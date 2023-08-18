@@ -65,7 +65,7 @@ void free_audio_chunk(int channel) {
 // param "chan" is channel
 void playSound(const char *pFilename, int chan, int loops) {
     // open our filename into a chunk
-    Mix_Chunk *pSound = Mix_LoadWAV(getPathStatic(pFilename));
+    Mix_Chunk *pSound = Mix_LoadWAV(pFilename);
     
     // if opening failed
     if (pSound == NULL) {

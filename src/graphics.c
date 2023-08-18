@@ -327,12 +327,12 @@ renderObject *getRenderObject(int identifier) {
 
 // load a font into memory and return a pointer to it
 // TODO: evaluate where this stands in relation to getFont functionality, does this just extend the backend of get Font?
-TTF_Font *loadFont(const char *pFontPath, int fontSize) {
+TTF_Font *loadFont(char *pFontPath, int fontSize) {
     if(fontSize > 500){
         logMessage(error, "ERROR: FONT SIZE TOO LARGE\n");
         return NULL;
     }
-    char *fontpath = getPathStatic(pFontPath);
+    char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
         char buffer[100];
         snprintf(buffer, sizeof(buffer),  "Could not access file '%s'.\n", fontpath);
@@ -424,7 +424,6 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
 // Create a texture from image path, returns its texture pointer and a flag on whether
 // or not the texture is also cached
 struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
-
     // try to get it from cache TODO: should we wrap this in if shouldCache?
     Variant *pVariant = getVariant(cache, pPath);
     if (pVariant != NULL) { // found in cache
@@ -437,7 +436,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         return ret;
     }
     else{ // not found in cache
-        if(access(getPathStatic(pPath), F_OK) == -1){
+        if(access(pPath, F_OK) == -1){
             char buffer[100];
             snprintf(buffer, sizeof(buffer),  "Could not access file '%s'.\n", pPath);
             logMessage(error, buffer);
@@ -445,7 +444,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         }
 
         // create surface from loading the image
-        SDL_Surface *pImage_surface = IMG_Load(getPathStatic(pPath));
+        SDL_Surface *pImage_surface = IMG_Load(pPath);
         
         // error out if surface load failed
         if (!pImage_surface) {
@@ -1354,7 +1353,7 @@ void changeResolution(int width, int height) {
 }
 
 // initialize graphics
-void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap){
+void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path){
     // test for video init, alarm if failed
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         char buffer[100];
@@ -1366,7 +1365,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     logMessage(info, "SDL initialized.\n");
 
     // test for window init, alarm if failed
-    pWindow = SDL_CreateWindow("Stardust Crusaders Dating Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode);
+    pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode);
     if (pWindow == NULL) {
         char buffer[100];
         snprintf(buffer, sizeof(buffer),  "Window creation failed: %s\n", SDL_GetError());
@@ -1424,7 +1423,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     cache = createVariantCollection();
 
     // load icon to surface
-    SDL_Surface *pIconSurface = IMG_Load(getPathStatic("images/icon.png"));
+    SDL_Surface *pIconSurface = IMG_Load(icon_path);
     if (pIconSurface == NULL) {
         char buffer[100];
         snprintf(buffer, sizeof(buffer),  "IMG_Load error: %s", IMG_GetError());

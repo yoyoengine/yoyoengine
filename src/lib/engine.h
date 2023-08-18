@@ -27,17 +27,36 @@ struct ScreenSize {
 // helper function to return ScreenSize struct from getting the screensize with SDL2
 struct ScreenSize getScreenSize();
 
-// returns the char * path to a resource specified in relation to root dir
-char *getPathStatic(const char *path);
-
 char *getPathDynamic(const char *path);
+
+char *getResourceStatic(const char *sub_path);
+
+char* getEngineResourceStatic(const char *sub_path);
 
 void toggleConsole();
 
 void toggleOverlay();
 
+// constructor for engine (any fields can be left blank for defaults)
+struct engine_data {
+    int screen_width;
+    int screen_height;
+    int volume;
+    int window_mode;
+    int framecap;
+    int log_level;
+    
+    bool debug_mode;
+    bool skipintro;
+
+    char *window_title;
+    char *icon_path;
+    char *engine_resources_path;
+    char *game_resources_path;
+};
+
 // entry point to the engine, initializes all subsystems
-void initEngine(int screenWidth, int screenHeight, bool debug, int volume, int windowMode, int framecap, bool skipintro);
+void initEngine(struct engine_data data);
 
 // shutdown point for engine, shuts down all subsystems
 void shutdownEngine();

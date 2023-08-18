@@ -31,17 +31,17 @@ DIST_FILES_WINDOWS := $(wildcard dist/windows/*)
 
 all: help
 
-linux: $(BIN_DIR_LINUX)/$(ENGINE_NAME).so $(BIN_DIR_LINUX)/copy_headers $(BIN_DIR_LINUX)/copy_libs $(BIN_DIR_LINUX)/engine_resources
+linux: $(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so $(BIN_DIR_LINUX)/copy_headers $(BIN_DIR_LINUX)/copy_libs $(BIN_DIR_LINUX)/engine_resources
 
 windows: $(BIN_DIR_WINDOWS)/$(ENGINE_NAME).dll $(BIN_DIR_WINDOWS)/dist_files $(BIN_DIR_WINDOWS)/engine_resources
 
-$(BIN_DIR_LINUX)/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)
+$(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS_LINUX)
+	@mkdir -p $(BIN_DIR_LINUX)/dependencies
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(BIN_DIR_WINDOWS)/$(ENGINE_NAME).dll: $(OBJECTS) $(SHARED_LIBS_WINDOWS)
-	@mkdir -p $(BIN_DIR_WINDOWS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	@mkdir -p $(BIN_DIR_WINDOWS)/dependencies
+	$(CC) $(LDFLAGS) -o $(BIN_DIR_WINDOWS)/dependencies/$(ENGINE_NAME).dll $^
 
 $(BIN_DIR_LINUX)/dist_files: $(DIST_FILES_LINUX)
 	@mkdir -p $(BIN_DIR_LINUX)/dependencies
@@ -69,15 +69,24 @@ $(BIN_DIR_LINUX)/copy_headers: $(DIST_FILES_LINUX)
 	cp -r $(SRC_DIR)/lib/* $(BIN_DIR_LINUX)/lib
 
 # Copy external libraries to the dependencies folder within the build directory
-$(BIN_DIR_LINUX)/copy_libs: $(DIST_FILES_LINUX)
+$(BIN_DIR_LINUX)/copy_libs: $(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so $(DIST_FILES_LINUX)
 	@mkdir -p $(BIN_DIR_LINUX)/dependencies
-	cp -r $(SRC_DIR)/dist/linux/* $(BIN_DIR_LINUX)/dependencies
+	cp $(SRC_DIR)/dist/linux/* $(BIN_DIR_LINUX)/dependencies
+
+# debug builds
+debug-linux: CFLAGS += -DDEBUG
+debug-linux: linux
+
+debug-windows: CFLAGS += -DDEBUG
+debug-windows: windows
 
 # Help target
 help:
 	@echo "Available targets:"
 	@echo "  linux         : Build the Linux version"
 	@echo "  windows       : Build the Windows version"
+	@echo "  debug-linux         : Build the Linux version with debugging flags"
+	@echo "  debug-windows       : Build the Windows version with debugging flags"
 	@echo "  copy_headers  : Copy header files to lib folder"
 	@echo "  copy_libs     : Copy external libraries to dependencies folder"
 	@echo "  clean         : Clean up build artifacts"

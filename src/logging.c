@@ -45,9 +45,10 @@ const char* getTimestamp() {
 
 void openLog(){
     // open the log file
-    logFile = fopen(getPathStatic("data/debug.log"), "a");
+    char *logpath = getEngineResourceStatic("debug.log");
+    logFile = fopen(logpath, "w");
     if (logFile == NULL) {
-        printf("%sError opening logfile\n",RED);
+        printf("%sError opening logfile at: %s\n",logpath,RED);
     }
 }
 
@@ -100,9 +101,10 @@ void log_init(enum logLevel level){
     #endif
 
     // open log file the first time in w mode to overwrite any existing log
-    logFile = fopen(getPathStatic("data/debug.log"), "w");
+    char *logpath = getEngineResourceStatic("debug.log");
+    logFile = fopen(logpath, "w");
     if (logFile == NULL) {
-        printf("%sError opening logfile\n",RED);
+        printf("%sError opening logfile at: %s\n",logpath,RED);
     }
     closeLog();
     logMessage(info, "Logging initialized\n");

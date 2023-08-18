@@ -94,7 +94,7 @@ void removeRenderObject(int identifier);
 
 renderObject *getRenderObject(int identifier);
 
-TTF_Font *loadFont(const char *pFontPath, int fontSize);
+TTF_Font *loadFont(char *pFontPath, int fontSize);
 
 /*
     struct holding info on texture creations
@@ -149,7 +149,7 @@ struct ScreenSize getCurrentResolution();
 
 void changeResolution(int width, int height);
 
-void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap);
+void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path);
 
 void shutdownGraphics();
 

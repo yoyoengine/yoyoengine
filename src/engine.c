@@ -1,7 +1,5 @@
 /*
     TODO: ENGINE
-    - engine resources (icon, fonts) need to be seperated in a sensical way from game code
-      and resources. Engine should feel more seperate and able to be converted to other projects
     - (maybe) seperate some prinf output feedbacks into debug only
     - run every file in gpt4 and ask for issues
     - update all header files with the comment descriptions of the functions
@@ -38,7 +36,7 @@ bool debugOverlay = false;
 bool consoleOverlay = false;
 
 // helper function to get the screen size
-// TODO: consider moving graphics.c
+// TODO: consider moving graphics.c TODO: yes move to graphics.c
 struct ScreenSize getScreenSize(){
     // initialize video
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -65,23 +63,39 @@ struct ScreenSize getScreenSize(){
     return screenSize;
 }
 
-// get path for one time use
-char *getPathStatic(const char *path) {
-    static char path_buffer[256];  // Adjust the buffer size as per your requirement
+// Global variables for resource paths
+static const char *resources_path = NULL;
+static const char *engine_resources_path = NULL;
+char *executable_path = NULL;
 
-    if (base_path == NULL) {
-        base_path = SDL_GetBasePath();
-        if (base_path == NULL) {
-            logMessage(error, "Error getting base path!\n");
-            return NULL;
-        }
+char* getResourceStatic(const char *sub_path) {
+    static char resource_buffer[256];  // Adjust the buffer size as per your requirement
+
+    if (resources_path == NULL) {
+        logMessage(error, "Resource paths not set!\n");
+        return NULL;
     }
 
-    snprintf(path_buffer, sizeof(path_buffer), "%s../../resources/%s", base_path, path);
-    return path_buffer;
+    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", resources_path, sub_path);
+    return strdup(resource_buffer);
 }
 
-// get dynamically allocated path which must be freed
+char* getEngineResourceStatic(const char *sub_path) {
+    static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
+
+    if (engine_resources_path == NULL) {
+        logMessage(error, "Engine reserved paths not set!\n");
+        return NULL;
+    }
+
+    snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_resources_path, sub_path);
+    return strdup(engine_reserved_buffer);
+}
+
+/*
+    get dynamically allocated path which must be freed
+    TODO: REMOVEME PLEASE/REPLACEME
+*/
 char *getPathDynamic(const char *path) {
     if (base_path == NULL) {
         base_path = SDL_GetBasePath();
@@ -112,7 +126,7 @@ void toggleConsole(){
         logMessage(debug, "Toggled Console Overlay On.\n");
 
         // add back panel to debug overlay
-        struct textureInfo info = createImageTexture("images/ui/dimpanel.png",false);
+        struct textureInfo info = createImageTexture(getEngineResourceStatic("dimpanel.png"),false);
 
         renderObject panel = {
             -901, // we set ID each time
@@ -223,7 +237,7 @@ void toggleOverlay(){
         addRenderObject(staging);
     
         // add back panel to debug overlay
-        struct textureInfo info = createImageTexture("images/ui/dimpanel.png",false);
+        struct textureInfo info = createImageTexture(getEngineResourceStatic("dimpanel.png"),false);
         
         renderObject panel = {
             -900, // we set ID each time
@@ -248,15 +262,85 @@ void toggleOverlay(){
     debugOverlay = !debugOverlay;
 }
 
-// engine entry point, takes in the screenWidth, screenHeight and a bool flag for
-// starting in debug mode
-void initEngine(int screenWidth, int screenHeight, bool debugMode, int volume, int windowMode, int framecap, bool skipintro){
-    // initialize graphics systems, creating window renderer, etc
-    initGraphics(screenWidth,screenHeight,windowMode,framecap);
+// some functions to apply a value if its uninitialized /////////////////////
 
-    // load a font for use in engine (value of global in engine.h modified)
-    pEngineFont = loadFont("engine_reserved/RobotoMono-Light.ttf", 500);
-    pEngineFont2 = loadFont("engine_reserved/RobotoMono-Light.ttf", 500);
+int applyDefaultInt(int value, int defaultValue) {
+    if (value != 0) {
+        return value;
+    }
+    return defaultValue;
+}
+
+bool applyDefaultBool(bool value, bool defaultValue) {
+    if (value) {
+        return value;
+    }
+    return defaultValue;
+}
+
+char* applyDefaultString(char* value, char* defaultValue) {
+    if (value != NULL && strlen(value) > 0) {
+        return value;
+    }
+    return (char*)defaultValue; // Cast away const for default value
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+// combines two paths together (sprintf's to result buffer)
+void constructPath(char *result, size_t result_size, const char *base_path, const char *supplied_path, const char *default_path) {
+    if (supplied_path) {
+        snprintf(result, result_size, "%s%s", base_path, supplied_path);
+    } else {
+        strncpy(result, default_path, result_size);
+    }
+}
+
+/*
+    Muted volume needs to be negative (if zero it will fallback to a default TODO: fix this)
+
+    TODO: version number on splash screen
+*/
+void initEngine(struct engine_data data) {
+    // Get the path to our executable
+    executable_path = SDL_GetBasePath(); // Don't forget to free memory later
+
+    // Set default paths for engineResourcesPath and gameResourcesPath
+    char engine_default_path[256], game_default_path[256];
+    snprintf(engine_default_path, sizeof(engine_default_path), "%sengine_resources", executable_path);
+    snprintf(game_default_path, sizeof(game_default_path), "%sresources", executable_path);
+
+    // Construct paths
+    char engine_supplied_path[256], game_supplied_path[256];
+    constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
+    constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
+
+    // Apply defaults using helper functions
+    int screenWidth = applyDefaultInt(data.screen_width, 1920);
+    int screenHeight = applyDefaultInt(data.screen_height, 1080);
+    int volume = applyDefaultInt(data.volume, 128);
+    int windowMode = applyDefaultInt(data.window_mode, 0);
+    int framecap = applyDefaultInt(data.framecap, -1);
+    int logLevel = applyDefaultInt(data.log_level, 3);
+    bool debugMode = applyDefaultBool(data.debug_mode, false);
+    bool skipIntro = applyDefaultBool(data.skipintro, false);
+    char *windowTitle = applyDefaultString(data.window_title, "Yoyo Engine Window");
+
+    // Update global locations for resources
+    engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
+    resources_path = strdup(game_supplied_path); // Remember to free this memory later
+
+    // Get the icon path
+    char *iconPath = data.icon_path ? getResourceStatic(data.icon_path) : getEngineResourceStatic("enginelogo.png");
+
+    // ----------------- Begin Setup -------------------
+
+    // initialize graphics systems, creating window renderer, etc
+    initGraphics(screenWidth,screenHeight,windowMode,framecap,windowTitle,iconPath);
+
+    // load a font for use in engine (value of global in engine.h modified) TODO: this will break
+    pEngineFont = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
+    pEngineFont2 = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // TODO: check this later because i'm so tired and perplexed with this workaround to letting the fn go out of scope
@@ -273,7 +357,7 @@ void initEngine(int screenWidth, int screenHeight, bool debugMode, int volume, i
     // (we need to count from the first item which is the counter to get accurate numbers (i think))
     if(debugMode){
         // initialize logging
-        log_init(debug);
+        log_init(logLevel);
 
         // display in console
         logMessage(debug, "Debug mode enabled.\n");
@@ -297,14 +381,14 @@ void initEngine(int screenWidth, int screenHeight, bool debugMode, int volume, i
         a splash screen with the engine title and logo for 2550ms and playing a
         startup noise
     */
-    if(skipintro){
+    if(skipIntro){
         logMessage(info,"Skipping Intro.\n");
     }
     else{
-        playSound("sfx/startup.mp3",0,0); // play startup sound
+        playSound(getEngineResourceStatic("startup.mp3"),0,0); // play startup sound
 
         // add startup splash image
-        createImage(0,.5f,.5f,1.0f,1.0f,"engine_reserved/splash.png",true,ALIGN_STRETCH);
+        createImage(0,.5f,.5f,1.0f,1.0f,getEngineResourceStatic("splash.png"),true,ALIGN_STRETCH);
 
         // render everything in engine queue
         renderAll(); 
@@ -327,15 +411,6 @@ void initEngine(int screenWidth, int screenHeight, bool debugMode, int volume, i
 void shutdownEngine(){
     logMessage(info, "Shutting down engine...\n");
 
-    /*
-        TECHNICALLY this might not have been called unless getPath() 
-        was called at least once, however: i dont feel like fixing 
-        this as the engine will always call this internally for the 
-        splash screen (unless the argv for skipping is passed) in 
-        which case it doesnt matter because its called in the game 
-        and nobody will ever use this engine :P
-    */
-
     // free the engine font color
     free(pEngineFontColor);
     pEngineFontColor = NULL;
@@ -352,6 +427,7 @@ void shutdownEngine(){
     // note: must happen before SDL because it relies on SDL path to open file
     log_shutdown();
     SDL_free(base_path); // free base path after (used by logging)
+    SDL_free(executable_path); // free base path after (used by logging)
 
     // quit SDL (should destroy anything else i forget)
     SDL_Quit();

@@ -1,0 +1,25 @@
+ENGINE_BUILD := ../../build/linux/yoyoengine
+
+CC = gcc
+CFLAGS = -Wall -Wextra -I$(ENGINE_BUILD)/dependencies
+LDFLAGS = -L$(ENGINE_BUILD)/dependencies
+LDLIBS = -lyoyoengine -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16
+
+all: minesweeper
+
+minesweeper: minesweeper.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@ -Wl,-rpath=$(ENGINE_BUILD)/dependencies
+
+clean:
+	rm -f minesweeper
+
+debug_linux: CFLAGS += -DDEBUG -g
+debug_linux: minesweeper
+
+gdb: clean debug_linux
+	gdb ./minesweeper
+
+valgrind: clean debug_linux
+	valgrind --leak-check=full --show-leak-kinds=all ./minesweeper
+
+.PHONY: all clean
