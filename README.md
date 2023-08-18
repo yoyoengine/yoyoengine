@@ -18,12 +18,12 @@ A 2D graphics engine (currently framework) written in C using SDL2, SDL2_image, 
 
 ## Plans
 
-[X] Text, Images, Animations, Sound, Buttons
-[ ] Documentation website
-[ ] Example projects and tutorials
-[ ] Lua integration
-[ ] Collision detection
-[ ] Networking
+- [X] Text, Images, Animations, Sound, Buttons
+- [ ] Documentation website
+- [ ] Example projects and tutorials
+- [ ] Lua integration
+- [ ] Collision detection
+- [ ] Networking
 
 ## Credit
 
