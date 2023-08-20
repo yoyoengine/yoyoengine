@@ -1,4 +1,5 @@
 ENGINE_BUILD := ../../build/linux/yoyoengine
+ENGINE_MAKEFILE := ../../
 
 CC = gcc
 CFLAGS = -Wall -Wextra -I$(ENGINE_BUILD)/dependencies
@@ -8,6 +9,7 @@ LDLIBS = -lyoyoengine -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lm
 all: minesweeper
 
 minesweeper: minesweeper.c
+	$(MAKE) -C $(dir $(ENGINE_MAKEFILE)) linux
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@ -Wl,-rpath=$(ENGINE_BUILD)/dependencies
 
 clean:
