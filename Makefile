@@ -4,16 +4,35 @@ LDFLAGS := -shared
 SRC_DIR := src
 BUILD_DIR := build
 OBJ_DIR := $(BUILD_DIR)/obj
-BIN_DIR_LINUX := $(BUILD_DIR)/linux/yoyoengine
-BIN_DIR_WINDOWS := $(BUILD_DIR)/windows/yoyoengine
+
+# Determine PLATFORM based on target
+ifeq ($(filter linux,$(MAKECMDGOALS)),linux)
+    PLATFORM := linux
+else ifeq ($(filter windows,$(MAKECMDGOALS)),windows)
+    PLATFORM := windows
+else ifeq ($(filter osx-arm,$(MAKECMDGOALS)),osx-arm)
+    PLATFORM := osx-arm
+endif
+
+# use our local copies of our libs to compile (TODO: fix for macos arm)
+CFLAGS += -I$(SRC_DIR)/dist/$(PLATFORM)
+LDFLAGS += -L$(SRC_DIR)/dist/$(PLATFORM)
+LDLIBS += -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16
+
+# Enable debugging flags if the DEBUG variable is set
+ifdef DEBUG
+    CFLAGS += -DDEBUG -g
+endif
+
+BIN_DIR := $(BUILD_DIR)/$(PLATFORM)/yoyoengine
+DIST_FILES := $(SRC_DIR)/dist/$(PLATFORM)
 
 SOURCES := $(wildcard $(SRC_DIR)/*.c)
 OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 ENGINE_NAME := libyoyoengine
 
-SHARED_LIB_DIR_LINUX := $(SRC_DIR)/dist/linux
-SHARED_LIB_DIR_WINDOWS := $(SRC_DIR)/dist/windows
+SHARED_LIB_DIR := $(SRC_DIR)/dist/$(PLATFORM)
 
 SHARED_LIB_EXTENSIONS := .so .dll
 
@@ -31,65 +50,65 @@ DIST_FILES_WINDOWS := $(wildcard dist/windows/*)
 
 all: help
 
-linux: $(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so $(BIN_DIR_LINUX)/copy_headers $(BIN_DIR_LINUX)/copy_libs $(BIN_DIR_LINUX)/engine_resources
+linux: $(BIN_DIR)/dependencies/$(ENGINE_NAME).so copy_headers copy_libs engine_resources
 
-windows: $(BIN_DIR_WINDOWS)/$(ENGINE_NAME).dll $(BIN_DIR_WINDOWS)/dist_files $(BIN_DIR_WINDOWS)/engine_resources
+windows: $(BIN_DIR)/dependencies/$(ENGINE_NAME).dll copy_headers copy_libs engine_resources
 
-$(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)/dependencies
+osx-arm: $(BIN_DIR)/dependencies/$(ENGINE_NAME).so copy_headers copy_libs engine_resources
+
+############################ ACTUAL ENGINE LIB OUTPUT ###############################
+
+# LINUX  & OSX
+$(BIN_DIR)/dependencies/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS_LINUX)
+	@mkdir -p $(BIN_DIR)/dependencies
 	$(CC) $(LDFLAGS) -o $@ $^
 
-$(BIN_DIR_WINDOWS)/$(ENGINE_NAME).dll: $(OBJECTS) $(SHARED_LIBS_WINDOWS)
-	@mkdir -p $(BIN_DIR_WINDOWS)/dependencies
-	$(CC) $(LDFLAGS) -o $(BIN_DIR_WINDOWS)/dependencies/$(ENGINE_NAME).dll $^
+# WINDOWS
+$(BIN_DIR)/dependencies/$(ENGINE_NAME).dll: $(OBJECTS) $(SHARED_LIBS_WINDOWS)
+	@mkdir -p $(BIN_DIR)/dependencies
+	$(CC) $(LDFLAGS) -o $(BIN_DIR)/dependencies/$(ENGINE_NAME).dll $^
 
-$(BIN_DIR_LINUX)/dist_files: $(DIST_FILES_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)/dependencies
-	cp -r $(SRC_DIR)/dist/linux/* $(BIN_DIR_LINUX)/dependencies
+############################ COPY PLATFORM DIST FILES ###############################
 
-$(BIN_DIR_WINDOWS)/dist_files: $(DIST_FILES_WINDOWS)
-	@mkdir -p $(BIN_DIR_WINDOWS)/dependencies
-	cp -r $(SRC_DIR)/dist/windows/* $(BIN_DIR_WINDOWS)/dependencies
+dist_files: $(DIST_FILES)
+	@mkdir -p $(BIN_DIR)/dependencies
+	cp -r $(SRC_DIR)/dist/$(PLATFORM)/* $(BIN_DIR)/dependencies
 
-$(BIN_DIR_LINUX)/engine_resources: $(DIST_FILES_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)/engine_resources
-	cp -r $(SRC_DIR)/dist/assets/* $(BIN_DIR_LINUX)/engine_resources
+engine_resources: $(DIST_FILES)
+	@mkdir -p $(BIN_DIR)/engine_resources
+	cp -r $(SRC_DIR)/dist/assets/* $(BIN_DIR)/engine_resources
 
-$(BIN_DIR_WINDOWS)/engine_resources: $(DIST_FILES_WINDOWS)
-	@mkdir -p $(BIN_DIR_WINDOWS)/engine_resources
-	cp -r $(SRC_DIR)/dist/assets/* $(BIN_DIR_WINDOWS)/engine_resources
+############################ BUILD OBJECT FILES ###############################
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@echo ----------------------------------
+	@echo Building for: $(PLATFORM)
+	@echo ----------------------------------
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
 
 # Copy header files to the lib folder within the build directory
-$(BIN_DIR_LINUX)/copy_headers: $(DIST_FILES_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)/lib
-	cp -r $(SRC_DIR)/lib/* $(BIN_DIR_LINUX)/lib
+copy_headers: $(DIST_FILES)
+	@mkdir -p $(BIN_DIR)/lib
+	cp -r $(SRC_DIR)/lib/* $(BIN_DIR)/lib
 
 # Copy external libraries to the dependencies folder within the build directory
-$(BIN_DIR_LINUX)/copy_libs: $(BIN_DIR_LINUX)/dependencies/$(ENGINE_NAME).so $(DIST_FILES_LINUX)
-	@mkdir -p $(BIN_DIR_LINUX)/dependencies
-	cp $(SRC_DIR)/dist/linux/* $(BIN_DIR_LINUX)/dependencies
-
-# debug builds
-debug-linux: CFLAGS += -DDEBUG
-debug-linux: linux
-
-debug-windows: CFLAGS += -DDEBUG
-debug-windows: windows
+copy_libs: $(BIN_DIR)/dependencies $(DIST_FILES)
+	@mkdir -p $(BIN_DIR)/dependencies
+	cp $(SRC_DIR)/dist/$(PLATFORM)/* $(BIN_DIR)/dependencies
 
 # Help target
 help:
-	@echo "Available targets:"
-	@echo "  linux         : Build the Linux version"
-	@echo "  windows       : Build the Windows version"
-	@echo "  debug-linux         : Build the Linux version with debugging flags"
-	@echo "  debug-windows       : Build the Windows version with debugging flags"
-	@echo "  copy_headers  : Copy header files to lib folder"
-	@echo "  copy_libs     : Copy external libraries to dependencies folder"
-	@echo "  clean         : Clean up build artifacts"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Available targets:                                                 |"
+	@echo "| - linux         : Build the Linux version                          |"
+	@echo "| - windows       : Build the Windows version                        |"
+	@echo "| - copy_headers  : Copy header files to lib folder                  |"
+	@echo "| - copy_libs     : Copy external libraries to dependencies folder   |"
+	@echo "| - clean         : Clean up build artifacts                         |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| passing 'debug' will enable debug builds                           |"
+	@echo "+--------------------------------------------------------------------+"
 
 # Clean target
 clean:
