@@ -40,11 +40,7 @@ define find_shared_libs
 $(wildcard $(1)*$(2))
 endef
 
-SHARED_LIBS_LINUX := $(foreach ext,$(SHARED_LIB_EXTENSIONS),$(call find_shared_libs,$(SHARED_LIB_DIR_LINUX),$(ext)))
-SHARED_LIBS_WINDOWS := $(foreach ext,$(SHARED_LIB_EXTENSIONS),$(call find_shared_libs,$(SHARED_LIB_DIR_WINDOWS),$(ext)))
-
-DIST_FILES_LINUX := $(wildcard dist/linux/*)
-DIST_FILES_WINDOWS := $(wildcard dist/windows/*)
+SHARED_LIBS := $(foreach ext,$(SHARED_LIB_EXTENSIONS),$(call find_shared_libs,$(SHARED_LIB_DIR),$(ext)))
 
 .PHONY: all clean linux windows copy_headers copy_libs help
 
@@ -59,12 +55,12 @@ osx-arm: $(BIN_DIR)/dependencies/$(ENGINE_NAME).so copy_headers copy_libs engine
 ############################ ACTUAL ENGINE LIB OUTPUT ###############################
 
 # LINUX  & OSX
-$(BIN_DIR)/dependencies/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS_LINUX)
+$(BIN_DIR)/dependencies/$(ENGINE_NAME).so: $(OBJECTS) $(SHARED_LIBS)
 	@mkdir -p $(BIN_DIR)/dependencies
 	$(CC) $(LDFLAGS) -o $@ $^
 
 # WINDOWS
-$(BIN_DIR)/dependencies/$(ENGINE_NAME).dll: $(OBJECTS) $(SHARED_LIBS_WINDOWS)
+$(BIN_DIR)/dependencies/$(ENGINE_NAME).dll: $(OBJECTS) $(SHARED_LIBS)
 	@mkdir -p $(BIN_DIR)/dependencies
 	$(CC) $(LDFLAGS) -o $(BIN_DIR)/dependencies/$(ENGINE_NAME).dll $^
 
@@ -81,11 +77,8 @@ engine_resources: $(DIST_FILES)
 ############################ BUILD OBJECT FILES ###############################
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo ----------------------------------
-	@echo Building for: $(PLATFORM)
-	@echo ----------------------------------
 	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
+	$(CC) $(CFLAGS) -fPIC -c -o $@ $< -Wl,-rpath=$(SRC_DIR)/dist/$(PLATFORM)
 
 # Copy header files to the lib folder within the build directory
 copy_headers: $(DIST_FILES)
