@@ -61,6 +61,8 @@ bool paintBounds = false;
 int currentResolutionWidth = 1920;
 int currentResolutionHeight = 1080;
 
+char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
+
 // create a cache to hold textures colors and fonts
 VariantCollection* cache;
 
@@ -1305,6 +1307,9 @@ void setVsync(bool enabled) {
         flags |= SDL_RENDERER_PRESENTVSYNC;
     }
 
+    // Reset the texture filtering hint
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
+
     pRenderer = SDL_CreateRenderer(pWindow, -1, flags);
     logMessage(debug, "Renderer re-created.\n");
 
@@ -1363,6 +1368,9 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     }
 
     logMessage(info, "SDL initialized.\n");
+
+    // Set the texture filtering hint
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
 
     // test for window init, alarm if failed
     pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode);
