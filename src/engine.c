@@ -12,10 +12,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#include "lib/audio.h"
-#include "lib/graphics.h"
-#include "lib/engine.h"
-#include "lib/logging.h"
+#include <yoyoengine/yoyoengine.h>
 
 // buffer to hold filepath strings
 // will be modified by getPath()

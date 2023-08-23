@@ -1,4 +1,5 @@
-#include "lib/variant.h"
+#include <yoyoengine/yoyoengine.h>
+
 #include <stdlib.h>
 #include <string.h>
 

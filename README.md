@@ -19,8 +19,9 @@ A 2D graphics engine (currently framework) written in C using SDL2, SDL2_image, 
 ## Plans
 
 - [X] Text, Images, Animations, Sound, Buttons
-- [ ] Documentation website
+- [ ] Lua support
 - [ ] Example projects and tutorials
+- [ ] Documentation website
 - [ ] Lua integration
 - [ ] Collision detection
 - [ ] Networking
@@ -28,3 +29,17 @@ A 2D graphics engine (currently framework) written in C using SDL2, SDL2_image, 
 ## Credit
 
 - The dependencies and Jojo's Bizarre Adventure for the bootup screen sound effect.
+
+## Caveats
+
+### The good
+
+- everything you need to build and distribute the engine is included in this repo
+
+### The bad
+
+- everything you need to build and distribute the engine is included in this repo
+
+### The ugly
+
+- everything you need to build and distribute the engine is included in this repo

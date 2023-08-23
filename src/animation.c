@@ -1,8 +1,6 @@
-#include "lib/engine.h"
-#include "lib/graphics.h"
-#include "lib/logging.h"
-#include "lib/animation.h"
-#include "lib/linkedlist.h"
+#include <yoyoengine/yoyoengine.h>
+
+#include <stdio.h>
 
 // declared in graphics.c, hold an unused unique increasing integer ID
 extern int global_id;

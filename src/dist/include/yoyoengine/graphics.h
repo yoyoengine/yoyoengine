@@ -5,8 +5,7 @@
 
 #include <SDL2/SDL_ttf.h>
 
-#include "animation.h"
-#include "utils.h"
+#include <yoyoengine/yoyoengine.h>
 
 /*
     TODO PLEASE PLEASE MOVE TO ENGINE CALLBACK HANDLER STUFF FUNCTION FILE

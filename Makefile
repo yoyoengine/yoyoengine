@@ -1,5 +1,5 @@
-CC := gcc
-CFLAGS := -Wall -Wextra -Ilib
+CC := gcc -v
+CFLAGS := -Wall -Wextra
 LDFLAGS := -shared
 SRC_DIR := src
 BUILD_DIR := build
@@ -15,7 +15,7 @@ else ifeq ($(filter osx-arm,$(MAKECMDGOALS)),osx-arm)
 endif
 
 # use our local copies of our libs to compile (TODO: fix for macos arm)
-CFLAGS += -I$(SRC_DIR)/dist/$(PLATFORM)
+CFLAGS += -I$(SRC_DIR)/dist/include
 LDFLAGS += -L$(SRC_DIR)/dist/$(PLATFORM)
 LDLIBS += -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16
 
@@ -82,8 +82,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 # Copy header files to the lib folder within the build directory
 copy_headers: $(DIST_FILES)
-	@mkdir -p $(BIN_DIR)/lib
-	cp -r $(SRC_DIR)/lib/* $(BIN_DIR)/lib
+	@mkdir -p $(BIN_DIR)/include
+	cp -r $(SRC_DIR)/dist/include* $(BIN_DIR)
 
 # Copy external libraries to the dependencies folder within the build directory
 copy_libs: $(BIN_DIR)/dependencies $(DIST_FILES)

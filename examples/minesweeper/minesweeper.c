@@ -1,5 +1,4 @@
-#include "../../build/linux/yoyoengine/lib/engine.h"
-#include "../../build/linux/yoyoengine/lib/graphics.h"
+#include <yoyoengine/yoyoengine.h>
 
 #include <stdbool.h>
 

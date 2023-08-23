@@ -1,8 +1,3 @@
-/*
-    TODO: GRAPHICS
-    - some sort of system for re render only updated renderObjects
-*/
-
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
@@ -13,11 +8,7 @@
 
 #include <jansson.h>
 
-#include "lib/engine.h"
-#include "lib/graphics.h"
-#include "lib/audio.h"
-#include "lib/logging.h"
-#include "lib/variant.h"
+#include <yoyoengine/yoyoengine.h>
 
 // define globals for file
 SDL_Window *pWindow = NULL;

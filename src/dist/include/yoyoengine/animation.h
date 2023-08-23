@@ -4,7 +4,10 @@
 #include <SDL2/SDL.h>
 
 #include "utils.h"
-#include "graphics.h"
+
+#include <stdbool.h>
+
+// #include "graphics.h"
 
 // animation datastructure
 typedef struct AnimationData {

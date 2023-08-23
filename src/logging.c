@@ -1,8 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "lib/logging.h"
-#include "lib/engine.h"
+#include <yoyoengine/yoyoengine.h>
 
 #ifdef _WIN32
 #include <windows.h>
