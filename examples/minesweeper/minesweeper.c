@@ -13,6 +13,8 @@ int main() {
     
     createImage(1,.5,.5,1,1,getEngineResourceStatic("enginelogo.png"),true,ALIGN_MID_CENTER);
 
+    runscript(getResourceStatic("scripts/fib.lua"));
+
     bool quit = false;
     SDL_Event e;
 

@@ -13,3 +13,4 @@
 #include "uthash.h"
 #include "utils.h"
 #include "variant.h"
+#include "lua.h"

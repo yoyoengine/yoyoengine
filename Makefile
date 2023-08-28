@@ -17,7 +17,7 @@ endif
 # use our local copies of our libs to compile (TODO: fix for macos arm)
 CFLAGS += -I$(SRC_DIR)/dist/include
 LDFLAGS += -L$(SRC_DIR)/dist/$(PLATFORM)
-LDLIBS += -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16
+LDLIBS += -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16 -llua -lm
 
 # Enable debugging flags if the DEBUG variable is set
 ifdef DEBUG

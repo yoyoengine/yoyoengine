@@ -9,3 +9,9 @@
   - this decision depends on what the actual goals for the engine are. graphics vs game engine vs visual novel engine
 
 - cmake?
+
+- lua wrap one C function to dispatch lua calls to C, that way we dont have to rewrite every function
+
+ive decided. its a visual novel engine that provides the extensibility to do other things and scenes with it, you have a lot of presets and options but do not have to stick to them. you also get custom lua scripting provided by the data files
+
+cpython wrap engine so can use whole thing from python?
