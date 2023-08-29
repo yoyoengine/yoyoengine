@@ -974,12 +974,6 @@ void clearAll(bool includeEngine) {
     clearVariantCollection(cache); // TODO: evaluate when cache should be cleared intelligently with refcounts
 }
 
-// function to allow externel signal to force display refresh for debug overlay
-void debugForceRefresh(){
-    forceRefresh = true;
-}
-
-//TODO: OPTIMIZATION -> switch if clauses because currently ID always runs but the inside case isnt always true
 // render everything in the scene
 void renderAll() {
     int frameStart = SDL_GetTicks();
@@ -998,14 +992,9 @@ void renderAll() {
 
     // while iteration var is not null
     while (pCurrent != NULL) {
-        // check if current item is the fps counter
-        if (pCurrent->identifier == -1) {
-            // allocate a new string
-            char str[25];
-                
-            // Insert the fps number into the string
-            sprintf(str, "fps: %d", fps);
 
+        // if we are counting debug stuff TODO: add a way for engine to know its displaying overlays
+        if(1){
             // increment the frame counter
             frameCounter++;
 
@@ -1017,83 +1006,6 @@ void renderAll() {
                 frameCounter = 0; // reset counted frames
             }
 
-            // Destroy old texture to prevent memory leak
-            if (pCurrent->pTexture != NULL) {
-                SDL_DestroyTexture(pCurrent->pTexture);
-            }
-
-            // Update texture with the new text TODO FIXME
-            updateTextByObj(pCurrent, str);
-        }
-
-        // check if current item is the render object counter
-        if (pCurrent->identifier == -2) {
-            // Check if the object count has changed
-            if (objectCount != lastObjectCount || forceRefresh) {
-                // Update the previous object count value
-                lastObjectCount = objectCount;
-
-                // allocate a new string
-                char strObjCount[25];
-
-                // Insert the render object count number into the string
-                sprintf(strObjCount, "render objects: %d", objectCount);
-
-                // Destroy old texture to prevent memory leak
-                if (pCurrent->pTexture != NULL) {
-                    SDL_DestroyTexture(pCurrent->pTexture);
-                }
-
-                // Update texture with the new text TODO FIXME
-                updateTextByObj(pCurrent, strObjCount);
-            }
-        }
-
-        // check if current item is the audio chunk counter
-        if (pCurrent->identifier == -3) {
-            // Check if the object count has changed
-            if (totalChunks != lastChunkCount || forceRefresh) {
-                // Update the previous object count value
-                lastChunkCount = totalChunks;
-
-                // allocate a new string
-                char strChkCount[25];
-
-                // Insert the render object count number into the string
-                sprintf(strChkCount, "audio chunks: %d", totalChunks);
-
-                // Destroy old texture to prevent memory leak
-                if (pCurrent->pTexture != NULL) {
-                    SDL_DestroyTexture(pCurrent->pTexture);
-                }
-
-                // Update texture with the new text TODO FIXME
-                updateTextByObj(pCurrent, strChkCount);
-            }
-        }
-
-        // check if current item is the log lines
-        // TODO: in the future this is where a dev console with log output could be
-        if (pCurrent->identifier == -4) {
-            // Check if the object count has changed
-            if (linesWritten != lastLinesWritten || forceRefresh) {
-                // Update the previous object count value
-                lastLinesWritten = linesWritten;
-
-                // allocate a new string
-                char strLinCount[25];
-
-                // Insert the render object count number into the string
-                sprintf(strLinCount, "log lines: %d", linesWritten);
-
-                // Destroy old texture to prevent memory leak
-                if (pCurrent->pTexture != NULL) {
-                    SDL_DestroyTexture(pCurrent->pTexture);
-                }
-
-                // Update texture with the new text TODO FIXME
-                updateTextByObj(pCurrent, strLinCount);
-            }
         }
 
         // if we are an animation, we want to go to the next frame if its available 
@@ -1124,32 +1036,12 @@ void renderAll() {
     // Calculate paint time
     Uint32 paintTime = paintEndTime - paintStartTime;
 
-    if (SDL_GetTicks() - fpsUpdateTime >= 250) {
-        // Update ID -5 texture with paint time
-        pCurrent = pRenderListHead;
-        while (pCurrent != NULL) {
-            if (pCurrent->identifier == -5) {
-                char paintTimeString[30];
-
-                sprintf(paintTimeString, "paint time: %d ms", paintTime);
-
-                if (pCurrent->pTexture != NULL) {
-                    SDL_DestroyTexture(pCurrent->pTexture);
-                }
-                updateTextByObj(pCurrent, paintTimeString);
-
-                // Render the updated paint time texture
-                SDL_RenderCopy(pRenderer, pCurrent->pTexture, NULL, &(pCurrent->rect));
-
-                break;
-            }
-
-            pCurrent = pCurrent->pNext;
-        }
+    if(1){ // TODO: see above todo
+        ui_paint_debug_overlay(fps,paintTime,objectCount,totalChunks,linesWritten);
     }
 
-    // update ui
-    ui_paint_overlay(pWindow,pRenderer);
+    // update ui (TODO: profile if this is an expensive op)
+    ui_render();    
 
     // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);
@@ -1174,7 +1066,6 @@ void renderAll() {
     if(forceRefresh){
         forceRefresh = false;
     }
-
 }
 
 // function that traverses our LL of buttons and returns the highest depth
@@ -1321,7 +1212,6 @@ void setVsync(bool enabled) {
 //     TODO: add checks for if we need to change vsync to save performance
 // */
 void changeFPS(int cap){
-    toggleOverlay(); // NOTE: overlay bugs out when we change renderer so we have to toggle it twice
     if(cap == -1){
         setVsync(true);
     }
@@ -1330,7 +1220,6 @@ void changeFPS(int cap){
         fpscap = cap;
         desiredFrameTime = 1000 / fpscap;
     }
-    toggleOverlay();
 }
 
 /*

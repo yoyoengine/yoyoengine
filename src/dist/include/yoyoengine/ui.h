@@ -18,6 +18,8 @@ void ui_begin_input_checks();
 
 void ui_end_input_checks();
 
-void ui_paint_overlay();
+void ui_paint_debug_overlay(int fps, int paint_time, int render_object_count, int audio_chunk_count, int log_line_count);
+
+void ui_render();
 
 void shutdown_ui();

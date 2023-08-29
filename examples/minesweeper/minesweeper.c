@@ -7,6 +7,7 @@ int main() {
         .engine_resources_path = "../../build/linux/yoyoengine/engine_resources",
         .log_level = 0, // 0,
         .debug_mode = true,
+        .framecap = -1,
     };
 
     initEngine(data);

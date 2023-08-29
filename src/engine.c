@@ -26,9 +26,6 @@ SDL_Color *pEngineFontColor = NULL;
 TTF_Font *pEngineFont = NULL;
 TTF_Font *pEngineFont2 = NULL;
 
-// debug overlay state controller
-bool debugOverlay = false;
-
 // console overlay state controller
 bool consoleOverlay = false;
 
@@ -168,97 +165,6 @@ void toggleConsole(){
     consoleOverlay = !consoleOverlay;
 }
 
-void toggleOverlay(){
-    if(debugOverlay){
-        logMessage(debug, "Toggled Debug Overlay Off.\n");
-        // remove all items in debug overlay
-        removeRenderObject(-1);
-        removeRenderObject(-2);
-        removeRenderObject(-3);
-        removeRenderObject(-4);
-        removeRenderObject(-5);
-        removeRenderObject(-900);
-    }
-    else{ // NOTE: lots of hard coded falses for texture caching
-        logMessage(debug, "Toggled Debug Overlay On.\n");
-        
-        // construct a prototype renderObject to pass to addRenderObject() which we modify each time
-        renderObject staging = {
-            -1, // we set ID each time
-            999,
-            renderType_Text,
-            createTextTexture("fps: 0",pEngineFont,pEngineFontColor), // we set texture each time
-            createRealPixelRect(false,0,0,.12f,.08f), // dummy rect
-            NULL, 
-            false, // no cache
-            createRealPixelRect(false,0,0,.12f,.08f),
-            false, // not centered
-            .TextData = {
-                pEngineFont2,
-                0,
-                pEngineFontColor,
-                NULL, // no outline color
-                "fps: 0",
-            }
-        };
-        
-        // add fps counter manually to render stack with a custom id
-        addRenderObject(staging);
-
-        // add object counter (only updates when changed)
-        staging.identifier = -2;
-        staging.rect.y += 75;
-        staging.bounds.y += 75;
-        staging.pTexture = createTextTexture("renderObjects: 0",pEngineFont2,pEngineFontColor);
-        addRenderObject(staging);
-
-        // add audio chunk counter (only updates when changed)
-        staging.identifier = -3;
-        staging.rect.y += 50;
-        staging.bounds.y += 50;
-        staging.pTexture = createTextTexture("audio chunks: 0",pEngineFont2,pEngineFontColor);
-        addRenderObject(staging);
-        
-        // add audio chunk counter (only updates when changed)
-        staging.identifier = -4;
-        staging.rect.y += 50;
-        staging.bounds.y += 50;
-        staging.pTexture = createTextTexture("log lines: 0",pEngineFont2,pEngineFontColor);
-        addRenderObject(staging);
-
-        // add audio chunk counter (only updates when changed)
-        staging.identifier = -5;
-        staging.rect.y += 50;
-        staging.bounds.y += 50;
-        staging.pTexture = createTextTexture("paint time: 0ms",pEngineFont2,pEngineFontColor);
-        addRenderObject(staging);
-    
-        // add back panel to debug overlay
-        struct textureInfo info = createImageTexture(getEngineResourceStatic("dimpanel.png"),false);
-        
-        renderObject panel = {
-            -900, // we set ID each time
-            900,
-            renderType_Image,
-            info.pTexture,
-            (SDL_Rect){0,0,250,400},
-            NULL, 
-            false, // cache this (eventually between scene loads we will want to keep it, actually we might already)
-            (SDL_Rect){0,0,250,400},
-            false, // not centered
-            .ImageData = {
-                "images/ui/dimpanel.png"
-            }
-        };
-        
-        addRenderObject(panel);
-
-        // force overlay refresh or text will be default
-        debugForceRefresh();
-    }
-    debugOverlay = !debugOverlay;
-}
-
 // some functions to apply a value if its uninitialized /////////////////////
 
 int applyDefaultInt(int value, int defaultValue) {
@@ -358,9 +264,6 @@ void initEngine(struct engine_data data) {
 
         // display in console
         logMessage(debug, "Debug mode enabled.\n");
-
-        // turn on debug overlay at launch in debug mode
-        toggleOverlay();
     }
     else{
         log_init(warning); // if we launch not in debug mode, only log warnings and errors

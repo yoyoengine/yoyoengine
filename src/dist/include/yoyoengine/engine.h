@@ -35,8 +35,6 @@ char* getEngineResourceStatic(const char *sub_path);
 
 void toggleConsole();
 
-void toggleOverlay();
-
 // constructor for engine (any fields can be left blank for defaults)
 struct engine_data {
     int screen_width;

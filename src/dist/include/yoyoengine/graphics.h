@@ -132,8 +132,6 @@ void clearAll(bool freeEngine);
 
 void removeButton(int id);
 
-void debugForceRefresh();
-
 void renderAll();
 
 void checkClicked(int x, int y);
