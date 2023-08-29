@@ -19,13 +19,16 @@ int main() {
     SDL_Event e;
 
     while(!quit) {
+        ui_begin_input_checks();
         while (SDL_PollEvent(&e)) {
+            ui_handle_input(&e);
             switch(e.type) {
                 case SDL_QUIT:
                     quit = true;
                     break;
             }
         }
+        ui_end_input_checks();
 
         // render frame
         renderAll();

@@ -1148,6 +1148,9 @@ void renderAll() {
         }
     }
 
+    // update ui
+    ui_paint_overlay(pWindow,pRenderer);
+
     // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);
 
@@ -1364,7 +1367,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
 
     // test for window init, alarm if failed
-    pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode);
+    pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode | SDL_WINDOW_ALLOW_HIGHDPI);
     if (pWindow == NULL) {
         char buffer[100];
         snprintf(buffer, sizeof(buffer),  "Window creation failed: %s\n", SDL_GetError());
@@ -1397,6 +1400,8 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
         logMessage(error, buffer);
         exit(1);
     }
+
+    init_ui(pWindow,pRenderer);
 
     // set our viewport to the screen size with neccessary computed offsets
     setViewport(screenWidth, screenHeight);
@@ -1456,6 +1461,8 @@ void shutdownGraphics(){
     // shutdown IMG
     IMG_Quit();
     logMessage(info, "Shut down IMG.\n");
+
+    shutdown_ui();
 
     // shutdown renderer
     SDL_DestroyRenderer(pRenderer);

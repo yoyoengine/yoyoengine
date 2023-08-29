@@ -1,4 +1,5 @@
-CC := gcc -v
+# CC := gcc -v
+CC := gcc
 CFLAGS := -Wall -Wextra
 LDFLAGS := -shared
 SRC_DIR := src
