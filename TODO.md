@@ -15,3 +15,7 @@
 ive decided. its a visual novel engine that provides the extensibility to do other things and scenes with it, you have a lot of presets and options but do not have to stick to them. you also get custom lua scripting provided by the data files
 
 cpython wrap engine so can use whole thing from python?
+
+Nuklear fix weird input handle lag
+
+- also design way to add custom overlays from json or other structure (does engine allow Nuklear functionality to users or is this just for editor?)
