@@ -14,6 +14,9 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+// engine version to be displayed on splash screen
+char * engine_version = "v0.0.1 dev";
+
 // buffer to hold filepath strings
 // will be modified by getPath()
 char path_buffer[1024];
@@ -24,7 +27,6 @@ char *base_path = NULL;
 // initialize engine internal variable globals to NULL
 SDL_Color *pEngineFontColor = NULL;
 TTF_Font *pEngineFont = NULL;
-TTF_Font *pEngineFont2 = NULL;
 
 // console overlay state controller
 bool consoleOverlay = false;
@@ -151,7 +153,7 @@ void toggleConsole(){
             false, // not centered
             ALIGN_MID_LEFT,
             .TextData = {
-                pEngineFont2,
+                pEngineFont,
                 0,
                 pEngineFontColor,
                 NULL, // no outline color
@@ -243,7 +245,6 @@ void initEngine(struct engine_data data) {
 
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
     pEngineFont = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
-    pEngineFont2 = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // TODO: check this later because i'm so tired and perplexed with this workaround to letting the fn go out of scope
@@ -256,8 +257,6 @@ void initEngine(struct engine_data data) {
     pEngineFontColor->a = 255;
 
     // if we are in debug mode
-    // BUG/INFO: FPS COUNTER MUST ABSOLUTELY BE THE HIGHEST DEPTH OR THE RENDER ORDER FUDGES THE NUMBERS 
-    // (we need to count from the first item which is the counter to get accurate numbers (i think))
     if(debugMode){
         // initialize logging
         log_init(logLevel);
@@ -290,11 +289,15 @@ void initEngine(struct engine_data data) {
         // add startup splash image
         createImage(0,.5f,.5f,1.0f,1.0f,getEngineResourceStatic("splash.png"),true,ALIGN_STRETCH);
 
+        createText(1,.5,.95,.1,.1,engine_version,pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
+        createText(1,.5,.98,.1,.1,"Ryan Zmuda 2023",pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
+
         // render everything in engine queue
         renderAll(); 
 
         // pause on engine splash for 2550ms (TODO: consider alternatives)
-        SDL_Delay(2550); 
+        // SDL_Delay(3000); maybe a more reasonable time scale?
+        SDL_Delay(2550);
         
         // remove startup objects
         clearAll(false);

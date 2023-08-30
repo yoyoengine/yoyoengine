@@ -16,7 +16,6 @@
 */
 extern SDL_Color *pEngineFontColor;
 extern TTF_Font *pEngineFont;
-extern TTF_Font *pEngineFont2;
 
 // struct to hold screen points
 struct ScreenSize {

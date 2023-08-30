@@ -19,3 +19,9 @@ cpython wrap engine so can use whole thing from python?
 Nuklear fix weird input handle lag
 
 - also design way to add custom overlays from json or other structure (does engine allow Nuklear functionality to users or is this just for editor?)
+
+graphics file needs cleaned up pretty bad
+
+new thread for timing delays, we can send a request with a callback ptr and it will do the awaiting on new thread
+
+animate the yoyo engine logo spinning on bootup
