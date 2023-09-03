@@ -25,3 +25,5 @@ graphics file needs cleaned up pretty bad
 new thread for timing delays, we can send a request with a callback ptr and it will do the awaiting on new thread
 
 animate the yoyo engine logo spinning on bootup
+
+stabilize the framework api before moving on to editor and python bindings
