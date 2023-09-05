@@ -26,15 +26,15 @@ struct ScreenSize {
 };
 
 // helper function to return ScreenSize struct from getting the screensize with SDL2
+// TODO: remove me?
 struct ScreenSize getScreenSize();
 
+// remove me? TODO
 char *getPathDynamic(const char *path);
 
-char *getResourceStatic(const char *sub_path);
+char *ye_get_resource_static(const char *sub_path);
 
-char* getEngineResourceStatic(const char *sub_path);
-
-void toggleConsole();
+char* ye_get_engine_resource_static(const char *sub_path);
 
 // constructor for engine (any fields can be left blank for defaults)
 struct engine_data {
@@ -48,10 +48,10 @@ struct engine_data {
     bool debug_mode; // does not need override
     bool skipintro; // does not need override
 
-    const char *window_title;
-    const char *icon_path;
-    const char *engine_resources_path;
-    const char *game_resources_path;
+    char *window_title;
+    char *icon_path;
+    char *engine_resources_path;
+    char *game_resources_path;
 
     // overrides - this is confusing with what needs overridden and what doesnt TODO:
     bool override_screen_width;
@@ -66,15 +66,21 @@ struct engine_data {
     bool override_engine_resources_path;
     bool override_game_resources_path;
 
+    // void pointer to a function that will be called to handle game input (takes in a SDL key)
+    void (*handle_input)(SDL_Event event);
+
     // some runtime state (always default to false)
     bool paintbounds_visible;
     bool metrics_visible;
+    bool console_visible;
 };
 
+void ye_process_frame();
+
 // entry point to the engine, initializes all subsystems
-void initEngine(struct engine_data data);
+void ye_init_engine(struct engine_data data);
 
 // shutdown point for engine, shuts down all subsystems
-void shutdownEngine();
+void ye_shutdown_engine();
 
 #endif

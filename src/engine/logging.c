@@ -45,7 +45,7 @@ const char* getTimestamp() {
 
 void openLog(){
     // open the log file
-    char *logpath = getEngineResourceStatic("debug.log");
+    char *logpath = ye_get_engine_resource_static("debug.log");
     logFile = fopen(logpath, "w");
     if (logFile == NULL) {
         printf("%sError opening logfile at: %s\n",logpath,RED);
@@ -191,7 +191,7 @@ void paint_console(struct nk_context *ctx){
                 }
             }
             else{
-                nk_label(ctx, formattedLog, NK_TEXT_LEFT);
+                nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(255, 255, 255));  // white text
             }
         }
 
@@ -231,7 +231,7 @@ void log_init(enum logLevel level){
     #endif
 
     // open log file the first time in w mode to overwrite any existing log
-    char *logpath = getEngineResourceStatic("debug.log");
+    char *logpath = ye_get_engine_resource_static("debug.log");
     logFile = fopen(logpath, "w");
     if (logFile == NULL) {
         printf("%sError opening logfile at: %s\n",logpath,RED);

@@ -40,3 +40,6 @@ timing functions
   - merge most game code into this as framework (scene loading, etc)
 - needs keybind to open/close
   - global state in engine.c tracking booleans which rest of engine can observe as internal state (paintbounds, overlay on, etc)
+- remember where console was before it was hidden
+
+completely rename engine function names

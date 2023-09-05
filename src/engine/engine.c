@@ -28,9 +28,6 @@ char *base_path = NULL;
 SDL_Color *pEngineFontColor = NULL;
 TTF_Font *pEngineFont = NULL;
 
-// console overlay state controller
-bool consoleOverlay = false;
-
 // expose our engine state data to the whole engine
 struct engine_data engine_state;
 
@@ -67,7 +64,7 @@ static const char *resources_path = NULL;
 static const char *engine_resources_path = NULL;
 char *executable_path = NULL;
 
-char* getResourceStatic(const char *sub_path) {
+char* ye_get_resource_static(const char *sub_path) {
     static char resource_buffer[256];  // Adjust the buffer size as per your requirement
 
     if (resources_path == NULL) {
@@ -79,7 +76,7 @@ char* getResourceStatic(const char *sub_path) {
     return strdup(resource_buffer);
 }
 
-char* getEngineResourceStatic(const char *sub_path) {
+char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
     if (engine_resources_path == NULL) {
@@ -173,10 +170,47 @@ void configute_defaults(struct engine_data *data){
     // game/engine resource paths are handed in init engine... move into here?
 }
 
+// event polled for per frame
+SDL_Event e;
+
+void ye_process_frame(){
+    ui_begin_input_checks();
+    while (SDL_PollEvent(&e)) {
+        ui_handle_input(&e);
+
+        // check for any reserved engine buttons (console, etc)
+        if(e.type == SDL_KEYDOWN){
+            switch(e.key.keysym.sym){
+                case SDLK_BACKQUOTE:
+                    if(engine_state.console_visible){
+                        engine_state.console_visible = false;
+                        remove_ui_component("console");
+                    }
+                    else{
+                        engine_state.console_visible = true;
+                        ui_register_component("console",paint_console);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // send event to callback specified by game (if needed)
+        if(engine_state.handle_input != NULL){
+            engine_state.handle_input(e);
+        }
+    }
+    ui_end_input_checks();
+
+    // render frame
+    renderAll();
+}
+
 /*
     Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
 */
-void initEngine(struct engine_data data) {
+void ye_init_engine(struct engine_data data) {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
 
@@ -200,7 +234,7 @@ void initEngine(struct engine_data data) {
     resources_path = strdup(game_supplied_path); // Remember to free this memory later
 
     // Get the icon path
-    char *iconPath = data.icon_path ? getResourceStatic(data.icon_path) : getEngineResourceStatic("enginelogo.png");
+    char *iconPath = data.icon_path ? ye_get_resource_static(data.icon_path) : ye_get_engine_resource_static("enginelogo.png");
 
     // TODO: i know these first two should be fine but does iconpath go out of scope after this fn?
     data.engine_resources_path = engine_resources_path;
@@ -224,7 +258,7 @@ void initEngine(struct engine_data data) {
     );
 
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
-    pEngineFont = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
+    pEngineFont = loadFont(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // TODO: check this later because i'm so tired and perplexed with this workaround to letting the fn go out of scope
@@ -264,10 +298,10 @@ void initEngine(struct engine_data data) {
         logMessage(info,"Skipping Intro.\n");
     }
     else{
-        playSound(getEngineResourceStatic("startup.mp3"),0,0); // play startup sound
+        playSound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
 
         // add startup splash image
-        createImage(0,.5f,.5f,1.0f,1.0f,getEngineResourceStatic("splash.png"),true,ALIGN_STRETCH);
+        createImage(0,.5f,.5f,1.0f,1.0f,ye_get_engine_resource_static("splash.png"),true,ALIGN_STRETCH);
 
         createText(1,.5,.95,.1,.1,engine_version,pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
         createText(1,.5,.98,.1,.1,"Ryan Zmuda 2023",pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
@@ -294,7 +328,7 @@ void initEngine(struct engine_data data) {
 } // control is now resumed by the game
 
 // function that shuts down all engine subsystems and components ()
-void shutdownEngine(){
+void ye_shutdown_engine(){
     logMessage(info, "Shutting down engine...\n");
 
     // shutdown lua

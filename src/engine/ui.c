@@ -109,7 +109,7 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     /* set up the font atlas and add desired font; note that font sizes are
         * multiplied by font_scale to produce better results at higher DPIs */
     nk_sdl_font_stash_begin(&atlas);
-    font = nk_font_atlas_add_from_file(atlas, getEngineResourceStatic("Orbitron-Regular.ttf"), 20 * font_scale, &config);
+    font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("Orbitron-Regular.ttf"), 20 * font_scale, &config);
     nk_sdl_font_stash_end();
 
     /* this hack makes the font appear to be scaled down to the desired
