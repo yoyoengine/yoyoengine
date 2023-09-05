@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.h": "c",
+        "system_error": "c"
+    }
+}

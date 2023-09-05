@@ -24,10 +24,65 @@
 
 #include <Nuklear/nuklear.h>
 #include <Nuklear/nuklear_sdl_renderer.h>
+#include <Nuklear/style.h>
+
+#define MAX_UI_COMPONENTS 30
+#define MAX_KEY_LENGTH 100
 
 float font_scale = 1;
 
 struct nk_context *ctx;
+
+////////////////////////////////
+
+typedef struct {
+    char key[MAX_KEY_LENGTH];  // Use a key identifier
+    void (*render_function)(struct nk_context *ctx);
+    // Add other relevant data fields here
+} UIComponent;
+
+
+UIComponent ui_components[MAX_UI_COMPONENTS];
+int num_ui_components = 0;  // Track the number of registered components
+
+void ui_register_component(const char* key, void (*render_function)()) {
+    if (num_ui_components < MAX_UI_COMPONENTS) {
+        UIComponent new_component;
+        strncpy(new_component.key, key, MAX_KEY_LENGTH - 1);  // Copy the key
+
+        new_component.render_function = render_function;
+        // Add any other relevant initialization here
+
+        ui_components[num_ui_components++] = new_component;
+    } else {
+        // Handle error: Max UI components reached
+    }
+}
+
+void remove_ui_component(const char* key) {
+    for (int i = 0; i < num_ui_components; i++) {
+        UIComponent* component = &ui_components[i];
+        if (strcmp(component->key, key) == 0) {
+            // Found the matching component, remove it by shifting elements
+            for (int j = i; j < num_ui_components - 1; j++) {
+                ui_components[j] = ui_components[j + 1];
+            }
+            num_ui_components--;
+            return;  // Component removed, exit the loop
+        }
+    }
+}
+
+////////////////////////////////
+
+// void paint_test(struct nk_context *ctx){
+//     if (nk_begin(ctx, "Test", nk_rect(10, 10, 220, 200),
+//                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
+//         nk_layout_row_dynamic(ctx, 25, 1);
+//         nk_label(ctx, "Hello World!", NK_TEXT_LEFT);
+//     }
+//     nk_end(ctx);
+// }
 
 void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
@@ -47,23 +102,26 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     /* GUI */
     /* Load Fonts: if none of these are loaded a default font will be used  */
     /* Load Cursor: if you uncomment cursor loading please hide the cursor */
-    {
-        struct nk_font_atlas *atlas;
-        struct nk_font_config config = nk_font_config(0);
-        struct nk_font *font;
+    struct nk_font_atlas *atlas;
+    struct nk_font_config config = nk_font_config(0);
+    struct nk_font *font;
 
-        /* set up the font atlas and add desired font; note that font sizes are
-         * multiplied by font_scale to produce better results at higher DPIs */
-        nk_sdl_font_stash_begin(&atlas);
-        font = nk_font_atlas_add_from_file(atlas, getEngineResourceStatic("Orbitron-Regular.ttf"), 20 * font_scale, &config);
-        nk_sdl_font_stash_end();
+    /* set up the font atlas and add desired font; note that font sizes are
+        * multiplied by font_scale to produce better results at higher DPIs */
+    nk_sdl_font_stash_begin(&atlas);
+    font = nk_font_atlas_add_from_file(atlas, getEngineResourceStatic("Orbitron-Regular.ttf"), 20 * font_scale, &config);
+    nk_sdl_font_stash_end();
 
-        /* this hack makes the font appear to be scaled down to the desired
-         * size and is only necessary when font_scale > 1 */
-        font->handle.height /= font_scale;
-        /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-        nk_style_set_font(ctx, &font->handle);
-    }
+    /* this hack makes the font appear to be scaled down to the desired
+        * size and is only necessary when font_scale > 1 */
+    font->handle.height /= font_scale;
+    /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
+    nk_style_set_font(ctx, &font->handle);
+
+    // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
+
+    // ui_register_component("test",paint_test);
+
     logMessage(info, "ui initialized");
 }
 
@@ -83,11 +141,9 @@ void ui_end_input_checks(){
     TODO: goal is to abstract painting ui overlay objects.
 
     Considerations:
-    - are we letting the programmer create their own gui overlays?
-        - this depends on if this will be used for text field inputs and other inputs, or just dev overlays
-    - do we need to make this extensible to lua? there was some talk about lua bindings on the Nuklear Repo
-    - For multiple overlays at the same time and visible/invisible overlay states, we need to collect function pointers that paint overlays
-      and throw them into a queue this ui file can iterate through to paint them all.
+    - how do we extend gui overlay creation to lua/python? would we be forcing C?
+        - do we need to make this extensible to lua? there was some talk about lua bindings on the Nuklear Repo
+    - integration for general game inputs and such, a default settings menu ships with game scenes?
     - relative positioning translation for ui comps... also how will we arrange viewport for game in editor
 
     Features:
@@ -119,7 +175,22 @@ void ui_paint_debug_overlay(int fps, int paint_time, int render_object_count, in
     nk_end(ctx);
 }
 
+/*
+    Will iterate and render all tracked ui components by calling their function pointers
+
+    These functions cannot take parameters (other than the Nuklear context), 
+    I would reccomend just scoping them to observe local variables in the files they reside in
+*/
 void ui_render(){
+    // render all tracked ui components
+    for (int i = 0; i < num_ui_components; i++) {
+        UIComponent* component = &ui_components[i];
+        if (component->render_function != NULL) {
+            component->render_function(ctx);
+        }
+    }
+
+    // paint everything
     nk_sdl_render(NK_ANTI_ALIASING_ON);
 }
 

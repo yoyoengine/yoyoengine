@@ -23,16 +23,21 @@
 
         return 0;
     }
+
+    This impl kinda sucks and is unused afaik
 */
 
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
+
+#include <stdlib.h>
 
 /*
     Holds a void* to some data, and the next item in the list
 */
 typedef struct Node {
     void *data;
+    char *key;
     struct Node *next;
 } Node;
 
@@ -57,10 +62,11 @@ void LL_initializeList(LinkedList *list) {
     at the moment, anything using this generic will have negligible
     item counts
 */
-void LL_insert(LinkedList *list, void *data) {
+void LL_insert(LinkedList *list, void *data, char *key) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     newNode->data = data;
     newNode->next = list->head;
+    newNode->key = key;
     list->head = newNode;
 }
 
@@ -71,7 +77,28 @@ void LL_insert(LinkedList *list, void *data) {
 void LL_traverse(LinkedList *list, void (*process)(void *)) {
     Node *current = list->head;
     while (current != NULL) {
-        process(current->data);
+        process(current);
+        current = current->next;
+    }
+}
+
+/*
+    Attempts to delete an item from the list by key
+*/
+void LL_delete(LinkedList *list, char *key){
+    Node *current = list->head;
+    Node *prev = NULL;
+    while (current != NULL) {
+        if(current->key == key){
+            if(prev == NULL){
+                list->head = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            return;
+        }
+        prev = current;
         current = current->next;
     }
 }

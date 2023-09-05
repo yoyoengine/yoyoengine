@@ -27,3 +27,8 @@ new thread for timing delays, we can send a request with a callback ptr and it w
 animate the yoyo engine logo spinning on bootup
 
 stabilize the framework api before moving on to editor and python bindings
+
+timing functions
+
+- other thread for delay callbacks
+- perf benchmarking

@@ -1292,6 +1292,10 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
     init_ui(pWindow,pRenderer);
 
+    // TODO: only do this in debug mode, we need to check engine state for that
+    // TODO: the refactor is that this debug overlay needs to move to this file from ui.c, and use the local vars from here. i dont care enough to do this now
+    // ui_register_component(ui_paint_debug_overlay, "debug_overlay");
+
     // set our viewport to the screen size with neccessary computed offsets
     setViewport(screenWidth, screenHeight);
     
