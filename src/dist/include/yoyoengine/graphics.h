@@ -28,8 +28,6 @@ typedef struct button {
 
 // SKJDFGLKJSHFGKLFDSGKJHDFKGHDKFJHGKFDJHGKJDFHGKJHSDKHGKFSHGKFDHKGJHDKFJHG
 
-void togglePaintBounds();
-
 int convertToRealPixelWidth(float in);
 
 int convertToRealPixelHeight(float in);

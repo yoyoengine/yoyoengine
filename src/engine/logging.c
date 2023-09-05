@@ -111,7 +111,7 @@ struct LogMessage logBuffer[LOG_BUFFER_SIZE];
 int logBufferIndex = 0;
 
 /*
-    TODO: do not completely wipe when finished, but start shifting old messages out of the buffer
+    shifts old messages out of buffer
 */
 void addToLogBuffer(enum logLevel level, const char *text) {
     // Initialize a new message
@@ -239,8 +239,6 @@ void log_init(enum logLevel level){
     closeLog();
     logMessage(info, "Logging initialized\n");
     linesWritten=1; // reset our counter because not all outputs have actually been written to the log file yet
-
-    ui_register_component("debug_log",paint_console);
 }
 
 void log_shutdown(){

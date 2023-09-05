@@ -31,6 +31,9 @@ TTF_Font *pEngineFont = NULL;
 // console overlay state controller
 bool consoleOverlay = false;
 
+// expose our engine state data to the whole engine
+struct engine_data engine_state;
+
 // helper function to get the screen size
 // TODO: consider moving graphics.c TODO: yes move to graphics.c
 struct ScreenSize getScreenSize(){
@@ -110,61 +113,6 @@ char *getPathDynamic(const char *path) {
 
     snprintf(path_buffer, buffer_size, "%s../../resources/%s", base_path, path);
     return path_buffer;
-}
-
-void toggleConsole(){
-    if(consoleOverlay){
-        logMessage(debug, "Toggled Console Overlay Off.\n");
-        removeRenderObject(-901);
-        removeRenderObject(-902);
-    }
-    else{
-        logMessage(debug, "Toggled Console Overlay On.\n");
-
-        // add back panel to debug overlay
-        struct textureInfo info = createImageTexture(getEngineResourceStatic("dimpanel.png"),false);
-
-        renderObject panel = {
-            -901, // we set ID each time
-            900,
-            renderType_Image,
-            info.pTexture,
-            createRealPixelRect(false,0,.9,.4,.1), // dummy rect
-            NULL, 
-            true, // cache this (eventually between scene loads we will want to keep it, actually we might already)
-            createRealPixelRect(false,0,.9,.4,.1),
-            false, // not centered
-            .ImageData = {
-                "images/ui/dimpanel.png"
-            }
-        };
-        
-        addRenderObject(panel);
-
-        renderObject text = {
-            -902, // we set ID each time
-            901,
-            renderType_Text,
-            createTextTexture("console init...",pEngineFont,pEngineFontColor), // we set texture each time
-            createRealPixelRect(false,0,.9,.4,.1), // dummy rect
-            NULL, 
-            false, // no cache
-            createRealPixelRect(false,0,.9,.4,.1),
-            false, // not centered
-            ALIGN_MID_LEFT,
-            .TextData = {
-                pEngineFont,
-                0,
-                pEngineFontColor,
-                NULL, // no outline color
-                ">",
-            }
-        };
-        
-        addRenderObject(text);
-        updateText(-902,">");
-    }
-    consoleOverlay = !consoleOverlay;
 }
 
 // some functions to apply a value if its uninitialized /////////////////////
@@ -247,17 +195,6 @@ void initEngine(struct engine_data data) {
     // check overrides to configure uninitialized fields to defaults
     configute_defaults(&data);
 
-    // Apply defaults using helper functions --- COMPILER WILL INITIALIZE FIELDS TO ZERO: if the value can be zero then we dont bother applying a zero check (apply default int)
-    int screenWidth = data.screen_width;
-    int screenHeight = data.screen_height;
-    int volume = data.volume;
-    int windowMode = data.window_mode;
-    int framecap = data.framecap;
-    int logLevel = data.log_level;
-    bool debugMode = data.debug_mode;
-    bool skipIntro = data.skipintro;
-    char *windowTitle = data.window_title;
-
     // Update global locations for resources
     engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
     resources_path = strdup(game_supplied_path); // Remember to free this memory later
@@ -265,10 +202,26 @@ void initEngine(struct engine_data data) {
     // Get the icon path
     char *iconPath = data.icon_path ? getResourceStatic(data.icon_path) : getEngineResourceStatic("enginelogo.png");
 
+    // TODO: i know these first two should be fine but does iconpath go out of scope after this fn?
+    data.engine_resources_path = engine_resources_path;
+    data.game_resources_path = resources_path;
+    data.icon_path = iconPath;
+
+    // copy our final data struct into the global engine state
+    engine_state = data;
+
     // ----------------- Begin Setup -------------------
 
     // initialize graphics systems, creating window renderer, etc
-    initGraphics(screenWidth,screenHeight,windowMode,framecap,windowTitle,iconPath);
+    // TODO: should this just take in engine state struct? would make things a lot easier tbh
+    initGraphics(
+        engine_state.screen_width,
+        engine_state.screen_height,
+        engine_state.window_mode,
+        engine_state.framecap,
+        engine_state.window_title,
+        engine_state.icon_path
+    );
 
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
     pEngineFont = loadFont(getEngineResourceStatic("RobotoMono-Light.ttf"), 500);
@@ -284,13 +237,15 @@ void initEngine(struct engine_data data) {
     pEngineFontColor->a = 255;
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
-    log_init(logLevel);
+    log_init(engine_state.log_level);
 
     // if we are in debug mode
-    if(debugMode){
+    if(engine_state.debug_mode){
+        // we will open the metrics by default in debug mode
+        engine_state.metrics_visible = true;
+
         // display in console
         logMessage(debug, "Debug mode enabled.\n");
-        // TODO: overlay and maybe log level adjust?
     }
 
     // startup audio systems
@@ -298,14 +253,14 @@ void initEngine(struct engine_data data) {
 
     // before we play our loud ass startup sound, lets check what volume the game wants
     // the engine to be at initially
-    setVolume(-1, volume);
+    setVolume(-1, engine_state.volume);
 
     /*
         Part of the engine startup which isnt configurable by the game is displaying
         a splash screen with the engine title and logo for 2550ms and playing a
         startup noise
     */
-    if(skipIntro){
+    if(engine_state.skipintro){
         logMessage(info,"Skipping Intro.\n");
     }
     else{

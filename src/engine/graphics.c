@@ -46,22 +46,15 @@ int yOffset = 0;
 
 bool forceRefresh = false;
 
-// internal state to paint bounds of objects to the screen
-bool paintBounds = false;
-
 int currentResolutionWidth = 1920;
 int currentResolutionHeight = 1080;
+
+// TODO: move most of engine runtime state into struct engine_data engine_state
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
 
 // create a cache to hold textures colors and fonts
 VariantCollection* cache;
-
-// toggles painting bounds in graphics
-void togglePaintBounds(){
-    paintBounds = !paintBounds;
-    logMessage(debug, "Toggled paintBounds\n");
-}
 
 // helper function to get renderObjectType as a string from the enum name
 char *getRenderObjectTypeString(renderObjectType type) {
@@ -1000,7 +993,7 @@ void renderAll() {
         // render our current object
         SDL_RenderCopy(pRenderer, pCurrent->pTexture, NULL, &(pCurrent->rect));
         
-        if(paintBounds){
+        if(engine_state.paintbounds_visible){
             // draw a red rectangle showing objects bounds
             SDL_SetRenderDrawColor(pRenderer, 255, 0, 0, 255);
             SDL_RenderDrawRect(pRenderer, &(pCurrent->bounds));
@@ -1014,8 +1007,8 @@ void renderAll() {
         pCurrent = pCurrent->pNext;
     }
 
-    // if we are counting debug stuff TODO: add a way for engine to know its displaying overlays
-    if(1){
+    // if we are showing metrics and need to update them (this does not really save that much perf)
+    if(engine_state.metrics_visible){
         // increment the frame counter
         frameCounter++;
 
@@ -1026,7 +1019,6 @@ void renderAll() {
             fps = frameCounter * 4;
             frameCounter = 0; // reset counted frames
         }
-
     }
 
     // Get paint end timestamp
@@ -1035,7 +1027,7 @@ void renderAll() {
     // Calculate paint time
     Uint32 paintTime = paintEndTime - paintStartTime;
 
-    if(1){ // TODO: see above todo
+    if(engine_state.metrics_visible){ // TODO: see above todo
         ui_paint_debug_overlay(fps,paintTime,objectCount,totalChunks,linesWritten);
     }
 

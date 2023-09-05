@@ -17,6 +17,8 @@
 extern SDL_Color *pEngineFontColor;
 extern TTF_Font *pEngineFont;
 
+extern struct engine_data engine_state;
+
 // struct to hold screen points
 struct ScreenSize {
     int width;
@@ -46,10 +48,10 @@ struct engine_data {
     bool debug_mode; // does not need override
     bool skipintro; // does not need override
 
-    char *window_title;
-    char *icon_path;
-    char *engine_resources_path;
-    char *game_resources_path;
+    const char *window_title;
+    const char *icon_path;
+    const char *engine_resources_path;
+    const char *game_resources_path;
 
     // overrides - this is confusing with what needs overridden and what doesnt TODO:
     bool override_screen_width;
@@ -63,6 +65,10 @@ struct engine_data {
     // skip icon path overrides...
     bool override_engine_resources_path;
     bool override_game_resources_path;
+
+    // some runtime state (always default to false)
+    bool paintbounds_visible;
+    bool metrics_visible;
 };
 
 // entry point to the engine, initializes all subsystems
