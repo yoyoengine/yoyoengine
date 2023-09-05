@@ -32,3 +32,11 @@ timing functions
 
 - other thread for delay callbacks
 - perf benchmarking
+
+## console
+
+- needs dynamic resizing
+- needs command execution
+  - merge most game code into this as framework (scene loading, etc)
+- needs keybind to open/close
+  - global state in engine.c tracking booleans which rest of engine can observe as internal state (paintbounds, overlay on, etc)

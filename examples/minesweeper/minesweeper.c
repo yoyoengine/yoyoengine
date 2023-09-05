@@ -27,6 +27,8 @@ int main() {
     bool quit = false;
     SDL_Event e;
 
+    createImage(2,.5,.5,1,1,getResourceStatic("images/anno.png"),true,ALIGN_MID_CENTER); // idk just for fun
+
     while(!quit) {
         ui_begin_input_checks();
         while (SDL_PollEvent(&e)) {
