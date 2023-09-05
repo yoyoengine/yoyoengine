@@ -8,6 +8,7 @@ int main() {
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
         .volume = 0,
+        .skipintro = true, // no override exists for this - its a boolean
 
         // make sure we declare overrides - i wish there were a better way but 
         // with compiler initialization of fields this is the best way i can think of
