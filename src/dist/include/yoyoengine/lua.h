@@ -3,4 +3,8 @@
 
 void runscript(char *name);
 
+void lua_init();
+
+void lua_shutdown();
+
 #endif

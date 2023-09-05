@@ -6,8 +6,15 @@ int main() {
     struct engine_data data = {
         .engine_resources_path = "../../build/linux/yoyoengine/engine_resources",
         .log_level = 0, // 0,
-        .debug_mode = true,
-        .framecap = -1,
+        .debug_mode = true, // no override exists for this - its a boolean
+        .volume = 0,
+
+        // make sure we declare overrides - i wish there were a better way but 
+        // with compiler initialization of fields this is the best way i can think of
+        .override_engine_resources_path = true,
+        .override_log_level = true,
+        .override_volume = true,
+        // if you provide a false/bad override the engine will segfault...
     };
 
     initEngine(data);

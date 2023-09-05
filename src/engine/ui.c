@@ -125,5 +125,5 @@ void ui_render(){
 
 void shutdown_ui(){
     nk_sdl_shutdown();
-    logMessage(info, "ui shutdown");
+    logMessage(info, "Shut down UI\n");
 }

@@ -3,6 +3,7 @@ CC := gcc
 CFLAGS := -Wall -Wextra
 LDFLAGS := -shared
 SRC_DIR := src
+ENGINE_SRC_DIR := $(SRC_DIR)/engine
 BUILD_DIR := build
 OBJ_DIR := $(BUILD_DIR)/obj
 
@@ -28,8 +29,8 @@ endif
 BIN_DIR := $(BUILD_DIR)/$(PLATFORM)/yoyoengine
 DIST_FILES := $(SRC_DIR)/dist/$(PLATFORM)
 
-SOURCES := $(wildcard $(SRC_DIR)/*.c)
-OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
+SOURCES := $(wildcard $(ENGINE_SRC_DIR)/*.c)
+OBJECTS := $(patsubst $(ENGINE_SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 ENGINE_NAME := libyoyoengine
 
@@ -77,7 +78,7 @@ engine_resources: $(DIST_FILES)
 
 ############################ BUILD OBJECT FILES ###############################
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(ENGINE_SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -fPIC -c -o $@ $< -Wl,-rpath=$(SRC_DIR)/dist/$(PLATFORM)
 

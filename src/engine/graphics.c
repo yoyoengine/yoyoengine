@@ -469,9 +469,9 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
 
             addVariant(cache, pPath, variant);
 
-            char buffer[100];
-            snprintf(buffer, sizeof(buffer),  "Cached a texture. key: %s\n", pPath);
-            logMessage(debug, buffer);
+            // char buffer[100];
+            // snprintf(buffer, sizeof(buffer),  "Cached a texture. key: %s\n", pPath);
+            // logMessage(debug, buffer);
 
             if(getVariant(cache, pPath) == NULL){
                 logMessage(error, "ERROR CACHING TEXTURE\n");
@@ -1316,6 +1316,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     cache = createVariantCollection();
 
     // load icon to surface
+    printf("icon path: %s\n", icon_path);
     SDL_Surface *pIconSurface = IMG_Load(icon_path);
     if (pIconSurface == NULL) {
         char buffer[100];

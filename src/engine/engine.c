@@ -202,13 +202,37 @@ void constructPath(char *result, size_t result_size, const char *base_path, cons
 }
 
 /*
-    Muted volume needs to be negative (if zero it will fallback to a default TODO: fix this)
+    Potentially clever thinking by me - just set defaults for non overridden values
+    For booleans, we can completely skip this because they are initialized to false and need to be overriden to true
+    (potential issue if we want it to default to true)
+*/
+void configute_defaults(struct engine_data *data){
+    if(!data->override_screen_width)
+        data->screen_width = 1920;
+    if(!data->override_screen_height)
+        data->screen_height = 1080;
+    if(!data->override_volume)
+        data->volume = 0;
+    if(!data->override_window_mode)
+        data->window_mode = 0;
+    if(!data->override_framecap)
+        data->framecap = -1;
+    if(!data->override_log_level)
+        data->log_level = 0;
+    if(!data->override_window_title)
+        data->window_title = "Yoyo Engine Window";
+    // we already have a ternery checking for uninitialized icon path
+    // game/engine resource paths are handed in init engine... move into here?
+}
 
-    TODO: version number on splash screen
+/*
+    Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
 */
 void initEngine(struct engine_data data) {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
+
+    // ----------------- Default Checks ----------------
 
     // Set default paths for engineResourcesPath and gameResourcesPath
     char engine_default_path[256], game_default_path[256];
@@ -220,16 +244,19 @@ void initEngine(struct engine_data data) {
     constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
     constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
 
-    // Apply defaults using helper functions
-    int screenWidth = applyDefaultInt(data.screen_width, 1920);
-    int screenHeight = applyDefaultInt(data.screen_height, 1080);
-    int volume = applyDefaultInt(data.volume, 128);
-    int windowMode = applyDefaultInt(data.window_mode, 0);
-    int framecap = applyDefaultInt(data.framecap, -1);
-    int logLevel = applyDefaultInt(data.log_level, 3);
-    bool debugMode = applyDefaultBool(data.debug_mode, false);
-    bool skipIntro = applyDefaultBool(data.skipintro, false);
-    char *windowTitle = applyDefaultString(data.window_title, "Yoyo Engine Window");
+    // check overrides to configure uninitialized fields to defaults
+    configute_defaults(&data);
+
+    // Apply defaults using helper functions --- COMPILER WILL INITIALIZE FIELDS TO ZERO: if the value can be zero then we dont bother applying a zero check (apply default int)
+    int screenWidth = data.screen_width;
+    int screenHeight = data.screen_height;
+    int volume = data.volume;
+    int windowMode = data.window_mode;
+    int framecap = data.framecap;
+    int logLevel = data.log_level;
+    bool debugMode = data.debug_mode;
+    bool skipIntro = data.skipintro;
+    char *windowTitle = data.window_title;
 
     // Update global locations for resources
     engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
@@ -256,16 +283,14 @@ void initEngine(struct engine_data data) {
     pEngineFontColor->b = 0;
     pEngineFontColor->a = 255;
 
+    // no matter what we will initialize log level with what it should be. default is nothing but dev can override
+    log_init(logLevel);
+
     // if we are in debug mode
     if(debugMode){
-        // initialize logging
-        log_init(logLevel);
-
         // display in console
         logMessage(debug, "Debug mode enabled.\n");
-    }
-    else{
-        log_init(warning); // if we launch not in debug mode, only log warnings and errors
+        // TODO: overlay and maybe log level adjust?
     }
 
     // startup audio systems
@@ -306,6 +331,9 @@ void initEngine(struct engine_data data) {
     // render everything in engine queue after splash asset removal
     renderAll();
 
+    lua_init(); // initialize lua
+    logMessage(debug, "Initialized Lua.\n");
+
     // debug output
     logMessage(info, "Engine Fully Initialized.\n");
 } // control is now resumed by the game
@@ -313,6 +341,10 @@ void initEngine(struct engine_data data) {
 // function that shuts down all engine subsystems and components ()
 void shutdownEngine(){
     logMessage(info, "Shutting down engine...\n");
+
+    // shutdown lua
+    lua_shutdown();
+    logMessage(info, "Shut down lua.\n");
 
     // free the engine font color
     free(pEngineFontColor);

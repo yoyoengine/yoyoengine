@@ -58,34 +58,34 @@ void closeLog(){
 void logMessage(enum logLevel level, const char *text){
     openLog();
     switch (level) {
-    case debug:
-        fprintf(logFile, "[%s] [DEBUG]: %s", getTimestamp(), text);
-        if(logThreshold <= level){
-            printf("%s[%s] [%sDEBUG%s]: %s", RESET, getTimestamp(), MAGENTA, RESET, text);
-        }
-        break;
-    case info:
-        fprintf(logFile, "[%s] [INFO]:  %s", getTimestamp(), text);
-        if(logThreshold <= level){
-            printf("%s[%s] [%sINFO%s]:  %s", RESET, getTimestamp(), GREEN, RESET, text);
-        }
-        break;
-    case warning:
-        fprintf(logFile, "[%s] [WARNING]: %s", getTimestamp(), text);
-        if(logThreshold <= level){
-            printf("%s[%s] [%sWARNING%s]: %s", YELLOW, getTimestamp(), YELLOW, RESET, text);
-        }
-        break;
-    case error:
-        fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), text);
-        if(logThreshold <= level){
-            printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, text);
-        }
-        break;
-    default:
-        fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), "Invalid log level\n");
-        printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, "Invalid log level\n");
-        break;
+        case debug:
+            fprintf(logFile, "[%s] [DEBUG]: %s", getTimestamp(), text);
+            if(logThreshold <= level){
+                printf("%s[%s] [%sDEBUG%s]: %s", RESET, getTimestamp(), MAGENTA, RESET, text);
+            }
+            break;
+        case info:
+            fprintf(logFile, "[%s] [INFO]:  %s", getTimestamp(), text);
+            if(logThreshold <= level){
+                printf("%s[%s] [%sINFO%s]:  %s", RESET, getTimestamp(), GREEN, RESET, text);
+            }
+            break;
+        case warning:
+            fprintf(logFile, "[%s] [WARNING]: %s", getTimestamp(), text);
+            if(logThreshold <= level){
+                printf("%s[%s] [%sWARNING%s]: %s", YELLOW, getTimestamp(), YELLOW, RESET, text);
+            }
+            break;
+        case error:
+            fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), text);
+            if(logThreshold <= level){
+                printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, text);
+            }
+            break;
+        default:
+            fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), "Invalid log level\n");
+            printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, "Invalid log level\n");
+            break;
     }
     linesWritten++;
     closeLog();

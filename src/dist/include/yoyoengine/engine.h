@@ -43,13 +43,26 @@ struct engine_data {
     int framecap;
     int log_level;
     
-    bool debug_mode;
-    bool skipintro;
+    bool debug_mode; // does not need override
+    bool skipintro; // does not need override
 
     char *window_title;
     char *icon_path;
     char *engine_resources_path;
     char *game_resources_path;
+
+    // overrides - this is confusing with what needs overridden and what doesnt TODO:
+    bool override_screen_width;
+    bool override_screen_height;
+    bool override_volume;
+    bool override_window_mode;
+    bool override_framecap;
+    bool override_log_level;
+    // skip boolean overrides...
+    bool override_window_title;
+    // skip icon path overrides...
+    bool override_engine_resources_path;
+    bool override_game_resources_path;
 };
 
 // entry point to the engine, initializes all subsystems
