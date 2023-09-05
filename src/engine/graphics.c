@@ -992,22 +992,6 @@ void renderAll() {
 
     // while iteration var is not null
     while (pCurrent != NULL) {
-
-        // if we are counting debug stuff TODO: add a way for engine to know its displaying overlays
-        if(1){
-            // increment the frame counter
-            frameCounter++;
-
-            // if we have waited long enough to update the display
-            if (SDL_GetTicks() - fpsUpdateTime >= 250) {
-                // get the elapsed time and scale it to our time factor to get fps
-                fpsUpdateTime = SDL_GetTicks();
-                fps = frameCounter * 4;
-                frameCounter = 0; // reset counted frames
-            }
-
-        }
-
         // if we are an animation, we want to go to the next frame if its available 
         // TODO: should we hard cap this to not run every frame? how expensive is this if we profile it
         if(pCurrent->type == renderType_Animation)
@@ -1028,6 +1012,21 @@ void renderAll() {
 
         // increment
         pCurrent = pCurrent->pNext;
+    }
+
+    // if we are counting debug stuff TODO: add a way for engine to know its displaying overlays
+    if(1){
+        // increment the frame counter
+        frameCounter++;
+
+        // if we have waited long enough to update the display
+        if (SDL_GetTicks() - fpsUpdateTime >= 250) {
+            // get the elapsed time and scale it to our time factor to get fps
+            fpsUpdateTime = SDL_GetTicks();
+            fps = frameCounter * 4;
+            frameCounter = 0; // reset counted frames
+        }
+
     }
 
     // Get paint end timestamp
