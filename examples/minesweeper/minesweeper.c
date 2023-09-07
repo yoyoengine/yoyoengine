@@ -46,6 +46,9 @@ int main() {
     createImage(2,.5,.5,1,1,ye_get_resource_static("images/anno.png"),true,ALIGN_MID_CENTER); // idk just for fun
     // runscript(ye_get_resource_static("scripts/fib.lua"));
 
+    struct ye_entity * entity = ye_create_entity();
+    ye_add_transform_component(entity, (SDL_Rect){0, 0, 0, 0}, YE_ALIGN_MID_CENTER);
+
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
         load and present the next frame, as well as handle its own logic. The engine will

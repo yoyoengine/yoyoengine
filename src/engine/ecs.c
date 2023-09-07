@@ -1,109 +1,112 @@
+/*
+    Doing today:
+    1. finish up the structure of the entities and components
+    2. create a storage system for entities and component pools (LL)
+    3. start roughing in systems like renderer
+*/
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Entity
-    
-    An entity is a collection of components that make up a game object.
-*/
-struct ye_entity {
-    bool active;        // controls whether system will act upon this entity and its components
+// entity id counter (used to assign unique ids to entities)
+int eid = 0; 
 
-    int id;             // unique id for this entity
-    char *name;         // name that can also be used to access the entity
-    char *tags[10];     // up to 10 tags that can also be used to access the entity
+//////////////////////// LINKED LIST //////////////////////////
 
-    struct ye_component_transform *transform;       // transform component
-    struct ye_component_renderer *renderer;         // renderer component
-    struct ye_component_script *script;             // script component
-    struct ye_component_interactible *interactible; // interactible component
+// Define a linked list structure for storing entities
+struct ye_entity_node {
+    struct ye_entity *entity;
+    struct ye_entity_node *next;
 };
 
-/*
-    Alignment enum
+// Create a linked list for entities of a specific type (e.g., renderable entities)
+struct ye_entity_node *ye_entity_list_create() {
+    return NULL; // Initialize an empty list
+}
 
-    Used to describe where an entity is aligned within its bounds.
-*/
-enum ye_alignment {
-    YE_ALIGN_TOP_LEFT,  YE_ALIGN_TOP_CENTER,    YE_ALIGN_TOP_RIGHT,
-    YE_ALIGN_MID_LEFT,  YE_ALIGN_MID_CENTER,    YE_ALIGN_MID_RIGHT,
-    YE_ALIGN_BOT_LEFT,  YE_ALIGN_BOT_CENTER,    YE_ALIGN_BOT_RIGHT
-};
+// Add an entity to the linked list
+void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) {
+    struct ye_entity_node *newNode = malloc(sizeof(struct ye_entity_node));
+    newNode->entity = entity;
+    newNode->next = *list;
+    *list = newNode;
+}
 
-/*
-    Transform component
-    
-    Describes where the entity sits in the world.
-    In 2D the Z axis is the layer the entity sits on. (High Z overpaints low Z)
-*/
-struct ye_component_trasform {
-    bool active;    // controls whether system will act upon this component
+// Remove an entity from the linked list
+void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity) {
+    struct ye_entity_node *current = *list;
+    struct ye_entity_node *prev = NULL;
 
-    SDL_Rect bounds;                // original desired pixel location of entity
-    enum ye_alignment alignment;    // alignment of entity within its bounds
-    SDL_Rect rect;                  // real location of entity computed from desired alignment
-};
+    while (current != NULL) {
+        if (current->entity == entity) {
+            if (prev == NULL) {
+                *list = current->next; // Update the head of the list
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
 
-/*
-    Script component
-    
-    Holds information on a script that is attatched to an entity.
-    This script will have its main loop run once per frame.
-*/
-struct ye_component_script {
-    bool active;    // controls whether system will act upon this component
+// Clean up the entire linked list
+void ye_entity_list_destroy(struct ye_entity_node **list) {
+    while (*list != NULL) {
+        struct ye_entity_node *temp = *list;
+        *list = (*list)->next;
+        ye_destroy_entity(temp->entity);
+        free(temp);
+    }
+}
 
-    char *script_path;
-};
+///////////////////////////////////////////////////////////////
 
-/*
-    Enum to store different unique types of renderers.
-    This is how we identify steps needed to render different types of entities.
-
-    Ex: animation renderer knows it needs to increment frames, text renderer knows how to reconstruct text, etc
-*/
-enum ye_component_renderer_type {
-    YE_RENDERER_TYPE_TEXT,
-    YE_RENDERER_TYPE_IMAGE,
-    YE_RENDERER_TYPE_ANIMATION
-};
-
-struct ye_component_renderer {
-    bool active;    // controls whether system will act upon this component
-
-    SDL_Texture *texture;   // texture to render
-
-    // bool texture_cached;   // whether the texture is cached or not
-
-    enum ye_component_renderer_type type;   // denotes which renderer is needed for this entity
-
-    union { // hold the data for the specific renderer type
-        struct ye_component_renderer_text *text;
-        struct ye_component_renderer_image *image;
-        struct ye_component_renderer_animation *animation;
-    };
-};
+struct ye_entity_node *entity_list_head;
 
 /*
-    Interactible component
-    
-    Holds information on how an entity can be interacted with.
+    Create a new entity and return a pointer to it
 */
-struct ye_component_interactible {
-    bool active;    // controls whether system will act upon this component
+struct ye_entity * ye_create_entity(){
+    struct ye_entity *entity = malloc(sizeof(struct ye_entity));
+    entity->id = eid++; // assign unique id to entity
+    entity->active = true;
 
-    void *data;                     // data to communicate when callback finishes
-    void (*callback)(void *data);   // callback to run when entity is interacted with
-};
+    // name the entity "entity: id"
+    char *name = malloc(sizeof(char) * 16);
+    snprintf(name, "entity: %d", entity->id);
+    entity->name = name;
+
+    // add the entity to the entity list
+    ye_entity_list_add(&entity_list_head, entity);
+    logMessage(debug, "Created and added an entity\n");
+
+    return entity;
+}
 
 /*
-    Create a new entity and return its id
+    Destroy an entity by pointer
 */
-int ye_create_entity(){}
+void ye_destroy_entity(struct ye_entity * entity){
+    // check for non null components and free them
+    if(entity->transform != NULL) ye_remove_transform_component(entity);
+    // if(entity->renderer != NULL) ye_remove_renderer_component(entity);
+    // if(entity->script != NULL) ye_remove_script_component(entity);
+    // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
 
-/*
-    Destroy an entity by ID
-*/
-void ye_destroy_entity(int id){}
+    // free the entity name
+    free(entity->name);
+
+    // free all tags
+    for(int i = 0; i < 10; i++){
+        if(entity->tags[i] != NULL) free(entity->tags[i]);
+    }
+
+    // free the entity
+    free(entity);
+
+    logMessage(debug, "Destroyed an entity\n");
+}
 
 struct ye_entity *ye_get_entity_by_id(int id){}
 
@@ -111,19 +114,69 @@ struct ye_entity *ye_get_entity_by_name(char *name){}
 
 struct ye_entity *ye_get_entity_by_tag(char *tag){}
 
+/////////////////////////  SYSTEMS  ////////////////////////////
+
+///////////////////////// TRANSFORM ////////////////////////////
+
+void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, enum ye_alignment alignment){
+    entity->transform = malloc(sizeof(struct ye_component_transform));
+    entity->transform->active = true;
+    entity->transform->bounds = (SDL_Rect){0, 0, 0, 0};
+    entity->transform->alignment = YE_ALIGN_MID_CENTER;
+    
+    // calculate the actual rect of the entity based on its alignment and bounds
+    ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+}
+
+void ye_remove_transform_component(struct ye_entity *entity){
+    free(entity->transform);
+    entity->transform = NULL;
+}
+
+///////////////////////// RENDERER ////////////////////////////
+
+void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type){
+    entity->renderer = malloc(sizeof(struct ye_component_renderer));
+    entity->renderer->active = true;
+    entity->renderer->type = type;
+    
+    if(type == YE_RENDERER_TYPE_IMAGE){
+        entity->renderer->texture = NULL; // TODO rn
+    }
+    // else if(type == YE_RENDERER_TYPE_TEXT){
+    //     entity->renderer->texture = NULL;
+    // }
+    // else if(type == YE_RENDERER_TYPE_ANIMATION){
+    //     entity->renderer->texture = NULL;
+    // }
+}
+
+/////////////////////////   ECS    ////////////////////////////
+
+void ye_init_ecs(){
+    entity_list_head = ye_entity_list_create();
+    logMessage(info, "Initialized ECS\n");
+}
+
+void ye_shutdown_ecs(){
+    ye_entity_list_destroy(&entity_list_head);
+    logMessage(info, "Shut down ECS\n");
+}
+
 /*
-    Thoughts: we need checks to see if certain components like transform
-    are not null before systems act upon other components like interactible
-
-    We need to create the pools/lists that the systems iterate through
-    to act upon components
-
-    Order of actions before frame render:
-    1. Scripting system runs scripts
-    2. Physics updates any physics components
-    3. Check for interactions and run callbacks
-    4. Rendering system renders all renderable components
-
-    Things I still havent figured out:
-    - How can we register callbacks to lua functions?
+    Function that iterates through entity list and logs all entities with their ids
 */
+void ye_print_entities(){
+    struct ye_entity_node *current = entity_list_head;
+    int i = 0;
+    while(current != NULL){
+        char b[100];
+        snprintf(b, sizeof(b), "Entity: %d", current->entity->id);
+        logMessage(debug, b);
+        current = current->next;
+        i++;
+    }
+    char b[100];
+    snprintf(b, sizeof(b), "Total entities: %d", i);
+    logMessage(debug, b);
+}

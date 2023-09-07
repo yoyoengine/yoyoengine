@@ -8,8 +8,6 @@
 #include <limits.h>
 #include <time.h>
 
-#include <yoyoengine/yoyoengine.h>
-
 #include <SDL2/SDL.h>
 
 #define NK_INCLUDE_FIXED_TYPES
@@ -22,9 +20,15 @@
 #define NK_IMPLEMENTATION
 #define NK_SDL_RENDERER_IMPLEMENTATION
 
+#ifndef nk
+#define nk
 #include <Nuklear/nuklear.h>
+#endif
+
 #include <Nuklear/nuklear_sdl_renderer.h>
 #include <Nuklear/style.h>
+
+#include <yoyoengine/yoyoengine.h>
 
 #define MAX_UI_COMPONENTS 30
 #define MAX_KEY_LENGTH 100

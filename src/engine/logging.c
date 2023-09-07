@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include <yoyoengine/yoyoengine.h>
-#include <Nuklear/nuklear.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -202,14 +201,19 @@ void paint_console(struct nk_context *ctx){
         if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
             // Handle user input when Enter key is pressed
             if (strlen(userInput) > 0) {
-                // Process the user's command here
-                // For example, you can parse userInput and execute corresponding actions
+                // log the executed command
+                logMessage(debug, userInput);
 
-                // create new string that says "executed command: <userInput>"
-                char proc[256];
-                snprintf(proc, sizeof(proc), "executed command: %s\n", userInput);
-                // log the new string
-                logMessage(info, proc);
+                // TODO: i would love to move command execution to a more sensible location in the future
+                if(strcmp(userInput,"entlist")==0){
+                    ye_print_entities();
+                }
+                else if(strcmp(userInput,"help")==0){
+                    logMessage(debug,"Available commands:entlist\n");
+                }
+                else{
+                    logMessage(debug,"Unknown command. Type 'help' for a list of commands\n");
+                }
                 
                 // Clear the input buffer
                 memset(userInput, 0, sizeof(userInput));

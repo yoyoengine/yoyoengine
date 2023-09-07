@@ -1,3 +1,6 @@
+#ifndef UI_H
+#define UI_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -23,3 +26,5 @@ void ui_paint_debug_overlay(int fps, int paint_time, int render_object_count, in
 void ui_render();
 
 void shutdown_ui();
+
+#endif

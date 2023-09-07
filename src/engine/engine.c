@@ -246,6 +246,9 @@ void ye_init_engine(struct engine_data data) {
 
     // ----------------- Begin Setup -------------------
 
+    // initialize entity component system
+    ye_init_ecs();
+
     // initialize graphics systems, creating window renderer, etc
     // TODO: should this just take in engine state struct? would make things a lot easier tbh
     initGraphics(
@@ -321,7 +324,7 @@ void ye_init_engine(struct engine_data data) {
     renderAll();
 
     lua_init(); // initialize lua
-    logMessage(debug, "Initialized Lua.\n");
+    logMessage(info, "Initialized Lua.\n");
 
     // debug output
     logMessage(info, "Engine Fully Initialized.\n");
@@ -346,6 +349,9 @@ void ye_shutdown_engine(){
     // shutdown audio
     shutdownAudio();
     logMessage(info, "Shut down audio.\n");
+
+    // shutdown ECS
+    ye_shutdown_ecs();
 
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file

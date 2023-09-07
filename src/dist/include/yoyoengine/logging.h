@@ -1,7 +1,10 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include <Nuklear/nuklear.h> // struct nk_context
+#ifndef nk
+#define nk
+#include <Nuklear/nuklear.h>
+#endif
 
 extern int linesWritten;
 
