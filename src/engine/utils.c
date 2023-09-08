@@ -68,3 +68,13 @@ void ye_auto_fit_bounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
             break;
     }
 }
+
+/*
+    Get a rect of the pixel w,h of a texture
+*/
+SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture){
+    int imgWidth, imgHeight;
+    SDL_QueryTexture(pTexture, NULL, NULL, &imgWidth, &imgHeight);
+    SDL_Rect rect = {0,0,imgWidth,imgHeight};
+    return rect;
+}

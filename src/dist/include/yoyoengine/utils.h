@@ -26,4 +26,6 @@ enum ye_alignment {
     YE_ALIGN_BOT_LEFT,  YE_ALIGN_BOT_CENTER,    YE_ALIGN_BOT_RIGHT
 };
 
+SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
+
 #endif
