@@ -303,11 +303,15 @@ void ye_init_engine(struct engine_data data) {
     else{
         playSound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
 
-        // add startup splash image
-        createImage(0,.5f,.5f,1.0f,1.0f,ye_get_engine_resource_static("splash.png"),true,ALIGN_STRETCH);
+        // im not a particularly massive fan of using the unstable ECS just yet, but might as well
+        struct ye_entity * splash_cam = ye_create_entity();
+        ye_add_transform_component(splash_cam, (SDL_Rect){0,0,1920,1080},YE_ALIGN_MID_CENTER);
+        ye_add_camera_component(splash_cam, (SDL_Rect){0,0,1920,1080});
+        ye_set_camera(splash_cam);
 
-        createText(1,.5,.95,.1,.1,engine_version,pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
-        createText(1,.5,.98,.1,.1,"Ryan Zmuda 2023",pEngineFont,&engineFontColor,true,ALIGN_MID_CENTER);
+        struct ye_entity * splash_img = ye_create_entity();
+        ye_add_transform_component(splash_img, (SDL_Rect){0,0,1920,1080},YE_ALIGN_MID_CENTER);
+        ye_temp_add_image_renderer_component(splash_img, ye_get_engine_resource_static("splash.png"));
 
         // render everything in engine queue
         renderAll(); 
@@ -315,9 +319,11 @@ void ye_init_engine(struct engine_data data) {
         // pause on engine splash for 2550ms (TODO: consider alternatives)
         // SDL_Delay(3000); maybe a more reasonable time scale?
         SDL_Delay(2550);
-        
-        // remove startup objects
-        clearAll(false);
+
+        // we need to delete everything in the ECS and reset the camera
+        ye_destroy_entity(splash_cam);
+        ye_set_camera(NULL);
+        ye_destroy_entity(splash_img);
     }
 
     // render everything in engine queue after splash asset removal

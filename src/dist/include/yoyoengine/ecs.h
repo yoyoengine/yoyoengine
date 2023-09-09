@@ -143,7 +143,60 @@ struct ye_component_interactible {
     */
 };
 
+/////// General entitys ///////
+
+/*
+    Create a new entity and return a pointer to it
+*/
 struct ye_entity * ye_create_entity();
+
+/*
+    Destroy an entity by pointer
+*/
+void ye_destroy_entity(struct ye_entity * entity);
+
+
+
+/////// Camera component ///////
+
+void ye_set_camera(struct ye_entity *entity);
+
+void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field);
+
+void ye_remove_camera_component(struct ye_entity *entity);
+
+
+
+/////// Transform Component ///////
+
+void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, enum ye_alignment alignment);
+
+void ye_remove_transform_component(struct ye_entity *entity);
+
+
+
+/////// Renderer Component ///////
+
+/*
+    DO NOT USE THIS DIRECTLY UNLESS YOU KNOW WHAT YOURE DOING
+
+    YOU MUST PASS A VOID POINTER TO A STRUCT OF MATCHING TYPE
+*/
+void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, void *data);
+
+void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src);
+
+void ye_remove_renderer_component(struct ye_entity *entity);
+
+
+
+/////// SYSTEMS ///////
+
+void ye_system_renderer(SDL_Renderer *renderer);
+
+
+
+/////// General ECS ///////
 
 void ye_init_ecs();
 

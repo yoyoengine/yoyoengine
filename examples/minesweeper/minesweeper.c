@@ -26,8 +26,8 @@ int main() {
         .engine_resources_path = "../../build/linux/yoyoengine/engine_resources",
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
-        .volume = 0,
-        .skipintro = true, // no override exists for this - its a boolean
+        .volume = 10,
+        // .skipintro = true, // no override exists for this - its a boolean
 
         .handle_input = handle_input, // function for handling our input
 

@@ -116,6 +116,9 @@ void ye_destroy_entity(struct ye_entity * entity){
         return;
     }
 
+    // remove from the entity list (frees its node)
+    ye_entity_list_remove(&entity_list_head, entity);
+
     // check for non null components and free them
     if(entity->transform != NULL) ye_remove_transform_component(entity);
     if(entity->renderer != NULL) ye_remove_renderer_component(entity);
@@ -139,11 +142,11 @@ void ye_destroy_entity(struct ye_entity * entity){
     logMessage(debug, "Destroyed an entity\n");
 }
 
-struct ye_entity *ye_get_entity_by_id(int id){}
+// struct ye_entity *ye_get_entity_by_id(int id){}
 
-struct ye_entity *ye_get_entity_by_name(char *name){}
+// struct ye_entity *ye_get_entity_by_name(char *name){}
 
-struct ye_entity *ye_get_entity_by_tag(char *tag){}
+// struct ye_entity *ye_get_entity_by_tag(char *tag){}
 
 /////////////////////////  SYSTEMS  ////////////////////////////
 

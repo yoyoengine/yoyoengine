@@ -43,3 +43,10 @@ timing functions
 - remember where console was before it was hidden
 
 completely rename engine function names
+
+render from the active camera POV - math!!
+engine use ECS splashscreen
+port the old renderer stuff to the new ECS
+cleanup all old renderer code
+
+for ECS it would be nice to pass NULL to get some sensible defaults on some comps
