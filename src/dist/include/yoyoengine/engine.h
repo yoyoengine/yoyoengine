@@ -69,10 +69,15 @@ struct engine_data {
     // void pointer to a function that will be called to handle game input (takes in a SDL key)
     void (*handle_input)(SDL_Event event);
 
-    // some runtime state (always default to false)
+    /*
+        State that is reserved to the engine, but 
+        could technically be mutated by the game
+    */
     bool paintbounds_visible;
     bool metrics_visible;
     bool console_visible;
+
+    struct ye_entity *target_camera;
 };
 
 void ye_process_frame();

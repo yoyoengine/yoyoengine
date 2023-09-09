@@ -147,7 +147,7 @@ bool color_code = true;
 // paint log panel
 void paint_console(struct nk_context *ctx){
     // Create the GUI layout
-    if (nk_begin(ctx, "Console", nk_rect(300, 200, 800, 633),
+    if (nk_begin(ctx, "Console", nk_rect(300, 200, 1000, 633),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
         
         nk_layout_row_dynamic(ctx, 30, 1);
@@ -159,6 +159,9 @@ void paint_console(struct nk_context *ctx){
 
         // TODO: allow resizing again and auto calculate size of log panel
         // printf("height: %f\n",ctx->current->bounds.h);
+
+        // struct nk_scroll horizontal_scroll; TODO add horizontal scrolling
+        // nk_zero(&horizontal_scroll, sizeof(struct nk_scroll));
 
         nk_layout_row_dynamic(ctx, logHeight, 1);
         nk_group_begin(ctx, "Log", NK_WINDOW_BORDER);
@@ -177,10 +180,10 @@ void paint_console(struct nk_context *ctx){
                         nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(0, 255, 0));  // Green text
                         break;
                     case debug:
-                        nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(150, 0, 255));  // Purple text
+                        nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(252, 186, 3));  // Orange text
                         break;
                     case warning:
-                        nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(255, 255, 0));  // Yellow text
+                        nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(248, 0, 252));  // Yellow text
                         break;
                     case error:
                         nk_label_colored(ctx, formattedLog, NK_TEXT_LEFT, nk_rgb(255, 0, 0));  // Red text
@@ -201,7 +204,7 @@ void paint_console(struct nk_context *ctx){
         if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
             // Handle user input when Enter key is pressed
             if (strlen(userInput) > 0) {
-                // log the executed command
+                // log the executed command TODO: add \n here
                 logMessage(debug, userInput);
 
                 // TODO: i would love to move command execution to a more sensible location in the future
@@ -209,7 +212,17 @@ void paint_console(struct nk_context *ctx){
                     ye_print_entities();
                 }
                 else if(strcmp(userInput,"help")==0){
-                    logMessage(debug,"Available commands:entlist\n");
+                    logMessage(debug,"Available commands: entlist, toggle paintbounds\n");
+                }
+                // check if the first word (there can be words after seperated by spaces) is "toggle"
+                else if(strncmp(userInput,"toggle",6)==0){
+                    // check if the second word is "debug"
+                    if(strncmp(userInput+7,"paintbounds",11)==0){
+                        engine_state.paintbounds_visible = !engine_state.paintbounds_visible;
+                    }
+                    else{
+                        logMessage(debug,"Unknown toggle command. Type 'help' for a list of commands\n");
+                    }
                 }
                 else{
                     logMessage(debug,"Unknown command. Type 'help' for a list of commands\n");
@@ -220,6 +233,8 @@ void paint_console(struct nk_context *ctx){
             }
         }
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, userInput, sizeof(userInput), nk_filter_ascii);
+        // nk_edit_focus(ctx, NK_EDIT_FIELD); TODO: really wish i could focus this auto
+        // https://github.com/vurtun/nuklear/issues/516
     }
     nk_end(ctx);
 }

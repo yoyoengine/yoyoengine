@@ -27,12 +27,39 @@ struct ye_entity {
 
     int id;             // unique id for this entity
     char *name;         // name that can also be used to access the entity
-    char *tags[10];     // up to 10 tags that can also be used to access the entity
+
+    /*
+        TODO: tag should become its own component, we dont want to check EVERY entity
+        for posessing a tag when only 1/100 entities have a tag component
+    */
+    // char *tags[10];     // up to 10 tags that can also be used to access the entity
 
     struct ye_component_transform *transform;       // transform component
     struct ye_component_renderer *renderer;         // renderer component
     struct ye_component_script *script;             // script component
     struct ye_component_interactible *interactible; // interactible component
+    struct ye_component_camera *camera;             // camera component
+
+    /* NOTE/TODO:
+        We can have arrays in the future malloced to the
+        size of struct ye_component_* and then we can have
+        multiple components of the same type on an entity.
+
+        This would be good for tags, but for all else we would actually need
+        to explicitely link which transform and which components are
+        used for other components which have been assuming them by default
+    */
+};
+
+/*
+    Camera component
+
+    Holds some information about a camera and its view field
+*/
+struct ye_component_camera {
+    bool active;    // controls whether system will act upon this component
+
+    SDL_Rect view_field;    // view field of camera
 };
 
 /*
@@ -82,11 +109,15 @@ struct ye_component_renderer {
 
     enum ye_component_renderer_type type;   // denotes which renderer is needed for this entity
 
-    union { // hold the data for the specific renderer type
+    union renderer_impl{ // hold the data for the specific renderer type
         struct ye_component_renderer_text *text;
         struct ye_component_renderer_image *image;
         struct ye_component_renderer_animation *animation;
-    };
+    } renderer_impl;
+};
+
+struct ye_component_renderer_image {
+    char *src;  // path to image
 };
 
 /*

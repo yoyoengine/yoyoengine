@@ -14,6 +14,7 @@
 SDL_Window *pWindow = NULL;
 SDL_Surface *pScreenSurface = NULL;
 SDL_Renderer *pRenderer = NULL;
+SDL_Texture* screen_buffer = NULL;
 
 renderObject *pRenderListHead = NULL;
 button *pButtonListHead = NULL;
@@ -645,7 +646,6 @@ int createText(int depth, float x,float y, float width, float height, char *pTex
     return global_id - 1; //return 1 less than after incrementation (id last item was assigned)
 }
 
-
 // add an image to the render queue, returns the engine assigned ID of the object
 int createImage(int depth, float x, float y, float width, float height, char *pPath, bool centered, Alignment alignment){
     struct textureInfo info = createImageTexture(pPath,true);
@@ -971,6 +971,9 @@ void clearAll(bool includeEngine) {
 void renderAll() {
     int frameStart = SDL_GetTicks();
 
+    // Set the render target to the screen buffer
+    SDL_SetRenderTarget(pRenderer, screen_buffer);
+    
     // Set background color to black
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 
@@ -1031,8 +1034,17 @@ void renderAll() {
         ui_paint_debug_overlay(fps,paintTime,objectCount,totalChunks,linesWritten);
     }
 
+    // INDEV TESTING: renderer system paint all entities with renderer
+    ye_system_renderer(pRenderer);
+
     // update ui (TODO: profile if this is an expensive op)
-    ui_render();    
+    ui_render(); 
+
+    // Reset the render target to the default
+    SDL_SetRenderTarget(pRenderer, NULL);
+
+    // copy the screen buffer to the renderer
+    SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
 
     // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);
@@ -1281,6 +1293,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
         exit(1);
     }
 
+
     init_ui(pWindow,pRenderer);
 
     // TODO: only do this in debug mode, we need to check engine state for that
@@ -1289,6 +1302,14 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
     // set our viewport to the screen size with neccessary computed offsets
     setViewport(screenWidth, screenHeight);
+
+    /*
+        Create our screen buffer
+
+        This will be used as a paint target seperate from what we present to the screen
+        This way we can paint our full output to either a texture/ui panel or the screen
+    */
+    screen_buffer = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, screenWidth, screenHeight);
     
     // test for TTF init, alarm if failed
     if (TTF_Init() == -1) {

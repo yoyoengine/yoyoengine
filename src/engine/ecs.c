@@ -30,7 +30,17 @@ void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) 
     *list = newNode;
 }
 
-// Remove an entity from the linked list
+/*
+    Remove an entity from the linked list
+
+    NOTE: THIS DOES NOT FREE THE ACTUAL ENTITY ITSELF
+    
+    This is temporarialy ok because we dont delete any at runtime but TODO
+    we need a method of this that does call the destructor for the entity
+    probably ye_entity_list_remove_free?
+    Not sure how to differentiate when this needs called though... just for actual list
+    of entities?
+*/ 
 void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity) {
     struct ye_entity_node *current = *list;
     struct ye_entity_node *prev = NULL;
@@ -58,11 +68,17 @@ void ye_entity_list_destroy(struct ye_entity_node **list) {
         ye_destroy_entity(temp->entity);
         free(temp);
     }
+    *list = NULL;
 }
 
 ///////////////////////////////////////////////////////////////
 
 struct ye_entity_node *entity_list_head;
+struct ye_entity_node *transform_list_head;
+struct ye_entity_node *renderer_list_head;
+struct ye_entity_node *camera_list_head;
+// struct ye_entity_node *script_list_head;
+// struct ye_entity_node *interactible_list_head;
 
 /*
     Create a new entity and return a pointer to it
@@ -72,10 +88,17 @@ struct ye_entity * ye_create_entity(){
     entity->id = eid++; // assign unique id to entity
     entity->active = true;
 
-    // name the entity "entity: id"
-    char *name = malloc(sizeof(char) * 16);
-    snprintf(name, "entity: %d", entity->id);
+    //name the entity "entity id"
+    char *name = malloc(sizeof(char) * 100);
+    snprintf(name, 100, "entity %d", entity->id);
     entity->name = name;
+
+    // assign all copmponents to null
+    entity->transform = NULL;
+    entity->renderer = NULL;
+    entity->camera = NULL;
+    entity->script = NULL;
+    entity->interactible = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -88,9 +111,15 @@ struct ye_entity * ye_create_entity(){
     Destroy an entity by pointer
 */
 void ye_destroy_entity(struct ye_entity * entity){
+    if(entity == NULL){
+        logMessage(warning, "Attempted to destroy a null entity\n");
+        return;
+    }
+
     // check for non null components and free them
     if(entity->transform != NULL) ye_remove_transform_component(entity);
-    // if(entity->renderer != NULL) ye_remove_renderer_component(entity);
+    if(entity->renderer != NULL) ye_remove_renderer_component(entity);
+    if(entity->camera != NULL) ye_remove_camera_component(entity);
     // if(entity->script != NULL) ye_remove_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
 
@@ -98,12 +127,14 @@ void ye_destroy_entity(struct ye_entity * entity){
     free(entity->name);
 
     // free all tags
-    for(int i = 0; i < 10; i++){
-        if(entity->tags[i] != NULL) free(entity->tags[i]);
-    }
+    // for(int i = 0; i < 10; i++){
+    //     if(entity->tags[i] != NULL) free(entity->tags[i]);
+    // }
 
     // free the entity
     free(entity);
+
+    entity = NULL;
 
     logMessage(debug, "Destroyed an entity\n");
 }
@@ -116,50 +147,211 @@ struct ye_entity *ye_get_entity_by_tag(char *tag){}
 
 /////////////////////////  SYSTEMS  ////////////////////////////
 
+/////////////////////////  CAMERA   ////////////////////////////
+
+void ye_set_camera(struct ye_entity *entity){
+    engine_state.target_camera = entity;
+}
+
+void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field){
+    entity->camera = malloc(sizeof(struct ye_component_camera));
+    entity->camera->active = true;
+    entity->camera->view_field = view_field; // the width height is all that matters here, because the actual x and y are inferred by its transform
+
+    // log that we added a transform and to what ID
+    char b[100];
+    snprintf(b, sizeof(b), "Added camera to entity %d\n", entity->id);
+    logMessage(debug, b);
+
+    // add this entity to the camera component list
+    ye_entity_list_add(&camera_list_head, entity);
+}
+
+void ye_remove_camera_component(struct ye_entity *entity){
+    free(entity->camera);
+    entity->camera = NULL;
+
+    // remove the entity from the camera component list
+    ye_entity_list_remove(&camera_list_head, entity);
+}
+
 ///////////////////////// TRANSFORM ////////////////////////////
 
+/*
+    Problem... we need the actual size of the image to align it in bounds, but
+    at the same time we can have a transform without a renderer (sometimes i guess)
+    which means we need to query the texture size
+*/
 void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, enum ye_alignment alignment){
     entity->transform = malloc(sizeof(struct ye_component_transform));
     entity->transform->active = true;
-    entity->transform->bounds = (SDL_Rect){0, 0, 0, 0};
-    entity->transform->alignment = YE_ALIGN_MID_CENTER;
+    entity->transform->bounds = bounds;
     
-    // calculate the actual rect of the entity based on its alignment and bounds
-    ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+    // we will first set the rect equal to the bounds, for the purposes of rendering the renderer on mount
+    // will then calculate the actual rect of the entity based on its alignment and bounds
+    entity->transform->rect = bounds;
+    entity->transform->alignment = YE_ALIGN_MID_CENTER;
+
+    // add this entity to the transform component list
+    ye_entity_list_add(&transform_list_head, entity);
+
+    // log that we added a transform and to what ID
+    char b[100];
+    snprintf(b, sizeof(b), "Added transform to entity %d\n", entity->id);
+    logMessage(debug, b);
 }
 
 void ye_remove_transform_component(struct ye_entity *entity){
     free(entity->transform);
     entity->transform = NULL;
+
+    // remove the entity from the transform component list
+    ye_entity_list_remove(&transform_list_head, entity);
 }
 
 ///////////////////////// RENDERER ////////////////////////////
 
-void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type){
+/*
+    Renderer TODO:
+    - occlusion culling on active camera
+*/
+
+void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, void *data){
     entity->renderer = malloc(sizeof(struct ye_component_renderer));
     entity->renderer->active = true;
     entity->renderer->type = type;
     
     if(type == YE_RENDERER_TYPE_IMAGE){
-        entity->renderer->texture = NULL; // TODO rn
+        entity->renderer->renderer_impl.image = data;
     }
-    // else if(type == YE_RENDERER_TYPE_TEXT){
-    //     entity->renderer->texture = NULL;
+    else if(type == YE_RENDERER_TYPE_TEXT){
+        entity->renderer->renderer_impl.text = data;
+    }
+    else if(type == YE_RENDERER_TYPE_ANIMATION){
+        entity->renderer->renderer_impl.animation = data;
+    }
+
+    // add this entity to the renderer component list
+    ye_entity_list_add(&renderer_list_head, entity);
+
+    // log that we added a renderer and to what ID
+    char b[100];
+    snprintf(b, sizeof(b), "Added renderer to entity %d\n", entity->id);
+    logMessage(debug, b);
+}
+
+void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
+    struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
+    // copy src to image->src
+    image->src = malloc(sizeof(char) * strlen(src));
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, image);
+
+    // create the image texture
+    struct textureInfo t = createImageTexture(src, false);
+    entity->renderer->texture = t.pTexture;
+
+    
+    if(entity->transform != NULL){
+        // calculate the actual rect of the entity based on its alignment and bounds
+        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+    }
+    else{
+        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+    }
+}
+
+void ye_remove_renderer_component(struct ye_entity *entity){
+    // free contents of renderer_impl
+    if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
+        free(entity->renderer->renderer_impl.image->src);
+        free(entity->renderer->renderer_impl.image);
+    }
+    // else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
+    //     free(entity->renderer->renderer_impl.text->pText);
+    //     free(entity->renderer->renderer_impl.text);
     // }
-    // else if(type == YE_RENDERER_TYPE_ANIMATION){
-    //     entity->renderer->texture = NULL;
+    // else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+    //     free(entity->renderer->renderer_impl.animation);
     // }
+
+    // destoy the texture. NOTE: if we have some cache system in future this would double free
+    SDL_DestroyTexture(entity->renderer->texture);
+    
+    free(entity->renderer);
+    entity->renderer = NULL;
+
+    // remove the entity from the renderer component list
+    ye_entity_list_remove(&renderer_list_head, entity);
+}
+
+/*
+    Renderer system
+
+    Acts upon the list of tracked entities with renderers and paints them
+    to the screen.
+
+    Uses the transform component to determine where to paint the entity.
+    Skips entity if there is no active transform or renderer is inactive
+*/
+void ye_system_renderer(SDL_Renderer *renderer){
+    // check if we have a non null, active camera targeted
+    if(engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active){
+        logMessage(warning, "No active camera targeted. Skipping renderer system\n");
+        return;
+    }
+
+    // traverse tracked entities with renderer components
+    struct ye_entity_node *current = renderer_list_head;
+    while(current != NULL){
+        if(current->entity->renderer->active){
+            if(current->entity->transform != NULL && current->entity->transform->active){
+                SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &current->entity->transform->rect);
+                /*note for self figure out how copy renderer maybe move into struct
+                    TODO: I would like to move dedicated systems across
+                    the codebase to where they belong.
+
+                    Something like this would go in graphics.c, but it would need
+                    to access the lists of this file.
+
+                    We could also leave the systems in the ECS file and have the graphics
+                    renderer and window ptrs be stored in the engine runtime state. Personally im a fan
+                    of this idea.
+
+                    actrual real todo:
+                    make it z sorted and paintbounds
+                */
+            }
+        }
+        current = current->next;
+    }
 }
 
 /////////////////////////   ECS    ////////////////////////////
 
 void ye_init_ecs(){
     entity_list_head = ye_entity_list_create();
+    transform_list_head = ye_entity_list_create();
+    renderer_list_head = ye_entity_list_create();
+    camera_list_head = ye_entity_list_create();
     logMessage(info, "Initialized ECS\n");
 }
 
 void ye_shutdown_ecs(){
     ye_entity_list_destroy(&entity_list_head);
+    
+    /* 
+        destroy the other, now empty lists (all items are null)
+
+        this mainly consists of freeing the malloced nodes (2 pointers to ent and nxt)
+    */
+
+    ye_entity_list_destroy(&transform_list_head);
+    ye_entity_list_destroy(&renderer_list_head);
+    ye_entity_list_destroy(&camera_list_head);
+
     logMessage(info, "Shut down ECS\n");
 }
 
@@ -171,7 +363,14 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "Entity: %d", current->entity->id);
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d T:%d R:%d C:%d I:%d S:%d\n",
+            current->entity->name, current->entity->id, 
+            current->entity->transform != NULL, 
+            current->entity->renderer != NULL, 
+            current->entity->camera != NULL,
+            current->entity->interactible != NULL,
+            current->entity->script != NULL
+        );
         logMessage(debug, b);
         current = current->next;
         i++;
@@ -180,3 +379,9 @@ void ye_print_entities(){
     snprintf(b, sizeof(b), "Total entities: %d", i);
     logMessage(debug, b);
 }
+
+/*
+    TODO: we need to deny adding multiple of the same component - or do we?
+    right now nothing is stopping from dropping without freeing, we need non null
+    check
+*/

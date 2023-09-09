@@ -321,7 +321,10 @@ void ye_init_engine(struct engine_data data) {
     }
 
     // render everything in engine queue after splash asset removal
-    renderAll();
+    // renderAll(); ACHSHUALLY - this needs fixed when ECS is finalized
+    // its ok to render a blank frame here, and then destroy the engine startup camera
+    // the user needs to make a camera after this though to display anything
+    // we will reset the default camera to null
 
     lua_init(); // initialize lua
     logMessage(info, "Initialized Lua.\n");
@@ -342,6 +345,9 @@ void ye_shutdown_engine(){
     free(pEngineFontColor);
     pEngineFontColor = NULL;
 
+    // shutdown ECS
+    ye_shutdown_ecs();
+
     // shutdown graphics
     shutdownGraphics();
     logMessage(info, "Shut down graphics.\n");
@@ -349,9 +355,6 @@ void ye_shutdown_engine(){
     // shutdown audio
     shutdownAudio();
     logMessage(info, "Shut down audio.\n");
-
-    // shutdown ECS
-    ye_shutdown_ecs();
 
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
