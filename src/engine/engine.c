@@ -246,9 +246,6 @@ void ye_init_engine(struct engine_data data) {
 
     // ----------------- Begin Setup -------------------
 
-    // initialize entity component system
-    ye_init_ecs();
-
     // initialize graphics systems, creating window renderer, etc
     // TODO: should this just take in engine state struct? would make things a lot easier tbh
     initGraphics(
@@ -275,6 +272,9 @@ void ye_init_engine(struct engine_data data) {
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
     log_init(engine_state.log_level);
+
+    // initialize entity component system
+    ye_init_ecs();
 
     // if we are in debug mode
     if(engine_state.debug_mode){
@@ -312,6 +312,8 @@ void ye_init_engine(struct engine_data data) {
         struct ye_entity * splash_img = ye_create_entity();
         ye_add_transform_component(splash_img, (SDL_Rect){0,0,1920,1080},YE_ALIGN_MID_CENTER);
         ye_temp_add_image_renderer_component(splash_img, ye_get_engine_resource_static("splash.png"));
+
+        // TODO: version numbers back please (awaiting text renderer)
 
         // render everything in engine queue
         renderAll(); 
