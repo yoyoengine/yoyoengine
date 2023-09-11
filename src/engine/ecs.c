@@ -108,6 +108,34 @@ struct ye_entity * ye_create_entity(){
 }
 
 /*
+    Create a new entity and return a pointer to it (named)
+
+    we must allocate space for the name and copy it
+*/
+// struct ye_entity * ye_create_entity_named(char *name){
+//     struct ye_entity *entity = malloc(sizeof(struct ye_entity));
+//     entity->id = eid++; // assign unique id to entity
+//     entity->active = true;
+
+//     //name the entity "entity id"
+//     entity->name = malloc(sizeof(char) * strlen(name));
+//     strcpy(entity->name, name);
+
+//     // assign all copmponents to null
+//     entity->transform = NULL;
+//     entity->renderer = NULL;
+//     entity->camera = NULL;
+//     entity->script = NULL;
+//     entity->interactible = NULL;
+
+//     // add the entity to the entity list
+//     ye_entity_list_add(&entity_list_head, entity);
+//     logMessage(debug, "Created and added an entity\n");
+
+//     return entity;
+// }
+
+/*
     Destroy an entity by pointer
 */
 void ye_destroy_entity(struct ye_entity * entity){
@@ -260,6 +288,15 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        
+        // LEFT FOR DEBUGGING
+        // // print the new bounds and rect
+        // char b[100];
+        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
+        // logMessage(debug, b);
+        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
+        // logMessage(debug, b);
+
     }
     else{
         logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
@@ -298,34 +335,70 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 
     Uses the transform component to determine where to paint the entity.
     Skips entity if there is no active transform or renderer is inactive
+
+    This system will paint relative to the active camera, and occlude anything
+    outside of the active camera's view field
+
+    TODO:
+    - z-sorting
+
+    NOTES:
+    - Initially I tried some weird really complicated impl, which I will share details
+    of below, for future me who will likely need these in the future.
+    For now, we literally just check an intersection of the object and the camera, and if it exists we
+    copy the object to the renderer offset by the camera position.
+    In the future we might want to return to the weird clip plane system, but for now this is fine.
+
+    Some functions and relevant snippets to the old system:
+    - SDL_RenderSetClipRect(renderer, &visibleRect);
 */
-void ye_system_renderer(SDL_Renderer *renderer){
-    // check if we have a non null, active camera targeted
-    if(engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active){
+void ye_system_renderer(SDL_Renderer *renderer) {
+    // check if we have a non-null, active camera targeted
+    if (engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active) {
         logMessage(warning, "No active camera targeted. Skipping renderer system\n");
         return;
     }
 
-    // traverse tracked entities with renderer components
+    // Get the camera's position in world coordinates
+    SDL_Rect camera_rect = engine_state.target_camera->transform->rect;
+    SDL_Rect view_field = engine_state.target_camera->camera->view_field;
+    camera_rect.w = view_field.w;
+    camera_rect.h = view_field.h;
+    // update camera rect to contain the view field w,h
+
+    // Traverse tracked entities with renderer components
     struct ye_entity_node *current = renderer_list_head;
-    while(current != NULL){
-        if(current->entity->renderer->active){
-            if(current->entity->transform != NULL && current->entity->transform->active){
-                SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &current->entity->transform->rect);
-                /*note for self figure out how copy renderer maybe move into struct
-                    TODO: I would like to move dedicated systems across
-                    the codebase to where they belong.
+    while (current != NULL) {
+        if (current->entity->renderer->active) {
+            if (current->entity->transform != NULL && current->entity->transform->active) {
+                SDL_Rect entity_rect = current->entity->transform->rect; // where the entity is in the world by pixel (x, y, w, h)
 
-                    Something like this would go in graphics.c, but it would need
-                    to access the lists of this file.
-
-                    We could also leave the systems in the ECS file and have the graphics
-                    renderer and window ptrs be stored in the engine runtime state. Personally im a fan
-                    of this idea.
-
-                    actrual real todo:
-                    make it z sorted and paintbounds
+                /*
+                    Check if the entity is within the camera's view field and render it offset by the camera position in space
                 */
+                SDL_Rect visibleRect; // output intersection rect
+                if (SDL_IntersectRect(&entity_rect, &camera_rect, &visibleRect) == SDL_TRUE) {
+                    // Adjust the entity's position to be relative to the camera
+                    entity_rect.x = entity_rect.x + camera_rect.x;
+                    entity_rect.y = entity_rect.y + camera_rect.y;
+
+                    // Copy the texture to the renderer within the clipping area and adjusted destination rectangle
+                    SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
+                    
+                    // paint bounds, my beloved <3
+                    if (engine_state.paintbounds_visible) {
+                        // create entity bounds offset by camera
+                        SDL_Rect entity_bounds = current->entity->transform->bounds;
+                        entity_bounds.x = entity_bounds.x + camera_rect.x;
+                        entity_bounds.y = entity_bounds.y + camera_rect.y;
+                        
+                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                        SDL_RenderDrawRect(renderer, &entity_bounds);
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        SDL_RenderDrawRect(renderer, &entity_rect);
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                    }
+                }
             }
         }
         current = current->next;

@@ -48,11 +48,14 @@ int main() {
 
     // camera
     struct ye_entity * cam = ye_create_entity();
-    ye_add_transform_component(cam, (SDL_Rect){0, 0, 1920, 1080}, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(cam, (SDL_Rect){0, 0, 0, 0}, YE_ALIGN_MID_CENTER);
     ye_add_camera_component(cam, (SDL_Rect){0, 0, 1920, 1080});
 
     // set camera
     ye_set_camera(cam);
+
+    // test moving cam
+    // cam->camera->view_field.x = 0;
 
     struct ye_entity * entity = ye_create_entity();
     ye_add_transform_component(entity, (SDL_Rect){0, 0, 1920, 1080}, YE_ALIGN_MID_CENTER);
@@ -64,6 +67,10 @@ int main() {
         call appropriate callbacks back into game code as needed during this
     */
     while(!quit) {
+
+        // move the camera up and down for testing
+        cam->transform->rect.y += 1;
+        cam->transform->rect.x += 1;
 
         /*
             Any other game frame logic...

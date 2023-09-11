@@ -50,3 +50,12 @@ port the old renderer stuff to the new ECS
 cleanup all old renderer code
 
 for ECS it would be nice to pass NULL to get some sensible defaults on some comps
+
+would be nice to abbreviate a bunch of ECS function calls into a backwards compatible ye_create_text ye_create_image ye_create_animation etc
+
+left off:
+splash screen too big i think its bounds exceed the camera because its a larger texture. we need to fit it into the camera bounds
+
+input state machine
+
+timers and input not tied to frame rate...
