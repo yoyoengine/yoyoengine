@@ -74,6 +74,8 @@ struct ye_component_transform {
     SDL_Rect bounds;                // original desired pixel location of entity
     enum ye_alignment alignment;    // alignment of entity within its bounds
     SDL_Rect rect;                  // real location of entity computed from desired alignment
+
+    int z;                          // layer the entity sits on
 };
 
 /*
@@ -169,7 +171,7 @@ void ye_remove_camera_component(struct ye_entity *entity);
 
 /////// Transform Component ///////
 
-void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, enum ye_alignment alignment);
+void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z, enum ye_alignment alignment);
 
 void ye_remove_transform_component(struct ye_entity *entity);
 

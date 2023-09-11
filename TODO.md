@@ -59,3 +59,5 @@ splash screen too big i think its bounds exceed the camera because its a larger 
 input state machine
 
 timers and input not tied to frame rate...
+
+named entities

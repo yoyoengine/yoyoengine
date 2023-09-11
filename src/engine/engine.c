@@ -305,12 +305,12 @@ void ye_init_engine(struct engine_data data) {
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
-        ye_add_transform_component(splash_cam, (SDL_Rect){0,0,1920,1080},YE_ALIGN_MID_CENTER);
+        ye_add_transform_component(splash_cam, (SDL_Rect){0,0,1920,1080}, 1, YE_ALIGN_MID_CENTER);
         ye_add_camera_component(splash_cam, (SDL_Rect){0,0,1920,1080});
         ye_set_camera(splash_cam);
 
         struct ye_entity * splash_img = ye_create_entity();
-        ye_add_transform_component(splash_img, (SDL_Rect){0,0,1920,1080},YE_ALIGN_MID_CENTER);
+        ye_add_transform_component(splash_img, (SDL_Rect){0,0,1920,1080}, 0, YE_ALIGN_MID_CENTER);
         ye_temp_add_image_renderer_component(splash_img, ye_get_engine_resource_static("splash.png"));
 
         // TODO: version numbers back please (awaiting text renderer)

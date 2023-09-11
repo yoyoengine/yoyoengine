@@ -213,10 +213,11 @@ void ye_remove_camera_component(struct ye_entity *entity){
     at the same time we can have a transform without a renderer (sometimes i guess)
     which means we need to query the texture size
 */
-void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, enum ye_alignment alignment){
+void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z, enum ye_alignment alignment){
     entity->transform = malloc(sizeof(struct ye_component_transform));
     entity->transform->active = true;
     entity->transform->bounds = bounds;
+    entity->transform->z = z;
     
     // we will first set the rect equal to the bounds, for the purposes of rendering the renderer on mount
     // will then calculate the actual rect of the entity based on its alignment and bounds
@@ -370,7 +371,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     struct ye_entity_node *current = renderer_list_head;
     while (current != NULL) {
         if (current->entity->renderer->active) {
-            if (current->entity->transform != NULL && current->entity->transform->active) {
+            if (current->entity->transform != NULL && 
+                current->entity->transform->active &&
+                current->entity->transform->z <= engine_state.target_camera->transform->z // only render if the entity is on or in front of the camera
+            ) {
                 SDL_Rect entity_rect = current->entity->transform->rect; // where the entity is in the world by pixel (x, y, w, h)
 
                 /*

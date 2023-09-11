@@ -27,6 +27,7 @@ int main() {
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
         .volume = 10,
+        // .framecap = 30,
         // .skipintro = true, // no override exists for this - its a boolean
 
         .handle_input = handle_input, // function for handling our input
@@ -36,6 +37,7 @@ int main() {
         .override_engine_resources_path = true,
         .override_log_level = true,
         .override_volume = true,
+        // .override_framecap = true,
         // if you provide a false/bad override the engine will segfault...
     };
 
@@ -48,17 +50,14 @@ int main() {
 
     // camera
     struct ye_entity * cam = ye_create_entity();
-    ye_add_transform_component(cam, (SDL_Rect){0, 0, 0, 0}, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(cam, (SDL_Rect){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
     ye_add_camera_component(cam, (SDL_Rect){0, 0, 1920, 1080});
 
     // set camera
     ye_set_camera(cam);
 
-    // test moving cam
-    // cam->camera->view_field.x = 0;
-
     struct ye_entity * entity = ye_create_entity();
-    ye_add_transform_component(entity, (SDL_Rect){0, 0, 1920, 1080}, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(entity, (SDL_Rect){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(entity, ye_get_resource_static("images/wolf.jpeg"));
 
     /*
