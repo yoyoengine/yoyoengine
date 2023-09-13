@@ -181,6 +181,35 @@ void ui_paint_debug_overlay(int fps, int paint_time, int render_object_count, in
 }
 
 /*
+    paint information on the current camera, x,y,w,h,z
+*/
+void ui_paint_cam_info(){
+    char x_str[100];
+    char y_str[100];
+    char w_str[100];
+    char h_str[100];
+    char z_str[100];
+
+    sprintf(x_str, "x: %d", engine_state.target_camera->transform->rect.x);
+    sprintf(y_str, "y: %d", engine_state.target_camera->transform->rect.y);
+    sprintf(w_str, "w: %d", engine_state.target_camera->camera->view_field.w);
+    sprintf(h_str, "h: %d", engine_state.target_camera->camera->view_field.h);
+    sprintf(z_str, "z: %d", engine_state.target_camera->transform->z);
+
+    // Create the GUI layout
+    if (nk_begin(ctx, "Camera", nk_rect(250, 10, 100, 200),
+        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, x_str, NK_TEXT_LEFT);
+            nk_label(ctx, y_str, NK_TEXT_LEFT);
+            nk_label(ctx, w_str, NK_TEXT_LEFT);
+            nk_label(ctx, h_str, NK_TEXT_LEFT);
+            nk_label(ctx, z_str, NK_TEXT_LEFT);
+    nk_end(ctx);
+    }
+}
+
+/*
     Will iterate and render all tracked ui components by calling their function pointers
 
     These functions cannot take parameters (other than the Nuklear context), 
