@@ -31,6 +31,42 @@ void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) 
 }
 
 /*
+    Adds to the renderer list sorted by z value, lowest at head
+*/
+void ye_entity_list_add_sorted_z(struct ye_entity_node **list, struct ye_entity *entity){
+    struct ye_entity_node *newNode = malloc(sizeof(struct ye_entity_node));
+    newNode->entity = entity;
+    newNode->next = NULL;
+
+    // if the list is empty, add to head
+    if(*list == NULL){
+        *list = newNode;
+        return;
+    }
+
+    // if the new node is less than the head, add to head
+    if(newNode->entity->transform->z < (*list)->entity->transform->z){
+        newNode->next = *list;
+        *list = newNode;
+        return;
+    }
+
+    // otherwise, traverse the list and find the correct spot
+    struct ye_entity_node *current = *list;
+    while(current->next != NULL){
+        if(newNode->entity->transform->z < current->next->entity->transform->z){
+            newNode->next = current->next;
+            current->next = newNode;
+            return;
+        }
+        current = current->next;
+    }
+
+    // if we reach the end of the list, add to the end
+    current->next = newNode;
+}
+
+/*
     Remove an entity from the linked list
 
     NOTE: THIS DOES NOT FREE THE ACTUAL ENTITY ITSELF
@@ -264,7 +300,7 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     }
 
     // add this entity to the renderer component list
-    ye_entity_list_add(&renderer_list_head, entity);
+    ye_entity_list_add_sorted_z(&renderer_list_head, entity);
 
     // log that we added a renderer and to what ID
     char b[100];
@@ -340,9 +376,6 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     This system will paint relative to the active camera, and occlude anything
     outside of the active camera's view field
 
-    TODO:
-    - z-sorting
-
     NOTES:
     - Initially I tried some weird really complicated impl, which I will share details
     of below, for future me who will likely need these in the future.
@@ -377,24 +410,31 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             ) {
                 SDL_Rect entity_rect = current->entity->transform->rect; // where the entity is in the world by pixel (x, y, w, h)
 
-                /*
-                    Check if the entity is within the camera's view field and render it offset by the camera position in space
-                */
-                SDL_Rect visibleRect; // output intersection rect
-                if (SDL_IntersectRect(&entity_rect, &camera_rect, &visibleRect) == SDL_TRUE) {
-                    // Adjust the entity's position to be relative to the camera
-                    entity_rect.x = entity_rect.x + camera_rect.x;
-                    entity_rect.y = entity_rect.y + camera_rect.y;
-
-                    // Copy the texture to the renderer within the clipping area and adjusted destination rectangle
+                // occlusion check
+                if (entity_rect.x + entity_rect.w < camera_rect.x ||
+                    entity_rect.x > camera_rect.x + camera_rect.w ||
+                    entity_rect.y + entity_rect.h < camera_rect.y ||
+                    entity_rect.y > camera_rect.y + camera_rect.h
+                    )
+                {
+                    // do not draw the object
+                    // log that we occluded entity and its name
+                    // char b[100];
+                    // snprintf(b, sizeof(b), "Occluded entity %s\n", current->entity->name);
+                    // logMessage(debug, b);
+                }
+                else{
+                    // scale it to be on screen and paint it
+                    entity_rect.x = entity_rect.x - camera_rect.x;
+                    entity_rect.y = entity_rect.y - camera_rect.y;
                     SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
-                    
+
                     // paint bounds, my beloved <3
                     if (engine_state.paintbounds_visible) {
                         // create entity bounds offset by camera
                         SDL_Rect entity_bounds = current->entity->transform->bounds;
-                        entity_bounds.x = entity_bounds.x + camera_rect.x;
-                        entity_bounds.y = entity_bounds.y + camera_rect.y;
+                        entity_bounds.x = entity_bounds.x - camera_rect.x;
+                        entity_bounds.y = entity_bounds.y - camera_rect.y;
                         
                         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                         SDL_RenderDrawRect(renderer, &entity_bounds);

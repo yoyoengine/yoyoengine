@@ -194,6 +194,23 @@ void ye_process_frame(){
                 default:
                     break;
             }
+            // if freecam is on (rare) TODO: allow changing of freecam scale
+            if(engine_state.freecam_enabled){
+                switch(e.key.keysym.sym){     
+                    case SDLK_LEFT:
+                        engine_state.target_camera->transform->rect.x -= 100;
+                        break;
+                    case SDLK_RIGHT:
+                        engine_state.target_camera->transform->rect.x += 100;
+                        break;
+                    case SDLK_UP:
+                        engine_state.target_camera->transform->rect.y -= 100;
+                        break;
+                    case SDLK_DOWN:
+                        engine_state.target_camera->transform->rect.y += 100;
+                        break;
+                }
+            }
         }
 
         // send event to callback specified by game (if needed)

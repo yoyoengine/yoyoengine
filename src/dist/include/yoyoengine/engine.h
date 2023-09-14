@@ -77,6 +77,8 @@ struct engine_data {
     bool metrics_visible;
     bool console_visible;
 
+    bool freecam_enabled;
+
     struct ye_entity *target_camera;
 };
 

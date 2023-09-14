@@ -4,6 +4,12 @@ A 2D graphics engine (currently framework) with optional visual novel engine cap
 
 ![Drawing](https://github.com/Yoyolick/SCDG/assets/43967290/f98545d1-c4ba-419e-a674-da436f591d23)
 
+## Notices
+
+This section is temporary and will be used to denote any important facts I need to remember about the project.
+
+- The coordinate system is non standard, north is -y, south is +y, east is +x, west is -x
+
 ## Dependencies
 
 - [SDL2](https://www.libsdl.org/)

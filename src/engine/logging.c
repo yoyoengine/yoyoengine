@@ -144,7 +144,12 @@ char userInput[MAX_INPUT_LENGTH];
 
 bool color_code = true;
 
-// paint log panel
+/*
+    Paint log console
+
+    in the future to save window bounds:
+        nk_window_get_bounds(ctx);
+*/
 void paint_console(struct nk_context *ctx){
     // Create the GUI layout
     if (nk_begin(ctx, "Console", nk_rect(300, 200, 1000, 633),
@@ -219,6 +224,15 @@ void paint_console(struct nk_context *ctx){
                     // check if the second word is "debug"
                     if(strncmp(userInput+7,"paintbounds",11)==0){
                         engine_state.paintbounds_visible = !engine_state.paintbounds_visible;
+                    }
+                    else if(strncmp(userInput+7,"freecam",7)==0){
+                        engine_state.freecam_enabled = !engine_state.freecam_enabled;
+                        if(engine_state.freecam_enabled){
+                            logMessage(debug,"Freecam enabled\n");
+                        }
+                        else{
+                            logMessage(debug,"Freecam disabled\n");
+                        }
                     }
                     else{
                         logMessage(debug,"Unknown toggle command. Type 'help' for a list of commands\n");

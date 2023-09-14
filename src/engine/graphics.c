@@ -1032,6 +1032,7 @@ void renderAll() {
 
     if(engine_state.metrics_visible){ // TODO: see above todo
         ui_paint_debug_overlay(fps,paintTime,objectCount,totalChunks,linesWritten);
+        ui_paint_cam_info();
     }
 
     // INDEV TESTING: renderer system paint all entities with renderer
