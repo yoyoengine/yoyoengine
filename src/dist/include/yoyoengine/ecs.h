@@ -122,6 +122,12 @@ struct ye_component_renderer_image {
     char *src;  // path to image
 };
 
+struct ye_component_renderer_text {
+    char *text;         // text to render
+    TTF_Font *font;     // font to use
+    SDL_Color *color;    // color of text
+};
+
 /*
     Interactible component
     

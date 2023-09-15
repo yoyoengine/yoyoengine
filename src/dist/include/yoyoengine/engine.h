@@ -19,6 +19,8 @@ extern TTF_Font *pEngineFont;
 
 extern struct engine_data engine_state;
 
+extern struct engine_runtime_data engine_runtime_state;
+
 // struct to hold screen points
 struct ScreenSize {
     int width;
@@ -36,7 +38,12 @@ char *ye_get_resource_static(const char *sub_path);
 
 char* ye_get_engine_resource_static(const char *sub_path);
 
-// constructor for engine (any fields can be left blank for defaults)
+/*
+    constructor for engine (any fields can be left blank for defaults)
+
+    There are some private fields at the bottom that can TECHNICALLY be overridden
+    by the game for some extra control (hence why they are exposed here)
+*/
 struct engine_data {
     int screen_width;
     int screen_height;
@@ -80,6 +87,19 @@ struct engine_data {
     bool freecam_enabled;
 
     struct ye_entity *target_camera;
+};
+
+/*
+    Struct to hold and persist globals to the engine (for ease documentation and use)
+    This will be instantiated to one global variable in engine.c and used throughout the engine
+*/
+struct engine_runtime_data {
+    int fps;
+    int frame_time;
+    int entity_count;
+    int painted_entity_count;
+    int log_line_count;
+    int audio_chunk_count;
 };
 
 void ye_process_frame();

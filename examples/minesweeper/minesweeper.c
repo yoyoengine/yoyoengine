@@ -17,14 +17,14 @@ void handle_input(SDL_Event event) {
     }
     else if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
-            case SDLK_w:
-                cam->camera->view_field.w += 1920;
-                cam->camera->view_field.h += 1080;
-                break;
-            case SDLK_s:
-                cam->camera->view_field.w -= 1920;
-                cam->camera->view_field.h -= 1080;
-                break;
+            // case SDLK_w:
+            //     cam->camera->view_field.w += 1920;
+            //     cam->camera->view_field.h += 1080;
+            //     break;
+            // case SDLK_s:
+            //     cam->camera->view_field.w -= 1920;
+            //     cam->camera->view_field.h -= 1080;
+            //     break;
             default:
                 break;
         }
@@ -81,6 +81,17 @@ int main() {
     struct ye_entity * rei = ye_create_entity();
     ye_add_transform_component(rei, (SDL_Rect){600, -600, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(rei, ye_get_resource_static("images/rei.png"));
+
+    struct ye_entity * snerfbot = ye_create_entity();
+    ye_add_transform_component(snerfbot, (SDL_Rect){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
+
+    TTF_Font * font = loadFont(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
+    SDL_Color color = {255, 255, 255, 255};
+
+    struct ye_entity * nic = ye_create_entity();
+    ye_add_transform_component(nic, (SDL_Rect){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    ye_temp_add_text_renderer_component(nic, "Hello, World!", font, &color);
 
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to

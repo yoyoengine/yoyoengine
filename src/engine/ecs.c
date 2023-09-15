@@ -140,6 +140,8 @@ struct ye_entity * ye_create_entity(){
     ye_entity_list_add(&entity_list_head, entity);
     logMessage(debug, "Created and added an entity\n");
 
+    engine_runtime_state.entity_count++;
+
     return entity;
 }
 
@@ -204,6 +206,8 @@ void ye_destroy_entity(struct ye_entity * entity){
     entity = NULL;
 
     logMessage(debug, "Destroyed an entity\n");
+
+    engine_runtime_state.entity_count--;
 }
 
 // struct ye_entity *ye_get_entity_by_id(int id){}
@@ -340,6 +344,37 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
     }
 }
 
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color){
+    struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
+    text_renderer->text = text;
+    text_renderer->font = font;
+    text_renderer->color = color;
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT, text_renderer);
+
+    // create the text texture
+    entity->renderer->texture = createTextTexture(text, font, color);
+
+    if(entity->transform != NULL){
+        // calculate the actual rect of the entity based on its alignment and bounds
+        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        
+        // LEFT FOR DEBUGGING
+        // // print the new bounds and rect
+        // char b[100];
+        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
+        // logMessage(debug, b);
+        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
+        // logMessage(debug, b);
+
+    }
+    else{
+        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+    }
+}
+
 void ye_remove_renderer_component(struct ye_entity *entity){
     // free contents of renderer_impl
     if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
@@ -393,6 +428,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         return;
     }
 
+    engine_runtime_state.painted_entity_count = 0;
+
     // Get the camera's position in world coordinates
     SDL_Rect camera_rect = engine_state.target_camera->transform->rect;
     SDL_Rect view_field = engine_state.target_camera->camera->view_field;
@@ -428,7 +465,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     entity_rect.x = entity_rect.x - camera_rect.x;
                     entity_rect.y = entity_rect.y - camera_rect.y;
                     SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
-
+                    engine_runtime_state.painted_entity_count++;
+                    
                     // paint bounds, my beloved <3
                     if (engine_state.paintbounds_visible) {
                         // create entity bounds offset by camera

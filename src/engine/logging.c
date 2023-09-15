@@ -17,7 +17,6 @@
 #define RESET   "\x1b[0m"
 
 FILE *logFile = NULL;
-int linesWritten = 0;
 
 enum logLevel logThreshold = 5; // by defualt log NOTHING to console
 
@@ -87,7 +86,7 @@ void logMessage(enum logLevel level, const char *text){
             printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, "Invalid log level\n");
             break;
     }
-    linesWritten++;
+    engine_runtime_state.log_line_count++;
 
     // Add to the log buffer
     addToLogBuffer(level, text);
@@ -271,10 +270,10 @@ void log_init(enum logLevel level){
     }
     closeLog();
     logMessage(info, "Logging initialized\n");
-    linesWritten=1; // reset our counter because not all outputs have actually been written to the log file yet
+    engine_runtime_state.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
 }
 
 void log_shutdown(){
     logMessage(info, "Logging shutdown\n");
-    linesWritten++;
+    engine_runtime_state.log_line_count++;
 }

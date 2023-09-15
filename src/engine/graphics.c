@@ -45,8 +45,6 @@ int virtualHeight = 1080;
 int xOffset = 0;
 int yOffset = 0;
 
-bool forceRefresh = false;
-
 int currentResolutionWidth = 1920;
 int currentResolutionHeight = 1080;
 
@@ -1021,17 +1019,13 @@ void renderAll() {
             fpsUpdateTime = SDL_GetTicks();
             fps = frameCounter * 4;
             frameCounter = 0; // reset counted frames
+            engine_runtime_state.fps = fps;
         }
     }
 
-    // Get paint end timestamp
-    Uint32 paintEndTime = SDL_GetTicks();
-
-    // Calculate paint time
-    Uint32 paintTime = paintEndTime - paintStartTime;
 
     if(engine_state.metrics_visible){ // TODO: see above todo
-        ui_paint_debug_overlay(fps,paintTime,objectCount,totalChunks,linesWritten);
+        ui_paint_debug_overlay();
         ui_paint_cam_info();
     }
 
@@ -1053,6 +1047,14 @@ void renderAll() {
     // update the window to reflect the new renderer changes
     SDL_UpdateWindowSurface(pWindow);
 
+    // Get paint end timestamp
+    Uint32 paintEndTime = SDL_GetTicks();
+
+    // Calculate paint time
+    Uint32 paintTime = paintEndTime - paintStartTime;
+
+    engine_runtime_state.frame_time = paintTime;
+
     // if we arent on vsync we need to preform some frame calculations to delay next frame
     if(fpscap != -1){
         // set the end of the render frame
@@ -1065,10 +1067,6 @@ void renderAll() {
         if (frameTime < desiredFrameTime) {
             SDL_Delay(desiredFrameTime - frameTime);
         }
-    }
-
-    if(forceRefresh){
-        forceRefresh = false;
     }
 }
 

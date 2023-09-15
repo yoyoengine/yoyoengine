@@ -31,6 +31,9 @@ TTF_Font *pEngineFont = NULL;
 // expose our engine state data to the whole engine
 struct engine_data engine_state;
 
+// runtime global information about the engine (used everywhere)
+struct engine_runtime_data engine_runtime_state; // this technically initializes it to 0
+
 // helper function to get the screen size
 // TODO: consider moving graphics.c TODO: yes move to graphics.c
 struct ScreenSize getScreenSize(){

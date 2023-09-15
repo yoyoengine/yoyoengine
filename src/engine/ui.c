@@ -155,25 +155,25 @@ void ui_end_input_checks(){
     - would be nice to get a perf/benchmarking/timing suite in the codebase so we can see all timing elements of a frame
       here, like how long logic/input/ui paint/object paint/interact check/physics took
 */
-void ui_paint_debug_overlay(int fps, int paint_time, int render_object_count, int audio_chunk_count, int log_line_count){
+void ui_paint_debug_overlay(){
     // put all the parameters into strings for display
     char fps_str[100];
     char paint_time_str[100];
-    char render_object_count_str[100];
+    char entity_count_str[100];
     char audio_chunk_count_str[100];
     char log_line_count_str[100];
-    sprintf(fps_str, "fps: %d", fps);
-    sprintf(paint_time_str, "paint time: %dms", paint_time);
-    sprintf(render_object_count_str, "render object count: %d", render_object_count);
-    sprintf(audio_chunk_count_str, "audio chunk count: %d", audio_chunk_count);
-    sprintf(log_line_count_str, "log line count: %d", log_line_count);
+    sprintf(fps_str, "fps: %d", engine_runtime_state.fps);
+    sprintf(paint_time_str, "paint time: %dms", engine_runtime_state.frame_time);
+    sprintf(entity_count_str, "visible entities: %d/%d", engine_runtime_state.painted_entity_count, engine_runtime_state.entity_count);
+    sprintf(audio_chunk_count_str, "audio chunk count: %d", engine_runtime_state.audio_chunk_count);
+    sprintf(log_line_count_str, "log line count: %d", engine_runtime_state.log_line_count);
     
     if (nk_begin(ctx, "Metrics", nk_rect(10, 10, 220, 200),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, fps_str, NK_TEXT_LEFT);
         nk_label(ctx, paint_time_str, NK_TEXT_LEFT);
-        nk_label(ctx, render_object_count_str, NK_TEXT_LEFT);
+        nk_label(ctx, entity_count_str, NK_TEXT_LEFT);
         nk_label(ctx, audio_chunk_count_str, NK_TEXT_LEFT);
         nk_label(ctx, log_line_count_str, NK_TEXT_LEFT);
     }

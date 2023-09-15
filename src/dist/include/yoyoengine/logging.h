@@ -6,8 +6,6 @@
 #include <Nuklear/nuklear.h>
 #endif
 
-extern int linesWritten;
-
 enum logLevel {
     debug,
     info,
