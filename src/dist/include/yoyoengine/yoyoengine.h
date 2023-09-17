@@ -9,7 +9,6 @@
 #include "ecs.h"
 #include "audio.h"
 #include "engine.h"
-#include "animation.h"
 #include "graphics.h"
 #include "logging.h"
 #include "uthash.h"

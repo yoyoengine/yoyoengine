@@ -589,6 +589,11 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 }
 
 /////////////////////////   ECS    ////////////////////////////
+/*
+    If you wanted to do something equivalent to the legacy clearAll()
+    you would instead ye_shutdown_ecs and then ye_init_ecs
+*/
+
 
 void ye_init_ecs(){
     entity_list_head = ye_entity_list_create();

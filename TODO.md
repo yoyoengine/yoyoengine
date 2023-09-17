@@ -64,3 +64,10 @@ named entities
 
 port all the old renderer code to the new ECS and rip out old code
 macro helpers for old style constructors
+
+port interactions to ecs
+
+sensible caching of fonts colors images automatically
+
+- this deserves its own full fledged cache system
+- possibly in the future this evolves into memory management + cache system
