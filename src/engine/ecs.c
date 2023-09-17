@@ -173,6 +173,15 @@ struct ye_entity * ye_create_entity_named(char *name){
     return entity;
 }
 
+void ye_rename_entity(struct ye_entity *entity, char *new_name){
+    // free the old name
+    free(entity->name);
+
+    // name the entity by its passed name
+    entity->name = malloc(sizeof(char) * strlen(new_name));
+    strcpy(entity->name, new_name);
+}
+
 /*
     Destroy an entity by pointer
 */

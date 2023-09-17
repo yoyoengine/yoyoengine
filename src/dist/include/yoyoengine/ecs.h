@@ -185,6 +185,18 @@ struct ye_component_interactible {
 struct ye_entity * ye_create_entity();
 
 /*
+    Create a new entity and return a pointer to it (named)
+
+    we must allocate space for the name and copy it
+*/
+struct ye_entity * ye_create_entity_named(char *name);
+
+/*
+    Rename an entity by pointer
+*/
+void ye_rename_entity(struct ye_entity *entity, char *name);
+
+/*
     Destroy an entity by pointer
 */
 void ye_destroy_entity(struct ye_entity * entity);

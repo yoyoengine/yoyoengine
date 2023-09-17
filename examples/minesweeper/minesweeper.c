@@ -103,6 +103,7 @@ int main() {
     ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
 
     struct ye_entity * dummy = ye_create_entity_named("dummy");
+    ye_rename_entity(dummy, "idiot");
 
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
