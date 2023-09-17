@@ -1,10 +1,8 @@
-/*
-    Doing today:
-    1. finish up the structure of the entities and components
-    2. create a storage system for entities and component pools (LL)
-    3. start roughing in systems like renderer
-*/
 #include <yoyoengine/yoyoengine.h>
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 // entity id counter (used to assign unique ids to entities)
 int eid = 0; 
@@ -346,7 +344,7 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
 
 void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
-    text_renderer->text = text;
+    text_renderer->text = strdup(text);
     text_renderer->font = font;
     text_renderer->color = color;
 
@@ -375,19 +373,67 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
     }
 }
 
+void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *path, char *format, size_t count, int frame_delay, int loops){
+    struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
+    animation->animation_path = strdup(path);
+    animation->image_format = strdup(format);
+    animation->frame_count = count;
+    animation->frame_delay = frame_delay;
+    animation->loops = loops;
+    animation->last_updated = 0; // set as 0 now so the operations between now and setting it do not count towards its frame time
+    animation->current_frame_index = 0;
+    animation->paused = false;
+    animation->frames = (SDL_Texture**)malloc(count * sizeof(SDL_Texture*));
+ 
+    // load all the frames into memory TODO: this could be futurely optimized
+    for (size_t i = 0; i < (size_t)count; ++i) {
+        char filename[256];  // Assuming a maximum filename length of 255 characters
+        snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, format); // TODO: dumb optimization but could cut out all except frame num insertion here
+        struct textureInfo textInfo = createImageTexture(filename,false); // we will not cache any animation frames;
+        animation->frames[i] = textInfo.pTexture;
+    }
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_ANIMATION, animation);
+
+    // set the texture to the first frame
+    entity->renderer->texture = animation->frames[0];
+
+    // make sure we are aligned
+    if(entity->transform != NULL){
+        // calculate the actual rect of the entity based on its alignment and bounds
+        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+    }
+    else{
+        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+    }
+
+
+    animation->last_updated = SDL_GetTicks(); // set the last updated to now so we can start ticking it accurately
+}
+
 void ye_remove_renderer_component(struct ye_entity *entity){
     // free contents of renderer_impl
     if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
         free(entity->renderer->renderer_impl.image->src);
         free(entity->renderer->renderer_impl.image);
     }
-    // else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
-    //     free(entity->renderer->renderer_impl.text->pText);
-    //     free(entity->renderer->renderer_impl.text);
-    // }
-    // else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-    //     free(entity->renderer->renderer_impl.animation);
-    // }
+    else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
+        free(entity->renderer->renderer_impl.text->text);
+        free(entity->renderer->renderer_impl.text);
+    }
+    else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+        // free all frames in an animation
+        for(int i = 0; i < entity->renderer->renderer_impl.animation->frame_count; i++){
+            SDL_DestroyTexture(entity->renderer->renderer_impl.animation->frames[i]);
+        }
+
+        free(entity->renderer->renderer_impl.animation->animation_path);
+        free(entity->renderer->renderer_impl.animation->image_format);
+        free(entity->renderer->renderer_impl.animation->frames);
+        free(entity->renderer->renderer_impl.animation);
+    }
 
     // destoy the texture. NOTE: if we have some cache system in future this would double free
     SDL_DestroyTexture(entity->renderer->texture);
@@ -441,6 +487,28 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     struct ye_entity_node *current = renderer_list_head;
     while (current != NULL) {
         if (current->entity->renderer->active) {
+            // check if renderer is animation and attemt to tick its frame if so
+            if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+                struct ye_component_renderer_animation *animation = current->entity->renderer->renderer_impl.animation;
+                if(!animation->paused){
+                    int now = SDL_GetTicks();
+                    if(now - animation->last_updated >= animation->frame_delay){
+                        animation->current_frame_index++;
+                        if(animation->current_frame_index >= animation->frame_count){
+                            animation->current_frame_index = 0;
+                            if(animation->loops != -1){
+                                animation->loops--;
+                                if(animation->loops == 0){
+                                    animation->paused = true; // TODO: dont just pause when it ends, but give option to destroy/ disable renderer
+                                }
+                            }
+                        }
+                        animation->last_updated = now;
+                        current->entity->renderer->texture = animation->frames[animation->current_frame_index];
+                    }
+                }
+            }
+            // paint the entity
             if (current->entity->transform != NULL && 
                 current->entity->transform->active &&
                 current->entity->transform->z <= engine_state.target_camera->transform->z // only render if the entity is on or in front of the camera

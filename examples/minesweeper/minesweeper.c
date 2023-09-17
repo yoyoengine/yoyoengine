@@ -93,6 +93,10 @@ int main() {
     ye_add_transform_component(nic, (SDL_Rect){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_renderer_component(nic, "Hello, World!", font, &color);
 
+    struct ye_entity * congratulations = ye_create_entity();
+    ye_add_transform_component(congratulations, (SDL_Rect){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
+    ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
+
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
         load and present the next frame, as well as handle its own logic. The engine will

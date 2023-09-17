@@ -4,6 +4,19 @@ A 2D graphics engine (currently framework) with optional visual novel engine cap
 
 ![Drawing](https://github.com/Yoyolick/SCDG/assets/43967290/f98545d1-c4ba-419e-a674-da436f591d23)
 
+## Goals
+
+- allow usage as
+  - a framework in C
+  - a framework with python bindings
+- an engine through an editor
+  - some sort of scripting integration
+    - lua?
+    - C#?
+    - native C scripting?
+- optional visual novel features that can be opted into as scene presets
+  - maybe this takes the form of easily sharable scenes exportable into presets
+
 ## Notices
 
 This section is temporary and will be used to denote any important facts I need to remember about the project.

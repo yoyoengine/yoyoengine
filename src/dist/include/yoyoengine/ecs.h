@@ -128,6 +128,22 @@ struct ye_component_renderer_text {
     SDL_Color *color;    // color of text
 };
 
+struct ye_component_renderer_animation {
+    char *animation_path;       // path to animation folder
+    char *image_format;         // format of image files in animation
+
+    size_t frame_count;         // number of frames in animation
+
+    int frame_delay;            // delay between frames in ms
+    int last_updated;           // SDL_GetTicks() last frame advance
+    int loops;                  // number of loops, -1 for infinite
+    int current_frame_index;    // current frame index
+
+    SDL_Texture** frames;       // array of textures for each frame
+
+    bool paused;
+};
+
 /*
     Interactible component
     
