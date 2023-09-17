@@ -53,7 +53,7 @@ int main() {
 
     // initialize engine with out data
     ye_init_engine(data);
-    
+
     // createImage(1,.5,.5,1,1,ye_get_engine_resource_static("enginelogo.png"),true,ALIGN_MID_CENTER);
     // createImage(2,.5,.5,1,1,ye_get_resource_static("images/anno.png"),true,ALIGN_MID_CENTER); // idk just for fun
     // runscript(ye_get_resource_static("scripts/fib.lua"));

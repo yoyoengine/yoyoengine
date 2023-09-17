@@ -39,23 +39,21 @@ struct engine_runtime_data engine_runtime_state; // this technically initializes
 struct ScreenSize getScreenSize(){
     // initialize video
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        logMessage(error, "SDL could not initialize!\n");
+        ye_logf(error, "SDL could not initialize!\n");
         exit(1);
     }
 
     // use video to initialize display mode
     SDL_DisplayMode displayMode;
     if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
-        logMessage(error, "SDL_GetCurrentDisplayMode failed!\n");
+        ye_logf(error, "SDL_GetCurrentDisplayMode failed!\n");
         exit(1);
     }
 
     int screenWidth = displayMode.w;
     int screenHeight = displayMode.h;
     
-    char buffer[100];
-    snprintf(buffer, sizeof(buffer),  "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
-    logMessage(debug, buffer);
+    ye_logf(debug, "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
 
     // return a ScreenSize struct with the screen width and height
     struct ScreenSize screenSize = {screenWidth, screenHeight};
@@ -71,7 +69,7 @@ char* ye_get_resource_static(const char *sub_path) {
     static char resource_buffer[256];  // Adjust the buffer size as per your requirement
 
     if (resources_path == NULL) {
-        logMessage(error, "Resource paths not set!\n");
+        ye_logf(error, "Resource paths not set!\n");
         return NULL;
     }
 
@@ -83,7 +81,7 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
     if (engine_resources_path == NULL) {
-        logMessage(error, "Engine reserved paths not set!\n");
+        ye_logf(error, "Engine reserved paths not set!\n");
         return NULL;
     }
 
@@ -99,7 +97,7 @@ char *getPathDynamic(const char *path) {
     if (base_path == NULL) {
         base_path = SDL_GetBasePath();
         if (base_path == NULL) {
-            logMessage(error, "Error getting base path!\n");
+            ye_logf(error, "Error getting base path!\n");
             return NULL;
         }
     }
@@ -107,7 +105,7 @@ char *getPathDynamic(const char *path) {
     size_t buffer_size = strlen(base_path) + strlen("../../resources/") + strlen(path) + 1;
     char *path_buffer = malloc(buffer_size);
     if (path_buffer == NULL) {
-        logMessage(error, "Error allocating memory for path!\n");
+        ye_logf(error, "Error allocating memory for path!\n");
         return NULL;
     }
 
@@ -166,7 +164,7 @@ void configute_defaults(struct engine_data *data){
     if(!data->override_framecap)
         data->framecap = -1;
     if(!data->override_log_level)
-        data->log_level = 0;
+        data->log_level = 4;
     if(!data->override_window_title)
         data->window_title = "Yoyo Engine Window";
     // we already have a ternery checking for uninitialized icon path
@@ -191,7 +189,7 @@ void ye_process_frame(){
                     }
                     else{
                         engine_state.console_visible = true;
-                        ui_register_component("console",paint_console);
+                        ui_register_component("console",ye_paint_console);
                     }
                     break;
                 default:
@@ -291,7 +289,7 @@ void ye_init_engine(struct engine_data data) {
     pEngineFontColor->a = 255;
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
-    log_init(engine_state.log_level);
+    ye_log_init(engine_state.log_level);
 
     // initialize entity component system
     ye_init_ecs();
@@ -302,7 +300,7 @@ void ye_init_engine(struct engine_data data) {
         engine_state.metrics_visible = true;
 
         // display in console
-        logMessage(debug, "Debug mode enabled.\n");
+        ye_logf(debug, "Debug mode enabled.\n");
     }
 
     // startup audio systems
@@ -318,7 +316,7 @@ void ye_init_engine(struct engine_data data) {
         startup noise
     */
     if(engine_state.skipintro){
-        logMessage(info,"Skipping Intro.\n");
+        ye_logf(info,"Skipping Intro.\n");
     }
     else{
         playSound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
@@ -355,19 +353,19 @@ void ye_init_engine(struct engine_data data) {
     // we will reset the default camera to null
 
     lua_init(); // initialize lua
-    logMessage(info, "Initialized Lua.\n");
+    ye_logf(info, "Initialized Lua.\n");
 
     // debug output
-    logMessage(info, "Engine Fully Initialized.\n");
+    ye_logf(info, "Engine Fully Initialized.\n");
 } // control is now resumed by the game
 
 // function that shuts down all engine subsystems and components ()
 void ye_shutdown_engine(){
-    logMessage(info, "Shutting down engine...\n");
+    ye_logf(info, "Shutting down engine...\n");
 
     // shutdown lua
     lua_shutdown();
-    logMessage(info, "Shut down lua.\n");
+    ye_logf(info, "Shut down lua.\n");
 
     // free the engine font color
     free(pEngineFontColor);
@@ -378,15 +376,15 @@ void ye_shutdown_engine(){
 
     // shutdown graphics
     shutdownGraphics();
-    logMessage(info, "Shut down graphics.\n");
+    ye_logf(info, "Shut down graphics.\n");
 
     // shutdown audio
     shutdownAudio();
-    logMessage(info, "Shut down audio.\n");
+    ye_logf(info, "Shut down audio.\n");
 
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
-    log_shutdown();
+    ye_log_shutdown();
     SDL_free(base_path); // free base path after (used by logging)
     SDL_free(executable_path); // free base path after (used by logging)
 

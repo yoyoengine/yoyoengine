@@ -127,7 +127,7 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
 
     // ui_register_component("test",paint_test);
 
-    logMessage(info, "ui initialized");
+    ye_logf(info, "ui initialized");
 }
 
 void ui_handle_input(SDL_Event *evt){
@@ -230,5 +230,5 @@ void ui_render(){
 
 void shutdown_ui(){
     nk_sdl_shutdown();
-    logMessage(info, "Shut down UI\n");
+    ye_logf(info, "Shut down UI\n");
 }

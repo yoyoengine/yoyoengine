@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #include <yoyoengine/yoyoengine.h>
 
@@ -18,10 +19,8 @@
 
 FILE *logFile = NULL;
 
-enum logLevel logThreshold = 5; // by defualt log NOTHING to console
-
 #ifdef _WIN32
-void enableVirtualTerminal() {
+void ye_enable_virtual_terminal() {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
 
@@ -31,7 +30,7 @@ void enableVirtualTerminal() {
 }
 #endif
 
-const char* getTimestamp() {
+const char* ye_get_timestamp() {
     static char datetime_str[20];
     time_t now = time(NULL);
     struct tm local_time = *localtime(&now);
@@ -41,57 +40,83 @@ const char* getTimestamp() {
     return datetime_str;
 }
 
-void openLog(){
+void ye_open_log(){
     // open the log file
     char *logpath = ye_get_engine_resource_static("debug.log");
     logFile = fopen(logpath, "w");
     if (logFile == NULL) {
         printf("%sError opening logfile at: %s\n",logpath,RED);
     }
+    else{
+        fseek(logFile, 0, SEEK_END);
+    }
 }
 
-void closeLog(){
+void ye_close_log(){
     fclose(logFile);
 }
 
-void logMessage(enum logLevel level, const char *text){
-    openLog();
+/*
+    Log a message to the console and log file
+    CAN ONLY BE USED AFTER INITIALIZING ENGINE
+
+    TODO: it would be cool to have
+    - option to log only to file or console
+    - not reliant on SDL and could be used whenever
+*/
+void ye_logf(enum logLevel level, const char *format, ...){
+    // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
+    if(engine_state.log_level > level || logFile == 0x0){ // idk why i wrote null like this i just want to feel cool
+        return;
+    }
+
+    // prepare our formatted string
+    va_list args;
+    va_start(args, format);
+
+    char text[512]; // Adjust the buffer size as needed
+    vsnprintf(text, sizeof(text), format, args);
+
+    va_end(args);
+    
+    // printf("%s",text);
+    // return;
+
     switch (level) {
         case debug:
-            fprintf(logFile, "[%s] [DEBUG]: %s", getTimestamp(), text);
-            if(logThreshold <= level){
-                printf("%s[%s] [%sDEBUG%s]: %s", RESET, getTimestamp(), MAGENTA, RESET, text);
-            }
+            fprintf(logFile, "[%s] [DEBUG]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sDEBUG%s]: %s", RESET, ye_get_timestamp(), MAGENTA, RESET, text);
             break;
         case info:
-            fprintf(logFile, "[%s] [INFO]:  %s", getTimestamp(), text);
-            if(logThreshold <= level){
-                printf("%s[%s] [%sINFO%s]:  %s", RESET, getTimestamp(), GREEN, RESET, text);
-            }
+            fprintf(logFile, "[%s] [INFO]:  %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sINFO%s]:  %s", RESET, ye_get_timestamp(), GREEN, RESET, text);
             break;
         case warning:
-            fprintf(logFile, "[%s] [WARNING]: %s", getTimestamp(), text);
-            if(logThreshold <= level){
-                printf("%s[%s] [%sWARNING%s]: %s", YELLOW, getTimestamp(), YELLOW, RESET, text);
-            }
+            fprintf(logFile, "[%s] [WARNING]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sWARNING%s]: %s", YELLOW, ye_get_timestamp(), YELLOW, RESET, text);
             break;
         case error:
-            fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), text);
-            if(logThreshold <= level){
-                printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, text);
-            }
+            fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sERROR%s]: %s", RED, ye_get_timestamp(), RED, RESET, text);
             break;
         default:
-            fprintf(logFile, "[%s] [ERROR]: %s", getTimestamp(), "Invalid log level\n");
-            printf("%s[%s] [%sERROR%s]: %s", RED, getTimestamp(), RED, RESET, "Invalid log level\n");
+            fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), "Invalid log level\n");
+            printf("%s[%s] [%sERROR%s]: %s", RED, ye_get_timestamp(), RED, RESET, "Invalid log level\n");
             break;
     }
     engine_runtime_state.log_line_count++;
 
     // Add to the log buffer
-    addToLogBuffer(level, text);
+    ye_add_to_log_buffer(level, text);
+}
 
-    closeLog();
+void ye_log_newline(enum logLevel level){
+    // if logging is disabled, or the log level is below the threshold, return
+    if(engine_state.log_level > level){
+        return;
+    }
+    fprintf(logFile, "\n");
+    printf("\n");
 }
 
 
@@ -111,10 +136,10 @@ int logBufferIndex = 0;
 /*
     shifts old messages out of buffer
 */
-void addToLogBuffer(enum logLevel level, const char *text) {
+void ye_add_to_log_buffer(enum logLevel level, const char *text) {
     // Initialize a new message
     struct LogMessage message;
-    snprintf(message.timestamp, sizeof(message.timestamp), "%s", getTimestamp());
+    snprintf(message.timestamp, sizeof(message.timestamp), "%s", ye_get_timestamp());
     message.level = level;
 
     // Remove newline characters from the text
@@ -148,14 +173,35 @@ bool color_code = true;
 
     in the future to save window bounds:
         nk_window_get_bounds(ctx);
+    
+    in the future it would also be cool to toggle the log level threshold
 */
-void paint_console(struct nk_context *ctx){
+void ye_paint_console(struct nk_context *ctx){
     // Create the GUI layout
     if (nk_begin(ctx, "Console", nk_rect(300, 200, 1000, 633),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
         
-        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_layout_row_dynamic(ctx, 30, 3);
         nk_checkbox_label(ctx, "Color by log level", &color_code);
+        
+        nk_label(ctx, "Threshold:", NK_TEXT_RIGHT);
+        switch(engine_state.log_level){
+            case 0:
+                nk_text_colored(ctx, "debug+", 6, NK_TEXT_LEFT, nk_rgb(252, 186, 3));  // Green text
+                break;
+            case 1:
+                nk_text_colored(ctx, "info+", 5, NK_TEXT_LEFT, nk_rgb(0, 255, 0));  // Orange text
+                break;
+            case 2:
+                nk_text_colored(ctx, "warning+", 8, NK_TEXT_LEFT, nk_rgb(248, 0, 252));  // Yellow text
+                break;
+            case 3:
+                nk_text_colored(ctx, "error+", 6, NK_TEXT_LEFT, nk_rgb(255, 0, 0));  // Red text
+                break;
+            default:
+                nk_text_colored(ctx, "supress all", 11, NK_TEXT_LEFT, nk_rgb(255, 255, 255));  // white text
+                break;
+        }
 
         // Calculate available space for log and input field
         float inputHeight = 35.0f; // Height of the input field
@@ -209,14 +255,15 @@ void paint_console(struct nk_context *ctx){
             // Handle user input when Enter key is pressed
             if (strlen(userInput) > 0) {
                 // log the executed command TODO: add \n here
-                logMessage(debug, userInput);
+                ye_logf(debug, userInput);
+                ye_log_newline(debug);
 
                 // TODO: i would love to move command execution to a more sensible location in the future
                 if(strcmp(userInput,"entlist")==0){
                     ye_print_entities();
                 }
                 else if(strcmp(userInput,"help")==0){
-                    logMessage(debug,"Available commands: entlist, toggle paintbounds\n");
+                    ye_logf(debug,"Available commands: entlist, toggle paintbounds\n");
                 }
                 // check if the first word (there can be words after seperated by spaces) is "toggle"
                 else if(strncmp(userInput,"toggle",6)==0){
@@ -227,18 +274,18 @@ void paint_console(struct nk_context *ctx){
                     else if(strncmp(userInput+7,"freecam",7)==0){
                         engine_state.freecam_enabled = !engine_state.freecam_enabled;
                         if(engine_state.freecam_enabled){
-                            logMessage(debug,"Freecam enabled\n");
+                            ye_logf(debug,"Freecam enabled\n");
                         }
                         else{
-                            logMessage(debug,"Freecam disabled\n");
+                            ye_logf(debug,"Freecam disabled\n");
                         }
                     }
                     else{
-                        logMessage(debug,"Unknown toggle command. Type 'help' for a list of commands\n");
+                        ye_logf(debug,"Unknown toggle command. Type 'help' for a list of commands\n");
                     }
                 }
                 else{
-                    logMessage(debug,"Unknown command. Type 'help' for a list of commands\n");
+                    ye_logf(debug,"Unknown command. Type 'help' for a list of commands\n");
                 }
                 
                 // Clear the input buffer
@@ -254,26 +301,22 @@ void paint_console(struct nk_context *ctx){
 
 // INIT AND SHUTDOWN ////////////////////////
 
-void log_init(enum logLevel level){
-    logThreshold = level;
-
+void ye_log_init(){
     // windows specific tweak to enable ansi colors
     #ifdef _WIN32
     enableVirtualTerminal();
     #endif
 
     // open log file the first time in w mode to overwrite any existing log
-    char *logpath = ye_get_engine_resource_static("debug.log");
-    logFile = fopen(logpath, "w");
-    if (logFile == NULL) {
-        printf("%sError opening logfile at: %s\n",logpath,RED);
+    if(engine_state.log_level < 4){
+        ye_open_log();
+        ye_logf(info, "Logging initialized\n");
+        engine_runtime_state.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
     }
-    closeLog();
-    logMessage(info, "Logging initialized\n");
-    engine_runtime_state.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
 }
 
-void log_shutdown(){
-    logMessage(info, "Logging shutdown\n");
+void ye_log_shutdown(){
+    ye_logf(info, "Logging shutdown\n");
     engine_runtime_state.log_line_count++;
+    ye_close_log();
 }

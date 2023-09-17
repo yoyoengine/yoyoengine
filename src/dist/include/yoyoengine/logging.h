@@ -13,12 +13,12 @@ enum logLevel {
     error
 };
 
-void log_init();
+void ye_log_init();
 
-void log_shutdown();
+void ye_log_shutdown();
 
-void logMessage(enum logLevel level, const char *text);
+void ye_logf(enum logLevel level, const char *format, ...);
 
-void paint_console(struct nk_context *ctx);
+void ye_paint_console(struct nk_context *ctx);
 
 #endif

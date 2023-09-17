@@ -50,6 +50,14 @@ struct engine_data {
     int volume;
     int window_mode;
     int framecap;
+
+    /*
+        0 - debug and higher
+        1 - info and higher
+        2 - warning and higher
+        3 - error and higher
+        4 - nothing
+    */
     int log_level;
     
     bool debug_mode; // does not need override

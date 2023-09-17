@@ -64,7 +64,7 @@ void ye_auto_fit_bounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
             obj->y = bounds->y + (bounds->h - obj->h);
             break;
         default:
-            logMessage(error, "Invalid alignment\n");
+            ye_logf(error, "Invalid alignment\n");
             break;
     }
 }

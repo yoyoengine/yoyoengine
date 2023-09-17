@@ -72,36 +72,6 @@ sensible caching of fonts colors images automatically
 - this deserves its own full fledged cache system
 - possibly in the future this evolves into memory management + cache system
 
-## printf type logging
-
-```c
-#include <stdio.h>
-#include <stdarg.h>
-
-void logMessage(const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-
-    char buffer[512]; // Adjust the buffer size as needed
-    vsnprintf(buffer, sizeof(buffer), format, args);
-
-    va_end(args);
-
-    // Now, you can use 'buffer' as your log message
-    // For example, you can write it to a log file or display it on the screen
-    // printf("Log: %s\n", buffer);
-    // Or write to a file: FILE *logFile = fopen("logfile.txt", "a"); fprintf(logFile, "%s\n", buffer); fclose(logFile);
-}
-
-int main() {
-    int x = 42;
-    float y = 3.14;
-    char message[] = "Hello, World!";
-
-    logMessage("x = %d, y = %f, message = %s", x, y, message);
-
-    return 0;
-}
-```
-
 particle emitter that just emits entities with transforms and physics components (super lighweight)
+
+fix debug log, should place next to exe by default but pass parm

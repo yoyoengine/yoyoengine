@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 // entity id counter (used to assign unique ids to entities)
-int eid = 0; 
+int eid = 0;
 
 //////////////////////// LINKED LIST //////////////////////////
 
@@ -136,7 +136,7 @@ struct ye_entity * ye_create_entity(){
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
-    logMessage(debug, "Created and added an entity\n");
+    ye_logf(debug, "Created and added an entity\n");
 
     engine_runtime_state.entity_count++;
 
@@ -166,7 +166,7 @@ struct ye_entity * ye_create_entity_named(char *name){
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
-    logMessage(debug, "Created and added an entity\n");
+    ye_logf(debug, "Created and added an entity\n");
 
     engine_runtime_state.entity_count++;
 
@@ -187,7 +187,7 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
 */
 void ye_destroy_entity(struct ye_entity * entity){
     if(entity == NULL){
-        logMessage(warning, "Attempted to destroy a null entity\n");
+        ye_logf(warning, "Attempted to destroy a null entity\n");
         return;
     }
 
@@ -214,7 +214,7 @@ void ye_destroy_entity(struct ye_entity * entity){
 
     entity = NULL;
 
-    logMessage(debug, "Destroyed an entity\n");
+    ye_logf(debug, "Destroyed an entity\n");
 
     engine_runtime_state.entity_count--;
 }
@@ -239,9 +239,7 @@ void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field){
     entity->camera->view_field = view_field; // the width height is all that matters here, because the actual x and y are inferred by its transform
 
     // log that we added a transform and to what ID
-    char b[100];
-    snprintf(b, sizeof(b), "Added camera to entity %d\n", entity->id);
-    logMessage(debug, b);
+    ye_logf(debug, "Added camera to entity %d\n", entity->id);
 
     // add this entity to the camera component list
     ye_entity_list_add(&camera_list_head, entity);
@@ -277,9 +275,7 @@ void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z
     ye_entity_list_add(&transform_list_head, entity);
 
     // log that we added a transform and to what ID
-    char b[100];
-    snprintf(b, sizeof(b), "Added transform to entity %d\n", entity->id);
-    logMessage(debug, b);
+    ye_logf(debug, "Added transform to entity %d\n", entity->id);
 }
 
 void ye_remove_transform_component(struct ye_entity *entity){
@@ -316,9 +312,7 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     ye_entity_list_add_sorted_z(&renderer_list_head, entity);
 
     // log that we added a renderer and to what ID
-    char b[100];
-    snprintf(b, sizeof(b), "Added renderer to entity %d\n", entity->id);
-    logMessage(debug, b);
+    ye_logf(debug, "Added renderer to entity %d\n", entity->id);
 }
 
 void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
@@ -338,18 +332,9 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
-        
-        // LEFT FOR DEBUGGING
-        // // print the new bounds and rect
-        // char b[100];
-        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
-        // logMessage(debug, b);
-        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
-        // logMessage(debug, b);
-
     }
     else{
-        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
     }
 }
 
@@ -369,18 +354,9 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
-        
-        // LEFT FOR DEBUGGING
-        // // print the new bounds and rect
-        // char b[100];
-        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
-        // logMessage(debug, b);
-        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
-        // logMessage(debug, b);
-
     }
     else{
-        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
     }
 }
 
@@ -402,18 +378,9 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
-        
-        // LEFT FOR DEBUGGING
-        // // print the new bounds and rect
-        // char b[100];
-        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
-        // logMessage(debug, b);
-        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
-        // logMessage(debug, b);
-
     }
     else{
-        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
     }
 }
 
@@ -450,7 +417,7 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *pa
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
     }
     else{
-        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
     }
 
 
@@ -514,7 +481,7 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 void ye_system_renderer(SDL_Renderer *renderer) {
     // check if we have a non-null, active camera targeted
     if (engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active) {
-        logMessage(warning, "No active camera targeted. Skipping renderer system\n");
+        ye_logf(warning, "No active camera targeted. Skipping renderer system\n");
         return;
     }
 
@@ -568,9 +535,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 {
                     // do not draw the object
                     // log that we occluded entity and its name
-                    // char b[100];
-                    // snprintf(b, sizeof(b), "Occluded entity %s\n", current->entity->name);
-                    // logMessage(debug, b);
+                    // ye_logf(debug, "Occluded entity %s\n", current->entity->name);
                 }
                 else{
                     // scale it to be on screen and paint it
@@ -611,7 +576,7 @@ void ye_init_ecs(){
     transform_list_head = ye_entity_list_create();
     renderer_list_head = ye_entity_list_create();
     camera_list_head = ye_entity_list_create();
-    logMessage(info, "Initialized ECS\n");
+    ye_logf(info, "Initialized ECS\n");
 }
 
 void ye_shutdown_ecs(){
@@ -627,7 +592,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&renderer_list_head);
     ye_entity_list_destroy(&camera_list_head);
 
-    logMessage(info, "Shut down ECS\n");
+    ye_logf(info, "Shut down ECS\n");
 }
 
 /*
@@ -646,13 +611,11 @@ void ye_print_entities(){
             current->entity->interactible != NULL,
             current->entity->script != NULL
         );
-        logMessage(debug, b);
+        ye_logf(debug, b);
         current = current->next;
         i++;
     }
-    char b[100];
-    snprintf(b, sizeof(b), "Total entities: %d", i);
-    logMessage(debug, b);
+    ye_logf(debug, "Total entities: %d", i);
 }
 
 /*

@@ -79,25 +79,19 @@ SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h) 
 // TODO: evaluate where this stands in relation to getFont functionality, does this just extend the backend of get Font?
 TTF_Font *loadFont(char *pFontPath, int fontSize) {
     if(fontSize > 500){
-        logMessage(error, "ERROR: FONT SIZE TOO LARGE\n");
+        ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
         return NULL;
     }
     char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Could not access file '%s'.\n", fontpath);
-        logMessage(error, buffer);
+        ye_logf(error, "Could not access file '%s'.\n", fontpath);
     }
     TTF_Font *pFont = TTF_OpenFont(fontpath, fontSize);
     if (pFont == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Failed to load font: %s\n", TTF_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
         return NULL;
     }
-    char buffer[100];
-    snprintf(buffer, sizeof(buffer),  "Loaded font: %s\n", pFontPath);
-    logMessage(debug, buffer);
+    ye_logf(debug, "Loaded font: %s\n", pFontPath);
     return pFont;
 }
 
@@ -129,9 +123,7 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     
     // error out if texture creation failed
     if (pTexture == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Failed to create texture: %s\n", SDL_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
         return NULL;
     }
     
@@ -147,9 +139,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     
     // error out if surface creation failed
     if (pSurface == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Failed to render text: %s\n", TTF_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
         return NULL;
     }
 
@@ -158,9 +148,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
 
     // error out if texture creation failed
     if (pTexture == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Failed to create texture: %s\n", SDL_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
         return NULL;
     }
 
@@ -177,7 +165,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
     // try to get it from cache TODO: should we wrap this in if shouldCache?
     Variant *pVariant = getVariant(cache, pPath);
     if (pVariant != NULL) { // found in cache
-        // logMessage(debug, "Found texture in cache\n");
+        // ye_logf(debug, "Found texture in cache\n");
 
         pVariant->refcount++; // increase refcount
 
@@ -187,9 +175,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
     }
     else{ // not found in cache
         if(access(pPath, F_OK) == -1){
-            char buffer[100];
-            snprintf(buffer, sizeof(buffer),  "Could not access file '%s'.\n", pPath);
-            logMessage(error, buffer);
+            ye_logf(error, "Could not access file '%s'.\n", pPath);
             return (struct textureInfo){NULL, NULL}; // TODO: give this a placeholder texture for failures
         }
 
@@ -198,9 +184,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         
         // error out if surface load failed
         if (!pImage_surface) {
-            char buffer[100];
-            snprintf(buffer, sizeof(buffer),  "Error loading image: %s\n", IMG_GetError());
-            logMessage(error, buffer);
+            ye_logf(error, "Error loading image: %s\n", IMG_GetError());
             exit(1); // FIXME
         }
 
@@ -209,9 +193,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         
         // error out if texture creation failed
         if (!pTexture) {
-            char buffer[100];
-            snprintf(buffer, sizeof(buffer),  "Error creating texture: %s\n", SDL_GetError());
-            logMessage(error, buffer);
+            ye_logf(error, "Error creating texture: %s\n", SDL_GetError());
             exit(1); // FIXME
         }
 
@@ -228,10 +210,10 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
 
             // char buffer[100];
             // snprintf(buffer, sizeof(buffer),  "Cached a texture. key: %s\n", pPath);
-            // logMessage(debug, buffer);
+            // ye_logf(debug, buffer);
 
             if(getVariant(cache, pPath) == NULL){
-                logMessage(error, "ERROR CACHING TEXTURE\n");
+                ye_logf(error, "ERROR CACHING TEXTURE\n");
             }
 
             struct textureInfo ret = {pTexture, true};
@@ -261,13 +243,11 @@ TTF_Font *getFont(char *key){
         fontVariant.fontValue = loadFont(key,100);
 
         addVariant(cache, key, fontVariant);
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Cached a font. key: %s\n", key);
-        logMessage(debug, buffer);
+        ye_logf(debug, "Cached a font. key: %s\n", key);
         v = getVariant(cache, key);
     }
     else{
-        // logMessage(debug, "Found cached font.\n");
+        // ye_logf(debug, "Found cached font.\n");
     }
     return v->fontValue;
 }
@@ -288,13 +268,11 @@ SDL_Color *getColor(char *key, SDL_Color color){
         colorVariant.colorValue = color;
 
         addVariant(cache, key, colorVariant);
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Cached a color. key: %s\n", key);
-        logMessage(debug, buffer);
+        ye_logf(debug, "Cached a color. key: %s\n", key);
         v = getVariant(cache, key);
     }
     else{
-        // logMessage(debug, "Found cached color.\n");
+        // ye_logf(debug, "Found cached color.\n");
     }
     SDL_Color *pColor = &v->colorValue;
     return pColor;
@@ -364,7 +342,7 @@ void autoFitBounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
             obj->y = bounds->y + (bounds->h - obj->h);
             break;
         default:
-            logMessage(error, "Invalid alignment\n");
+            ye_logf(error, "Invalid alignment\n");
             break;
     }
 }
@@ -375,7 +353,7 @@ void autoFitBounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
 void imageDecref(char *name){
     Variant *v = getVariant(cache, name);
     if(v == NULL){
-        logMessage(error, "ERROR DECREFFING IMAGE: IMAGE NOT FOUND\n");
+        ye_logf(error, "ERROR DECREFFING IMAGE: IMAGE NOT FOUND\n");
         return;
     }
     v->refcount--;
@@ -483,13 +461,9 @@ void setViewport(int screenWidth, int screenHeight){
     }
 
     // debug outputs
-    char buffer[100];
-    snprintf(buffer, sizeof(buffer),  "Targeting aspect ratio: %f\n",targetAspectRatio);
-    logMessage(debug, buffer);
-    snprintf(buffer, sizeof(buffer),  "Virtual Resolution: %dx%d\n",virtualWidth,virtualHeight);
-    logMessage(debug, buffer);
-    snprintf(buffer, sizeof(buffer),  "(unused) offset: %dx%d\n",xOffset,yOffset);
-    logMessage(debug, buffer);
+    ye_logf(debug, "Targeting aspect ratio: %f\n",targetAspectRatio);
+    ye_logf(debug, "Virtual Resolution: %dx%d\n",virtualWidth,virtualHeight);
+    ye_logf(debug, "(unused) offset: %dx%d\n",xOffset,yOffset);
 
     // setup viewport with our virtual resolutions
     SDL_Rect viewport;
@@ -511,12 +485,12 @@ void changeWindowMode(Uint32 flag)
     int success = SDL_SetWindowFullscreen(pWindow, flag);
     if(success < 0) 
     {
-        logMessage(error, "ERROR: COULD NOT CHANGE WINDOW MODE\n");
+        ye_logf(error, "ERROR: COULD NOT CHANGE WINDOW MODE\n");
         return;
     }
     else
     {
-        logMessage(info, "Changed window mode.\n");
+        ye_logf(info, "Changed window mode.\n");
     }
 
     if(flag == 0){
@@ -525,15 +499,13 @@ void changeWindowMode(Uint32 flag)
     else{
         SDL_DisplayMode displayMode;
         if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
-            logMessage(error, "SDL_GetCurrentDisplayMode failed!\n");
+            ye_logf(error, "SDL_GetCurrentDisplayMode failed!\n");
             return;
         }
         int screenWidth = displayMode.w;
         int screenHeight = displayMode.h;
         
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
-        logMessage(debug, buffer);
+        ye_logf(debug,  "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
 
         changeResolution(screenWidth, screenHeight);
     }
@@ -545,7 +517,7 @@ void changeWindowMode(Uint32 flag)
 // */
 void setVsync(bool enabled) {
     SDL_DestroyRenderer(pRenderer);
-    logMessage(debug, "Renderer destroyed to toggle vsync.\n");
+    ye_logf(debug, "Renderer destroyed to toggle vsync.\n");
 
     uint32_t flags = SDL_RENDERER_ACCELERATED;
     if (enabled) {
@@ -556,10 +528,10 @@ void setVsync(bool enabled) {
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
 
     pRenderer = SDL_CreateRenderer(pWindow, -1, flags);
-    logMessage(debug, "Renderer re-created.\n");
+    ye_logf(debug, "Renderer re-created.\n");
 
     if (pRenderer == NULL) {
-        logMessage(warning,"ERROR RE-CREATING RENDERER\n");     
+        ye_logf(warning,"ERROR RE-CREATING RENDERER\n");     
         exit(1);
     }
 
@@ -604,13 +576,11 @@ void changeResolution(int width, int height) {
 void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path){
     // test for video init, alarm if failed
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "SDL initialization failed: %s\n", SDL_GetError());
-        logMessage(debug, buffer);
+        ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
         exit(1);
     }
 
-    logMessage(info, "SDL initialized.\n");
+    ye_logf(info, "SDL initialized.\n");
 
     // Set the texture filtering hint
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
@@ -618,13 +588,11 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     // test for window init, alarm if failed
     pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode | SDL_WINDOW_ALLOW_HIGHDPI);
     if (pWindow == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Window creation failed: %s\n", SDL_GetError());
-        logMessage(debug, buffer);
+        ye_logf(debug, "Window creation failed: %s\n", SDL_GetError());
         exit(1);
     }
     
-    logMessage(info, "Window initialized.\n");
+    ye_logf(info, "Window initialized.\n");
     
     // set our fps cap to the frame cap param
     // (-1) for vsync
@@ -633,20 +601,16 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
     // if vsync is on
     if(fpscap == -1) {
-        logMessage(info, "Starting renderer with vsync... \n");
+        ye_logf(info, "Starting renderer with vsync... \n");
         pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     }
     else {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Starting renderer with maxfps %d... \n",framecap);
-        logMessage(debug, buffer);
+        ye_logf(debug, "Starting renderer with maxfps %d... \n",framecap);
         pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
     }
 
     if (pRenderer == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
         exit(1);
     }
 
@@ -670,20 +634,16 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     
     // test for TTF init, alarm if failed
     if (TTF_Init() == -1) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
         exit(1);
     }
-    logMessage(info, "TTF initialized.\n");
+    ye_logf(info, "TTF initialized.\n");
 
     if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "IMG_Init error: %s", IMG_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "IMG_Init error: %s", IMG_GetError());
         exit(1);
     }
-    logMessage(info, "IMG initialized.\n");
+    ye_logf(info, "IMG initialized.\n");
 
     // initialize cache
     cache = createVariantCollection();
@@ -692,9 +652,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     printf("icon path: %s\n", icon_path);
     SDL_Surface *pIconSurface = IMG_Load(icon_path);
     if (pIconSurface == NULL) {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer),  "IMG_Load error: %s", IMG_GetError());
-        logMessage(error, buffer);
+        ye_logf(error, "IMG_Load error: %s", IMG_GetError());
         exit(1);
     }
     // set icon
@@ -703,7 +661,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     // release surface
     SDL_FreeSurface(pIconSurface);
 
-    logMessage(info, "Window icon set.\n");
+    ye_logf(info, "Window icon set.\n");
 
     // set a start time for counting fps
     startTime = SDL_GetTicks();
@@ -716,19 +674,19 @@ void shutdownGraphics(){
 
     // shutdown TTF
     TTF_Quit();
-    logMessage(info, "Shut down TTF.\n");
+    ye_logf(info, "Shut down TTF.\n");
 
     // shutdown IMG
     IMG_Quit();
-    logMessage(info, "Shut down IMG.\n");
+    ye_logf(info, "Shut down IMG.\n");
 
     shutdown_ui();
 
     // shutdown renderer
     SDL_DestroyRenderer(pRenderer);
-    logMessage(info, "Shut down renderer.\n");
+    ye_logf(info, "Shut down renderer.\n");
 
     // shutdown window
     SDL_DestroyWindow(pWindow);
-    logMessage(info, "Shut down window.\n");
+    ye_logf(info, "Shut down window.\n");
 }
