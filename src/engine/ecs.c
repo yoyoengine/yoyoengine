@@ -373,6 +373,39 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
     }
 }
 
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
+    struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
+    text_renderer->text = strdup(text);
+    text_renderer->font = font;
+    text_renderer->color = color;
+    text_renderer->outline_color = outline_color;
+    text_renderer->outline_size = outline_size;
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT_OUTLINED, text_renderer);
+
+    // create the text texture
+    entity->renderer->texture = createTextTextureWithOutline(text,outline_size,font,color,outline_color);
+
+    if(entity->transform != NULL){
+        // calculate the actual rect of the entity based on its alignment and bounds
+        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        
+        // LEFT FOR DEBUGGING
+        // // print the new bounds and rect
+        // char b[100];
+        // snprintf(b, sizeof(b), "Bounds: %d %d %d %d\n", entity->transform->bounds.x, entity->transform->bounds.y, entity->transform->bounds.w, entity->transform->bounds.h);
+        // logMessage(debug, b);
+        // snprintf(b, sizeof(b), "Rect: %d %d %d %d\n", entity->transform->rect.x, entity->transform->rect.y, entity->transform->rect.w, entity->transform->rect.h);
+        // logMessage(debug, b);
+
+    }
+    else{
+        logMessage(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
+    }
+}
+
 void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *path, char *format, size_t count, int frame_delay, int loops){
     struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
     animation->animation_path = strdup(path);

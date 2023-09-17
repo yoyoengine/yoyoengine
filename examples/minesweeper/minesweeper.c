@@ -87,15 +87,20 @@ int main() {
     ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
 
     TTF_Font * font = loadFont(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
-    SDL_Color color = {255, 255, 255, 255};
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color red = {255, 0, 0, 255};
 
     struct ye_entity * nic = ye_create_entity();
     ye_add_transform_component(nic, (SDL_Rect){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(nic, "Hello, World!", font, &color);
+    ye_temp_add_text_renderer_component(nic, "Hello, World!", font, &white);
 
     struct ye_entity * congratulations = ye_create_entity();
     ye_add_transform_component(congratulations, (SDL_Rect){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
     ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
+
+    struct ye_entity * text = ye_create_entity();
+    ye_add_transform_component(text, (SDL_Rect){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
 
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to

@@ -98,6 +98,7 @@ struct ye_component_script {
 */
 enum ye_component_renderer_type {
     YE_RENDERER_TYPE_TEXT,
+    YE_RENDERER_TYPE_TEXT_OUTLINED,
     YE_RENDERER_TYPE_IMAGE,
     YE_RENDERER_TYPE_ANIMATION
 };
@@ -113,6 +114,7 @@ struct ye_component_renderer {
 
     union renderer_impl{ // hold the data for the specific renderer type
         struct ye_component_renderer_text *text;
+        struct ye_component_renderer_text *text_outlined;
         struct ye_component_renderer_image *image;
         struct ye_component_renderer_animation *animation;
     } renderer_impl;
@@ -126,6 +128,14 @@ struct ye_component_renderer_text {
     char *text;         // text to render
     TTF_Font *font;     // font to use
     SDL_Color *color;    // color of text
+};
+
+struct ye_component_renderer_text_outlined {
+    char *text;                 // text to render
+    int outline_size;           // size of text outline
+    TTF_Font *font;             // font to use
+    SDL_Color *color;           // color of text
+    SDL_Color *outline_color;   // color of text outline
 };
 
 struct ye_component_renderer_animation {

@@ -64,5 +64,3 @@ named entities
 
 port all the old renderer code to the new ECS and rip out old code
 macro helpers for old style constructors
-
-ACTUALLY SORT THE RENDER QUEUE BY Z
