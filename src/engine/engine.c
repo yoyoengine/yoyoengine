@@ -63,6 +63,7 @@ struct ScreenSize getScreenSize(){
 // Global variables for resource paths
 static const char *resources_path = NULL;
 static const char *engine_resources_path = NULL;
+static const char *log_file_path = NULL;
 char *executable_path = NULL;
 
 char* ye_get_resource_static(const char *sub_path) {
@@ -87,30 +88,6 @@ char* ye_get_engine_resource_static(const char *sub_path) {
 
     snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_resources_path, sub_path);
     return strdup(engine_reserved_buffer);
-}
-
-/*
-    get dynamically allocated path which must be freed
-    TODO: REMOVEME PLEASE/REPLACEME
-*/
-char *getPathDynamic(const char *path) {
-    if (base_path == NULL) {
-        base_path = SDL_GetBasePath();
-        if (base_path == NULL) {
-            ye_logf(error, "Error getting base path!\n");
-            return NULL;
-        }
-    }
-
-    size_t buffer_size = strlen(base_path) + strlen("../../resources/") + strlen(path) + 1;
-    char *path_buffer = malloc(buffer_size);
-    if (path_buffer == NULL) {
-        ye_logf(error, "Error allocating memory for path!\n");
-        return NULL;
-    }
-
-    snprintf(path_buffer, buffer_size, "%s../../resources/%s", base_path, path);
-    return path_buffer;
 }
 
 // some functions to apply a value if its uninitialized /////////////////////
@@ -235,14 +212,16 @@ void ye_init_engine(struct engine_data data) {
     // ----------------- Default Checks ----------------
 
     // Set default paths for engineResourcesPath and gameResourcesPath
-    char engine_default_path[256], game_default_path[256];
+    char engine_default_path[256], game_default_path[256], log_default_path[256];
     snprintf(engine_default_path, sizeof(engine_default_path), "%sengine_resources", executable_path);
     snprintf(game_default_path, sizeof(game_default_path), "%sresources", executable_path);
+    snprintf(log_default_path, sizeof(log_default_path), "%sdebug.log", executable_path);
 
     // Construct paths
-    char engine_supplied_path[256], game_supplied_path[256];
+    char engine_supplied_path[256], game_supplied_path[256], log_supplied_path[256];
     constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
     constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
+    constructPath(log_supplied_path, sizeof(log_supplied_path), executable_path, data.log_file_path, log_default_path);
 
     // check overrides to configure uninitialized fields to defaults
     configute_defaults(&data);
@@ -250,6 +229,7 @@ void ye_init_engine(struct engine_data data) {
     // Update global locations for resources
     engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
     resources_path = strdup(game_supplied_path); // Remember to free this memory later
+    log_file_path = strdup(log_supplied_path); // Remember to free this memory later
 
     // Get the icon path
     char *iconPath = data.icon_path ? ye_get_resource_static(data.icon_path) : ye_get_engine_resource_static("enginelogo.png");
@@ -257,6 +237,7 @@ void ye_init_engine(struct engine_data data) {
     // TODO: i know these first two should be fine but does iconpath go out of scope after this fn?
     data.engine_resources_path = engine_resources_path;
     data.game_resources_path = resources_path;
+    data.log_file_path = log_file_path;
     data.icon_path = iconPath;
 
     // copy our final data struct into the global engine state
@@ -289,7 +270,7 @@ void ye_init_engine(struct engine_data data) {
     pEngineFontColor->a = 255;
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
-    ye_log_init(engine_state.log_level);
+    ye_log_init(log_file_path);
 
     // initialize entity component system
     ye_init_ecs();

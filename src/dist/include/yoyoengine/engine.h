@@ -31,9 +31,6 @@ struct ScreenSize {
 // TODO: remove me?
 struct ScreenSize getScreenSize();
 
-// remove me? TODO
-char *getPathDynamic(const char *path);
-
 char *ye_get_resource_static(const char *sub_path);
 
 char* ye_get_engine_resource_static(const char *sub_path);
@@ -67,6 +64,7 @@ struct engine_data {
     char *icon_path;
     char *engine_resources_path;
     char *game_resources_path;
+    char *log_file_path;
 
     // overrides - this is confusing with what needs overridden and what doesnt TODO:
     bool override_screen_width;
@@ -77,9 +75,7 @@ struct engine_data {
     bool override_log_level;
     // skip boolean overrides...
     bool override_window_title;
-    // skip icon path overrides...
-    bool override_engine_resources_path;
-    bool override_game_resources_path;
+    // skip path overrides... (this is implicitly deducted by if the fields are NULL or not)
 
     // void pointer to a function that will be called to handle game input (takes in a SDL key)
     void (*handle_input)(SDL_Event event);

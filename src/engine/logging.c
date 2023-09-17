@@ -18,6 +18,7 @@
 #define RESET   "\x1b[0m"
 
 FILE *logFile = NULL;
+char *logpath = NULL;
 
 #ifdef _WIN32
 void ye_enable_virtual_terminal() {
@@ -42,7 +43,6 @@ const char* ye_get_timestamp() {
 
 void ye_open_log(){
     // open the log file
-    char *logpath = ye_get_engine_resource_static("debug.log");
     logFile = fopen(logpath, "w");
     if (logFile == NULL) {
         printf("%sError opening logfile at: %s\n",logpath,RED);
@@ -301,7 +301,9 @@ void ye_paint_console(struct nk_context *ctx){
 
 // INIT AND SHUTDOWN ////////////////////////
 
-void ye_log_init(){
+void ye_log_init(char * log_file_path){
+    logpath = log_file_path;
+
     // windows specific tweak to enable ansi colors
     #ifdef _WIN32
     enableVirtualTerminal();

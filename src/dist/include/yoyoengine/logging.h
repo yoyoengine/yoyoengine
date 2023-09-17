@@ -13,7 +13,7 @@ enum logLevel {
     error
 };
 
-void ye_log_init();
+void ye_log_init(char *log_file_path);
 
 void ye_log_shutdown();
 
