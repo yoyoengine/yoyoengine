@@ -102,6 +102,8 @@ int main() {
     ye_add_transform_component(text, (SDL_Rect){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
 
+    struct ye_entity * dummy = ye_create_entity_named("dummy");
+
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
         load and present the next frame, as well as handle its own logic. The engine will

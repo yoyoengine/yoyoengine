@@ -148,28 +148,30 @@ struct ye_entity * ye_create_entity(){
 
     we must allocate space for the name and copy it
 */
-// struct ye_entity * ye_create_entity_named(char *name){
-//     struct ye_entity *entity = malloc(sizeof(struct ye_entity));
-//     entity->id = eid++; // assign unique id to entity
-//     entity->active = true;
+struct ye_entity * ye_create_entity_named(char *name){
+    struct ye_entity *entity = malloc(sizeof(struct ye_entity));
+    entity->id = eid++; // assign unique id to entity
+    entity->active = true;
 
-//     //name the entity "entity id"
-//     entity->name = malloc(sizeof(char) * strlen(name));
-//     strcpy(entity->name, name);
+    // name the entity by its passed name
+    entity->name = malloc(sizeof(char) * strlen(name));
+    strcpy(entity->name, name);
+    
+    // assign all copmponents to null
+    entity->transform = NULL;
+    entity->renderer = NULL;
+    entity->camera = NULL;
+    entity->script = NULL;
+    entity->interactible = NULL;
 
-//     // assign all copmponents to null
-//     entity->transform = NULL;
-//     entity->renderer = NULL;
-//     entity->camera = NULL;
-//     entity->script = NULL;
-//     entity->interactible = NULL;
+    // add the entity to the entity list
+    ye_entity_list_add(&entity_list_head, entity);
+    logMessage(debug, "Created and added an entity\n");
 
-//     // add the entity to the entity list
-//     ye_entity_list_add(&entity_list_head, entity);
-//     logMessage(debug, "Created and added an entity\n");
+    engine_runtime_state.entity_count++;
 
-//     return entity;
-// }
+    return entity;
+}
 
 /*
     Destroy an entity by pointer
