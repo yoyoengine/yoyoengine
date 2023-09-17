@@ -95,16 +95,23 @@ copy_libs: $(BIN_DIR)/dependencies $(DIST_FILES)
 # Help target
 help:
 	@echo "+--------------------------------------------------------------------+"
+	@echo "| Yoyo Engine - Ryan Zmuda 2023                                      |"
+	@echo "+--------------------------------------------------------------------+"
 	@echo "| Available targets:                                                 |"
 	@echo "| - linux         : Build the Linux version                          |"
 	@echo "| - windows       : Build the Windows version                        |"
 	@echo "| - copy_headers  : Copy header files to lib folder                  |"
 	@echo "| - copy_libs     : Copy external libraries to dependencies folder   |"
 	@echo "| - clean         : Clean up build artifacts                         |"
+	@echo "| - cloc          : Count lines of code                              |"
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| passing 'debug' will enable debug builds                           |"
+	@echo "| passing 'DEBUG=1' will enable debug builds                         |"
 	@echo "+--------------------------------------------------------------------+"
 
 # Clean target
 clean:
 	rm -rf $(BUILD_DIR)
+
+cloc: 
+	cloc ./src --exclude-dir=dist
+# cloc ./src/dist/include/yoyoengine --exclude-list-file=uthash.h
