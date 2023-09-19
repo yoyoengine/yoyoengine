@@ -38,7 +38,7 @@ int main() {
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
         .volume = 10,
-        // .framecap = 30,
+        .framecap = -1,
         .skipintro = true, // no override exists for this - its a boolean
 
         .handle_input = handle_input, // function for handling our input
@@ -47,7 +47,7 @@ int main() {
         // with compiler initialization of fields this is the best way i can think of
         .override_log_level = true,
         .override_volume = true,
-        // .override_framecap = true,
+        .override_framecap = true,
         // if you provide a false/bad override the engine will segfault...
     };
 
@@ -101,6 +101,8 @@ int main() {
     struct ye_entity * text = ye_create_entity();
     ye_add_transform_component(text, (SDL_Rect){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
+    ye_add_physics_component(text, 1, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
+    text->renderer->alpha = 100;
 
     struct ye_entity * dummy = ye_create_entity_named("dummy");
     ye_rename_entity(dummy, "idiot");
@@ -118,6 +120,11 @@ int main() {
             callbacks so nothing much would need to happen here)
         */
 
+        // if the x of text exceeds below zero or above 1000 reverse the velocity
+        if(text->transform->rect.x < 0 || text->transform->rect.x > 1000) {
+            text->physics->velocity.x *= -1;
+        }
+        
         ye_process_frame();
     }
 

@@ -111,6 +111,8 @@ struct ye_entity_node *entity_list_head;
 struct ye_entity_node *transform_list_head;
 struct ye_entity_node *renderer_list_head;
 struct ye_entity_node *camera_list_head;
+struct ye_entity_node *physics_list_head;
+
 // struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
 
@@ -133,6 +135,8 @@ struct ye_entity * ye_create_entity(){
     entity->camera = NULL;
     entity->script = NULL;
     entity->interactible = NULL;
+    entity->physics = NULL;
+    entity->collider = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -163,6 +167,8 @@ struct ye_entity * ye_create_entity_named(char *name){
     entity->camera = NULL;
     entity->script = NULL;
     entity->interactible = NULL;
+    entity->physics = NULL;
+    entity->collider = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -198,6 +204,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->transform != NULL) ye_remove_transform_component(entity);
     if(entity->renderer != NULL) ye_remove_renderer_component(entity);
     if(entity->camera != NULL) ye_remove_camera_component(entity);
+    if(entity->physics != NULL) ye_remove_physics_component(entity);
     // if(entity->script != NULL) ye_remove_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
 
@@ -265,6 +272,9 @@ void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z
     entity->transform->active = true;
     entity->transform->bounds = bounds;
     entity->transform->z = z;
+
+    // must be modified outside of this constructor if non default desired
+    entity->transform->rotation = 0;
     
     // we will first set the rect equal to the bounds, for the purposes of rendering the renderer on mount
     // will then calculate the actual rect of the entity based on its alignment and bounds
@@ -286,17 +296,74 @@ void ye_remove_transform_component(struct ye_entity *entity){
     ye_entity_list_remove(&transform_list_head, entity);
 }
 
+///////////////////////// PHYSICS  ////////////////////////////
+
+void ye_add_physics_component(struct ye_entity *entity, int velocity_x, int velocity_y){
+    entity->physics = malloc(sizeof(struct ye_component_physics));
+    entity->physics->active = true;
+    // entity->physics->mass = mass;
+    // entity->physics->drag = drag;
+    entity->physics->velocity.x = velocity_x;
+    entity->physics->velocity.y = velocity_y;
+    // entity->physics->acceleration.x = acceleration_x;
+    // entity->physics->acceleration.y = acceleration_y;
+
+    // add this entity to the physics component list
+    ye_entity_list_add(&physics_list_head, entity);
+
+    // log that we added a physics and to what ID
+    ye_logf(debug, "Added physics component to entity %d\n", entity->id);
+}
+
+void ye_remove_physics_component(struct ye_entity *entity){
+    free(entity->physics);
+    entity->physics = NULL;
+
+    // remove the entity from the physics component list
+    ye_entity_list_remove(&physics_list_head, entity);
+
+    // log that we removed a physics and to what ID
+    ye_logf(debug, "Removed physics component from entity %d\n", entity->id);
+}
+
+/*
+    Physics system
+
+    Acts upon the list of tracked entities with physics components and updates their
+    position based on their velocity and acceleration. Multiply by delta time to get
+    the actual change in position. (engine_runtime_state.frame_time).
+*/
+void ye_system_physics(){
+    // Traverse tracked entities with physics components
+    struct ye_entity_node *current = physics_list_head;
+    while (current != NULL) {
+        if (current->entity->physics->active) {
+            // log the frame time
+            // ye_logf(debug, "Frame time: %f\n", engine_runtime_state.frame_time);
+            // update the entity's position based on its velocity and acceleration
+            current->entity->transform->rect.x += current->entity->physics->velocity.x * engine_runtime_state.frame_time;
+            current->entity->transform->rect.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
+            current->entity->transform->bounds.x += current->entity->physics->velocity.x * engine_runtime_state.frame_time;
+            current->entity->transform->bounds.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
+            // current->entity->physics->velocity.x += current->entity->physics->acceleration.x * engine_runtime_state.frame_time;
+            // current->entity->physics->velocity.y += current->entity->physics->acceleration.y * engine_runtime_state.frame_time;
+        }
+        current = current->next;
+    }
+}
+
 ///////////////////////// RENDERER ////////////////////////////
 
 /*
     Renderer TODO:
-    - occlusion culling on active camera
+    - rotations painted
 */
 
 void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, void *data){
     entity->renderer = malloc(sizeof(struct ye_component_renderer));
     entity->renderer->active = true;
     entity->renderer->type = type;
+    entity->renderer->alpha = 255; // by default renderer is fully opaque
     
     if(type == YE_RENDERER_TYPE_IMAGE){
         entity->renderer->renderer_impl.image = data;
@@ -468,6 +535,10 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     This system will paint relative to the active camera, and occlude anything
     outside of the active camera's view field
 
+    TODO:
+    - fulcrum cull rotated entities
+    - render rotated entities
+
     NOTES:
     - Initially I tried some weird really complicated impl, which I will share details
     of below, for future me who will likely need these in the future.
@@ -538,6 +609,11 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     // ye_logf(debug, "Occluded entity %s\n", current->entity->name);
                 }
                 else{
+                    // set alpha (log failure) TODO: profile efficiency of this
+                    if (SDL_SetTextureAlphaMod(current->entity->renderer->texture, current->entity->renderer->alpha) != 0) {
+                        ye_logf(warning, "Failed to set alpha for entity %s\n", current->entity->name);
+                    }
+      
                     // scale it to be on screen and paint it
                     entity_rect.x = entity_rect.x - camera_rect.x;
                     entity_rect.y = entity_rect.y - camera_rect.y;
@@ -576,6 +652,7 @@ void ye_init_ecs(){
     transform_list_head = ye_entity_list_create();
     renderer_list_head = ye_entity_list_create();
     camera_list_head = ye_entity_list_create();
+    physics_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
 
@@ -591,6 +668,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&transform_list_head);
     ye_entity_list_destroy(&renderer_list_head);
     ye_entity_list_destroy(&camera_list_head);
+    ye_entity_list_destroy(&physics_list_head);
 
     ye_logf(info, "Shut down ECS\n");
 }
@@ -603,19 +681,21 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d T:%d R:%d C:%d I:%d S:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d T:%d R:%d C:%d I:%d S:%d P:%d C:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
             current->entity->camera != NULL,
             current->entity->interactible != NULL,
-            current->entity->script != NULL
+            current->entity->script != NULL,
+            current->entity->physics != NULL,
+            current->entity->collider != NULL
         );
         ye_logf(debug, b);
         current = current->next;
         i++;
     }
-    ye_logf(debug, "Total entities: %d", i);
+    ye_logf(debug, "Total entities: %d\n", i);
 }
 
 /*

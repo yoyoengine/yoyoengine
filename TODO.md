@@ -57,3 +57,25 @@ sensible caching of fonts colors images automatically
 - possibly in the future this evolves into memory management + cache system
 
 particle emitter that just emits entities with transforms and physics components (super lighweight)
+
+need to finalize the ECS completely before i can add the mock api
+once ECS is totally done we can do scene loading and execution from data files + prefab representation
+after that we build basic editor
+then we can build out scripting
+and then its gg just polish and make a game (or a few)
+networking for jackbox game
+
+ask chatgpt how multithreading is usually done... maybe i just need a rendering thread and a game thread, what type of synchronization is needed?
+
+The cache system could parse the scene or some top level project file declaring all used fonts and colors and then load them all at once and cache them
+images should be lazily cached i think... but maybe we can get away with them not... idk
+
+DECIDE IF YOU WANT VELOCITY AND ACCELERATION AND DRAG AND MASS OR IF
+WE REALLY ONLY NEED VELOCITY
+
+for editor panning right click
+on key down right click start tracking mouse pos
+on key up right click stop tracking mouse pos
+calculate, etc
+
+physics system overlay arrows of velocity

@@ -39,6 +39,8 @@ struct ye_entity {
     struct ye_component_script *script;             // script component
     struct ye_component_interactible *interactible; // interactible component
     struct ye_component_camera *camera;             // camera component
+    struct ye_component_physics *physics;           // physics component
+    struct ye_component_collider *collider;         // collider component
 
     /* NOTE/TODO:
         We can have arrays in the future malloced to the
@@ -62,6 +64,12 @@ struct ye_component_camera {
     SDL_Rect view_field;    // view field of camera
 };
 
+// 2d vector TODO: should be float?
+struct ye_vec2 {
+    int x;
+    int y;
+};
+
 /*
     Transform component
     
@@ -75,7 +83,43 @@ struct ye_component_transform {
     enum ye_alignment alignment;    // alignment of entity within its bounds
     SDL_Rect rect;                  // real location of entity computed from desired alignment
 
+    int rotation;                   // rotation of entity in degrees
+
     int z;                          // layer the entity sits on
+};
+
+/*
+    Physics component
+    
+    Holds information on how an entity moves.
+
+    Velocity and acceleration are in pixels per second.
+*/
+struct ye_component_physics {
+    bool active;                    // controls whether system will act upon this component
+
+    // float mass;                     // mass of entity
+    // float drag;                     // drag of entity when accelerating
+    struct ye_vec2 velocity;        // velocity of entity
+    // struct ye_vec2 acceleration;    // acceleration of entity
+};
+
+enum ye_collider_type {
+    YE_COLLIDER_TYPE_RECT,
+    YE_COLLIDER_TYPE_CIRCLE
+};
+
+/*
+    Collider component
+    
+    Holds information on how an entity collides with other entities.
+*/
+struct ye_component_collider {
+    bool active;    // controls whether system will act upon this component
+
+    enum ye_collider_type type; // type of collider
+    bool is_trigger;            // whether collider is a trigger or not
+    SDL_Rect rect;              // collider bounds
 };
 
 /*
@@ -111,6 +155,8 @@ struct ye_component_renderer {
     // bool texture_cached;   // whether the texture is cached or not
 
     enum ye_component_renderer_type type;   // denotes which renderer is needed for this entity
+
+    int alpha;  // alpha of texture
 
     union renderer_impl{ // hold the data for the specific renderer type
         struct ye_component_renderer_text *text;

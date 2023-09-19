@@ -198,6 +198,9 @@ void ye_process_frame(){
     }
     ui_end_input_checks();
 
+    // update physics
+    ye_system_physics();
+
     // render frame
     renderAll();
 }

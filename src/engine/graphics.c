@@ -423,21 +423,20 @@ void renderAll() {
     // Calculate paint time
     Uint32 paintTime = paintEndTime - paintStartTime;
 
-    engine_runtime_state.frame_time = paintTime;
+    // set the end of the render frame
+    int frameEnd = SDL_GetTicks();
+
+    engine_runtime_state.frame_time = frameEnd - frameStart;
 
     // if we arent on vsync we need to preform some frame calculations to delay next frame
     if(fpscap != -1){
-        // set the end of the render frame
-        int frameEnd = SDL_GetTicks();
-
-        // calculate the current frame time
-        int frameTime = frameEnd - frameStart;
-
         // check the desired FPS cap and add delay if needed
-        if (frameTime < desiredFrameTime) {
-            SDL_Delay(desiredFrameTime - frameTime);
+        if (engine_runtime_state.frame_time < desiredFrameTime) {
+            SDL_Delay(desiredFrameTime - engine_runtime_state.frame_time);
         }
     }
+
+    engine_runtime_state.frame_time = SDL_GetTicks() - frameStart;
 }
 
 // method to ensure our game content is centered and scaled well

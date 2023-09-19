@@ -2,6 +2,7 @@
     "files.associations": {
         "*.h": "c",
         "system_error": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "random": "c"
     }
 }
