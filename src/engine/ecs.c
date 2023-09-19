@@ -275,6 +275,9 @@ void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z
 
     // must be modified outside of this constructor if non default desired
     entity->transform->rotation = 0;
+    entity->transform->flipped_x = false;
+    entity->transform->flipped_y = false;
+    entity->transform->center = (SDL_Point){bounds.w / 2, bounds.h / 2}; // default center is the center of the bounds
     
     // we will first set the rect equal to the bounds, for the purposes of rendering the renderer on mount
     // will then calculate the actual rect of the entity based on its alignment and bounds
@@ -305,6 +308,7 @@ void ye_add_physics_component(struct ye_entity *entity, int velocity_x, int velo
     // entity->physics->drag = drag;
     entity->physics->velocity.x = velocity_x;
     entity->physics->velocity.y = velocity_y;
+    entity->physics->rotational_velocity = 0; // directly modified by pointer because not often used
     // entity->physics->acceleration.x = acceleration_x;
     // entity->physics->acceleration.y = acceleration_y;
 
@@ -345,6 +349,12 @@ void ye_system_physics(){
             current->entity->transform->rect.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
             current->entity->transform->bounds.x += current->entity->physics->velocity.x * engine_runtime_state.frame_time;
             current->entity->transform->bounds.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
+            
+            // update the entity's rotation based on its rotational velocity
+            current->entity->transform->rotation += current->entity->physics->rotational_velocity * engine_runtime_state.frame_time;
+            if(current->entity->transform->rotation > 360) current->entity->transform->rotation -= 360;
+            if(current->entity->transform->rotation < 0) current->entity->transform->rotation += 360;
+
             // current->entity->physics->velocity.x += current->entity->physics->acceleration.x * engine_runtime_state.frame_time;
             // current->entity->physics->velocity.y += current->entity->physics->acceleration.y * engine_runtime_state.frame_time;
         }
@@ -398,7 +408,7 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
         ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
@@ -420,7 +430,7 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
         ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
@@ -444,7 +454,7 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
         ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
@@ -481,7 +491,7 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *pa
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
         entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment);
+        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
         ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
@@ -613,11 +623,32 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     if (SDL_SetTextureAlphaMod(current->entity->renderer->texture, current->entity->renderer->alpha) != 0) {
                         ye_logf(warning, "Failed to set alpha for entity %s\n", current->entity->name);
                     }
-      
+
                     // scale it to be on screen and paint it
                     entity_rect.x = entity_rect.x - camera_rect.x;
                     entity_rect.y = entity_rect.y - camera_rect.y;
-                    SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
+      
+                    // if transform is flipped or rotated render it differently
+                    if(current->entity->transform->flipped_x || current->entity->transform->flipped_y){
+                        SDL_RendererFlip flip = SDL_FLIP_NONE;
+                        if(current->entity->transform->flipped_x && current->entity->transform->flipped_y){
+                            flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+                        }
+                        else if(current->entity->transform->flipped_x){
+                            flip = SDL_FLIP_HORIZONTAL;
+                        }
+                        else if(current->entity->transform->flipped_y){
+                            flip = SDL_FLIP_VERTICAL;
+                        }
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, current->entity->transform->rotation, NULL, flip);
+                    }
+                    else if(current->entity->transform->rotation != 0){
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, current->entity->transform->rotation, &current->entity->transform->center, SDL_FLIP_NONE);
+                    }
+                    else{
+                        SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
+                    }
+                    
                     engine_runtime_state.painted_entity_count++;
                     
                     // paint bounds, my beloved <3
@@ -631,6 +662,11 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_RenderDrawRect(renderer, &entity_bounds);
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         SDL_RenderDrawRect(renderer, &entity_rect);
+
+                        // paint an orange rectangle filled at the entity center (transform->center) SDL_Point
+                        SDL_Rect center_rect = {entity_rect.x + current->entity->transform->center.x - 10, entity_rect.y + current->entity->transform->center.y - 10, 20, 20};
+                        SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
+                        SDL_RenderFillRect(renderer, &center_rect);
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }
                 }

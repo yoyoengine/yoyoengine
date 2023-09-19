@@ -3,7 +3,7 @@
 /*
     Massive function to handle the orientation of an object within a set of bounds
 */
-void ye_auto_fit_bounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
+void ye_auto_fit_bounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment, SDL_Point* center){
     // check if some loser wants to stretch something
     if(alignment == ALIGN_STRETCH){
         obj->w = bounds->w;
@@ -67,6 +67,7 @@ void ye_auto_fit_bounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
             ye_logf(error, "Invalid alignment\n");
             break;
     }
+    *center = (SDL_Point){obj->w / 2, obj->h / 2};
 }
 
 /*

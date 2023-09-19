@@ -102,10 +102,33 @@ int main() {
     ye_add_transform_component(text, (SDL_Rect){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
     ye_add_physics_component(text, 1, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
-    text->renderer->alpha = 100;
+
+    // create some text entities that say "flipped x" "flipped y" and "flipped xy"
+    struct ye_entity * flipped_x = ye_create_entity();
+    ye_add_transform_component(flipped_x, (SDL_Rect){800, 200, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_temp_add_text_renderer_component(flipped_x, "flipped x", font, &white);
+    flipped_x->transform->flipped_x = true;
+
+    struct ye_entity * flipped_y = ye_create_entity();    
+    ye_add_transform_component(flipped_y, (SDL_Rect){800, 300, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_temp_add_text_renderer_component(flipped_y, "flipped y", font, &white);
+    flipped_y->transform->flipped_y = true;
+
+    struct ye_entity * flipped_xy = ye_create_entity();
+    ye_add_transform_component(flipped_xy, (SDL_Rect){800, 400, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_temp_add_text_renderer_component(flipped_xy, "flipped xy", font, &white);
+    flipped_xy->transform->flipped_x = true;
+    flipped_xy->transform->flipped_y = true;
 
     struct ye_entity * dummy = ye_create_entity_named("dummy");
     ye_rename_entity(dummy, "idiot");
+
+    struct ye_entity *cat = ye_create_entity_named("cat");
+    ye_add_transform_component(cat, (SDL_Rect){1000, 800, 500, 500}, 0, YE_ALIGN_MID_CENTER);
+    ye_temp_add_image_renderer_component(cat, ye_get_resource_static("images/cat.png"));
+    ye_add_physics_component(cat, 0, 0);
+    cat->physics->rotational_velocity = 1;
+    cat->transform->center = (SDL_Point){100, 100};
 
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
@@ -123,6 +146,12 @@ int main() {
         // if the x of text exceeds below zero or above 1000 reverse the velocity
         if(text->transform->rect.x < 0 || text->transform->rect.x > 1000) {
             text->physics->velocity.x *= -1;
+        }
+
+        // increase alpha til 255 then decreate to zero then repeat (for text)
+        text->renderer->alpha += 3;
+        if(text->renderer->alpha > 255) {
+            text->renderer->alpha = 0;
         }
         
         ye_process_frame();

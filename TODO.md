@@ -79,3 +79,5 @@ on key up right click stop tracking mouse pos
 calculate, etc
 
 physics system overlay arrows of velocity
+
+write the timing callback thread system so you dont have to SDL sleep on splash screen and you can spin the yoyo gear logo

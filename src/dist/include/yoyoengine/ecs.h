@@ -84,6 +84,9 @@ struct ye_component_transform {
     SDL_Rect rect;                  // real location of entity computed from desired alignment
 
     int rotation;                   // rotation of entity in degrees
+    bool flipped_x;                 // whether entity is flipped on x axis
+    bool flipped_y;                 // whether entity is flipped on y axis
+    SDL_Point center;               // center of rotation
 
     int z;                          // layer the entity sits on
 };
@@ -96,12 +99,13 @@ struct ye_component_transform {
     Velocity and acceleration are in pixels per second.
 */
 struct ye_component_physics {
-    bool active;                    // controls whether system will act upon this component
+    bool active;                        // controls whether system will act upon this component
 
-    // float mass;                     // mass of entity
-    // float drag;                     // drag of entity when accelerating
-    struct ye_vec2 velocity;        // velocity of entity
-    // struct ye_vec2 acceleration;    // acceleration of entity
+    // float mass;                      // mass of entity
+    // float drag;                      // drag of entity when accelerating
+    struct ye_vec2 velocity;            // velocity of entity
+    int rotational_velocity;            // rotational velocity of entity
+    // struct ye_vec2 acceleration;     // acceleration of entity
 };
 
 enum ye_collider_type {
