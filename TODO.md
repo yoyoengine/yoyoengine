@@ -87,6 +87,3 @@ data bundling / packing assets
 scaling factor and offset for resolution
 
 do not update physics every frame
-
-we need to transition everything to floats and integer cast them for displaying
-(i am full brain rotted right now and will stall this)

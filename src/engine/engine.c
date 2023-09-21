@@ -199,7 +199,7 @@ void ye_process_frame(){
     ui_end_input_checks();
 
     // update physics
-    ye_system_physics();
+    ye_system_physics(); // TODO: decouple from framerate
 
     // render frame
     renderAll();
@@ -263,6 +263,9 @@ void ye_init_engine(struct engine_data data) {
         engine_state.icon_path
     );
 
+    // init timers
+    ye_init_timers();
+
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
     pEngineFont = loadFont(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
 
@@ -311,34 +314,49 @@ void ye_init_engine(struct engine_data data) {
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
-        ye_add_transform_component(splash_cam, (struct ye_rectf){0,0,1920,1080}, 1, YE_ALIGN_MID_CENTER);
+        ye_add_transform_component(splash_cam, (struct ye_rectf){0,0,1920,1080}, 99, YE_ALIGN_MID_CENTER);
         ye_add_camera_component(splash_cam, (SDL_Rect){0,0,1920,1080});
         ye_set_camera(splash_cam);
 
-        struct ye_entity * splash_img = ye_create_entity();
-        ye_add_transform_component(splash_img, (struct ye_rectf){0,0,1920,1080}, 0, YE_ALIGN_MID_CENTER);
-        ye_temp_add_image_renderer_component(splash_img, ye_get_engine_resource_static("splash.png"));
+        // background for splash
+        struct ye_entity * splash_bg = ye_create_entity();
+        ye_add_transform_component(splash_bg, (struct ye_rectf){0,0,1920,1080}, 0, YE_ALIGN_MID_CENTER);
+        ye_temp_add_image_renderer_component(splash_bg, ye_get_engine_resource_static("splash_bg.png"));
+
+        // foreground logo for splash
+        struct ye_entity * splash_y = ye_create_entity();
+        ye_add_transform_component(splash_y, (struct ye_rectf){1920/2 - 350/2 - 100,1080/2 - 350/2,350,350}, 2, YE_ALIGN_MID_CENTER);
+        ye_temp_add_image_renderer_component(splash_y, ye_get_engine_resource_static("splash_y.png"));
+
+        // gear spinning below logo
+        struct ye_entity * splash_gear = ye_create_entity();
+        ye_add_transform_component(splash_gear, (struct ye_rectf){1920/2,1080/2 - 110,300,300}, 1, YE_ALIGN_MID_CENTER);
+        ye_temp_add_image_renderer_component(splash_gear, ye_get_engine_resource_static("splash_gear.png"));
+        ye_add_physics_component(splash_gear,0,0);
+        splash_gear->physics->rotational_velocity = 90;
 
         // TODO: version numbers back please (awaiting text renderer)
 
-        // render everything in engine queue
-        renderAll(); 
-
         // pause on engine splash for 2550ms (TODO: consider alternatives)
         // SDL_Delay(3000); maybe a more reasonable time scale?
-        SDL_Delay(2550);
+        // SDL_Delay(2550);
+
+        // get current ticks
+        int ticks = SDL_GetTicks();
+
+        // until we are 2550 ticks in the future
+        while(SDL_GetTicks() - ticks < 2550){
+            // process frame
+            ye_process_frame();
+        }
 
         // we need to delete everything in the ECS and reset the camera
         ye_destroy_entity(splash_cam);
         ye_set_camera(NULL);
-        ye_destroy_entity(splash_img);
+        ye_destroy_entity(splash_bg);
+        ye_destroy_entity(splash_y);
+        ye_destroy_entity(splash_gear);
     }
-
-    // render everything in engine queue after splash asset removal
-    // renderAll(); ACHSHUALLY - this needs fixed when ECS is finalized
-    // its ok to render a blank frame here, and then destroy the engine startup camera
-    // the user needs to make a camera after this though to display anything
-    // we will reset the default camera to null
 
     lua_init(); // initialize lua
     ye_logf(info, "Initialized Lua.\n");
@@ -361,6 +379,9 @@ void ye_shutdown_engine(){
 
     // shutdown ECS
     ye_shutdown_ecs();
+
+    // shutdown timers
+    ye_shutdown_timers();
 
     // shutdown graphics
     shutdownGraphics();

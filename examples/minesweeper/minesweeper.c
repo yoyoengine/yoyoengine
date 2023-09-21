@@ -39,7 +39,7 @@ int main() {
         .debug_mode = true, // no override exists for this - its a boolean
         .volume = 10,
         .framecap = -1,
-        .skipintro = true, // no override exists for this - its a boolean
+        // .skipintro = true, // no override exists for this - its a boolean
 
         .handle_input = handle_input, // function for handling our input
 
