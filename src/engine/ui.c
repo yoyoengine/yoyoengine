@@ -190,8 +190,8 @@ void ui_paint_cam_info(){
     char h_str[100];
     char z_str[100];
 
-    sprintf(x_str, "x: %d", engine_state.target_camera->transform->rect.x);
-    sprintf(y_str, "y: %d", engine_state.target_camera->transform->rect.y);
+    sprintf(x_str, "x: %f", engine_state.target_camera->transform->rect.x);
+    sprintf(y_str, "y: %f", engine_state.target_camera->transform->rect.y);
     sprintf(w_str, "w: %d", engine_state.target_camera->camera->view_field.w);
     sprintf(h_str, "h: %d", engine_state.target_camera->camera->view_field.h);
     sprintf(z_str, "z: %d", engine_state.target_camera->transform->z);

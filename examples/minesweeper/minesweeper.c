@@ -60,30 +60,30 @@ int main() {
 
     // camera
     cam = ye_create_entity();
-    ye_add_transform_component(cam, (SDL_Rect){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(cam, (struct ye_rectf){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
     ye_add_camera_component(cam, (SDL_Rect){0, 0, 1920, 1080});
 
     // set camera
     ye_set_camera(cam);
 
     struct ye_entity * entity = ye_create_entity();
-    ye_add_transform_component(entity, (SDL_Rect){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(entity, (struct ye_rectf){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(entity, ye_get_resource_static("images/wolf.jpeg"));
 
     struct ye_entity * anno = ye_create_entity();
-    ye_add_transform_component(anno, (SDL_Rect){500, -500, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(anno, (struct ye_rectf){500, -500, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(anno, ye_get_resource_static("images/anno.png"));
 
     struct ye_entity * origin = ye_create_entity();
-    ye_add_transform_component(origin, (SDL_Rect){0, 0, 200, 200}, 700, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(origin, (struct ye_rectf){0, 0, 200, 200}, 700, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("origin.png"));
 
     struct ye_entity * rei = ye_create_entity();
-    ye_add_transform_component(rei, (SDL_Rect){600, -600, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(rei, (struct ye_rectf){600, -600, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(rei, ye_get_resource_static("images/rei.png"));
 
     struct ye_entity * snerfbot = ye_create_entity();
-    ye_add_transform_component(snerfbot, (SDL_Rect){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(snerfbot, (struct ye_rectf){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
 
     TTF_Font * font = loadFont(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
@@ -91,31 +91,31 @@ int main() {
     SDL_Color red = {255, 0, 0, 255};
 
     struct ye_entity * nic = ye_create_entity();
-    ye_add_transform_component(nic, (SDL_Rect){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(nic, (struct ye_rectf){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_renderer_component(nic, "Hello, World!", font, &white);
 
     struct ye_entity * congratulations = ye_create_entity();
-    ye_add_transform_component(congratulations, (SDL_Rect){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(congratulations, (struct ye_rectf){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
     ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
 
     struct ye_entity * text = ye_create_entity();
-    ye_add_transform_component(text, (SDL_Rect){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(text, (struct ye_rectf){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", font, &white, &red, 5);
-    ye_add_physics_component(text, 1, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
+    ye_add_physics_component(text, 100, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
 
     // create some text entities that say "flipped x" "flipped y" and "flipped xy"
     struct ye_entity * flipped_x = ye_create_entity();
-    ye_add_transform_component(flipped_x, (SDL_Rect){800, 200, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(flipped_x, (struct ye_rectf){800, 200, 500, 300}, 600, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_renderer_component(flipped_x, "flipped x", font, &white);
     flipped_x->transform->flipped_x = true;
 
     struct ye_entity * flipped_y = ye_create_entity();    
-    ye_add_transform_component(flipped_y, (SDL_Rect){800, 300, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(flipped_y, (struct ye_rectf){800, 300, 500, 300}, 600, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_renderer_component(flipped_y, "flipped y", font, &white);
     flipped_y->transform->flipped_y = true;
 
     struct ye_entity * flipped_xy = ye_create_entity();
-    ye_add_transform_component(flipped_xy, (SDL_Rect){800, 400, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(flipped_xy, (struct ye_rectf){800, 400, 500, 300}, 600, YE_ALIGN_MID_CENTER);
     ye_temp_add_text_renderer_component(flipped_xy, "flipped xy", font, &white);
     flipped_xy->transform->flipped_x = true;
     flipped_xy->transform->flipped_y = true;
@@ -124,10 +124,10 @@ int main() {
     ye_rename_entity(dummy, "idiot");
 
     struct ye_entity *cat = ye_create_entity_named("cat");
-    ye_add_transform_component(cat, (SDL_Rect){1000, 800, 500, 500}, 0, YE_ALIGN_MID_CENTER);
+    ye_add_transform_component(cat, (struct ye_rectf){1000, 800, 500, 500}, 0, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(cat, ye_get_resource_static("images/cat.png"));
     ye_add_physics_component(cat, 0, 0);
-    cat->physics->rotational_velocity = 1;
+    cat->physics->rotational_velocity = 45.0;
     cat->transform->center = (SDL_Point){100, 100};
 
     /*

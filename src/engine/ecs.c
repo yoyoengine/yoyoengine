@@ -267,7 +267,7 @@ void ye_remove_camera_component(struct ye_entity *entity){
     at the same time we can have a transform without a renderer (sometimes i guess)
     which means we need to query the texture size
 */
-void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z, enum ye_alignment alignment){
+void ye_add_transform_component(struct ye_entity *entity, struct ye_rectf bounds, int z, enum ye_alignment alignment){
     entity->transform = malloc(sizeof(struct ye_component_transform));
     entity->transform->active = true;
     entity->transform->bounds = bounds;
@@ -301,7 +301,14 @@ void ye_remove_transform_component(struct ye_entity *entity){
 
 ///////////////////////// PHYSICS  ////////////////////////////
 
-void ye_add_physics_component(struct ye_entity *entity, int velocity_x, int velocity_y){
+/*
+    Physics component
+
+    Holds some information about an entity's physics
+
+    Velocity is in pixels per second
+*/
+void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float velocity_y){
     entity->physics = malloc(sizeof(struct ye_component_physics));
     entity->physics->active = true;
     // entity->physics->mass = mass;
@@ -340,18 +347,21 @@ void ye_remove_physics_component(struct ye_entity *entity){
 void ye_system_physics(){
     // Traverse tracked entities with physics components
     struct ye_entity_node *current = physics_list_head;
+
+    float offset = (float)engine_runtime_state.frame_time / 1000.0;
+
     while (current != NULL) {
         if (current->entity->physics->active) {
             // log the frame time
             // ye_logf(debug, "Frame time: %f\n", engine_runtime_state.frame_time);
             // update the entity's position based on its velocity and acceleration
-            current->entity->transform->rect.x += current->entity->physics->velocity.x * engine_runtime_state.frame_time;
-            current->entity->transform->rect.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
-            current->entity->transform->bounds.x += current->entity->physics->velocity.x * engine_runtime_state.frame_time;
-            current->entity->transform->bounds.y += current->entity->physics->velocity.y * engine_runtime_state.frame_time;
+            current->entity->transform->rect.x += current->entity->physics->velocity.x * offset;
+            current->entity->transform->rect.y += current->entity->physics->velocity.y * offset;
+            current->entity->transform->bounds.x += current->entity->physics->velocity.x * offset;
+            current->entity->transform->bounds.y += current->entity->physics->velocity.y * offset;
             
             // update the entity's rotation based on its rotational velocity
-            current->entity->transform->rotation += current->entity->physics->rotational_velocity * engine_runtime_state.frame_time;
+            current->entity->transform->rotation += current->entity->physics->rotational_velocity * offset;
             if(current->entity->transform->rotation > 360) current->entity->transform->rotation -= 360;
             if(current->entity->transform->rotation < 0) current->entity->transform->rotation += 360;
 
@@ -407,7 +417,9 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
     
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        entity->transform->rect = ye_convert_rect_rectf(
+            ye_get_real_texture_size_rect(entity->renderer->texture)
+        );
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
@@ -429,7 +441,9 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
 
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        entity->transform->rect = ye_convert_rect_rectf(
+            ye_get_real_texture_size_rect(entity->renderer->texture)
+        );
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
@@ -453,7 +467,9 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char
 
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        entity->transform->rect = ye_convert_rect_rectf(
+            ye_get_real_texture_size_rect(entity->renderer->texture)
+        );
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
@@ -490,7 +506,9 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *pa
     // make sure we are aligned
     if(entity->transform != NULL){
         // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_get_real_texture_size_rect(entity->renderer->texture);
+        entity->transform->rect = ye_convert_rect_rectf(
+            ye_get_real_texture_size_rect(entity->renderer->texture)
+        );
         ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
     }
     else{
@@ -569,7 +587,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     engine_runtime_state.painted_entity_count = 0;
 
     // Get the camera's position in world coordinates
-    SDL_Rect camera_rect = engine_state.target_camera->transform->rect;
+    SDL_Rect camera_rect = ye_convert_rectf_rect(engine_state.target_camera->transform->rect); // TODO profile conversion overhead
+    
     SDL_Rect view_field = engine_state.target_camera->camera->view_field;
     camera_rect.w = view_field.w;
     camera_rect.h = view_field.h;
@@ -605,7 +624,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 current->entity->transform->active &&
                 current->entity->transform->z <= engine_state.target_camera->transform->z // only render if the entity is on or in front of the camera
             ) {
-                SDL_Rect entity_rect = current->entity->transform->rect; // where the entity is in the world by pixel (x, y, w, h)
+                SDL_Rect entity_rect = ye_convert_rectf_rect(current->entity->transform->rect); // where the entity is in the world by pixel (x, y, w, h)
 
                 // occlusion check
                 if (entity_rect.x + entity_rect.w < camera_rect.x ||
@@ -640,10 +659,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         else if(current->entity->transform->flipped_y){
                             flip = SDL_FLIP_VERTICAL;
                         }
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, current->entity->transform->rotation, NULL, flip);
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->transform->rotation, NULL, flip);
                     }
-                    else if(current->entity->transform->rotation != 0){
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, current->entity->transform->rotation, &current->entity->transform->center, SDL_FLIP_NONE);
+                    else if(current->entity->transform->rotation != 0.0){
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->transform->rotation, &current->entity->transform->center, SDL_FLIP_NONE);
                     }
                     else{
                         SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
@@ -654,7 +673,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     // paint bounds, my beloved <3
                     if (engine_state.paintbounds_visible) {
                         // create entity bounds offset by camera
-                        SDL_Rect entity_bounds = current->entity->transform->bounds;
+                        SDL_Rect entity_bounds = ye_convert_rectf_rect(current->entity->transform->bounds);
                         entity_bounds.x = entity_bounds.x - camera_rect.x;
                         entity_bounds.y = entity_bounds.y - camera_rect.y;
                         

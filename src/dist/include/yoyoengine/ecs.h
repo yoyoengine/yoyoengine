@@ -65,9 +65,9 @@ struct ye_component_camera {
 };
 
 // 2d vector TODO: should be float?
-struct ye_vec2 {
-    int x;
-    int y;
+struct ye_vec2f {
+    float x;
+    float y;
 };
 
 /*
@@ -79,11 +79,11 @@ struct ye_vec2 {
 struct ye_component_transform {
     bool active;    // controls whether system will act upon this component
 
-    SDL_Rect bounds;                // original desired pixel location of entity
+    struct ye_rectf bounds;         // original desired pixel location of entity
     enum ye_alignment alignment;    // alignment of entity within its bounds
-    SDL_Rect rect;                  // real location of entity computed from desired alignment
+    struct ye_rectf rect;           // real location of entity computed from desired alignment
 
-    int rotation;                   // rotation of entity in degrees
+    float rotation;                   // rotation of entity in degrees
     bool flipped_x;                 // whether entity is flipped on x axis
     bool flipped_y;                 // whether entity is flipped on y axis
     SDL_Point center;               // center of rotation
@@ -103,8 +103,8 @@ struct ye_component_physics {
 
     // float mass;                      // mass of entity
     // float drag;                      // drag of entity when accelerating
-    struct ye_vec2 velocity;            // velocity of entity
-    int rotational_velocity;            // rotational velocity of entity
+    struct ye_vec2f velocity;            // velocity of entity
+    float rotational_velocity;            // rotational velocity of entity
     // struct ye_vec2 acceleration;     // acceleration of entity
 };
 
@@ -265,9 +265,19 @@ void ye_remove_camera_component(struct ye_entity *entity);
 
 /////// Transform Component ///////
 
-void ye_add_transform_component(struct ye_entity *entity, SDL_Rect bounds, int z, enum ye_alignment alignment);
+void ye_add_transform_component(struct ye_entity *entity, struct ye_rectf bounds, int z, enum ye_alignment alignment);
 
 void ye_remove_transform_component(struct ye_entity *entity);
+
+
+
+/////// Renderer Component ///////
+
+void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float velocity_y);
+
+void ye_remove_physics_component(struct ye_entity *entity);
+
+void ye_system_physics();
 
 
 

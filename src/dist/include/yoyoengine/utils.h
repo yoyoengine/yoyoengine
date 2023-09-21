@@ -26,6 +26,26 @@ enum ye_alignment {
     YE_ALIGN_BOT_LEFT,  YE_ALIGN_BOT_CENTER,    YE_ALIGN_BOT_RIGHT
 };
 
+/*
+    Slow (probably) function that jumps through a bunch of hoops aligning struct rectf's
+    It has to convert them to SDL_Rect's and back because the SDL_Rect's are used for rendering
+    but could probably be refactored because its just floating point math anyways
+
+    TODO: SDL_Point should be floating too
+*/
+//void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center);
+
 SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
+
+/*
+    Floating point rectangle
+*/
+struct ye_rectf {
+    float x, y, w, h;
+};
+
+SDL_Rect ye_convert_rectf_rect(struct ye_rectf rect);
+
+struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect);
 
 #endif

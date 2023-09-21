@@ -108,6 +108,8 @@ struct engine_runtime_data {
 
 void ye_process_frame();
 
+float ye_get_delta_time();
+
 // entry point to the engine, initializes all subsystems
 void ye_init_engine(struct engine_data data);
 
