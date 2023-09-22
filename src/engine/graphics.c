@@ -366,6 +366,15 @@ void imageDecref(char *name){
 void renderAll() {
     int frameStart = SDL_GetTicks();
 
+    // Set the render target to the screen
+    SDL_SetRenderTarget(pRenderer, NULL);
+    
+    // Set background color to black
+    SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+
+    // Clear the window with the set background color
+    SDL_RenderClear(pRenderer);
+
     // Set the render target to the screen buffer
     SDL_SetRenderTarget(pRenderer, screen_buffer);
     
@@ -394,22 +403,54 @@ void renderAll() {
     }
 
 
-    if(engine_state.metrics_visible){ // TODO: see above todo
-        ui_paint_debug_overlay();
-        ui_paint_cam_info();
-    }
-
     // INDEV TESTING: renderer system paint all entities with renderer
     ye_system_renderer(pRenderer);
 
-    // update ui (TODO: profile if this is an expensive op)
-    ui_render(); 
+    /*
+        If we are in the editor, we want to paint the scene to a nuklear window viewport
+        Then we paint the ui to the actual screen, not our intermediary buffer
+    */
+    if(engine_state.editor_mode){
+        // Reset the render target to the default
+        SDL_SetRenderTarget(pRenderer, NULL);
 
-    // Reset the render target to the default
-    SDL_SetRenderTarget(pRenderer, NULL);
+        // seems like we arent going to be able to paint the SDL_Texture into nuklear viewport (wihtout significant modification)
+        // so for now, lets just paint it to the upper 25% of the screen
+        SDL_Rect viewport;
+        viewport.x = 0;
+        viewport.y = 0;
+        viewport.w = currentResolutionWidth / 1.5;
+        viewport.h = currentResolutionHeight / 1.5;
 
-    // copy the screen buffer to the renderer
-    SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
+        // // draw some grid lines (offset by camera position) within the viweport bounds to serve as backdrop
+        // SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
+        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y, viewport.x + viewport.w, viewport.y);
+        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y, viewport.x, viewport.y + viewport.h);
+        // // SDL_RenderDrawLine(pRenderer, viewport.x + viewport.w, viewport.y, viewport.x + viewport.w, viewport.y + viewport.h);
+        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y + viewport.h, viewport.x + viewport.w, viewport.y + viewport.h);
+        // // we want a grid of 100x100 lines
+        // int gridWidth = 100;
+        // int gridHeight = 100;
+        // int gridX = viewport.x + (int)engine_state.target_camera->transform->rect.x % gridWidth;
+        // int gridY = viewport.y + (int)engine_state.target_camera->transform->rect.y % gridHeight;
+        // for(int i = 0; i < viewport.w / gridWidth; i++){
+        //     SDL_RenderDrawLine(pRenderer, gridX + (i * gridWidth), viewport.y, gridX + (i * gridWidth), viewport.y + viewport.h);
+        // }
+
+        SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);        
+
+        // update ui (TODO: profile if this is an expensive op)
+        ui_render();         
+    }else{
+        // update ui (TODO: profile if this is an expensive op)
+        ui_render(); 
+        
+        // Reset the render target to the default
+        SDL_SetRenderTarget(pRenderer, NULL);
+
+        // copy the screen buffer to the renderer
+        SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
+    }
 
     // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);

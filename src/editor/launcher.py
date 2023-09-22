@@ -98,6 +98,27 @@ def new_project():
     new_project_path = os.path.join(project_path, project_name)
     os.makedirs(new_project_path)
 
+    """
+    Construct the following directory structure inside the project dir:
+    .
+    ├── resources
+    │   ├── scenes
+    │   │   └── scene1.yoyo
+    │   └── style.yoyo
+    ├── settings.yoyo
+    └── Makefile
+    """
+    os.makedirs(os.path.join(new_project_path, "resources"))
+    os.makedirs(os.path.join(new_project_path, "resources", "scenes"))
+    with open(os.path.join(new_project_path, "resources", "scenes", "scene1.yoyo"), "w") as f:
+        f.write("{}")
+    with open(os.path.join(new_project_path, "resources", "style.yoyo"), "w") as f:
+        f.write("{}")
+    with open(os.path.join(new_project_path, "settings.yoyo"), "w") as f:
+        f.write("{}")
+    with open(os.path.join(new_project_path, "Makefile"), "w") as f:
+        f.write("")
+
     # Update launcher.json
     launcher_json["projects"].append({"name": project_name, "path": project_path})
     update_json()

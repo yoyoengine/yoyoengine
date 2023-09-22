@@ -282,6 +282,10 @@ void ye_init_engine(struct engine_data data) {
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
     ye_log_init(log_file_path);
 
+    if(engine_state.editor_mode){
+        ye_logf(info, "Detected editor mode.\n");
+    }
+
     // initialize entity component system
     ye_init_ecs();
 

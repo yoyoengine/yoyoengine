@@ -3,6 +3,7 @@
         "*.h": "c",
         "system_error": "c",
         "typeinfo": "c",
-        "random": "c"
+        "random": "c",
+        "*.yoyo": "json"
     }
 }

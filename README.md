@@ -39,6 +39,7 @@ This section is temporary and will be used to denote any important facts I need 
 
 - [tkinter](https://docs.python.org/3/library/tkinter.html)
 - [CustomTkinter](https://customtkinter.tomschimansky.com/)
+- [CTkMessagebox](https://github.com/Akascape/CTkMessagebox)
 
 ## Documentation
 

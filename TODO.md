@@ -87,3 +87,5 @@ data bundling / packing assets
 scaling factor and offset for resolution
 
 do not update physics every frame
+
+`editor.c` TODO list

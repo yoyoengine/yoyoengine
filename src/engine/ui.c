@@ -88,48 +88,6 @@ void remove_ui_component(const char* key) {
 //     nk_end(ctx);
 // }
 
-void init_ui(SDL_Window *win, SDL_Renderer *renderer){
-    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
-    /* scale the renderer output for High-DPI displays */
-    {
-        int render_w, render_h;
-        int window_w, window_h;
-        float scale_x, scale_y;
-        SDL_GetRendererOutputSize(renderer, &render_w, &render_h);
-        SDL_GetWindowSize(win, &window_w, &window_h);
-        scale_x = (float)(render_w) / (float)(window_w);
-        scale_y = (float)(render_h) / (float)(window_h);
-        SDL_RenderSetScale(renderer, scale_x, scale_y);
-        font_scale = scale_y;
-    }
-    ctx = nk_sdl_init(win, renderer);
-    /* GUI */
-    /* Load Fonts: if none of these are loaded a default font will be used  */
-    /* Load Cursor: if you uncomment cursor loading please hide the cursor */
-    struct nk_font_atlas *atlas;
-    struct nk_font_config config = nk_font_config(0);
-    struct nk_font *font;
-
-    /* set up the font atlas and add desired font; note that font sizes are
-        * multiplied by font_scale to produce better results at higher DPIs */
-    nk_sdl_font_stash_begin(&atlas);
-    // font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("Orbitron-Regular.ttf"), 20 * font_scale, &config);
-    font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 20 * font_scale, &config);
-    nk_sdl_font_stash_end();
-
-    /* this hack makes the font appear to be scaled down to the desired
-        * size and is only necessary when font_scale > 1 */
-    font->handle.height /= font_scale;
-    /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-    nk_style_set_font(ctx, &font->handle);
-
-    // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
-
-    // ui_register_component("test",paint_test);
-
-    ye_logf(info, "ui initialized");
-}
-
 void ui_handle_input(SDL_Event *evt){
     nk_sdl_handle_event(evt);
 }
@@ -226,6 +184,51 @@ void ui_render(){
 
     // paint everything
     nk_sdl_render(NK_ANTI_ALIASING_ON);
+}
+
+void init_ui(SDL_Window *win, SDL_Renderer *renderer){
+    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
+    /* scale the renderer output for High-DPI displays */
+    {
+        int render_w, render_h;
+        int window_w, window_h;
+        float scale_x, scale_y;
+        SDL_GetRendererOutputSize(renderer, &render_w, &render_h);
+        SDL_GetWindowSize(win, &window_w, &window_h);
+        scale_x = (float)(render_w) / (float)(window_w);
+        scale_y = (float)(render_h) / (float)(window_h);
+        SDL_RenderSetScale(renderer, scale_x, scale_y);
+        font_scale = scale_y;
+    }
+    ctx = nk_sdl_init(win, renderer);
+    /* GUI */
+    /* Load Fonts: if none of these are loaded a default font will be used  */
+    /* Load Cursor: if you uncomment cursor loading please hide the cursor */
+    struct nk_font_atlas *atlas;
+    struct nk_font_config config = nk_font_config(0);
+    struct nk_font *font;
+
+    /* set up the font atlas and add desired font; note that font sizes are
+        * multiplied by font_scale to produce better results at higher DPIs */
+    nk_sdl_font_stash_begin(&atlas);
+    // font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("Orbitron-Regular.ttf"), 20 * font_scale, &config);
+    font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+    nk_sdl_font_stash_end();
+
+    /* this hack makes the font appear to be scaled down to the desired
+        * size and is only necessary when font_scale > 1 */
+    font->handle.height /= font_scale;
+    /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
+    nk_style_set_font(ctx, &font->handle);
+
+    // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
+
+    // ui_register_component("test",paint_test);
+
+    ui_register_component("debug_overlay",ui_paint_debug_overlay);
+    ui_register_component("cam_info",ui_paint_cam_info);
+
+    ye_logf(info, "ui initialized");
 }
 
 void shutdown_ui(){

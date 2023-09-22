@@ -59,6 +59,7 @@ struct engine_data {
     
     bool debug_mode; // does not need override
     bool skipintro; // does not need override
+    bool editor_mode; // does not need override
 
     char *window_title;
     char *icon_path;
