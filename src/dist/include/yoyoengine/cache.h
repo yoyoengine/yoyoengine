@@ -1,4 +1,22 @@
 /*
+    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    Copyright (C) 2023  Ryan Zmuda
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+/*
     TODO:
     - Cache size counter could be cool, but not necessary
 
@@ -13,6 +31,12 @@
     This cache paradigm suits the intended use of the engine, as I envision loading all scene assets up front, and then clearing them when the scene is unloaded.
     To minimize the overhead of loading textures that might not need to be cleared on scene switch, `ye_swap_scene_cache` is provided to only prune textures that
     are not used in the new scene, and load any new textures that are needed.
+
+    Pre caching a scene will be opt-in, and will be done by the scene manager. In the case of very large scenes, the developer can still load textures on demand,
+    but will still need to find a way to pre-cache all their fonts and colors as needed.
+
+    The low level api does allow for deletion of individual resources, but I'm only including this for edge case compatibility, as I wont be using it for the purpose of
+    my games (yet).
 */
 
 #ifndef YE_CACHE_H
@@ -145,5 +169,20 @@ void ye_create_font(char *name, int size, char *path){}
     Create a color from r g b a
 */
 void ye_create_color(char *name, int r, int g, int b, int a){}
+
+/*
+    Destroy a texture from path
+*/
+void ye_destroy_texture(char *path){}
+
+/*
+    Destroy a font from name
+*/
+void ye_destroy_font(char *name){}
+
+/*
+    Destroy a color from name
+*/
+void ye_destroy_color(char *name){}
 
 #endif
