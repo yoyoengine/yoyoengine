@@ -89,3 +89,7 @@ scaling factor and offset for resolution
 do not update physics every frame
 
 `editor.c` TODO list
+
+### logging before SDL init
+
+we could use another method of getting the path for the log file.

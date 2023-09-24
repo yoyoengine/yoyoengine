@@ -23,6 +23,8 @@ This section is temporary and will be used to denote any important facts I need 
 
 - The coordinate system is non standard, north is -y, south is +y, east is +x, west is -x
 - only text or png images can have their alpha modulated
+- The engine is single threaded (except for audio)
+- Logging is unavailable until the engine is initialized (SDL needs loaded before we can use it)
 
 ## Dependencies
 

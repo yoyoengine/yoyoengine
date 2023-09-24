@@ -11,6 +11,7 @@
 #include "audio.h"
 #include "engine.h"
 #include "graphics.h"
+#include "cache.h"
 #include "logging.h"
 #include "uthash.h"
 #include "variant.h"
