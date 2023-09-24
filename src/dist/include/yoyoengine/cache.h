@@ -50,32 +50,32 @@
     NOTE:
     When implementing, consider that the scene file may reference prefabs from another file which could reference textures.
 */
-void ye_pre_cache_scene(char *file_path){}
+void ye_pre_cache_scene(char *file_path);
 
 /*
     Will iterate through a .yoyo scene file and cache all of its fonts and colors, copying over any repeats from the old cache and deleting any that are not used.
 */
-void ye_swap_scene_cache(char *file_path){}
+void ye_swap_scene_cache(char *file_path);
 
 /*
     Will iterate through a .yoyo style file and cache all of its fonts and colors.
 */
-void ye_pre_cache_style(char *file_path){}
+void ye_pre_cache_style(char *file_path);
 
 /*
     Will close all cached textures.
 */
-void ye_clear_texture_cache(){}
+void ye_clear_texture_cache();
 
 /*
     Will close all cached fonts.
 */
-void ye_clear_font_cache(){}
+void ye_clear_font_cache();
 
 /*
     Will free all cached colors.
 */
-void ye_clear_color_cache(){}
+void ye_clear_color_cache();
 
 
 
@@ -86,12 +86,12 @@ void ye_clear_color_cache(){}
     After this, any color font or texture can be cached at any time, or pre cached before a scene load.
     This function will also parse styles.yoyo (if its not null) and load all fonts and colors.
 */
-void ye_init_cache(char *styles_path){}
+void ye_init_cache(char *styles_path);
 
 /*
     Will close all cached textures, fonts, and colors.
 */
-void ye_shutdown_cache(){}
+void ye_shutdown_cache();
 
 
 
@@ -133,17 +133,17 @@ struct ye_color_node {
 /*
     Returns the pointer to a cached texture, loading it if its not already cached.
 */
-SDL_Texture * ye_image(char *path){}
+SDL_Texture * ye_image(char *path);
 
 /*
     Returns the pointer to a cached font based on name, will return NULL if not found.
 */
-TTF_Font * ye_font(char *name){}
+TTF_Font * ye_font(char *name);
 
 /*
     Caches a single color, will return NULL if not found
 */
-SDL_Color * ye_color(char *name){}
+SDL_Color * ye_color(char *name);
 
 
 
@@ -158,31 +158,31 @@ SDL_Color * ye_color(char *name){}
 /*
     Create a texture from path
 */
-SDL_Texture * ye_create_texture(char *path){}
+SDL_Texture * ye_create_texture(char *path);
 
 /*
     Create a font from path and size
 */
-void ye_create_font(char *name, int size, char *path){}
+void ye_create_font(char *name, int size, char *path);
 
 /*
     Create a color from r g b a
 */
-void ye_create_color(char *name, int r, int g, int b, int a){}
+void ye_create_color(char *name, int r, int g, int b, int a);
 
 /*
     Destroy a texture from path
 */
-void ye_destroy_texture(char *path){}
+void ye_destroy_texture(char *path);
 
 /*
     Destroy a font from name
 */
-void ye_destroy_font(char *name){}
+void ye_destroy_font(char *name);
 
 /*
     Destroy a color from name
 */
-void ye_destroy_color(char *name){}
+void ye_destroy_color(char *name);
 
 #endif

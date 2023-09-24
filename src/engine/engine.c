@@ -285,7 +285,7 @@ void ye_init_engine(struct engine_data data) {
     ye_init_timers();
 
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
-    pEngineFont = loadFont(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
+    pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // TODO: check this later because i'm so tired and perplexed with this workaround to letting the fn go out of scope

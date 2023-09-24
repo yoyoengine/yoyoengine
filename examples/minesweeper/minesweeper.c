@@ -104,7 +104,7 @@ int main() {
     ye_add_transform_component(snerfbot, (struct ye_rectf){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
 
-    TTF_Font * font = loadFont(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
+    TTF_Font * font = ye_load_font(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
     SDL_Color white = {255, 255, 255, 255};
     SDL_Color red = {255, 0, 0, 255};
 

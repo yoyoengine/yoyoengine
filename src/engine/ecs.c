@@ -429,8 +429,7 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, image);
 
     // create the image texture
-    struct textureInfo t = createImageTexture(src, false);
-    entity->renderer->texture = t.pTexture;
+    entity->renderer->texture = ye_create_image_texture(src);
 
     
     if(entity->transform != NULL){
@@ -511,8 +510,7 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *pa
     for (size_t i = 0; i < (size_t)count; ++i) {
         char filename[256];  // Assuming a maximum filename length of 255 characters
         snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, format); // TODO: dumb optimization but could cut out all except frame num insertion here
-        struct textureInfo textInfo = createImageTexture(filename,false); // we will not cache any animation frames;
-        animation->frames[i] = textInfo.pTexture;
+        animation->frames[i] = ye_create_image_texture(filename);
     }
 
     // create the renderer top level

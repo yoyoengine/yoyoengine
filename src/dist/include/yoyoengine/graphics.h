@@ -31,29 +31,14 @@ int convertToRealPixelHeight(float in);
 
 SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
 
-TTF_Font *loadFont(char *pFontPath, int fontSize);
-
-/*
-    struct holding info on texture creations
-    TODO: in the future will we need refcounts for arbitrary cache objects holding more than just their texture?
-*/
-struct textureInfo {
-    SDL_Texture *pTexture;
-    bool cached;
-};
+TTF_Font *ye_load_font(char *pFontPath, int fontSize);
 
 // Create a texture from image path, returns NULL for failure
-struct textureInfo createImageTexture(char *pPath, bool shouldCache);
+SDL_Texture * ye_create_image_texture(char *pPath);
 
 SDL_Texture *createTextTextureWithOutline();
 
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor);
-
-TTF_Font *getFont(char *key);
-
-SDL_Color *getColor(char *key, SDL_Color color);
-
-void autoFitBounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment);
 
 void renderAll();
 

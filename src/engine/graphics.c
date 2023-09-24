@@ -69,9 +69,6 @@ SDL_Texture *missing_texture = NULL;
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
 
-// create a cache to hold textures colors and fonts
-VariantCollection* cache;
-
 // converts a relative float to real screen pixel width
 int convertToRealPixelWidth(float in){
     return (int)((float)in * (float)virtualWidth);
@@ -98,9 +95,10 @@ SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h) 
     return rect;
 }
 
-// load a font into memory and return a pointer to it
-// TODO: evaluate where this stands in relation to getFont functionality, does this just extend the backend of get Font?
-TTF_Font *loadFont(char *pFontPath, int fontSize) {
+/*
+    Loads a font from a path and size, returns a pointer to the font, or NULL if failed
+*/
+TTF_Font * ye_load_font(char *pFontPath, int fontSize) {
     if(fontSize > 500){
         ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
         return NULL;
@@ -155,7 +153,10 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     return pTexture;
 }
 
-// Create a texture from text string with specified font and color, returns NULL for failure
+
+/*
+    Create a text texture from a string, font, and color. Returns a pointer to the texture, or the default missing texture if failed
+*/
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderUTF8_Blended(pFont, pText, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
@@ -163,7 +164,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
-        return NULL;
+        return missing_texture; // return missing texture, error has been logged
     }
 
     // create texture from surface
@@ -172,7 +173,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     // error out if texture creation failed
     if (pTexture == NULL) {
         ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
-        return NULL;
+        return missing_texture; // return missing texture, error has been logged
     }
 
     // free the surface memory
@@ -182,207 +183,39 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     return pTexture;
 }
 
-// Create a texture from image path, returns its texture pointer and a flag on whether
-// or not the texture is also cached
-struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
-    // try to get it from cache TODO: should we wrap this in if shouldCache?
-    Variant *pVariant = getVariant(cache, pPath);
-    if (pVariant != NULL) { // found in cache
-        // ye_logf(debug, "Found texture in cache\n");
-
-        pVariant->refcount++; // increase refcount
-
-        struct textureInfo ret = {pVariant->textureValue, true};
-        // printf("refcount for %s: %d\n",pPath,pVariant->refcount);
-        return ret;
-    }
-    else{ // not found in cache
-        if(access(pPath, F_OK) == -1){
-            ye_logf(error, "Could not access file '%s'.\n", pPath);
-            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
-        }
-
-        // create surface from loading the image
-        SDL_Surface *pImage_surface = IMG_Load(pPath);
-        
-        // error out if surface load failed
-        if (!pImage_surface) {
-            ye_logf(error, "Error loading image: %s\n", IMG_GetError());
-            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
-        }
-
-        // create texture from surface
-        SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, pImage_surface);
-        
-        // error out if texture creation failed
-        if (!pTexture) {
-            ye_logf(error, "Error creating texture: %s\n", SDL_GetError());
-            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
-        }
-
-        // release surface from memory
-        SDL_FreeSurface(pImage_surface);
-        if(shouldCache){ // we are going to cache it
-            // cache the texture
-            Variant variant;
-            variant.type = VARIANT_TEXTURE;
-            variant.textureValue = pTexture;
-            variant.refcount = 1;
-
-            addVariant(cache, pPath, variant);
-
-            // char buffer[100];
-            // snprintf(buffer, sizeof(buffer),  "Cached a texture. key: %s\n", pPath);
-            // ye_logf(debug, buffer);
-
-            if(getVariant(cache, pPath) == NULL){
-                ye_logf(error, "ERROR CACHING TEXTURE\n");
-            }
-
-            struct textureInfo ret = {pTexture, true};
-            
-            // return the created texture
-            // printf("refcount for %s: %d\n",pPath,variant.refcount);
-            return ret;
-
-        }
-        else{ // we are not going to cache it
-            struct textureInfo ret = {pTexture, false}; 
-
-            return ret;
-        }
-    }
-}
-
 /*
-    takes in a key (relative resource path to a font) and returns a 
-    pointer to the loaded font (caches the font if it doesnt exist in cache)
+    Create a texture from a local image path, returns a pointer to the texture (and to the missing texture texture if it fails)
 */
-TTF_Font *getFont(char *key){
-    Variant *v = getVariant(cache, key);
-    if(v == NULL){
-        Variant fontVariant;
-        fontVariant.type = VARIANT_FONT;
-        fontVariant.fontValue = loadFont(key,100);
-
-        addVariant(cache, key, fontVariant);
-        ye_logf(debug, "Cached a font. key: %s\n", key);
-        v = getVariant(cache, key);
-    }
-    else{
-        // ye_logf(debug, "Found cached font.\n");
-    }
-    return v->fontValue;
-}
-
-/*
-    takes in a key (relative resource path to a font) and returns a 
-    pointer to the loaded font (caches the font if it doesnt exist in cache)
-
-    This is mainly here for the game, the engine cant utilize this super well as
-    it doesnt have an understanding of named colors, it can just cache them for quick
-    access by the game
-*/
-SDL_Color *getColor(char *key, SDL_Color color){
-    Variant *v = getVariant(cache, key);
-    if(v == NULL){
-        Variant colorVariant;
-        colorVariant.type = VARIANT_COLOR;
-        colorVariant.colorValue = color;
-
-        addVariant(cache, key, colorVariant);
-        ye_logf(debug, "Cached a color. key: %s\n", key);
-        v = getVariant(cache, key);
-    }
-    else{
-        // ye_logf(debug, "Found cached color.\n");
-    }
-    SDL_Color *pColor = &v->colorValue;
-    return pColor;
-}
-
-/*
-    Massive function to handle the orientation of an object within a set of bounds
-*/
-void autoFitBounds(SDL_Rect* bounds, SDL_Rect* obj, Alignment alignment){
-    // check if some loser wants to stretch something
-    if(alignment == ALIGN_STRETCH){
-        obj->w = bounds->w;
-        obj->h = bounds->h;
-        obj->x = bounds->x;
-        obj->y = bounds->y;
-        return;
+SDL_Texture * ye_create_image_texture(char *pPath) {
+    // check the file exists
+    if(access(pPath, F_OK) == -1){
+        ye_logf(error, "Could not access file '%s'.\n", pPath);
+        return missing_texture; // return missing texture, error has been logged
     }
 
-    // actual orientation handling
-
-    float boundsAspectRatio = (float)bounds->w / (float)bounds->h;
-    float objectAspectRatio = (float)obj->w / (float)obj->h;
-
-    if (objectAspectRatio > boundsAspectRatio) {
-        obj->h = bounds->w / objectAspectRatio;
-        obj->w = bounds->w;
-    } else {
-        obj->w = bounds->h * objectAspectRatio;
-        obj->h = bounds->h;
+    // create surface from loading the image
+    SDL_Surface *pImage_surface = IMG_Load(pPath);
+    
+    // error out if surface load failed
+    if (!pImage_surface) {
+        ye_logf(error, "Error loading image: %s\n", IMG_GetError());
+        return missing_texture; // return missing texture, error has been logged
     }
 
-    switch(alignment) {
-        case ALIGN_TOP_LEFT:
-            obj->x = bounds->x;
-            obj->y = bounds->y;
-            break;
-        case ALIGN_TOP_CENTER:
-            obj->x = bounds->x + (bounds->w - obj->w) / 2;
-            obj->y = bounds->y;
-            break;
-        case ALIGN_TOP_RIGHT:
-            obj->x = bounds->x + (bounds->w - obj->w);
-            obj->y = bounds->y;
-            break;
-        case ALIGN_MID_LEFT:
-            obj->x = bounds->x;
-            obj->y = bounds->y + (bounds->h - obj->h) / 2;
-            break;
-        case ALIGN_MID_CENTER:
-            obj->x = bounds->x + (bounds->w - obj->w) / 2;
-            obj->y = bounds->y + (bounds->h - obj->h) / 2;
-            break;
-        case ALIGN_MID_RIGHT:
-            obj->x = bounds->x + (bounds->w - obj->w);
-            obj->y = bounds->y + (bounds->h - obj->h) / 2;
-            break;
-        case ALIGN_BOT_LEFT:
-            obj->x = bounds->x;
-            obj->y = bounds->y + (bounds->h - obj->h);
-            break;
-        case ALIGN_BOT_CENTER:
-            obj->x = bounds->x + (bounds->w - obj->w) / 2;
-            obj->y = bounds->y + (bounds->h - obj->h);
-            break;
-        case ALIGN_BOT_RIGHT:
-            obj->x = bounds->x + (bounds->w - obj->w);
-            obj->y = bounds->y + (bounds->h - obj->h);
-            break;
-        default:
-            ye_logf(error, "Invalid alignment\n");
-            break;
+    // create texture from surface
+    SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, pImage_surface);
+    
+    // error out if texture creation failed
+    if (!pTexture) {
+        ye_logf(error, "Error creating texture: %s\n", SDL_GetError());
+        return missing_texture; // return missing texture, error has been logged
     }
-}
 
-/*
-    Will attempt to grab a variant by name, and decrease its refcount, destroying it if it hits 0
-*/
-void imageDecref(char *name){
-    Variant *v = getVariant(cache, name);
-    if(v == NULL){
-        ye_logf(error, "ERROR DECREFFING IMAGE: IMAGE NOT FOUND\n");
-        return;
-    }
-    v->refcount--;
-    if(v->refcount <= 0){
-        removeVariant(cache,name); // this is responsible for destroying the texture
-    }
+    // release surface from memory
+    SDL_FreeSurface(pImage_surface);
+
+    // return the created texture
+    return pTexture;
 }
 
 // render everything in the scene
@@ -712,9 +545,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     }
     ye_logf(info, "IMG initialized.\n");
 
-    // initialize cache
-    cache = createVariantCollection();
-
     // load icon to surface
     printf("icon path: %s\n", icon_path);
     SDL_Surface *pIconSurface = IMG_Load(icon_path);
@@ -736,9 +566,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
 // shuts down all initialzied graphics systems
 void shutdownGraphics(){
-    // destroy cache
-    destroyVariantCollection(cache);
-
     // shutdown TTF
     TTF_Quit();
     ye_logf(info, "Shut down TTF.\n");
