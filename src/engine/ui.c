@@ -224,10 +224,10 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
 
     // ui_register_component("test",paint_test);
-
-    ui_register_component("debug_overlay",ui_paint_debug_overlay);
-    ui_register_component("cam_info",ui_paint_cam_info);
-
+    if(engine_state.debug_mode){
+        ui_register_component("debug_overlay",ui_paint_debug_overlay);
+        ui_register_component("cam_info",ui_paint_cam_info);
+    }
     ye_logf(info, "ui initialized");
 }
 
