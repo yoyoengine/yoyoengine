@@ -130,6 +130,11 @@ int main() {
     cat->physics->rotational_velocity = 45.0;
     cat->transform->center = (SDL_Point){100, 100};
 
+    // // intentionally create an object with a bad texture to see missing
+    // struct ye_entity * missing = ye_create_entity_named("missing");
+    // ye_add_transform_component(missing, (struct ye_rectf){1000, 800, 500, 500}, 10, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(missing, ye_get_resource_static("images/missing.png"));
+
     /*
         Main game loop. We can do any logic the game needs and then tell the engine to
         load and present the next frame, as well as handle its own logic. The engine will

@@ -542,7 +542,7 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     }
 
     // destoy the texture. NOTE: if we have some cache system in future this would double free
-    SDL_DestroyTexture(entity->renderer->texture);
+    SDL_DestroyTexture(entity->renderer->texture); // WRONG: this already does double free
     
     free(entity->renderer);
     entity->renderer = NULL;
@@ -641,6 +641,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     // set alpha (log failure) TODO: profile efficiency of this
                     if (SDL_SetTextureAlphaMod(current->entity->renderer->texture, current->entity->renderer->alpha) != 0) {
                         ye_logf(warning, "Failed to set alpha for entity %s\n", current->entity->name);
+                        // log the sdl get error
+                        ye_logf(warning, "SDL_GetError: %s\n", SDL_GetError());
                     }
 
                     // scale it to be on screen and paint it

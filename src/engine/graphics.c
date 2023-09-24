@@ -42,6 +42,11 @@ int yOffset = 0;
 int currentResolutionWidth = 1920;
 int currentResolutionHeight = 1080;
 
+/*
+    Texture used for missing textures
+*/
+SDL_Texture *missing_texture = NULL;
+
 // TODO: move most of engine runtime state into struct engine_data engine_state
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
@@ -176,7 +181,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
     else{ // not found in cache
         if(access(pPath, F_OK) == -1){
             ye_logf(error, "Could not access file '%s'.\n", pPath);
-            return (struct textureInfo){NULL, NULL}; // TODO: give this a placeholder texture for failures
+            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
         }
 
         // create surface from loading the image
@@ -185,7 +190,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         // error out if surface load failed
         if (!pImage_surface) {
             ye_logf(error, "Error loading image: %s\n", IMG_GetError());
-            exit(1); // FIXME
+            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
         }
 
         // create texture from surface
@@ -194,7 +199,7 @@ struct textureInfo createImageTexture(char *pPath, bool shouldCache) {
         // error out if texture creation failed
         if (!pTexture) {
             ye_logf(error, "Error creating texture: %s\n", SDL_GetError());
-            exit(1); // FIXME
+            return (struct textureInfo){missing_texture, NULL}; // return missing texture, error has been logged
         }
 
         // release surface from memory
@@ -654,6 +659,10 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
         exit(1);
     }
 
+    // load our missing texture into memory
+    SDL_Surface *missing_surface = IMG_Load(ye_get_engine_resource_static("missing.png"));
+    missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
+    SDL_FreeSurface(missing_surface);
 
     init_ui(pWindow,pRenderer);
 
@@ -719,6 +728,9 @@ void shutdownGraphics(){
     // shutdown IMG
     IMG_Quit();
     ye_logf(info, "Shut down IMG.\n");
+
+    // free the missing texture
+    SDL_DestroyTexture(missing_texture);
 
     shutdown_ui();
 
