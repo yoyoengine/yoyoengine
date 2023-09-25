@@ -17,20 +17,5 @@
 */
 
 /*
-    Include all our headers in one place.
-    This lets the game use
-    #include <yoyoengine/yoyoengine.h> assuming they have
-    defined the header and lib paths correctly.
+    TODO: implement
 */
-#include "engine.h"
-#include "graphics.h"
-#include "cache.h"
-#include "utils.h"
-#include "ui.h"
-#include "ecs.h"
-#include "timer.h"
-#include "audio.h"
-#include "logging.h"
-#include "uthash.h"
-#include "lua.h"
-#include "json.h"

@@ -28,6 +28,9 @@ This section is temporary and will be used to denote any important facts I need 
 
 ## Dependencies
 
+> [!NOTE]  
+> All C dependencies are included in this repository, besides a compiler and stdlib. Python dependencies are not included, and will need to be downloaded via pip.
+
 ### Core & Editor
 
 - [SDL2](https://www.libsdl.org/)
@@ -36,6 +39,7 @@ This section is temporary and will be used to denote any important facts I need 
 - [SDL2_mixer](https://www.libsdl.org/projects/SDL_mixer/)
 - [uthash](https://github.com/troydhanson/uthash)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
+- [jansson](https://github.com/akheron/jansson)
 
 ### Launcher / Project Manager
 

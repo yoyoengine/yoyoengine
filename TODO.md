@@ -100,4 +100,8 @@ First frame should be offset by the time it took to load the animation for accur
 
 ## ECS
 
-allow duplicating entities
+API needs stabilized, the lua wrapper would have an extremely hard time manipulating components because it cannot directly access the raw pointer fields
+
+## shaping
+
+should report in readme the things im scoping down, like the visual novel capabilities and all other features

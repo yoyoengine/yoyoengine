@@ -84,8 +84,6 @@ void ye_shutdown_cache(){
     ye_logf(info,"%s","Shut down cache.\n");
 }
 
-
-
 /*
     PRIMARY API:
     This is the intended interface with the cache system, but assumes you have pre cached fonts and colors.
