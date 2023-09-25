@@ -37,6 +37,9 @@
 
     The cache is implemented using UTHASH for simplicity and
 
+    The cache is very opt in, as you are only required to pass the pointers to resources when constructing ECS
+    components, meaning you could forgo the cache entirely and manually manage your memory. This is not recommended.
+
     Tracking cache size:
 
     This could be pretty easily done, but its not strictly necessary and will add overhead (unless optimized out)
@@ -47,6 +50,11 @@
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
         return w * h * 4;
     }
+
+    TODO:
+    - destruction of individual cache items
+    - file based reading of styles.yoyo
+    - caching of scene files
 */
 
 #ifndef YE_CACHE_H
@@ -69,21 +77,50 @@ void ye_swap_scene_cache(char *file_path);
 
 /*
     Will iterate through a .yoyo style file and cache all of its fonts and colors.
+
+    Example styles.yoyo file:
+
+    {
+        "fonts":{
+            "font12":{
+                "path":"path/to/font.ttf",
+                "size":12
+            },
+            "font24":{
+                "path":"path/to/font.ttf",
+                "size":24
+            }
+        },
+        "colors":{
+            "color_name":{
+                "r":255,
+                "g":255,
+                "b":255,
+                "a":255
+            }
+        }
+    }
 */
 void ye_pre_cache_style(char *file_path);
 
 /*
     Will close all cached textures.
+
+    BE CAREFUL DOING THIS AT RUNTIME!!!
 */
 void ye_clear_texture_cache();
 
 /*
     Will close all cached fonts.
+
+    BE CAREFUL DOING THIS AT RUNTIME!!!
 */
 void ye_clear_font_cache();
 
 /*
     Will free all cached colors.
+
+    BE CAREFUL DOING THIS AT RUNTIME!!!
 */
 void ye_clear_color_cache();
 
@@ -146,12 +183,12 @@ struct ye_color_node {
 SDL_Texture * ye_image(char *path);
 
 /*
-    Returns the pointer to a cached font based on name, will return NULL if not found.
+    Returns the pointer to a cached font based on name and size, returning a fallback default font if not found.
 */
 TTF_Font * ye_font(char *name);
 
 /*
-    Caches a single color, will return NULL if not found
+    Caches a single color, returning a fallback default color if not found.
 */
 SDL_Color * ye_color(char *name);
 
@@ -171,27 +208,27 @@ SDL_Color * ye_color(char *name);
 SDL_Texture * ye_cache_texture(char *path);
 
 /*
-    Create a font from path and size
+    Create a font from name, size, and path
 */
-void ye_create_font(char *name, int size, char *path);
+TTF_Font * ye_cache_font(char *name, int size, char *path);
 
 /*
-    Create a color from r g b a
+    Cache a SDL_Color
 */
-void ye_create_color(char *name, int r, int g, int b, int a);
+SDL_Color * ye_cache_color(char *name, SDL_Color color);
 
 /*
-    Destroy a texture from path
+    Destroy a cached texture from path
 */
 void ye_destroy_texture(char *path);
 
 /*
-    Destroy a font from name
+    Destroy a cached font from name
 */
 void ye_destroy_font(char *name);
 
 /*
-    Destroy a color from name
+    Destroy a cached color from name
 */
 void ye_destroy_color(char *name);
 

@@ -93,3 +93,11 @@ do not update physics every frame
 ### logging before SDL init
 
 we could use another method of getting the path for the log file.
+
+### animations
+
+First frame should be offset by the time it took to load the animation for accuracy?
+
+## ECS
+
+allow duplicating entities

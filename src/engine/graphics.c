@@ -101,16 +101,17 @@ SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h) 
 TTF_Font * ye_load_font(char *pFontPath, int fontSize) {
     if(fontSize > 500){
         ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
-        return NULL;
+        return pEngineFont;
     }
     char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
         ye_logf(error, "Could not access file '%s'.\n", fontpath);
+        return pEngineFont;
     }
     TTF_Font *pFont = TTF_OpenFont(fontpath, fontSize);
     if (pFont == NULL) {
         ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
-        return NULL;
+        return pEngineFont;
     }
     ye_logf(debug, "Loaded font: %s\n", pFontPath);
     return pFont;

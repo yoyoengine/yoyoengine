@@ -202,7 +202,7 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     free(entity->name);
 
     // name the entity by its passed name
-    entity->name = malloc(sizeof(char) * strlen(new_name));
+    entity->name = malloc(strlen(new_name) + 1);
     strcpy(entity->name, new_name);
 }
 

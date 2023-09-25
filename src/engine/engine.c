@@ -287,11 +287,11 @@ void ye_init_engine(struct engine_data data) {
     // initialize the cache
     ye_init_cache(NULL); // TODO: pass styles path
 
-    // load a font for use in engine (value of global in engine.h modified) TODO: this will break
-    pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
+    // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
+    pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 64);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
-    // TODO: check this later because i'm so tired and perplexed with this workaround to letting the fn go out of scope
+    // this is also returned as a color if a user specified one cannot be loaded
     SDL_Color engineFontColor = {255, 255, 0, 255};
     pEngineFontColor = &engineFontColor;
     pEngineFontColor = malloc(sizeof(SDL_Color));
@@ -401,6 +401,9 @@ void ye_shutdown_engine(){
     // free the engine font color
     free(pEngineFontColor);
     pEngineFontColor = NULL;
+
+    // free the engine font
+    TTF_CloseFont(pEngineFont);
 
     // shutdown ECS
     ye_shutdown_ecs();
