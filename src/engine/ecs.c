@@ -206,6 +206,32 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     strcpy(entity->name, new_name);
 }
 
+struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
+    // create a new entity named "(old name) (copy)"
+    struct ye_entity *new_entity = ye_create_entity_named(strcat(strcat(entity->name, " "), "copy"));
+
+    // copy all components
+    if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->bounds, entity->transform->z, entity->transform->alignment);
+    if(entity->renderer != NULL){
+        if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
+            ye_temp_add_image_renderer_component(new_entity, entity->renderer->renderer_impl.image->src);
+        }
+        else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
+            ye_temp_add_text_renderer_component(new_entity, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
+        }
+        else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+            ye_temp_add_animation_renderer_component(new_entity, entity->renderer->renderer_impl.animation->animation_path, entity->renderer->renderer_impl.animation->image_format, entity->renderer->renderer_impl.animation->frame_count, entity->renderer->renderer_impl.animation->frame_delay, entity->renderer->renderer_impl.animation->loops);
+        }
+    }
+    if(entity->camera != NULL) ye_add_camera_component(new_entity, entity->camera->view_field);
+    // if(entity->script != NULL) ye_add_script_component(new_entity, entity->script->script_path);
+    // if(entity->interactible != NULL) ye_add_interactible_component(new_entity, entity->interactible->interactible_type);
+    if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
+    // if(entity->collider != NULL) ye_add_collider_component(new_entity, entity->collider->collider_type, entity->collider->collider_impl);
+
+    return new_entity;
+}
+
 /*
     Destroy an entity by pointer
 */

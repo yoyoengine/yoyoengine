@@ -119,9 +119,8 @@ int main() {
     ye_add_transform_component(congratulations, (struct ye_rectf){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
     ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
 
-    struct ye_entity * congrats2 = ye_create_entity();
-    ye_add_transform_component(congrats2, (struct ye_rectf){0, 700, 500, 300}, 820, YE_ALIGN_MID_CENTER);
-    ye_temp_add_animation_renderer_component(congrats2, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
+    struct ye_entity * congrats2 = ye_duplicate_entity(congratulations);
+    congrats2->transform->rect.y = 700;
 
     struct ye_entity * text = ye_create_entity();
     ye_add_transform_component(text, (struct ye_rectf){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);

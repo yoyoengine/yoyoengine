@@ -265,6 +265,11 @@ struct ye_entity * ye_create_entity_named(char *name);
 void ye_rename_entity(struct ye_entity *entity, char *name);
 
 /*
+    Duplicate an entity by pointer. Will rename the entitity to "entity_name (copy)"
+*/
+struct ye_entity * ye_duplicate_entity(struct ye_entity *entity);
+
+/*
     Destroy an entity by pointer
 */
 void ye_destroy_entity(struct ye_entity * entity);
