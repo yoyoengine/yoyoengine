@@ -17,9 +17,6 @@
 */
 
 /*
-    TODO:
-    - Cache size counter could be cool, but not necessary
-
     Cache System:
     
     The goal of this cache system is to be something that supports the engine for the long term. The chosen paradigm is that of a refcount-less cache, which accumulates
@@ -37,6 +34,19 @@
 
     The low level api does allow for deletion of individual resources, but I'm only including this for edge case compatibility, as I wont be using it for the purpose of
     my games (yet).
+
+    The cache is implemented using UTHASH for simplicity and
+
+    Tracking cache size:
+
+    This could be pretty easily done, but its not strictly necessary and will add overhead (unless optimized out)
+    It could be done like this if ever needed:
+
+    int ye_texture_size(SDL_Texture *texture){
+        int w, h;
+        SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+        return w * h * 4;
+    }
 */
 
 #ifndef YE_CACHE_H
@@ -98,25 +108,25 @@ void ye_shutdown_cache();
 
 
 /*
-    Linked lists
+    Nodes for cache items (UTHASH hooks into the hash handles)
 */
 struct ye_texture_node {
     SDL_Texture *texture;
     char *path;
-    struct ye_texture_node *next;
+    UT_hash_handle hh;
 };
 
 struct ye_font_node {
     TTF_Font *font;
     char *name;
     int size;
-    struct ye_font_node *next;
+    UT_hash_handle hh;
 };
 
 struct ye_color_node {
     SDL_Color color;
     char *name;
-    struct ye_color_node *next;
+    UT_hash_handle hh;
 };
 
 
@@ -152,13 +162,13 @@ SDL_Color * ye_color(char *name);
 
 /*
     Low level implementation that can also be used manually by developer.
-    These functions will construct the underlying nodes and add them to the linked lists.
+    These functions will construct the underlying nodes and add them to the hash cache.
 */
 
 /*
     Create a texture from path
 */
-SDL_Texture * ye_create_texture(char *path);
+SDL_Texture * ye_cache_texture(char *path);
 
 /*
     Create a font from path and size

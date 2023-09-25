@@ -99,6 +99,7 @@ void ye_update_timers(){
 */
 void ye_init_timers(){
     timers = NULL;
+    ye_logf(info,"%s","Initialized timers.\n");
 }
 
 /*
@@ -107,4 +108,5 @@ void ye_init_timers(){
 void ye_shutdown_timers(){
     ye_unregister_all_timers();
     timers = NULL;
+    ye_logf(info,"%s","Shut down timers.\n");
 }

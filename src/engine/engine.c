@@ -284,6 +284,9 @@ void ye_init_engine(struct engine_data data) {
     // init timers
     ye_init_timers();
 
+    // initialize the cache
+    ye_init_cache(NULL); // TODO: pass styles path
+
     // load a font for use in engine (value of global in engine.h modified) TODO: this will break
     pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 500);
 
@@ -404,6 +407,9 @@ void ye_shutdown_engine(){
 
     // shutdown timers
     ye_shutdown_timers();
+
+    // shutdown cache
+    ye_shutdown_cache();
 
     // shutdown graphics
     shutdownGraphics();

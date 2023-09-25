@@ -32,5 +32,4 @@
 #include "audio.h"
 #include "logging.h"
 #include "uthash.h"
-#include "variant.h"
 #include "lua.h"
