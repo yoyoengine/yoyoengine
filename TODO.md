@@ -109,3 +109,7 @@ should report in readme the things im scoping down, like the visual novel capabi
 ## best practices
 
 all functions that dont modify char \* should be const char \* (optimization and quality)
+
+## caching
+
+ability to read the cache from a file into the cache in the background... could occur during splash screen and block until done... some sort of generic with loading screen also

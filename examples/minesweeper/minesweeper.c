@@ -55,7 +55,7 @@ int main() {
         // .log_file_path = "resources/debug.log",
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
-        .volume = 10,
+        .volume = 64,
         .framecap = -1,
         // .skipintro = true, // no override exists for this - its a boolean
 
@@ -84,6 +84,38 @@ int main() {
 
     // set camera
     ye_set_camera(cam);
+
+    struct ye_entity *splash = ye_create_entity();
+    ye_add_transform_component(splash, (struct ye_rectf){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
+    ye_temp_add_image_renderer_component(splash, ye_get_resource_static("images/studiozoogies.png"));
+
+    playSound(ye_get_resource_static("sfx/boot.mp3"),-1,0); // play startup sound
+
+    // get current ticks
+    int ticks = SDL_GetTicks();
+
+    // until we are 4000 ticks in the future
+    while(SDL_GetTicks() - ticks < 4000){
+        // fade in from alpha=0 to alpha=255 over 1 second
+        if(SDL_GetTicks() - ticks < 1000){
+            splash->renderer->alpha = (SDL_GetTicks() - ticks) / 4;
+        }
+        // sustain at alpha=255 from 1 to 3 seconds
+        else if(SDL_GetTicks() - ticks < 3000){
+            splash->renderer->alpha = 255;
+        }
+        // fade out from alpha=255 to alpha=0 over 1 second
+        else {
+            splash->renderer->alpha = 255 - ((SDL_GetTicks() - ticks - 3000) / 4);
+        }
+        
+        // process frame
+        ye_process_frame();
+    }
+
+    ye_destroy_entity(splash);
+
+    playSound(ye_get_resource_static("music/24songs.mp3"),-1,-1); // play music
 
     struct ye_entity * entity = ye_create_entity();
     ye_add_transform_component(entity, (struct ye_rectf){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
