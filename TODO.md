@@ -105,3 +105,7 @@ API needs stabilized, the lua wrapper would have an extremely hard time manipula
 ## shaping
 
 should report in readme the things im scoping down, like the visual novel capabilities and all other features
+
+## best practices
+
+all functions that dont modify char \* should be const char \* (optimization and quality)
