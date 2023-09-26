@@ -26,14 +26,17 @@
 /*
     json wrapper
 
-    This is a wrapper around the jansson library that provides a more convenient interface as well
+    This is a light wrapper around the jansson library that provides a more convenient interface as well
     as validation and error checking. If you try to access a value that does not exist you will recieve
-    false, with the output ptr being NULL as well as a ye_logf warning.
+    false, with the output ptr not being modified as well as a ye_logf warning.
 
     Functions take in the json_t * to act upon, a key to index a value via, and an output ptr to assign
     the value to. If the key is not found, the function will return false and the output ptr will be
     NULL. If the key is found, the function will return true and the output ptr will be assigned the
     value.
+
+    Some reccomended convention:
+    name any root json_t objects in UPPERCASE, and ensure to json_decref them when you are done with them
 */
 
 /*
@@ -58,6 +61,16 @@ void ye_json_log(json_t* json);
     This will modify the first json_t object (without upping its refcount). Returns 0 on success, -1 on failure
 */
 int ye_json_merge(json_t* first, json_t* second);
+
+/*
+    Like ye_json_merge, but only values of existing keys (in first) are updated
+*/
+int ye_json_merge_existing(json_t* first, json_t* second);
+
+/*
+    Like ye_json_merge, but only new keys are created, existing keys are not updated
+*/
+int ye_json_merge_missing(json_t* first, json_t* second);
 
 /*
     Checks if a json_t object has a key
@@ -85,6 +98,9 @@ bool ye_json_bool(json_t* json, const char* key, bool *out);
 /*
     Extract a string from a json_t by key, assigning the passed string to it
     Returns true if extraction was successful, false otherwise.
+    
+    THIS FUNCTION SETS const char **out TO BE A REFERENCE TO THE STRING IN JANSSON, IF THIS NEEDS TO PERSIST
+    YOU NEED TO COPY OR DUPLICATE ITS MEMORY
 */
 bool ye_json_string(json_t* json, const char* key, const char **out);
 
@@ -97,6 +113,8 @@ bool ye_json_object(json_t* json, const char* key, json_t **out);
 /*
     Extract a json_t from a json_t by key, assigning the passed json_t to it
     Returns true if extraction was successful, false otherwise.
+
+    This function is practically the same as object, but provides a sanity check for array type
 */
 bool ye_json_array(json_t* json, const char* key, json_t **out);
 
@@ -121,6 +139,9 @@ bool ye_json_arr_bool(json_t* json, int index, bool *out);
 /*
     Extract a string from a json_t by index, assigning the passed string to it
     Returns true if extraction was successful, false otherwise.
+
+    THIS FUNCTION SETS const char **out TO BE A REFERENCE TO THE STRING IN JANSSON, IF THIS NEEDS TO PERSIST
+    YOU NEED TO COPY OR DUPLICATE ITS MEMORY
 */
 bool ye_json_arr_string(json_t* json, int index, const char **out);
 
