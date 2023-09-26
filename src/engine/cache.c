@@ -26,17 +26,95 @@ struct ye_texture_node * cached_textures_head;
 struct ye_font_node * cached_fonts_head;
 struct ye_color_node * cached_colors_head;
 
-void ye_init_cache(char *styles_path){
-    cached_textures_head = NULL;
-    cached_fonts_head = NULL;
-    cached_colors_head = NULL;
-
+void ye_pre_cache_styles(char *styles_path){
     if(styles_path == NULL){
         ye_logf(debug,"%s","No styles path provided.");
         return;
     }
 
-    // TODO: implement setup that occurs to load styles path
+    // read fonts and colors from styles and cache them
+    json_t *STYLES = ye_json_read(styles_path);
+    ye_json_log(STYLES);
+    if(STYLES == NULL){
+        ye_logf(error,"Failed to read styles file: %s\n",styles_path);
+        json_decref(STYLES);
+        return;
+    }
+
+    // check that fonts and colors exists and extract them if so
+    if(ye_json_has_key(STYLES,"fonts")){
+        json_t *fonts = NULL;
+        ye_json_object(STYLES,"fonts",&fonts);
+        if(fonts == NULL){
+            ye_logf(error,"%s","Failed to read fonts from styles file.\n");
+            json_decref(STYLES);
+            return;
+        }
+
+        // iterate over fonts and cache them
+        const char *font_name;
+        json_t *font;
+        json_object_foreach(fonts, font_name, font) {
+            if(!ye_json_has_key(font,"path")){
+                ye_logf(error,"Font %s does not have a path.\n",font_name);
+                continue;
+            }
+            if(!ye_json_has_key(font,"size")){
+                ye_logf(error,"Font %s does not have a size.\n",font_name);
+                continue;
+            }
+            char *font_path;    ye_json_string(font,"path",&font_path);
+            int font_size;      ye_json_int(font,"size",&font_size);
+            ye_cache_font(font_name,font_size,ye_get_resource_static(font_path));
+        }
+    }
+
+    if(ye_json_has_key(STYLES,"colors")){
+        json_t *colors = NULL;
+        ye_json_object(STYLES,"colors",&colors);
+        if(colors == NULL){
+            ye_logf(error,"%s","Failed to read colors from styles file.\n");
+            json_decref(STYLES);
+            return;
+        }
+
+        // iterate over colors and cache them
+        const char *color_name;
+        json_t *color;
+        json_object_foreach(colors, color_name, color) {
+            if(!ye_json_has_key(color,"r")){
+                ye_logf(error,"Color %s does not have an r value.\n",color_name);
+                continue;
+            }
+            if(!ye_json_has_key(color,"g")){
+                ye_logf(error,"Color %s does not have a g value.\n",color_name);
+                continue;
+            }
+            if(!ye_json_has_key(color,"b")){
+                ye_logf(error,"Color %s does not have a b value.\n",color_name);
+                continue;
+            }
+            if(!ye_json_has_key(color,"a")){
+                ye_logf(error,"Color %s does not have an a value.\n",color_name);
+                continue;
+            }
+            int r;  ye_json_int(color,"r",&r);
+            int g;  ye_json_int(color,"g",&g);
+            int b;  ye_json_int(color,"b",&b);
+            int a;  ye_json_int(color,"a",&a);
+            SDL_Color sdl_color = {r,g,b,a};
+            ye_cache_color(color_name,sdl_color);
+        }
+    }
+
+    // free styles json
+    json_decref(STYLES);
+}
+
+void ye_init_cache(char *styles_path){
+    cached_textures_head = NULL;
+    cached_fonts_head = NULL;
+    cached_colors_head = NULL;
 }
 
 void ye_clear_texture_cache(){

@@ -1,0 +1,16 @@
+{
+    "fonts":{
+        "PressStart2P-24":{
+            "path":"fonts/PressStart2P.ttf",
+            "size":24
+        }
+    },
+    "colors":{
+        "black":{
+            "r":0,
+            "g":0,
+            "b":0,
+            "a":255
+        }
+    }
+}

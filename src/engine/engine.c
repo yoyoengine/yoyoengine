@@ -285,7 +285,7 @@ void ye_init_engine(struct engine_data data) {
     ye_init_timers();
 
     // initialize the cache
-    ye_init_cache(NULL); // TODO: pass styles path
+    ye_init_cache();
 
     // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
     pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 64);

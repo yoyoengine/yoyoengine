@@ -72,8 +72,9 @@ int main() {
     // initialize engine with out data
     ye_init_engine(data);
 
-    // createImage(1,.5,.5,1,1,ye_get_engine_resource_static("enginelogo.png"),true,ALIGN_MID_CENTER);
-    // createImage(2,.5,.5,1,1,ye_get_resource_static("images/anno.png"),true,ALIGN_MID_CENTER); // idk just for fun
+    // load styles for this scene
+    ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
+
     // runscript(ye_get_resource_static("scripts/fib.lua"));
 
     // camera
@@ -113,7 +114,7 @@ int main() {
 
     struct ye_entity * nic = ye_create_entity();
     ye_add_transform_component(nic, (struct ye_rectf){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(nic, "Hello, World!", ye_font("Roboto40"), ye_color("white"));
+    ye_temp_add_text_renderer_component(nic, "Hello, World!", ye_font("PressStart2P-24"), ye_color("white"));
 
     struct ye_entity * congratulations = ye_create_entity();
     ye_add_transform_component(congratulations, (struct ye_rectf){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
@@ -124,7 +125,7 @@ int main() {
 
     struct ye_entity * text = ye_create_entity();
     ye_add_transform_component(text, (struct ye_rectf){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", ye_font("Roboto40"), ye_color("black"), &red, 5);
+    ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", ye_font("PressStart2P-24"), ye_color("black"), &red, 5);
     ye_add_physics_component(text, 100, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
 
     // create some text entities that say "flipped x" "flipped y" and "flipped xy"

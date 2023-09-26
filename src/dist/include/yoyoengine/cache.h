@@ -53,14 +53,21 @@
 
     TODO:
     - destruction of individual cache items
-    - file based reading of styles.yoyo
     - caching of scene files
+
+    SHAPING:
+    scene.yoyo files can specify a styles.yoyo that it is dependant on... which scene manager can auto load
 */
 
 #ifndef YE_CACHE_H
 #define YE_CACHE_H
 
 #include <yoyoengine/yoyoengine.h>
+
+/*
+    Cache all fonts and colors in a styles.yoyo file.
+*/
+void ye_load_styles(char *styles_path);
 
 /*
     Will iterate through a .yoyo scene file and cache all of its textures.
@@ -101,7 +108,7 @@ void ye_swap_scene_cache(char *file_path);
         }
     }
 */
-void ye_pre_cache_style(char *file_path);
+void ye_pre_cache_styles(char *styles_path);
 
 /*
     Will close all cached textures.
@@ -131,9 +138,8 @@ void ye_clear_color_cache();
 /*
     Will initialize the caches.
     After this, any color font or texture can be cached at any time, or pre cached before a scene load.
-    This function will also parse styles.yoyo (if its not null) and load all fonts and colors.
 */
-void ye_init_cache(char *styles_path);
+void ye_init_cache();
 
 /*
     Will close all cached textures, fonts, and colors.
