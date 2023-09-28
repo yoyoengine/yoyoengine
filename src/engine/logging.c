@@ -92,7 +92,7 @@ void ye_logf(enum logLevel level, const char *format, ...){
     va_list args;
     va_start(args, format);
 
-    char text[512]; // Adjust the buffer size as needed
+    char text[1024]; // Adjust the buffer size as needed
     vsnprintf(text, sizeof(text), format, args);
 
     va_end(args);
@@ -281,7 +281,10 @@ void ye_paint_console(struct nk_context *ctx){
                     ye_print_entities();
                 }
                 else if(strcmp(userInput,"help")==0){
-                    ye_logf(debug,"Available commands: entlist, toggle paintbounds\n");
+                    ye_logf(debug,"Available commands: entlist, toggle paintbounds, toggle freecam, reload scene\n");
+                }
+                else if(strcmp(userInput,"reload scene")==0){
+                    ye_reload_scene();
                 }
                 // check if the first word (there can be words after seperated by spaces) is "toggle"
                 else if(strncmp(userInput,"toggle",6)==0){

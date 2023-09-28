@@ -84,10 +84,10 @@ bool ye_json_has_key(json_t* json, const char* key);
 bool ye_json_int(json_t* json, const char* key, int *out);
 
 /*
-    Extract a double from a json_t by key, assigning the passed double to it
+    Extract a float from a json_t by key, assigning the passed float to it
     Returns true if extraction was successful, false otherwise.
 */
-bool ye_json_double(json_t* json, const char* key, double *out);
+bool ye_json_float(json_t* json, const char* key, float *out);
 
 /*
     Extract a bool from a json_t by key, assigning the passed bool to it

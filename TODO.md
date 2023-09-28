@@ -113,3 +113,43 @@ all functions that dont modify char \* should be const char \* (optimization and
 ## caching
 
 ability to read the cache from a file into the cache in the background... could occur during splash screen and block until done... some sort of generic with loading screen also
+
+## scene files
+
+- the version integer denotes the version of the actual scene file format, not the version of the engine.
+- any key not parsed by the engine can be used as a comment, like "comment": "this is a comment"
+- if rect is unset it will be computed by bounds
+- alignment integer is the cooresponding enum value.
+  0 1 2
+  3 4 5
+  6 7 8
+  with 9 being stretch to fill
+- if flipped x or y are not present they are assumed to be false, really any sensible field that is not present is assumed to be a default value unless its critically necessary in which case it will just be skipped
+- really any enum field in component struct will be a int in file
+
+                    "rect":{
+                        "x":0,
+                        "y":0,
+                        "w":0,
+                        "h":0
+                    },
+
+it would be nice if scene manager knew entry point or last scene loaded to return to if critical error occurs
+
+- prefabs array holds the path to any prefab files that should be loaded into the scene
+  - if an item in the entities array has a prefab field, its current keys will be merged with the loaded prefab, any keys in the entity will override the prefab keys
+
+## MEMORY LEAKS
+
+- CRITICAL
+  - all engine resource gets are STRDUPED?!??!?! WTF WAS I THINKING
+
+## notes
+
+- most things serialized to json are integers rather than floats.
+
+## cache todo
+
+The actual implementation for scene change persisting already cached textures
+
+Caching prefab files assets pre. Loading prefabs into their own list so they are already constructed to instantiate? prefab is a field in entity struct but looks up into prefab list for it?

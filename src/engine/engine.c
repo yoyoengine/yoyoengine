@@ -25,15 +25,14 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
 #include <yoyoengine/yoyoengine.h>
-
-// engine version to be displayed on splash screen
-char * engine_version = "v0.0.1 dev";
 
 // buffer to hold filepath strings
 // will be modified by getPath()

@@ -34,3 +34,4 @@
 #include "uthash.h"
 #include "lua.h"
 #include "json.h"
+#include "scene.h"

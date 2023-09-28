@@ -26,8 +26,8 @@
     Normally, the scene manager will just clear the texture cache between scenes. The font and color cache will be cleared when the engine is shut down.
 
     This cache paradigm suits the intended use of the engine, as I envision loading all scene assets up front, and then clearing them when the scene is unloaded.
-    To minimize the overhead of loading textures that might not need to be cleared on scene switch, `ye_swap_scene_cache` is provided to only prune textures that
-    are not used in the new scene, and load any new textures that are needed.
+    To minimize the overhead of loading textures that might not need to be cleared on scene switch, `ye_pre_cache_scene` will reuse duplicate textures that have
+    already been cached when switching scenes.
 
     Pre caching a scene will be opt-in, and will be done by the scene manager. In the case of very large scenes, the developer can still load textures on demand,
     but will still need to find a way to pre-cache all their fonts and colors as needed.
@@ -65,22 +65,10 @@
 #include <yoyoengine/yoyoengine.h>
 
 /*
-    Cache all fonts and colors in a styles.yoyo file.
+    Will iterate through a .yoyo scene file and cache all of its textures. Any textures that can be reused from
+    the old scene will be carried over without reloading.
 */
-void ye_load_styles(char *styles_path);
-
-/*
-    Will iterate through a .yoyo scene file and cache all of its textures.
-
-    NOTE:
-    When implementing, consider that the scene file may reference prefabs from another file which could reference textures.
-*/
-void ye_pre_cache_scene(char *file_path);
-
-/*
-    Will iterate through a .yoyo scene file and cache all of its fonts and colors, copying over any repeats from the old cache and deleting any that are not used.
-*/
-void ye_swap_scene_cache(char *file_path);
+void ye_pre_cache_scene(json_t *scene);
 
 /*
     Will iterate through a .yoyo style file and cache all of its fonts and colors.

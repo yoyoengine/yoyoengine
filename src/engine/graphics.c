@@ -24,8 +24,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <jansson.h>
-
 #include <yoyoengine/yoyoengine.h>
 
 // define globals for file
@@ -547,7 +545,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     ye_logf(info, "IMG initialized.\n");
 
     // load icon to surface
-    printf("icon path: %s\n", icon_path);
     SDL_Surface *pIconSurface = IMG_Load(icon_path);
     if (pIconSurface == NULL) {
         ye_logf(error, "IMG_Load error: %s", IMG_GetError());

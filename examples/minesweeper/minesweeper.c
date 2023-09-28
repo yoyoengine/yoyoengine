@@ -73,14 +73,14 @@ int main() {
     ye_init_engine(data);
 
     // load styles for this scene
-    ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
+    // ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
 
     // runscript(ye_get_resource_static("scripts/fib.lua"));
 
     // camera
-    cam = ye_create_entity();
+    cam = ye_create_entity_named("camera");
     ye_add_transform_component(cam, (struct ye_rectf){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
-    ye_add_camera_component(cam, (SDL_Rect){0, 0, 1920, 1080});
+    ye_add_camera_component(cam, (SDL_Rect){0, 0, 2560, 1440});
 
     // set camera
     ye_set_camera(cam);
@@ -115,78 +115,90 @@ int main() {
 
     ye_destroy_entity(splash);
 
-    playSound(ye_get_resource_static("music/24songs.mp3"),-1,-1); // play music
+    // playSound(ye_get_resource_static("music/24songs.mp3"),-1,-1); // play music
 
-    struct ye_entity * entity = ye_create_entity();
-    ye_add_transform_component(entity, (struct ye_rectf){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(entity, ye_get_resource_static("images/wolf.jpeg"));
+    // struct ye_entity * entity = ye_create_entity();
+    // ye_add_transform_component(entity, (struct ye_rectf){0, 0, 1920, 1080}, 0, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(entity, ye_get_resource_static("images/wolf.jpeg"));
 
-    struct ye_entity * anno = ye_create_entity();
-    ye_add_transform_component(anno, (struct ye_rectf){500, -500, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(anno, ye_get_resource_static("images/anno.png"));
+    // struct ye_entity * anno = ye_create_entity();
+    // ye_add_transform_component(anno, (struct ye_rectf){500, -500, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(anno, ye_get_resource_static("images/anno.png"));
 
-    struct ye_entity * origin = ye_create_entity();
-    ye_add_transform_component(origin, (struct ye_rectf){0, 0, 200, 200}, 700, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("origin.png"));
+    // struct ye_entity * origin = ye_create_entity();
+    // ye_add_transform_component(origin, (struct ye_rectf){0, 0, 200, 200}, 700, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("origin.png"));
 
-    struct ye_entity * rei = ye_create_entity();
-    ye_add_transform_component(rei, (struct ye_rectf){600, -600, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(rei, ye_get_resource_static("images/rei.png"));
+    // struct ye_entity * rei = ye_create_entity();
+    // ye_add_transform_component(rei, (struct ye_rectf){600, -600, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(rei, ye_get_resource_static("images/rei.png"));
 
-    struct ye_entity * snerfbot = ye_create_entity();
-    ye_add_transform_component(snerfbot, (struct ye_rectf){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
+    // struct ye_entity * snerfbot = ye_create_entity();
+    // ye_add_transform_component(snerfbot, (struct ye_rectf){-900, 900, 1920, 1080}, -1, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
 
-    ye_cache_font("Roboto40", 40, ye_get_engine_resource_static("RobotoMono-Regular.ttf"));
-    // TTF_Font * font = ye_load_font(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
-    SDL_Color white = {255, 255, 255, 255};
-    SDL_Color red = {255, 0, 0, 255};
-    ye_cache_color("white", white);
-    ye_cache_color("red", red);
+    // ye_cache_font("Roboto40", 40, ye_get_engine_resource_static("RobotoMono-Regular.ttf"));
+    // // TTF_Font * font = ye_load_font(ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 40);
+    // SDL_Color white = {255, 255, 255, 255};
+    // SDL_Color red = {255, 0, 0, 255};
+    // ye_cache_color("white", white);
+    // ye_cache_color("red", red);
 
-    struct ye_entity * nic = ye_create_entity();
-    ye_add_transform_component(nic, (struct ye_rectf){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(nic, "Hello, World!", ye_font("PressStart2P-24"), ye_color("white"));
+    // struct ye_entity * nic = ye_create_entity();
+    // ye_add_transform_component(nic, (struct ye_rectf){0, 0, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_text_renderer_component(nic, "Hello, World!", ye_font("PressStart2P-24"), ye_color("white"));
 
-    struct ye_entity * congratulations = ye_create_entity();
-    ye_add_transform_component(congratulations, (struct ye_rectf){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
-    ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
+    // struct ye_entity * congratulations = ye_create_entity();
+    // ye_add_transform_component(congratulations, (struct ye_rectf){0, 400, 500, 300}, 820, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_animation_renderer_component(congratulations, ye_get_resource_static("animations/congratulations"), "jpg", 24, 100, -1);
 
-    struct ye_entity * congrats2 = ye_duplicate_entity(congratulations);
-    congrats2->transform->rect.y = 700;
+    // struct ye_entity * congrats2 = ye_duplicate_entity(congratulations);
+    // congrats2->transform->rect.y = 700;
 
-    struct ye_entity * text = ye_create_entity();
-    ye_add_transform_component(text, (struct ye_rectf){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", ye_font("PressStart2P-24"), ye_color("black"), &red, 5);
-    ye_add_physics_component(text, 100, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
+    // struct ye_entity * text = ye_create_entity();
+    // ye_add_transform_component(text, (struct ye_rectf){0, 200, 500, 300}, 800, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_text_outlined_renderer_component(text, "Congratulations!", ye_font("PressStart2P-24"), ye_color("black"), &red, 5);
+    // ye_add_physics_component(text, 100, 0); // TODO: we need to refactor transform to use floats instead of integers to go lower than this, and this is pretty fast for being the lowest
 
-    // create some text entities that say "flipped x" "flipped y" and "flipped xy"
-    struct ye_entity * flipped_x = ye_create_entity();
-    ye_add_transform_component(flipped_x, (struct ye_rectf){800, 200, 500, 300}, 600, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(flipped_x, "flipped x", ye_font("Roboto40"), &white);
-    flipped_x->transform->flipped_x = true;
+    // // create some text entities that say "flipped x" "flipped y" and "flipped xy"
+    // struct ye_entity * flipped_x = ye_create_entity();
+    // ye_add_transform_component(flipped_x, (struct ye_rectf){800, 200, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_text_renderer_component(flipped_x, "flipped x", ye_font("Roboto40"), &white);
+    // flipped_x->transform->flipped_x = true;
 
-    struct ye_entity * flipped_y = ye_create_entity();    
-    ye_add_transform_component(flipped_y, (struct ye_rectf){800, 300, 500, 300}, 600, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(flipped_y, "flipped y", ye_font("Roboto40"), &white);
-    flipped_y->transform->flipped_y = true;
+    // struct ye_entity * flipped_y = ye_create_entity();    
+    // ye_add_transform_component(flipped_y, (struct ye_rectf){800, 300, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_text_renderer_component(flipped_y, "flipped y", ye_font("Roboto40"), &white);
+    // flipped_y->transform->flipped_y = true;
 
-    struct ye_entity * flipped_xy = ye_create_entity();
-    ye_add_transform_component(flipped_xy, (struct ye_rectf){800, 400, 500, 300}, 600, YE_ALIGN_MID_CENTER);
-    ye_temp_add_text_renderer_component(flipped_xy, "flipped xy", ye_font("Roboto40"), &white);
-    flipped_xy->transform->flipped_x = true;
-    flipped_xy->transform->flipped_y = true;
+    // struct ye_entity * flipped_xy = ye_create_entity();
+    // ye_add_transform_component(flipped_xy, (struct ye_rectf){800, 400, 500, 300}, 600, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_text_renderer_component(flipped_xy, "flipped xy", ye_font("Roboto40"), &white);
+    // flipped_xy->transform->flipped_x = true;
+    // flipped_xy->transform->flipped_y = true;
 
-    struct ye_entity * dummy = ye_create_entity_named("dummy");
-    ye_rename_entity(dummy, "idiot");
+    // struct ye_entity * dummy = ye_create_entity_named("dummy");
+    // ye_rename_entity(dummy, "idiot");
 
-    struct ye_entity *cat = ye_create_entity_named("cat");
-    ye_add_transform_component(cat, (struct ye_rectf){1000, 800, 500, 500}, 0, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(cat, ye_get_resource_static("images/cat.png"));
-    ye_add_physics_component(cat, 0, 0);
-    cat->physics->rotational_velocity = 45.0;
-    cat->transform->center = (SDL_Point){100, 100};
+    // struct ye_entity *cat = ye_create_entity_named("cat");
+    // ye_add_transform_component(cat, (struct ye_rectf){1000, 800, 500, 500}, 0, YE_ALIGN_MID_CENTER);
+    // ye_temp_add_image_renderer_component(cat, ye_get_resource_static("images/cat.png"));
+    // ye_add_physics_component(cat, 0, 0);
+    // cat->physics->rotational_velocity = 45.0;
+    // cat->transform->center = (SDL_Point){100, 100};
 
+    ye_destroy_entity(ye_find_entity_named("camera"));
+
+    ye_load_scene(ye_get_resource_static("scenes/main.yoyo"));
+    ye_logf(info, "current scene: %s\n", ye_get_scene_name());
+    // struct ye_entity * denji = ye_find_entity_named("denji");
+    // if(denji == NULL) {
+    //     ye_logf(error, "denji is null\n");
+    // }
+    // else {
+    //     ye_logf(info, "denji is not null\n");
+    // }
+    // ye_temp_add_image_renderer_component(denji, ye_get_resource_static("images/rei.png"));
     // // intentionally create an object with a bad texture to see missing
     // struct ye_entity * missing = ye_create_entity_named("missing");
     // ye_add_transform_component(missing, (struct ye_rectf){1000, 800, 500, 500}, 10, YE_ALIGN_MID_CENTER);
@@ -206,15 +218,15 @@ int main() {
         */
 
         // if the x of text exceeds below zero or above 1000 reverse the velocity
-        if(text->transform->rect.x < 0 || text->transform->rect.x > 1000) {
-            text->physics->velocity.x *= -1;
-        }
+        // if(text->transform->rect.x < 0 || text->transform->rect.x > 1000) {
+        //     text->physics->velocity.x *= -1;
+        // }
 
-        // increase alpha til 255 then decreate to zero then repeat (for text)
-        text->renderer->alpha += 3;
-        if(text->renderer->alpha > 255) {
-            text->renderer->alpha = 0;
-        }
+        // // increase alpha til 255 then decreate to zero then repeat (for text)
+        // text->renderer->alpha += 3;
+        // if(text->renderer->alpha > 255) {
+        //     text->renderer->alpha = 0;
+        // }
         
         ye_process_frame();
     }

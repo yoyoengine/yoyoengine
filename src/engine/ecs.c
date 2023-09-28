@@ -270,6 +270,20 @@ void ye_destroy_entity(struct ye_entity * entity){
     engine_runtime_state.entity_count--;
 }
 
+struct ye_entity * ye_find_entity_named(char *name){
+    struct ye_entity_node *current = entity_list_head;
+
+    while(current != NULL){
+        ye_logf(warning, "Comparing %s to %s\n", current->entity->name, name);
+        if(strcmp(current->entity->name, name) == 0){
+            return current->entity;
+        }
+        current = current->next;
+    }
+
+    return NULL;
+}
+
 // struct ye_entity *ye_get_entity_by_id(int id){}
 
 // struct ye_entity *ye_get_entity_by_name(char *name){}
@@ -280,6 +294,9 @@ void ye_destroy_entity(struct ye_entity * entity){
 
 /////////////////////////  CAMERA   ////////////////////////////
 
+/*
+    Set a camera as the active camera renderer
+*/
 void ye_set_camera(struct ye_entity *entity){
     engine_state.target_camera = entity;
 }
@@ -572,10 +589,7 @@ void ye_remove_renderer_component(struct ye_entity *entity){
         free(entity->renderer->renderer_impl.text);
     }
     else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-        // free all frames in an animation
-        for(int i = 0; i < entity->renderer->renderer_impl.animation->frame_count; i++){
-            SDL_DestroyTexture(entity->renderer->renderer_impl.animation->frames[i]);
-        }
+        // cache will handle freeing the frames as needed
 
         free(entity->renderer->renderer_impl.animation->animation_path);
         free(entity->renderer->renderer_impl.animation->image_format);
@@ -583,9 +597,8 @@ void ye_remove_renderer_component(struct ye_entity *entity){
         free(entity->renderer->renderer_impl.animation);
     }
 
-    // destoy the texture. NOTE: if we have some cache system in future this would double free
-    SDL_DestroyTexture(entity->renderer->texture); // WRONG: this already does double free
-    
+    // cache will handle freeing the texture as needed
+
     free(entity->renderer);
     entity->renderer = NULL;
 

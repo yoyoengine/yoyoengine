@@ -26,8 +26,17 @@
 
 #include "graphics.h"
 
-#define intFail -666 // define global engine int fail num
+/*
+    Define some important constants to the engine
+*/
+#define YE_ENGINE_VERSION "v0.0.1 dev"
+#define YE_ENGINE_SCENE_VERSION 0 // version 0 of scene files
 
+#ifdef YE_BUILD_MODE
+    /*
+        Do things like limit the debug log output unless override is set
+    */
+#endif
 /*
     Reserve an internal font and color for the engine to use rendering
     overlays such as the fpsCounter. Font NULL until initialized in init()
@@ -123,6 +132,8 @@ struct engine_runtime_data {
     int painted_entity_count;
     int log_line_count;
     int audio_chunk_count;
+
+    char *scene_name;
 };
 
 void ye_process_frame();

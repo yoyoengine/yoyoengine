@@ -16,6 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/*
+    Entity Component System impl
+
+    TODO: defining custom systems and components would be of use to a game developer
+*/
+
 #ifndef ECS_H
 #define ECS_H
 
@@ -82,7 +88,7 @@ struct ye_component_camera {
     SDL_Rect view_field;    // view field of camera
 };
 
-// 2d vector TODO: should be float?
+// 2d vector
 struct ye_vec2f {
     float x;
     float y;
@@ -182,7 +188,7 @@ struct ye_component_renderer {
 
     union renderer_impl{ // hold the data for the specific renderer type
         struct ye_component_renderer_text *text;
-        struct ye_component_renderer_text *text_outlined;
+        struct ye_component_renderer_text_outlined *text_outlined;
         struct ye_component_renderer_image *image;
         struct ye_component_renderer_animation *animation;
     } renderer_impl;
@@ -274,6 +280,10 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity);
 */
 void ye_destroy_entity(struct ye_entity * entity);
 
+/*
+    Find entity by name, returns pointer to first entity of specified name, NULL if not found
+*/
+struct ye_entity * ye_find_entity_named(char *name);
 
 
 /////// Camera component ///////

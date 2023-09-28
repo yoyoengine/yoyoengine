@@ -26,9 +26,95 @@ struct ye_texture_node * cached_textures_head;
 struct ye_font_node * cached_fonts_head;
 struct ye_color_node * cached_colors_head;
 
+/*
+    Todo: properly error check and validate every field
+*/
+void ye_pre_cache_scene(json_t *scene){
+    if(scene == NULL){ // this should quite literally never be hit.
+        ye_logf(error,"%s","Invalid scene passed to pre_cache_scene.\n");
+        return;
+    }
+
+    // iterate through all objects in "entities", check if they have a "renderer" field,
+    // if so, check "impl"->"src" and load it as an image
+    json_t *entities = NULL;
+    ye_json_array(scene,"entities",&entities);
+    if(entities == NULL){
+        ye_logf(error,"%s","Failed to read entities from scene.\n");
+        return;
+    }
+    for(int i = 0; i < json_array_size(entities); i++){
+        json_t *entity = NULL;      ye_json_arr_object(entities,i,&entity);
+
+        // ye_json_log(entity);
+
+        // get components obj
+        json_t *components = NULL;  ye_json_object(entity,"components",&components);
+        if(components == NULL){
+            continue;
+        }
+
+        // skip if obj has no renderer component
+        if(!ye_json_has_key(components,"renderer")){
+            continue;
+        }
+
+        json_t *renderer = NULL;    ye_json_object(components,"renderer",&renderer);
+        if(renderer == NULL){
+            continue;
+        }
+
+        // get the type of renderer
+        int type_int;
+        if(!ye_json_int(renderer,"type",&type_int)) {
+            return;
+        }
+
+        enum ye_component_renderer_type type = (enum ye_component_renderer_type)type_int;        
+
+        json_t *impl = NULL;
+        ye_json_object(renderer,"impl",&impl);
+        if(impl == NULL){
+            continue;
+        }
+
+        switch(type){
+            case YE_RENDERER_TYPE_IMAGE:
+                char *src = NULL;
+                if(!ye_json_string(impl,"src",&src)){
+                    continue;
+                }
+                ye_image(ye_get_resource_static(src));
+                break;
+            case YE_RENDERER_TYPE_ANIMATION:
+                // cache all images in animation path/framenum.extension
+                char *path = NULL;
+                if(!ye_json_string(impl,"animation path",&path)){
+                    continue;
+                }
+                int frame_count;
+                if(!ye_json_int(impl,"frame count",&frame_count)){
+                    continue;
+                }
+                char *extension = NULL;
+                if(!ye_json_string(impl,"image format",&extension)){
+                    continue;
+                }
+                for(int i = 0; i<frame_count; ++i){
+                    char filename[256];  // Assuming a maximum filename length of 255 characters
+                    snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, extension); // TODO: dumb optimization but could cut out all except frame num insertion here
+                    ye_image(ye_get_resource_static(filename));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 void ye_pre_cache_styles(char *styles_path){
     if(styles_path == NULL){
-        ye_logf(debug,"%s","No styles path provided.");
+        ye_logf(debug,"%s","No styles path provided.\n");
         return;
     }
 

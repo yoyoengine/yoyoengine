@@ -98,7 +98,7 @@ bool ye_json_int(json_t* json, const char* key, int *out)
     return true;
 }
 
-bool ye_json_double(json_t* json, const char* key, double *out)
+bool ye_json_float(json_t* json, const char* key, float *out)
 {
     json_t* val = json_object_get(json, key);
     if (!val) {
@@ -106,7 +106,7 @@ bool ye_json_double(json_t* json, const char* key, double *out)
         return false;
     }
     if (!json_is_real(val)) {
-        ye_logf(warning, "json object key %s is not a double\n", key);
+        ye_logf(warning, "json object key %s is not a float\n", key);
         return false;
     }
     *out = json_real_value(val);
