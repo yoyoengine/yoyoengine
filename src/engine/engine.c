@@ -92,7 +92,7 @@ char* ye_get_resource_static(const char *sub_path) {
     }
 
     snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", resources_path, sub_path);
-    return strdup(resource_buffer);
+    return resource_buffer;
 }
 
 char* ye_get_engine_resource_static(const char *sub_path) {
@@ -104,7 +104,7 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     }
 
     snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_resources_path, sub_path);
-    return strdup(engine_reserved_buffer);
+    return engine_reserved_buffer;
 }
 
 // some functions to apply a value if its uninitialized /////////////////////
@@ -256,7 +256,7 @@ void ye_init_engine(struct engine_data data) {
     log_file_path = strdup(log_supplied_path); // Remember to free this memory later
 
     // Get the icon path
-    char *iconPath = data.icon_path ? ye_get_resource_static(data.icon_path) : ye_get_engine_resource_static("enginelogo.png");
+    char *iconPath = data.icon_path ? strdup(ye_get_resource_static(data.icon_path)) : strdup(ye_get_engine_resource_static("enginelogo.png"));
 
     // TODO: i know these first two should be fine but does iconpath go out of scope after this fn?
     data.engine_resources_path = engine_resources_path;

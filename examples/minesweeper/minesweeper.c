@@ -55,8 +55,9 @@ int main() {
         // .log_file_path = "resources/debug.log",
         .log_level = 0, // 0,
         .debug_mode = true, // no override exists for this - its a boolean
-        .volume = 64,
+        .volume = 0,
         .framecap = -1,
+        // .window_mode = 1,
         // .skipintro = true, // no override exists for this - its a boolean
 
         .handle_input = handle_input, // function for handling our input
@@ -66,6 +67,7 @@ int main() {
         .override_log_level = true,
         .override_volume = true,
         .override_framecap = true,
+        // .override_window_mode = true,
         // if you provide a false/bad override the engine will segfault...
     };
 
