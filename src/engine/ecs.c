@@ -620,7 +620,6 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 
     TODO:
     - fulcrum cull rotated entities
-    - render rotated entities
 
     NOTES:
     - Initially I tried some weird really complicated impl, which I will share details

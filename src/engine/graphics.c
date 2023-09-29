@@ -30,7 +30,6 @@
 SDL_Window *pWindow = NULL;
 SDL_Surface *pScreenSurface = NULL;
 SDL_Renderer *pRenderer = NULL;
-SDL_Texture* screen_buffer = NULL;
 
 // int that increments each renderObject created, allowing new unique id's to be assigned
 int lastChunkCount = 0;
@@ -50,13 +49,6 @@ int desiredFrameTime = 0;
 
 // initialize some variables in engine to track screen size
 float targetAspectRatio = 16.0f / 9.0f;
-int virtualWidth = 1920;
-int virtualHeight = 1080;
-int xOffset = 0;
-int yOffset = 0;
-
-int currentResolutionWidth = 1920;
-int currentResolutionHeight = 1080;
 
 /*
     Texture used for missing textures
@@ -66,32 +58,6 @@ SDL_Texture *missing_texture = NULL;
 // TODO: move most of engine runtime state into struct engine_data engine_state
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
-
-// converts a relative float to real screen pixel width
-int convertToRealPixelWidth(float in){
-    return (int)((float)in * (float)virtualWidth);
-}
-
-// converts a relative float to real screen pixel height
-int convertToRealPixelHeight(float in){
-    return (int)((float)in * (float)virtualHeight);
-}
-
-// creates a real screen pixel rect from relative float values
-SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h) {
-    int realX = convertToRealPixelWidth(x);
-    int realY = convertToRealPixelHeight(y);
-    int realW = convertToRealPixelWidth(w);
-    int realH = convertToRealPixelHeight(h);
-
-    if (centered) {
-        realX -= realW / 2;
-        realY -= realH / 2;
-    }
-
-    SDL_Rect rect = {realX, realY, realW, realH};
-    return rect;
-}
 
 /*
     Loads a font from a path and size, returns a pointer to the font, or NULL if failed
@@ -230,15 +196,6 @@ void renderAll() {
     // Clear the window with the set background color
     SDL_RenderClear(pRenderer);
 
-    // Set the render target to the screen buffer
-    SDL_SetRenderTarget(pRenderer, screen_buffer);
-    
-    // Set background color to black
-    SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-
-    // Clear the window with the set background color
-    SDL_RenderClear(pRenderer);
-
     // Get paint start timestamp
     Uint32 paintStartTime = SDL_GetTicks();
 
@@ -257,55 +214,16 @@ void renderAll() {
         }
     }
 
-
-    // INDEV TESTING: renderer system paint all entities with renderer
+    // render all entities
     ye_system_renderer(pRenderer);
 
     /*
-        If we are in the editor, we want to paint the scene to a nuklear window viewport
-        Then we paint the ui to the actual screen, not our intermediary buffer
+        Do anything special in editor mode
     */
-    if(engine_state.editor_mode){
-        // Reset the render target to the default
-        SDL_SetRenderTarget(pRenderer, NULL);
+    if(engine_state.editor_mode){}
 
-        // seems like we arent going to be able to paint the SDL_Texture into nuklear viewport (wihtout significant modification)
-        // so for now, lets just paint it to the upper 25% of the screen
-        SDL_Rect viewport;
-        viewport.x = 0;
-        viewport.y = 0;
-        viewport.w = currentResolutionWidth / 1.5;
-        viewport.h = currentResolutionHeight / 1.5;
-
-        // // draw some grid lines (offset by camera position) within the viweport bounds to serve as backdrop
-        // SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
-        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y, viewport.x + viewport.w, viewport.y);
-        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y, viewport.x, viewport.y + viewport.h);
-        // // SDL_RenderDrawLine(pRenderer, viewport.x + viewport.w, viewport.y, viewport.x + viewport.w, viewport.y + viewport.h);
-        // // SDL_RenderDrawLine(pRenderer, viewport.x, viewport.y + viewport.h, viewport.x + viewport.w, viewport.y + viewport.h);
-        // // we want a grid of 100x100 lines
-        // int gridWidth = 100;
-        // int gridHeight = 100;
-        // int gridX = viewport.x + (int)engine_state.target_camera->transform->rect.x % gridWidth;
-        // int gridY = viewport.y + (int)engine_state.target_camera->transform->rect.y % gridHeight;
-        // for(int i = 0; i < viewport.w / gridWidth; i++){
-        //     SDL_RenderDrawLine(pRenderer, gridX + (i * gridWidth), viewport.y, gridX + (i * gridWidth), viewport.y + viewport.h);
-        // }
-
-        SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);        
-
-        // update ui (TODO: profile if this is an expensive op)
-        ui_render();         
-    }else{
-        // update ui (TODO: profile if this is an expensive op)
-        ui_render(); 
-        
-        // Reset the render target to the default
-        SDL_SetRenderTarget(pRenderer, NULL);
-
-        // copy the screen buffer to the renderer
-        SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
-    }
+    // update ui (TODO: profile if this is an expensive op)
+    ui_render(); 
 
     // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);
@@ -335,137 +253,6 @@ void renderAll() {
     engine_runtime_state.frame_time = SDL_GetTicks() - frameStart;
 }
 
-// method to ensure our game content is centered and scaled well
-void setViewport(int screenWidth, int screenHeight){
-    // get our current aspect ratio
-    float currentAspectRatio = (float)screenWidth / (float)screenHeight;
-
-    // if aspect ratio is too wide
-    if (currentAspectRatio >= targetAspectRatio) {
-        // set our width to be the max that can accomidate the height
-        virtualWidth = (int)(screenHeight * targetAspectRatio);
-        virtualHeight = screenHeight;
-        xOffset = (screenWidth - virtualWidth) / 2;
-    } 
-    // if aspect ratio is too tall
-    else {
-        // set our width to be the max that can fit
-        virtualWidth = screenWidth;
-        virtualHeight = screenWidth / targetAspectRatio;
-        yOffset = (screenHeight - virtualHeight) / 2;
-    }
-
-    // debug outputs
-    ye_logf(debug, "Targeting aspect ratio: %f\n",targetAspectRatio);
-    ye_logf(debug, "Virtual Resolution: %dx%d\n",virtualWidth,virtualHeight);
-    ye_logf(debug, "(unused) offset: %dx%d\n",xOffset,yOffset);
-
-    // setup viewport with our virtual resolutions
-    SDL_Rect viewport;
-    viewport.x = xOffset;
-    viewport.y = yOffset;
-    viewport.w = virtualWidth;
-    viewport.h = virtualHeight;
-    SDL_RenderSetViewport(pRenderer, &viewport);
-}
-
-// /*
-//     method to change the window mode, flag passed in will set the window mode
-//     method will also change the resolution to match the new window mode:
-//     fullscreen - will auto detect screen resolution and set it
-//     windowed - will set the resolution to 1920x1080
-// */
-void changeWindowMode(Uint32 flag)
-{
-    int success = SDL_SetWindowFullscreen(pWindow, flag);
-    if(success < 0) 
-    {
-        ye_logf(error, "ERROR: COULD NOT CHANGE WINDOW MODE\n");
-        return;
-    }
-    else
-    {
-        ye_logf(info, "Changed window mode.\n");
-    }
-
-    if(flag == 0){
-        changeResolution(1920, 1080);
-    }
-    else{
-        SDL_DisplayMode displayMode;
-        if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
-            ye_logf(error, "SDL_GetCurrentDisplayMode failed!\n");
-            return;
-        }
-        int screenWidth = displayMode.w;
-        int screenHeight = displayMode.h;
-        
-        ye_logf(debug,  "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
-
-        changeResolution(screenWidth, screenHeight);
-    }
-}
-
-// /*
-//     Shuts down current renderer, creates a new renderer with or withou
-//     vsync according to passed bool
-// */
-void setVsync(bool enabled) {
-    SDL_DestroyRenderer(pRenderer);
-    ye_logf(debug, "Renderer destroyed to toggle vsync.\n");
-
-    uint32_t flags = SDL_RENDERER_ACCELERATED;
-    if (enabled) {
-        flags |= SDL_RENDERER_PRESENTVSYNC;
-    }
-
-    // Reset the texture filtering hint
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
-
-    pRenderer = SDL_CreateRenderer(pWindow, -1, flags);
-    ye_logf(debug, "Renderer re-created.\n");
-
-    if (pRenderer == NULL) {
-        ye_logf(warning,"ERROR RE-CREATING RENDERER\n");     
-        exit(1);
-    }
-
-    // NOTE: in fullscreen, resetting the render means we need to reset our viewport
-    setViewport(currentResolutionWidth,currentResolutionHeight);
-}
-
-// /*
-//     Changes the game fps cap to the passed integer
-//     TODO: add checks for if we need to change vsync to save performance
-// */
-void changeFPS(int cap){
-    if(cap == -1){
-        setVsync(true);
-    }
-    else{
-        setVsync(false);
-        fpscap = cap;
-        desiredFrameTime = 1000 / fpscap;
-    }
-}
-
-/*
-    returns a ScreenSize struct of the current resolution w,h
-*/
-struct ScreenSize getCurrentResolution(){
-    struct ScreenSize screensize = {currentResolutionWidth,currentResolutionHeight}; // TODO: this sucks
-    return screensize;
-}
-
-/*
-    Changes the game resolution to the passed width and height
-*/
-void changeResolution(int width, int height) {
-    SDL_SetWindowSize(pWindow, width, height);
-    setViewport(width, height);
-    currentResolutionWidth = width;
-    currentResolutionHeight = height;
-}
 
 // initialize graphics
 void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path){
@@ -516,21 +303,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
     init_ui(pWindow,pRenderer);
 
-    // TODO: only do this in debug mode, we need to check engine state for that
-    // TODO: the refactor is that this debug overlay needs to move to this file from ui.c, and use the local vars from here. i dont care enough to do this now
-    // ui_register_component(ui_paint_debug_overlay, "debug_overlay");
-
-    // set our viewport to the screen size with neccessary computed offsets
-    setViewport(screenWidth, screenHeight);
-
-    /*
-        Create our screen buffer
-
-        This will be used as a paint target seperate from what we present to the screen
-        This way we can paint our full output to either a texture/ui panel or the screen
-    */
-    screen_buffer = SDL_CreateTexture(pRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, screenWidth, screenHeight);
-    
     // test for TTF init, alarm if failed
     if (TTF_Init() == -1) {
         ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
