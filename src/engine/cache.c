@@ -120,7 +120,7 @@ void ye_pre_cache_styles(char *styles_path){
 
     // read fonts and colors from styles and cache them
     json_t *STYLES = ye_json_read(styles_path);
-    ye_json_log(STYLES);
+    // ye_json_log(STYLES);
     if(STYLES == NULL){
         ye_logf(error,"Failed to read styles file: %s\n",styles_path);
         json_decref(STYLES);

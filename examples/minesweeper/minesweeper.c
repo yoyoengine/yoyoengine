@@ -196,7 +196,7 @@ int main() {
     ye_destroy_entity(ye_find_entity_named("camera"));
 
     ye_load_scene(ye_get_resource_static("scenes/main.yoyo"));
-    ye_logf(info, "current scene: %s\n", ye_get_scene_name());
+    // ye_logf(info, "current scene: %s\n", ye_get_scene_name());
     // struct ye_entity * denji = ye_find_entity_named("denji");
     // if(denji == NULL) {
     //     ye_logf(error, "denji is null\n");

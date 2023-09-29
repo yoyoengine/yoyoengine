@@ -176,7 +176,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
     }
 
     switch(type){
-        ye_logf(info,"Constructing renderer: %s\n", entity_name);
+        // ye_logf(info,"Constructing renderer: %s\n", entity_name);
         case YE_RENDERER_TYPE_IMAGE:
 
             // set src to impl->src
@@ -361,7 +361,7 @@ void ye_construct_scene(json_t *entities){
             e = ye_create_entity();
         }
         else{
-            ye_logf(info,"Constructing entity: %s\n", entity_name);
+            // ye_logf(info,"Constructing entity: %s\n", entity_name);
             e = ye_create_entity_named(entity_name);
         }
 

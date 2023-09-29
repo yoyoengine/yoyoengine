@@ -158,7 +158,7 @@ struct ye_entity * ye_create_entity(){
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
-    ye_logf(debug, "Created and added an entity\n");
+    // ye_logf(debug, "Created and added an entity\n");
 
     engine_runtime_state.entity_count++;
 
@@ -190,7 +190,7 @@ struct ye_entity * ye_create_entity_named(char *name){
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
-    ye_logf(debug, "Created and added an entity\n");
+    // ye_logf(debug, "Created and added an entity\n");
 
     engine_runtime_state.entity_count++;
 
@@ -265,7 +265,7 @@ void ye_destroy_entity(struct ye_entity * entity){
 
     entity = NULL;
 
-    ye_logf(debug, "Destroyed an entity\n");
+    // ye_logf(debug, "Destroyed an entity\n");
 
     engine_runtime_state.entity_count--;
 }
@@ -274,7 +274,6 @@ struct ye_entity * ye_find_entity_named(char *name){
     struct ye_entity_node *current = entity_list_head;
 
     while(current != NULL){
-        ye_logf(warning, "Comparing %s to %s\n", current->entity->name, name);
         if(strcmp(current->entity->name, name) == 0){
             return current->entity;
         }
@@ -307,7 +306,7 @@ void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field){
     entity->camera->view_field = view_field; // the width height is all that matters here, because the actual x and y are inferred by its transform
 
     // log that we added a transform and to what ID
-    ye_logf(debug, "Added camera to entity %d\n", entity->id);
+    // ye_logf(debug, "Added camera to entity %d\n", entity->id);
 
     // add this entity to the camera component list
     ye_entity_list_add(&camera_list_head, entity);
@@ -349,7 +348,7 @@ void ye_add_transform_component(struct ye_entity *entity, struct ye_rectf bounds
     ye_entity_list_add(&transform_list_head, entity);
 
     // log that we added a transform and to what ID
-    ye_logf(debug, "Added transform to entity %d\n", entity->id);
+    // ye_logf(debug, "Added transform to entity %d\n", entity->id);
 }
 
 void ye_remove_transform_component(struct ye_entity *entity){
@@ -384,7 +383,7 @@ void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float 
     ye_entity_list_add(&physics_list_head, entity);
 
     // log that we added a physics and to what ID
-    ye_logf(debug, "Added physics component to entity %d\n", entity->id);
+    // ye_logf(debug, "Added physics component to entity %d\n", entity->id);
 }
 
 void ye_remove_physics_component(struct ye_entity *entity){
@@ -460,7 +459,7 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     ye_entity_list_add_sorted_z(&renderer_list_head, entity);
 
     // log that we added a renderer and to what ID
-    ye_logf(debug, "Added renderer to entity %d\n", entity->id);
+    // ye_logf(debug, "Added renderer to entity %d\n", entity->id);
 }
 
 void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
