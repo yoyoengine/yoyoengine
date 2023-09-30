@@ -20,8 +20,6 @@ cpython wrap engine so can use whole thing from python?
 
 new thread for timing delays, we can send a request with a callback ptr and it will do the awaiting on new thread
 
-animate the yoyo engine logo spinning on bootup
-
 stabilize the framework api before moving on to editor and python bindings
 
 timing functions
@@ -31,13 +29,9 @@ timing functions
 
 ## console
 
-- needs dynamic resizing
-- needs keybind to open/close
 - remember where console was before it was hidden
 
 completely rename engine function names (hit the few remaining)
-
-- merge most game code into this as framework (scene loading, etc)
 
 for ECS it would be nice to pass NULL to get some sensible defaults on some comps
 
@@ -45,16 +39,9 @@ would be nice to abbreviate a bunch of ECS function calls into a backwards compa
 
 input state machine
 
-timers and input not tied to frame rate...
-
 macro helpers for old style constructors
 
 port interactions to ecs
-
-sensible caching of fonts colors images automatically
-
-- this deserves its own full fledged cache system
-- possibly in the future this evolves into memory management + cache system
 
 particle emitter that just emits entities with transforms and physics components (super lighweight)
 
@@ -153,3 +140,9 @@ it would be nice if scene manager knew entry point or last scene loaded to retur
 The actual implementation for scene change persisting already cached textures
 
 Caching prefab files assets pre. Loading prefabs into their own list so they are already constructed to instantiate? prefab is a field in entity struct but looks up into prefab list for it?
+
+## camera
+
+rendering at a scale and from a camera pov is necessary for an engine, but this is tilting me so unbelievably hard. figure it out or make it a limitation. bitch.
+
+<https://chat.openai.com/share/8b657109-efd2-4b98-bf1c-0da309bed9f6>
