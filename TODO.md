@@ -146,3 +146,11 @@ Caching prefab files assets pre. Loading prefabs into their own list so they are
 rendering at a scale and from a camera pov is necessary for an engine, but this is tilting me so unbelievably hard. figure it out or make it a limitation. bitch.
 
 <https://chat.openai.com/share/8b657109-efd2-4b98-bf1c-0da309bed9f6>
+
+## editor
+
+we want a unique renderer for the editor
+
+## left off
+
+editor test object into scene verify game resource path constructed from path (editor specific things change bc editor executible is completely different folder)
