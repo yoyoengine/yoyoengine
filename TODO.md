@@ -147,10 +147,18 @@ rendering at a scale and from a camera pov is necessary for an engine, but this 
 
 <https://chat.openai.com/share/8b657109-efd2-4b98-bf1c-0da309bed9f6>
 
-## editor
-
-we want a unique renderer for the editor
-
 ## left off
 
 editor test object into scene verify game resource path constructed from path (editor specific things change bc editor executible is completely different folder)
+
+## renderer improvements
+
+rectangle renderer for things like camera preview - maybe just internal implementation for editor?
+
+## editor
+
+have to think a lot about how we will represent the editor heiarchy and work with it. I think its best to allow editor to iterate over render lists by exposing them as pointers in some editor only datastructure - or in engine runtime state?
+We will expose lists for editor to traverse on its own each frame and once we are satisfied with scene editor can dump it to a json (means we need to load all meta from json into editor for editing)
+another problem to solve is that we also need to make font and color work seamless in the editor.
+
+- figure out how we REALLY want to layout the editor. visual font and color loading would be nice but not strictly necessary for lack of time

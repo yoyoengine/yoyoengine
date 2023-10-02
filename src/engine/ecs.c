@@ -626,11 +626,27 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     For now, we literally just check an intersection of the object and the camera, and if it exists we
     copy the object to the renderer offset by the camera position.
     In the future we might want to return to the weird clip plane system, but for now this is fine.
+    - I'm making a REALLY stupid assumption that we dont really scale the camera viewfield outside of the
+    window resolution. I dont want to deal with the paint issues that i need to solve to truly paint from the cameras POV
 
     Some functions and relevant snippets to the old system:
     - SDL_RenderSetClipRect(renderer, &visibleRect);
+    - SDL_Rect rect = {0,0,640,320}; SDL_RenderSetViewport(pRenderer, &rect);
 */
 void ye_system_renderer(SDL_Renderer *renderer) {
+    // if we are in editor mode
+    if(engine_state.editor_mode){
+        // draw a grid of white evently spaced lines across the screen
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 50);
+        for(int i = 0; i < engine_state.target_camera->camera->view_field.w; i += 32){
+            SDL_RenderDrawLine(renderer, i, 0, i, engine_state.target_camera->camera->view_field.h);
+        }
+        for(int i = 0; i < engine_state.target_camera->camera->view_field.h; i += 32){
+            SDL_RenderDrawLine(renderer, 0, i, engine_state.target_camera->camera->view_field.w, i);
+        }
+    }
+
     // check if we have a non-null, active camera targeted
     if (engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active) {
         ye_logf(warning, "No active camera targeted. Skipping renderer system\n");
@@ -652,23 +668,27 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     while (current != NULL) {
         if (current->entity->renderer->active) {
             // check if renderer is animation and attemt to tick its frame if so
+            // TODO: this should be decoupled from the renderer and become its own system
             if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-                struct ye_component_renderer_animation *animation = current->entity->renderer->renderer_impl.animation;
-                if(!animation->paused){
-                    int now = SDL_GetTicks();
-                    if(now - animation->last_updated >= animation->frame_delay){
-                        animation->current_frame_index++;
-                        if(animation->current_frame_index >= animation->frame_count){
-                            animation->current_frame_index = 0;
-                            if(animation->loops != -1){
-                                animation->loops--;
-                                if(animation->loops == 0){
-                                    animation->paused = true; // TODO: dont just pause when it ends, but give option to destroy/ disable renderer
+                // if not editor mode (we want to not run animations in editor)
+                if(!engine_state.editor_mode){
+                    struct ye_component_renderer_animation *animation = current->entity->renderer->renderer_impl.animation;
+                    if(!animation->paused){
+                        int now = SDL_GetTicks();
+                        if(now - animation->last_updated >= animation->frame_delay){
+                            animation->current_frame_index++;
+                            if(animation->current_frame_index >= animation->frame_count){
+                                animation->current_frame_index = 0;
+                                if(animation->loops != -1){
+                                    animation->loops--;
+                                    if(animation->loops == 0){
+                                        animation->paused = true; // TODO: dont just pause when it ends, but give option to destroy/ disable renderer
+                                    }
                                 }
                             }
+                            animation->last_updated = now;
+                            current->entity->renderer->texture = animation->frames[animation->current_frame_index];
                         }
-                        animation->last_updated = now;
-                        current->entity->renderer->texture = animation->frames[animation->current_frame_index];
                     }
                 }
             }
@@ -701,7 +721,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     // scale it to be on screen and paint it
                     entity_rect.x = entity_rect.x - camera_rect.x;
                     entity_rect.y = entity_rect.y - camera_rect.y;
-      
+
                     // if transform is flipped or rotated render it differently
                     if(current->entity->transform->flipped_x || current->entity->transform->flipped_y){
                         SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -747,6 +767,30 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             }
         }
         current = current->next;
+    }
+
+    /*
+        additional post processing for editor mode    
+        RUNS ONCE AFTER ALL ENTITES ARE PAINTED
+    */
+    if(engine_state.editor_mode && engine_runtime_state.scene_default_camera != NULL){
+        // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
+        // SDL_Color color = {255, 255, 255, 255};
+        // SDL_Texture *text_texture = createTextTexture(current->entity->name, pEngineFont, &color);
+        // SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
+        // SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
+        // SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
+        // SDL_DestroyTexture(text_texture);
+
+        // draw box around viewport of engine_runtime_state.scene_default_camera
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_Rect scene_camera_rect = ye_convert_rectf_rect(engine_runtime_state.scene_default_camera->transform->rect);
+        scene_camera_rect.x = scene_camera_rect.x - camera_rect.x;
+        scene_camera_rect.y = scene_camera_rect.y - camera_rect.y;
+        scene_camera_rect.w = engine_runtime_state.scene_default_camera->camera->view_field.w;
+        scene_camera_rect.h = engine_runtime_state.scene_default_camera->camera->view_field.h;
+        SDL_RenderDrawRect(renderer, &scene_camera_rect);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 }
 

@@ -30,14 +30,7 @@
 SDL_Window *pWindow = NULL;
 SDL_Surface *pScreenSurface = NULL;
 SDL_Renderer *pRenderer = NULL;
-
-// int that increments each renderObject created, allowing new unique id's to be assigned
-int lastChunkCount = 0;
-int lastLinesWritten = 0;
-
-// NOTE: negative global_id's are reserved for engine components, 
-// and traversing the list to clear renderObjects will only clear 
-// non engine renderObjects
+SDL_Texture* screen_buffer = NULL;
 
 // fps related counters
 int fpsUpdateTime = 0;
@@ -46,9 +39,6 @@ int fps = 0;
 int startTime = 0;
 int fpscap = 0;
 int desiredFrameTime = 0;  
-
-// initialize some variables in engine to track screen size
-float targetAspectRatio = 16.0f / 9.0f;
 
 /*
     Texture used for missing textures
@@ -118,7 +108,6 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     return pTexture;
 }
 
-
 /*
     Create a text texture from a string, font, and color. Returns a pointer to the texture, or the default missing texture if failed
 */
@@ -187,18 +176,6 @@ SDL_Texture * ye_create_image_texture(char *pPath) {
 void renderAll() {
     int frameStart = SDL_GetTicks();
 
-    // Set the render target to the screen
-    SDL_SetRenderTarget(pRenderer, NULL);
-    
-    // Set background color to black
-    SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-
-    // Clear the window with the set background color
-    SDL_RenderClear(pRenderer);
-
-    // Get paint start timestamp
-    Uint32 paintStartTime = SDL_GetTicks();
-
     // if we are showing metrics and need to update them (this does not really save that much perf)
     if(engine_state.metrics_visible){
         // increment the frame counter
@@ -214,13 +191,50 @@ void renderAll() {
         }
     }
 
-    // render all entities
-    ye_system_renderer(pRenderer);
+    // Set the render target to the screen
+    SDL_SetRenderTarget(pRenderer, NULL);
+    
+    // Set background color to black
+    SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+
+    // Clear the window with the set background color
+    SDL_RenderClear(pRenderer);
 
     /*
         Do anything special in editor mode
     */
-    if(engine_state.editor_mode){}
+    if(engine_state.editor_mode){
+        // render all entities
+        ye_system_renderer(pRenderer);
+
+        // seems like we arent going to be able to paint the SDL_Texture into nuklear viewport (wihtout significant modification)
+        // so for now, lets just paint it to the upper 25% of the screen
+        SDL_Rect viewport;
+        viewport.x = 0;
+        viewport.y = 0;
+        viewport.w = engine_state.screen_width / 1.5;
+        viewport.h = engine_state.screen_height / 1.5;
+        SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);
+    }
+    else{
+        // Set the render target to the screen buffer
+        SDL_SetRenderTarget(pRenderer, screen_buffer);
+
+        // Set background color to black
+        SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+
+        // Clear the window with the set background color
+        SDL_RenderClear(pRenderer);
+
+        // render all entities
+        ye_system_renderer(pRenderer);
+
+        // Reset the render target to the default
+        SDL_SetRenderTarget(pRenderer, NULL);
+
+        // render the screen buffer to the screen
+        SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
+    }
 
     // update ui (TODO: profile if this is an expensive op)
     ui_render(); 
@@ -230,12 +244,6 @@ void renderAll() {
 
     // update the window to reflect the new renderer changes
     SDL_UpdateWindowSurface(pWindow);
-
-    // Get paint end timestamp
-    Uint32 paintEndTime = SDL_GetTicks();
-
-    // Calculate paint time
-    Uint32 paintTime = paintEndTime - paintStartTime;
 
     // set the end of the render frame
     int frameEnd = SDL_GetTicks();
@@ -356,4 +364,22 @@ void shutdownGraphics(){
     // shutdown window
     SDL_DestroyWindow(pWindow);
     ye_logf(info, "Shut down window.\n");
+}
+
+// helper function to get the current window size, if fullscreen it gets the monitor size
+struct ScreenSize ye_get_screen_size(){
+    struct ScreenSize screenSize;
+    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP){
+        SDL_DisplayMode DM;
+        SDL_GetDesktopDisplayMode(0, &DM);
+        screenSize.width = DM.w;
+        screenSize.height = DM.h;
+    }
+    else if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
+        SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
+    }
+    else {
+        SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
+    }
+    return screenSize;
 }

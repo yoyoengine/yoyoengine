@@ -487,13 +487,18 @@ void ye_load_scene(const char *scene_path){
         ye_logf(error,"Scene \"%s\" has no default camera\n", scene_path);
     }
     else{
-        ye_logf(info,"Setting default camera to: %s\n", default_camera_name);
         struct ye_entity *camera = ye_find_entity_named(default_camera_name);
-        if(camera == NULL){
-            ye_logf(error,"Scene \"%s\" has no camera named \"%s\"\n", scene_path, default_camera_name);
+        if(!engine_state.editor_mode){
+            ye_logf(info,"Setting default camera to: %s\n", default_camera_name);
+            if(camera == NULL){
+                ye_logf(error,"Scene \"%s\" has no camera named \"%s\"\n", scene_path, default_camera_name);
+            }
+            else{
+                ye_set_camera(camera);
+            }
         }
         else{
-            ye_set_camera(camera);
+            engine_runtime_state.scene_default_camera = camera;
         }
     }
 

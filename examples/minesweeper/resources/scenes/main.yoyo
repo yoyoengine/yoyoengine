@@ -58,8 +58,8 @@
                     "camera":{
                         "active":true,
                         "view field":{
-                            "w":2560,
-                            "h":1440
+                            "w":1920,
+                            "h":1080
                         }
                     }
                 }

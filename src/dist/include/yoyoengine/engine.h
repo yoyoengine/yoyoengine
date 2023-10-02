@@ -104,6 +104,9 @@ struct engine_data {
     // skip boolean overrides...
     bool override_window_title;
     // skip path overrides... (this is implicitly deducted by if the fields are NULL or not)
+    bool game_resources_path_absolute;
+    bool engine_resources_path_absolute;
+    // added the above for editor: allow overriding the path entirely, not assuming it starts from the executable
 
     // void pointer to a function that will be called to handle game input (takes in a SDL key)
     void (*handle_input)(SDL_Event event);
@@ -134,6 +137,10 @@ struct engine_runtime_data {
     int audio_chunk_count;
 
     char *scene_name;
+
+    // EDITOR SPECIFIC FIELDS BELOW
+
+    struct ye_entity *scene_default_camera; // this is set when the scene has its own declared camera, which cannot override the editor camera. we can draw a viewport for this cam
 };
 
 void ye_process_frame();

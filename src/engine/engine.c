@@ -141,6 +141,14 @@ void constructPath(char *result, size_t result_size, const char *base_path, cons
     }
 }
 
+void constructPathAbsolute(char *result, size_t result_size, const char *supplied_path, const char *default_path) {
+    if (supplied_path) {
+        strncpy(result, supplied_path, result_size);
+    } else {
+        strncpy(result, default_path, result_size);
+    }
+}
+
 /*
     Potentially clever thinking by me - just set defaults for non overridden values
     For booleans, we can completely skip this because they are initialized to false and need to be overriden to true
@@ -215,8 +223,10 @@ void ye_process_frame(){
     }
     ui_end_input_checks();
 
-    // update physics
-    ye_system_physics(); // TODO: decouple from framerate
+    if(!engine_state.editor_mode){
+        // update physics
+        ye_system_physics(); // TODO: decouple from framerate
+    }
 
     // render frame
     renderAll();
@@ -243,8 +253,18 @@ void ye_init_engine(struct engine_data data) {
 
     // Construct paths
     char engine_supplied_path[256], game_supplied_path[256], log_supplied_path[256];
-    constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
-    constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
+    if(data.engine_resources_path_absolute){
+        constructPathAbsolute(engine_supplied_path, sizeof(engine_supplied_path), data.engine_resources_path, engine_default_path);
+    }
+    else{
+        constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
+    }
+    if(data.game_resources_path_absolute){
+        constructPathAbsolute(game_supplied_path, sizeof(game_supplied_path), data.game_resources_path, game_default_path);
+    }
+    else{
+        constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
+    }
     constructPath(log_supplied_path, sizeof(log_supplied_path), executable_path, data.log_file_path, log_default_path);
 
     // check overrides to configure uninitialized fields to defaults
@@ -254,6 +274,9 @@ void ye_init_engine(struct engine_data data) {
     engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
     resources_path = strdup(game_supplied_path); // Remember to free this memory later
     log_file_path = strdup(log_supplied_path); // Remember to free this memory later
+
+    // log the engine resources path
+    // printf("Engine resources path: %s\n", engine_resources_path);
 
     // Get the icon path
     char *iconPath = data.icon_path ? strdup(ye_get_resource_static(data.icon_path)) : strdup(ye_get_engine_resource_static("enginelogo.png"));
@@ -266,6 +289,9 @@ void ye_init_engine(struct engine_data data) {
 
     // copy our final data struct into the global engine state
     engine_state = data;
+
+    // initialize the runtime state
+    engine_runtime_state.scene_default_camera = NULL;
 
     // ----------------- Begin Setup -------------------
 

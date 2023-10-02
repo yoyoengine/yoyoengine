@@ -6,10 +6,12 @@ CFLAGS = -Wall -Wextra -I$(ENGINE_BUILD)/include
 LDFLAGS = -L$(ENGINE_BUILD)/dependencies
 LDLIBS = -lyoyoengine -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16 -llua -lm -ljansson
 
-all: editor
+all: engine editor
+
+engine:
+	$(MAKE) -C $(dir $(ENGINE_MAKEFILE)) linux
 
 editor: editor.c
-	$(MAKE) -C $(dir $(ENGINE_MAKEFILE)) linux
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@ -Wl,-rpath=$(ENGINE_BUILD)/dependencies
 
 clean:

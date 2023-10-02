@@ -56,4 +56,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
 void shutdownGraphics();
 
+struct ScreenSize ye_get_screen_size();
+
 #endif
