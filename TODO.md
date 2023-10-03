@@ -162,3 +162,5 @@ We will expose lists for editor to traverse on its own each frame and once we ar
 another problem to solve is that we also need to make font and color work seamless in the editor.
 
 - figure out how we REALLY want to layout the editor. visual font and color loading would be nice but not strictly necessary for lack of time
+
+- could technically have preview from other cameras POV shouldnt be too hard but honestly out of scope and unnecessary

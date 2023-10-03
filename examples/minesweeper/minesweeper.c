@@ -73,6 +73,8 @@ int main() {
         .override_framecap = true,
         .override_window_mode = true,
         // if you provide a false/bad override the engine will segfault...
+
+        // .stretch_viewport = true,
     };
 
     // initialize engine with out data

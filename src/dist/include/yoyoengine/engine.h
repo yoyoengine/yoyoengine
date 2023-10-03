@@ -122,6 +122,13 @@ struct engine_data {
     bool freecam_enabled;
 
     struct ye_entity *target_camera;
+
+    /*
+        By default, the viewport will render from its actual perspective,
+        setting this to true will disable this behavior and simply paint any object in the
+        cameras view cone to the viewport actual position
+    */
+    bool stretch_viewport;
 };
 
 /*

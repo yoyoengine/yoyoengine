@@ -38,7 +38,7 @@ int frameCounter = 0;
 int fps = 0;
 int startTime = 0;
 int fpscap = 0;
-int desiredFrameTime = 0;  
+int desiredFrameTime = 0;
 
 /*
     Texture used for missing textures
@@ -200,6 +200,11 @@ void renderAll() {
     // Clear the window with the set background color
     SDL_RenderClear(pRenderer);
 
+    if(!engine_state.stretch_viewport){
+        float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
+        SDL_RenderSetScale(pRenderer, scaleX, scaleX);
+    }
+
     /*
         Do anything special in editor mode
     */
@@ -213,7 +218,7 @@ void renderAll() {
         viewport.x = 0;
         viewport.y = 0;
         viewport.w = engine_state.screen_width / 1.5;
-        viewport.h = engine_state.screen_height / 1.5;
+        viewport.h = engine_state.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
         SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);
     }
     else{
@@ -235,6 +240,7 @@ void renderAll() {
         // render the screen buffer to the screen
         SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
     }
+    SDL_RenderSetScale(pRenderer, 1.0f, 1.0f); // TODO profile performance of this, can look at source
 
     // update ui (TODO: profile if this is an expensive op)
     ui_render(); 

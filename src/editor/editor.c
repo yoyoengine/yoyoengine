@@ -52,6 +52,10 @@ int screenHeight;
 
 /*
     Registered input handler
+
+    TODO: 
+    - zoom in should center on the mouse or the center of the screen
+    - zoom should not work when not hovering viewport
 */
 void handle_input(SDL_Event event) {
     if(event.type == SDL_QUIT) {
@@ -88,6 +92,18 @@ void handle_input(SDL_Event event) {
             editor_camera->transform->rect.y -= dy;
             last_x = event.motion.x;
             last_y = event.motion.y;
+        }
+    }
+    else if (event.type == SDL_MOUSEWHEEL) {
+        if (event.wheel.y > 0) {
+            if(editor_camera->camera->view_field.w > 16){
+                editor_camera->camera->view_field.w -= 16;
+                editor_camera->camera->view_field.h -= 9;
+            }
+        }
+        else if (event.wheel.y < 0) {
+            editor_camera->camera->view_field.w += 16;
+            editor_camera->camera->view_field.h += 9;
         }
     }
 }
@@ -182,7 +198,7 @@ int main(int argc, char **argv) {
     // create our editor camera and register it with the engine
     editor_camera = ye_create_entity_named("editor_camera");
     ye_add_transform_component(editor_camera, (struct ye_rectf){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
-    ye_add_camera_component(editor_camera, (SDL_Rect){0, 0, 1920, 1080});
+    ye_add_camera_component(editor_camera, (SDL_Rect){0, 0, 2560, 1440});
     ye_set_camera(editor_camera);
 
     // register all editor ui components
