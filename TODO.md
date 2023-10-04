@@ -164,3 +164,9 @@ another problem to solve is that we also need to make font and color work seamle
 - figure out how we REALLY want to layout the editor. visual font and color loading would be nice but not strictly necessary for lack of time
 
 - could technically have preview from other cameras POV shouldnt be too hard but honestly out of scope and unnecessary
+
+- selected entity GOTO button
+
+- nuklear deselect when lose focus (scrolling affects ui even if not mouse over)
+
+- ui functions need decoupled from main, the setup of the editor project is really messy rn

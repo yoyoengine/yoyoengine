@@ -27,12 +27,6 @@ int eid = 0;
 
 //////////////////////// LINKED LIST //////////////////////////
 
-// Define a linked list structure for storing entities
-struct ye_entity_node {
-    struct ye_entity *entity;
-    struct ye_entity_node *next;
-};
-
 // Create a linked list for entities of a specific type (e.g., renderable entities)
 struct ye_entity_node *ye_entity_list_create() {
     return NULL; // Initialize an empty list
@@ -133,6 +127,14 @@ struct ye_entity_node *physics_list_head;
 
 // struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
+
+/*
+    Get the entity list head pointer
+    (For use outside this file, ex: the editor)
+*/
+struct ye_entity_node * ye_get_entity_list_head(){
+    return entity_list_head;
+}
 
 /*
     Create a new entity and return a pointer to it
@@ -635,7 +637,7 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 */
 void ye_system_renderer(SDL_Renderer *renderer) {
     // if we are in editor mode
-    if(engine_state.editor_mode){
+    if(engine_state.editor_mode && engine_runtime_state.editor_display_viewport_lines){
         // draw a grid of white evently spaced lines across the screen
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 50);
@@ -645,6 +647,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         for(int i = 0; i < engine_state.target_camera->camera->view_field.h; i += 32){
             SDL_RenderDrawLine(renderer, 0, i, engine_state.target_camera->camera->view_field.w, i);
         }
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 
     // check if we have a non-null, active camera targeted

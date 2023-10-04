@@ -26,6 +26,10 @@ This section is temporary and will be used to denote any important facts I need 
 - The engine is single threaded (except for audio)
 - Logging is unavailable until the engine is initialized (SDL needs loaded before we can use it)
 
+### editor
+
+- zooming too far out really messes with the SDL line renderer, and you will see weird visual artifacts.
+
 ## Dependencies
 
 > [!NOTE]  

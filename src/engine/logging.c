@@ -193,6 +193,11 @@ bool color_code = true;
         nk_window_get_bounds(ctx);
     
     in the future it would also be cool to toggle the log level threshold
+
+    TODO:
+    - with advent of the editor I would like for this to get moved out of here or at least the 
+      command logic so that its something the editor has control over, 
+      and can provide a visual interface for most commands
 */
 void ye_paint_console(struct nk_context *ctx){
     // Create the GUI layout

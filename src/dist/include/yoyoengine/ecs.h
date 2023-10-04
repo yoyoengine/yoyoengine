@@ -29,17 +29,13 @@
 #include <yoyoengine/utils.h>
 #include <stdbool.h>
 
-/*
-    Linked list structure for storing entities
-
-    The intent of this is to keep lists of entities that contain
-    certain components, so that systems can iterate through them
-    and act upon their components.
-*/
-struct ye_entity_list_item {
+// Define a linked list structure for storing entities
+struct ye_entity_node {
     struct ye_entity *entity;
-    struct ye_entity_list_item *next;
+    struct ye_entity_node *next;
 };
+
+struct ye_entity_node * ye_get_entity_list_head();
 
 /*
     Entity

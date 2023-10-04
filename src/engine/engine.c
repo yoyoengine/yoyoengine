@@ -292,6 +292,7 @@ void ye_init_engine(struct engine_data data) {
 
     // initialize the runtime state
     engine_runtime_state.scene_default_camera = NULL;
+    engine_runtime_state.selected_entity = NULL;
 
     // ----------------- Begin Setup -------------------
 

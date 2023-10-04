@@ -47,8 +47,16 @@ bool dragging = false;
 int last_x;
 int last_y;
 struct ye_entity * editor_camera;
+struct ye_entity * origin;
 int screenWidth;
 int screenHeight;
+struct ye_entity_node * entity_list_head;
+char *project_path;
+
+// some fields for current selected entity tracking (this will be messy)
+// actually lets be really smart and keep local copy
+struct ye_entity staged_entity;
+struct ye_component_transform staged_transform;
 
 /*
     Registered input handler
@@ -95,13 +103,17 @@ void handle_input(SDL_Event event) {
         }
     }
     else if (event.type == SDL_MOUSEWHEEL) {
-        if (event.wheel.y > 0) {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        if (event.wheel.y > 0 && x > 0 && x < screenWidth/1.5 &&
+            y > 0 && y < screenHeight/1.5) {
             if(editor_camera->camera->view_field.w > 16){
                 editor_camera->camera->view_field.w -= 16;
                 editor_camera->camera->view_field.h -= 9;
             }
         }
-        else if (event.wheel.y < 0) {
+        else if (event.wheel.y < 0 && x > 0 && x < screenWidth/1.5 &&
+            y > 0 && y < screenHeight/1.5) {
             editor_camera->camera->view_field.w += 16;
             editor_camera->camera->view_field.h += 9;
         }
@@ -113,21 +125,104 @@ void handle_input(SDL_Event event) {
 // EDITOR PANELS //
 
 
-
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
-    if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, screenHeight/1.5),
+    // if no selected entity its height will be full height, else its half
+    int height = engine_runtime_state.selected_entity == NULL ? screenHeight : screenHeight/2;
+    if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "Heiarchy", NK_TEXT_LEFT);
+            nk_label(ctx, "Controls:", NK_TEXT_LEFT);
+            if(nk_button_label(ctx, "New Entity")){
+                ye_create_entity();
+                entity_list_head = ye_get_entity_list_head();
+            }
+
+            nk_label(ctx, "Entities:", NK_TEXT_LEFT);
+
+            // iterate through entity_list_head and display the names of each entity as a button
+            struct ye_entity_node *current = entity_list_head;
+            while(current != NULL){
+                /*
+                    Honestly, should just leave editor camera in the heiarchy for fun lol
+                    Kinda funny that you could just nuke it if you wanted
+                */
+                if(current->entity == editor_camera || current->entity == origin){
+                    current = current->next;
+                    continue;
+                }
+                if(nk_button_label(ctx, current->entity->name)){
+                    if(engine_runtime_state.selected_entity == current->entity){
+                        engine_runtime_state.selected_entity = NULL;
+                        break;
+                    }
+                    engine_runtime_state.selected_entity = current->entity;
+                    entity_list_head = ye_get_entity_list_head();
+                    // set all our current entity staging fields
+                    staged_entity = *current->entity;
+                    break;
+                }
+                current = current->next;
+            }
         nk_end(ctx);
     }
 }
 
-void ye_editor_paint_bottom(struct nk_context *ctx){
-    if (nk_begin(ctx, "Other", nk_rect(0, screenHeight/1.5, screenWidth/1.5, screenHeight/1.5),
+/*
+    The entity preview will be a snapshot of the entity when selected, it will stash current state, and allow editing of the entity until
+    dev clicks "save" or "cancel"
+*/
+void ye_editor_paint_entity(struct nk_context *ctx){
+    if(engine_runtime_state.selected_entity == NULL){
+        return;
+    }
+    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 2, screenWidth - screenWidth/1.5, screenHeight),
+        NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
+            if(engine_runtime_state.selected_entity == NULL){
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label_colored(ctx, "No entity selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
+            }
+            else{
+                nk_layout_row_dynamic(ctx, 25, 2);
+                nk_label(ctx, "Name:", NK_TEXT_LEFT);
+                nk_label(ctx, engine_runtime_state.selected_entity->name, NK_TEXT_LEFT);
+
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label(ctx, "Components:", NK_TEXT_LEFT);
+                // iterate through the components and display them
+                // struct ye_component_node *current = selected_entity->component_list_head;
+                // while(current != NULL){
+                //     nk_layout_row_dynamic(ctx, 25, 1);
+                //     nk_label(ctx, current->component->name, NK_TEXT_LEFT);
+                //     current = current->next;
+                // }
+
+                // save or cancel buttons
+                nk_layout_row_dynamic(ctx, 25, 2);
+                if(nk_button_label(ctx, "Save")){}
+                if(nk_button_label(ctx, "Cancel")){
+                    engine_runtime_state.selected_entity = NULL;
+                }
+            }
+        nk_end(ctx);
+    }
+}
+
+void ye_editor_paint_project(struct nk_context *ctx){
+    if (nk_begin(ctx, "Project", nk_rect(0, screenHeight/1.5, screenWidth/1.5 / 2, screenHeight/1.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "Other", NK_TEXT_LEFT);
+            // button to open project settings
+            if(nk_button_label(ctx, "Project Settings")){}
+            if(nk_button_label(ctx, "Browse Project Files")){
+                char command[256];
+                snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path);
+
+                // Execute the command.
+                int status = system(command);
+            }
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
         nk_end(ctx);
     }
 }
@@ -137,8 +232,8 @@ void ye_editor_paint_bottom(struct nk_context *ctx){
     - paintbounds somehow starts out checked even though its not, so have to double click to turn on
     - if console is opened when we tick one of these, closing the console crashes
 */
-void ye_editor_paint_extra(struct nk_context *ctx){
-    if (nk_begin(ctx, "Extra", nk_rect(screenWidth/1.5, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
+void ye_editor_paint_options(struct nk_context *ctx){
+    if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             
@@ -147,8 +242,12 @@ void ye_editor_paint_extra(struct nk_context *ctx){
             nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);
             nk_checkbox_label(ctx, "Paintbounds", &engine_state.paintbounds_visible);
 
+            nk_label(ctx, "Preferences:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_checkbox_label(ctx, "Draw Lines", &engine_runtime_state.editor_display_viewport_lines);
+
             nk_label(ctx, "Extra:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_dynamic(ctx, 25, 1);
             nk_checkbox_label(ctx, "Stretch Viewport", &engine_state.stretch_viewport);
         nk_end(ctx);
     }
@@ -166,6 +265,7 @@ void ye_editor_paint_extra(struct nk_context *ctx){
 int main(int argc, char **argv) {
     // get our path from the command line
     char *path = argv[1];
+    project_path = path;
 
     // print the path
     // printf("path: %s\n", path);
@@ -216,10 +316,18 @@ int main(int argc, char **argv) {
 
     // register all editor ui components
     ui_register_component("heiarchy",ye_editor_paint_hiearchy);
-    ui_register_component("bottom",ye_editor_paint_bottom);
-    ui_register_component("extra",ye_editor_paint_extra);
+    ui_register_component("entity",ye_editor_paint_entity);
+    ui_register_component("options",ye_editor_paint_options);
+    ui_register_component("project",ye_editor_paint_project);
 
-    struct ye_entity *origin = ye_create_entity_named("origin");
+    /*
+        Heiarchy function that implements listing all items
+        This is called by two heiarchy ui's: full and mini. full is default, mini is shown when we have an entity selected
+
+        This is all proposed ^^^ more complicated than just maintaining mini because it will be on screen most of the time anyway
+    */
+
+    origin = ye_create_entity_named("origin");
     ye_add_transform_component(origin, (struct ye_rectf){-50, -50, 100, 100}, 0, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("originwhite.png"));
 
@@ -242,6 +350,8 @@ int main(int argc, char **argv) {
     else{
         ye_load_scene(ye_get_resource_static(entry_scene));
     }
+
+    entity_list_head = ye_get_entity_list_head();
 
     while(!quit) {
         ye_process_frame();
