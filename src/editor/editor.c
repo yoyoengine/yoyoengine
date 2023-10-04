@@ -132,11 +132,24 @@ void ye_editor_paint_bottom(struct nk_context *ctx){
     }
 }
 
+/*
+    TODO:
+    - paintbounds somehow starts out checked even though its not, so have to double click to turn on
+    - if console is opened when we tick one of these, closing the console crashes
+*/
 void ye_editor_paint_extra(struct nk_context *ctx){
     if (nk_begin(ctx, "Extra", nk_rect(screenWidth/1.5, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "Extra", NK_TEXT_LEFT);
+            
+            nk_label(ctx, "Visual Debugging:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);
+            nk_checkbox_label(ctx, "Paintbounds", &engine_state.paintbounds_visible);
+
+            nk_label(ctx, "Extra:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_checkbox_label(ctx, "Stretch Viewport", &engine_state.stretch_viewport);
         nk_end(ctx);
     }
 }

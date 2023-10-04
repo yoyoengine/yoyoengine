@@ -763,6 +763,16 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_RenderFillRect(renderer, &center_rect);
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }
+
+                    if(engine_state.editor_mode && engine_runtime_state.display_names){
+                        // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
+                        SDL_Color color = {255, 255, 255, 255};
+                        SDL_Texture *text_texture = createTextTexture(current->entity->name, pEngineFont, &color);
+                        SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
+                        SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
+                        SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
+                        SDL_DestroyTexture(text_texture);
+                    }
                 }
             }
         }
@@ -774,14 +784,6 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         RUNS ONCE AFTER ALL ENTITES ARE PAINTED
     */
     if(engine_state.editor_mode && engine_runtime_state.scene_default_camera != NULL){
-        // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
-        // SDL_Color color = {255, 255, 255, 255};
-        // SDL_Texture *text_texture = createTextTexture(current->entity->name, pEngineFont, &color);
-        // SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
-        // SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
-        // SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
-        // SDL_DestroyTexture(text_texture);
-
         // draw box around viewport of engine_runtime_state.scene_default_camera
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_Rect scene_camera_rect = ye_convert_rectf_rect(engine_runtime_state.scene_default_camera->transform->rect);

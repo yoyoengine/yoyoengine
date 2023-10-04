@@ -148,6 +148,8 @@ struct engine_runtime_data {
     // EDITOR SPECIFIC FIELDS BELOW
 
     struct ye_entity *scene_default_camera; // this is set when the scene has its own declared camera, which cannot override the editor camera. we can draw a viewport for this cam
+
+    bool display_names;
 };
 
 void ye_process_frame();
