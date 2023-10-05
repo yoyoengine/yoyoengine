@@ -2,3 +2,4 @@ build
 examples/minesweeper/debug.log
 src/editor/debug.log
 examples/test
+test

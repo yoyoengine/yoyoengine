@@ -170,3 +170,31 @@ another problem to solve is that we also need to make font and color work seamle
 - nuklear deselect when lose focus (scrolling affects ui even if not mouse over)
 
 - ui functions need decoupled from main, the setup of the editor project is really messy rn
+
+- way to register C functions or files to attatch and run certain things on during lifecycle of engine
+
+- better error detection and messages for paths rather than segfault. validate the result if the item even exists
+
+## build system
+
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Linux YoyoEngine on save",
+            "type": "shell",
+            "command": "${workspaceFolder}/engine/build_linux.sh", // Replace with the actual path to your script
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+        }
+    ]
+}
+
+tasks.json build on save
+
+test windows build
+
+Cmake for editor output

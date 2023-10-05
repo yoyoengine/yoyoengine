@@ -61,7 +61,10 @@ You can create, delete, and launch projects through this easily.
 
 ## Editor
 
-The editor is not yet implemented, but will be a visual editor for the engine. It will essentially be a "game" running the core framework to provide an easy way to layout scenes, and tools to build them together without writing the framework interfacing code yourself.
+> [!WARNING]  
+> The editor has only been tested on linux, and is incomplete. IT WILL PROBABLY NOT RUN ON WINDOWS!!!
+
+The editor is currently being worked on as a visual scene editor and build manager.
 
 ## Framework
 

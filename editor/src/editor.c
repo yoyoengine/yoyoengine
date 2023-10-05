@@ -265,6 +265,7 @@ void ye_editor_paint_options(struct nk_context *ctx){
 int main(int argc, char **argv) {
     // get our path from the command line
     char *path = argv[1];
+    printf("path: %s\n", path);
     project_path = path;
 
     // print the path
@@ -279,7 +280,7 @@ int main(int argc, char **argv) {
     snprintf(window_title, sizeof(window_title), "Yoyo Engine Editor - %s", YE_EDITOR_VERSION);
 
     struct engine_data data = {
-        .engine_resources_path = "../../build/linux/yoyoengine/engine_resources",
+        .engine_resources_path = "./engine_resources",
         .game_resources_path = resources_path,
         .window_title = window_title,
         .log_level = 0,
@@ -296,7 +297,7 @@ int main(int argc, char **argv) {
         .skipintro = true,
 
         .game_resources_path_absolute = true,
-        .engine_resources_path_absolute = true,
+        // .engine_resources_path_absolute = true,
 
         .debug_mode = true,
     };

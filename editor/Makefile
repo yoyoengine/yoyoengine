@@ -12,18 +12,19 @@ engine:
 	$(MAKE) -C $(dir $(ENGINE_MAKEFILE)) linux
 
 editor: editor.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@ -Wl,-rpath=$(ENGINE_BUILD)/dependencies
+	mkdir -p ./build/linux
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o ./build/linux/$@ -Wl,-rpath=$(ENGINE_BUILD)/dependencies
 
 clean:
-	rm -f editor
+	rm -f ./build/linux/editor
 
 debug_linux: CFLAGS += -DDEBUG -g
 debug_linux: editor
 
 gdb: clean debug_linux
-	gdb ./editor
+	gdb ./build/linux/editor
 
 valgrind: clean debug_linux
-	valgrind --leak-check=full --show-leak-kinds=all ./editor
+	valgrind --leak-check=full --show-leak-kinds=all ./build/linux/editor
 
 .PHONY: all clean

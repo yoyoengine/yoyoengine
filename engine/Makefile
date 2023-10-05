@@ -3,7 +3,6 @@ CC := gcc
 CFLAGS := -Wall -Wextra
 LDFLAGS := -shared
 SRC_DIR := src
-ENGINE_SRC_DIR := $(SRC_DIR)/engine
 BUILD_DIR := build
 OBJ_DIR := $(BUILD_DIR)/obj
 
@@ -17,8 +16,8 @@ else ifeq ($(filter osx-arm,$(MAKECMDGOALS)),osx-arm)
 endif
 
 # use our local copies of our libs to compile (TODO: fix for macos arm)
-CFLAGS += -I$(SRC_DIR)/dist/include
-LDFLAGS += -L$(SRC_DIR)/dist/$(PLATFORM)
+CFLAGS += -I./dist/include
+LDFLAGS += -L./dist/$(PLATFORM)
 LDLIBS += -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lfreetype -lmpg123 -lpng16 -llua -lm -ljansson
 
 # Enable debugging flags if the DEBUG variable is set
@@ -29,8 +28,8 @@ endif
 BIN_DIR := $(BUILD_DIR)/$(PLATFORM)/yoyoengine
 DIST_FILES := $(SRC_DIR)/dist/$(PLATFORM)
 
-SOURCES := $(wildcard $(ENGINE_SRC_DIR)/*.c)
-OBJECTS := $(patsubst $(ENGINE_SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
+SOURCES := $(wildcard $(SRC_DIR)/*.c)
+OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 ENGINE_NAME := libyoyoengine
 
