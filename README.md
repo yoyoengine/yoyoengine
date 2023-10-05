@@ -35,6 +35,8 @@ This section is temporary and will be used to denote any important facts I need 
 > [!NOTE]  
 > All C dependencies are included in this repository, besides a compiler and stdlib. Python dependencies are not included, and will need to be downloaded via pip.
 
+To build you need `cmake` and `make` installed. To run the editor you need `python3` and to run the launcher you need the tkinter dependencies listed below.
+
 ### Core & Editor
 
 - [SDL2](https://www.libsdl.org/)

@@ -1,0 +1,5 @@
+{
+    "platform":"linux",
+    "cflags":"-Wall -Wextra -g",
+    "engine_build_path":"/home/ryan/repos/yoyoengine/engine/build/linux"
+}
