@@ -94,18 +94,6 @@ struct engine_data {
     char *game_resources_path;
     char *log_file_path;
 
-    // overrides - this is confusing with what needs overridden and what doesnt TODO:
-    bool override_screen_width;
-    bool override_screen_height;
-    bool override_volume;
-    bool override_window_mode;
-    bool override_framecap;
-    bool override_log_level;
-    // skip boolean overrides...
-    bool override_window_title;
-    // skip path overrides... (this is implicitly deducted by if the fields are NULL or not)
-    bool game_resources_path_absolute;
-    bool engine_resources_path_absolute;
     // added the above for editor: allow overriding the path entirely, not assuming it starts from the executable
 
     // void pointer to a function that will be called to handle game input (takes in a SDL key)

@@ -204,3 +204,7 @@ Cmake for editor output
 ## rn
 
 - port over old pass in engine config system to use settings.yoyo
+
+## TODO
+
+- finalize api for custom declarations of C scripts, and port editor over to use it as a genuine actual engine project

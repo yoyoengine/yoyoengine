@@ -271,37 +271,10 @@ int main(int argc, char **argv) {
     // print the path
     // printf("path: %s\n", path);
 
-    // make a string "resources path" with resources/ appended
-    char resources_path[100];
-    snprintf(resources_path, sizeof(resources_path), "%s/resources", path);
+    ye_init_engine();
 
-    // set window title to "Yoyo Engine Editor - vX.X.X" as defined in YE_EDITOR_VERSION
-    char window_title[100];
-    snprintf(window_title, sizeof(window_title), "Yoyo Engine Editor - %s", YE_EDITOR_VERSION);
-
-    struct engine_data data = {
-        .engine_resources_path = "./engine_resources",
-        .game_resources_path = resources_path,
-        .window_title = window_title,
-        .log_level = 0,
-        .volume = 32,
-        // .window_mode = SDL_WINDOW_FULLSCREEN_DESKTOP,
-        // .override_window_mode = true,
-        .handle_input = handle_input,
-        .editor_mode = true,
-
-        .override_log_level = true,
-        .override_window_title = true,
-        .override_volume = true,
-
-        .skipintro = true,
-
-        .game_resources_path_absolute = true,
-        // .engine_resources_path_absolute = true,
-
-        .debug_mode = true,
-    };
-    ye_init_engine(data);
+    engine_state.editor_mode = true;
+    engine_state.handle_input = handle_input;
 
     // update screenWidth and screenHeight
     struct ScreenSize screenSize = ye_get_screen_size();

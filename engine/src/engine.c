@@ -97,29 +97,6 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     return engine_reserved_buffer;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-
-// TODO: STAGED FOR REMOVE AFTER NEXT COMMIT
-
-// // combines two paths together (sprintf's to result buffer)
-// void constructPath(char *result, size_t result_size, const char *base_path, const char *supplied_path, const char *default_path) {
-//     if (supplied_path) {
-//         snprintf(result, result_size, "%s%s", base_path, supplied_path);
-//     } else {
-//         strncpy(result, default_path, result_size);
-//     }
-// }
-
-// void constructPathAbsolute(char *result, size_t result_size, const char *supplied_path, const char *default_path) {
-//     if (supplied_path) {
-//         strncpy(result, supplied_path, result_size);
-//     } else {
-//         strncpy(result, default_path, result_size);
-//     }
-// }
-
-/////////////////////////////////////////////////////////////////////////////
-
 // event polled for per frame
 SDL_Event e;
 
@@ -183,6 +160,34 @@ float ye_get_delta_time(){
     return (float)engine_runtime_state.frame_time / 1000.0;
 }
 
+void set_setting_string(const char* key, char** value, json_t* settings) {
+    char * json_value;
+    if (ye_json_string(settings, key, &json_value)) {
+        *value = strdup(json_value);
+    }
+}
+
+void set_setting_int(const char* key, int* value, json_t* settings) {
+    int json_value;
+    if (ye_json_int(settings, key, &json_value)) {
+        *value = json_value;
+    }
+}
+
+void set_setting_bool(const char* key, bool* value, json_t* settings) {
+    bool json_value;
+    if (ye_json_bool(settings, key, &json_value)) {
+        *value = json_value;
+    }
+}
+
+void set_setting_float(const char* key, float* value, json_t* settings) {
+    float json_value;
+    if (ye_json_float(settings, key, &json_value)) {
+        *value = json_value;
+    }
+}
+
 /*
     Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
 */
@@ -220,36 +225,22 @@ void ye_init_engine() {
     else{
         ye_logf(info, "Found settings.yoyo file, using values from it.\n");
 
-        // // if settings file has override for engine resources path
-        // if(ye_json_has_key(SETTINGS, "engine_resources_path")){
-        //     const char *engine_resources_path;
-        //     if(ye_json_string(SETTINGS, "engine_resources_path", &engine_resources_path) != 0){
-        //         ye_logf(error, "Failed to read engine_resources_path from settings.yoyo, using default.\n");
-        //     }
-        //     else{
-        //         engine_state.engine_resources_path = strdup(engine_resources_path);
-        //         engine_state.engine_resources_path_absolute = true;
-        //     }
-        // }
-        // else{
-        //     engine_state.engine_resources_path_absolute = false;
-        // }
+        set_setting_string("engine_resources_path", &engine_state.engine_resources_path, SETTINGS);
+        set_setting_string("game_resources_path", &engine_state.game_resources_path, SETTINGS);
+        set_setting_string("log_file_path", &engine_state.log_file_path, SETTINGS);
+        set_setting_string("icon_path", &engine_state.icon_path, SETTINGS);
+        set_setting_string("window_title", &engine_state.window_title, SETTINGS);
 
-        // check if the settings file has a framecap
-        // if(ye_json_has_key(SETTINGS, "framecap")){
-        //     int framecap;
-        //     if(ye_json_int(SETTINGS, "framecap", &framecap) != 0){
-        //         ye_logf(error, "Failed to read framecap from settings.yoyo, using default.\n");
-        //     }
-        //     else{
-        //         engine_state.framecap = framecap;
-        //         engine_state.override_framecap = true;
-        //     }
-        // }
-        // else{
-        //     engine_state.framecap = -1;
-        //     engine_state.override_framecap = false;
-        // }
+        set_setting_int("window_mode", &engine_state.window_mode, SETTINGS);
+        set_setting_int("volume", &engine_state.volume, SETTINGS);
+        set_setting_int("log_level", &engine_state.log_level, SETTINGS);
+        set_setting_int("screen_width", &engine_state.screen_width, SETTINGS);
+        set_setting_int("screen_height", &engine_state.screen_height, SETTINGS);
+        set_setting_int("framecap", &engine_state.framecap, SETTINGS);
+
+        set_setting_bool("debug_mode", &engine_state.debug_mode, SETTINGS);
+        set_setting_bool("skipintro", &engine_state.skipintro, SETTINGS);
+        set_setting_bool("editor_mode", &engine_state.editor_mode, SETTINGS);
 
         json_decref(SETTINGS);
     }
