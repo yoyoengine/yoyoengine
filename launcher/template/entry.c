@@ -45,7 +45,8 @@ int main(/*int argc, char** argv*/){
     // ...etc. colliders and other triggers in future
     
     // intialize the engine (engine will look at ./settings.yoyo for configuration)
-    // ye_init_engine();
+    ye_init_engine();
+    printf("Game initialized successfully\n");
 
     #ifdef YOYO_POST_INIT
         // run the post init function
@@ -58,7 +59,7 @@ int main(/*int argc, char** argv*/){
     #endif
 
     // shutdown engine
-    // ye_shutdown_engine();
+    ye_shutdown_engine();
 
     #ifdef YOYO_POST_SHUTDOWN
         // run the post shutdown function

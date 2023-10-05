@@ -16,13 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    TODO: ENGINE
-    - (maybe) seperate some prinf output feedbacks into debug only
-    - run every file in gpt4 and ask for issues
-    - update all header files with the comment descriptions of the functions
-*/
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -78,100 +71,54 @@ struct ScreenSize getScreenSize(){
 }
 
 // Global variables for resource paths
-static const char *resources_path = NULL;
-static const char *engine_resources_path = NULL;
-static const char *log_file_path = NULL;
 char *executable_path = NULL;
 
 char* ye_get_resource_static(const char *sub_path) {
     static char resource_buffer[256];  // Adjust the buffer size as per your requirement
 
-    if (resources_path == NULL) {
+    if (engine_state.game_resources_path == NULL) {
         ye_logf(error, "Resource paths not set!\n");
         return NULL;
     }
 
-    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", resources_path, sub_path);
+    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", engine_state.game_resources_path, sub_path);
     return resource_buffer;
 }
 
 char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
-    if (engine_resources_path == NULL) {
+    if (engine_state.engine_resources_path == NULL) {
         ye_logf(error, "Engine reserved paths not set!\n");
         return NULL;
     }
 
-    snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_resources_path, sub_path);
+    snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_state.engine_resources_path, sub_path);
     return engine_reserved_buffer;
-}
-
-// some functions to apply a value if its uninitialized /////////////////////
-
-int applyDefaultInt(int value, int defaultValue) {
-    if (value != 0) {
-        return value;
-    }
-    return defaultValue;
-}
-
-bool applyDefaultBool(bool value, bool defaultValue) {
-    if (value) {
-        return value;
-    }
-    return defaultValue;
-}
-
-char* applyDefaultString(char* value, char* defaultValue) {
-    if (value != NULL && strlen(value) > 0) {
-        return value;
-    }
-    return (char*)defaultValue; // Cast away const for default value
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
-// combines two paths together (sprintf's to result buffer)
-void constructPath(char *result, size_t result_size, const char *base_path, const char *supplied_path, const char *default_path) {
-    if (supplied_path) {
-        snprintf(result, result_size, "%s%s", base_path, supplied_path);
-    } else {
-        strncpy(result, default_path, result_size);
-    }
-}
+// TODO: STAGED FOR REMOVE AFTER NEXT COMMIT
 
-void constructPathAbsolute(char *result, size_t result_size, const char *supplied_path, const char *default_path) {
-    if (supplied_path) {
-        strncpy(result, supplied_path, result_size);
-    } else {
-        strncpy(result, default_path, result_size);
-    }
-}
+// // combines two paths together (sprintf's to result buffer)
+// void constructPath(char *result, size_t result_size, const char *base_path, const char *supplied_path, const char *default_path) {
+//     if (supplied_path) {
+//         snprintf(result, result_size, "%s%s", base_path, supplied_path);
+//     } else {
+//         strncpy(result, default_path, result_size);
+//     }
+// }
 
-/*
-    Potentially clever thinking by me - just set defaults for non overridden values
-    For booleans, we can completely skip this because they are initialized to false and need to be overriden to true
-    (potential issue if we want it to default to true)
-*/
-void configute_defaults(struct engine_data *data){
-    if(!data->override_screen_width)
-        data->screen_width = 1920;
-    if(!data->override_screen_height)
-        data->screen_height = 1080;
-    if(!data->override_volume)
-        data->volume = 0;
-    if(!data->override_window_mode)
-        data->window_mode = 0;
-    if(!data->override_framecap)
-        data->framecap = -1;
-    if(!data->override_log_level)
-        data->log_level = 4;
-    if(!data->override_window_title)
-        data->window_title = "Yoyo Engine Window";
-    // we already have a ternery checking for uninitialized icon path
-    // game/engine resource paths are handed in init engine... move into here?
-}
+// void constructPathAbsolute(char *result, size_t result_size, const char *supplied_path, const char *default_path) {
+//     if (supplied_path) {
+//         strncpy(result, supplied_path, result_size);
+//     } else {
+//         strncpy(result, default_path, result_size);
+//     }
+// }
+
+/////////////////////////////////////////////////////////////////////////////
 
 // event polled for per frame
 SDL_Event e;
@@ -239,11 +186,9 @@ float ye_get_delta_time(){
 /*
     Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
 */
-void ye_init_engine(struct engine_data data) {
+void ye_init_engine() {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
-
-    // ----------------- Default Checks ----------------
 
     // Set default paths for engineResourcesPath and gameResourcesPath
     char engine_default_path[256], game_default_path[256], log_default_path[256];
@@ -251,44 +196,63 @@ void ye_init_engine(struct engine_data data) {
     snprintf(game_default_path, sizeof(game_default_path), "%sresources", executable_path);
     snprintf(log_default_path, sizeof(log_default_path), "%sdebug.log", executable_path);
 
-    // Construct paths
-    char engine_supplied_path[256], game_supplied_path[256], log_supplied_path[256];
-    if(data.engine_resources_path_absolute){
-        constructPathAbsolute(engine_supplied_path, sizeof(engine_supplied_path), data.engine_resources_path, engine_default_path);
+    // set defaults for engine state
+    engine_state.framecap = -1;
+    engine_state.screen_width = 1920;
+    engine_state.screen_height = 1080;
+    engine_state.window_mode = 0;
+    engine_state.volume = 64;
+    engine_state.window_title = "Yoyo Engine Window";
+
+    // set default paths, if we have an override we can change them later
+    engine_state.engine_resources_path = strdup(engine_default_path);
+    engine_state.game_resources_path = strdup(game_default_path);
+    engine_state.log_file_path = strdup(log_default_path);
+    engine_state.icon_path = strdup(ye_get_engine_resource_static("enginelogo.png"));
+
+    engine_state.log_level = 4;
+
+    // check if ./settings.yoyo exists (if not, use defaults)
+    json_t *SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+    if (SETTINGS == NULL) {
+        ye_logf(warning, "No settings.yoyo file found, using defaults.\n");
     }
     else{
-        constructPath(engine_supplied_path, sizeof(engine_supplied_path), executable_path, data.engine_resources_path, engine_default_path);
+        ye_logf(info, "Found settings.yoyo file, using values from it.\n");
+
+        // // if settings file has override for engine resources path
+        // if(ye_json_has_key(SETTINGS, "engine_resources_path")){
+        //     const char *engine_resources_path;
+        //     if(ye_json_string(SETTINGS, "engine_resources_path", &engine_resources_path) != 0){
+        //         ye_logf(error, "Failed to read engine_resources_path from settings.yoyo, using default.\n");
+        //     }
+        //     else{
+        //         engine_state.engine_resources_path = strdup(engine_resources_path);
+        //         engine_state.engine_resources_path_absolute = true;
+        //     }
+        // }
+        // else{
+        //     engine_state.engine_resources_path_absolute = false;
+        // }
+
+        // check if the settings file has a framecap
+        // if(ye_json_has_key(SETTINGS, "framecap")){
+        //     int framecap;
+        //     if(ye_json_int(SETTINGS, "framecap", &framecap) != 0){
+        //         ye_logf(error, "Failed to read framecap from settings.yoyo, using default.\n");
+        //     }
+        //     else{
+        //         engine_state.framecap = framecap;
+        //         engine_state.override_framecap = true;
+        //     }
+        // }
+        // else{
+        //     engine_state.framecap = -1;
+        //     engine_state.override_framecap = false;
+        // }
+
+        json_decref(SETTINGS);
     }
-    if(data.game_resources_path_absolute){
-        constructPathAbsolute(game_supplied_path, sizeof(game_supplied_path), data.game_resources_path, game_default_path);
-    }
-    else{
-        constructPath(game_supplied_path, sizeof(game_supplied_path), executable_path, data.game_resources_path, game_default_path);
-    }
-    constructPath(log_supplied_path, sizeof(log_supplied_path), executable_path, data.log_file_path, log_default_path);
-
-    // check overrides to configure uninitialized fields to defaults
-    configute_defaults(&data);
-
-    // Update global locations for resources
-    engine_resources_path = strdup(engine_supplied_path); // Remember to free this memory later
-    resources_path = strdup(game_supplied_path); // Remember to free this memory later
-    log_file_path = strdup(log_supplied_path); // Remember to free this memory later
-
-    // log the engine resources path
-    // printf("Engine resources path: %s\n", engine_resources_path);
-
-    // Get the icon path
-    char *iconPath = data.icon_path ? strdup(ye_get_resource_static(data.icon_path)) : strdup(ye_get_engine_resource_static("enginelogo.png"));
-
-    // TODO: i know these first two should be fine but does iconpath go out of scope after this fn?
-    data.engine_resources_path = engine_resources_path;
-    data.game_resources_path = resources_path;
-    data.log_file_path = log_file_path;
-    data.icon_path = iconPath;
-
-    // copy our final data struct into the global engine state
-    engine_state = data;
 
     // initialize the runtime state
     engine_runtime_state.scene_default_camera = NULL;
@@ -327,7 +291,7 @@ void ye_init_engine(struct engine_data data) {
     pEngineFontColor->a = 255;
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
-    ye_log_init(log_file_path);
+    ye_log_init(engine_state.log_file_path);
 
     if(engine_state.editor_mode){
         ye_logf(info, "Detected editor mode.\n");
@@ -451,6 +415,10 @@ void ye_shutdown_engine(){
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();
+    free(engine_state.log_file_path);
+    free(engine_state.engine_resources_path);
+    free(engine_state.game_resources_path);
+    free(engine_state.icon_path);
     SDL_free(base_path); // free base path after (used by logging)
     SDL_free(executable_path); // free base path after (used by logging)
 

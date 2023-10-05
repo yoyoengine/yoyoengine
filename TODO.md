@@ -200,3 +200,7 @@ tasks.json build on save
 test windows build
 
 Cmake for editor output
+
+## rn
+
+- port over old pass in engine config system to use settings.yoyo

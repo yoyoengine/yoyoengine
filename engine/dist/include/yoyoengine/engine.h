@@ -160,8 +160,11 @@ void ye_process_frame();
 
 float ye_get_delta_time();
 
-// entry point to the engine, initializes all subsystems
-void ye_init_engine(struct engine_data data);
+/*
+    entry point to the engine, initializes all subsystems
+    Will look at ./settings.yoyo for initialization parameters (if empty or nonexistant will use defaults)
+*/
+void ye_init_engine();
 
 // shutdown point for engine, shuts down all subsystems
 void ye_shutdown_engine();

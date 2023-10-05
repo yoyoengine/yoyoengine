@@ -71,7 +71,9 @@ void ye_open_log(){
 }
 
 void ye_close_log(){
-    fclose(logFile);
+    if(logFile != 0x0){
+        fclose(logFile);
+    }
 }
 
 /*

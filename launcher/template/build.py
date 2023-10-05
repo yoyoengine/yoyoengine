@@ -100,7 +100,7 @@ cmake_file.write("add_executable(${EXECUTIBLE_NAME} ${SOURCES} ${CUSTOM_SOURCES}
 
 cmake_file.write("file(GLOB LIB_FILES "+build_dir+"/lib/*.so)\n")
 
-cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} ${LIB_FILES})\n")
+cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES} SDL2_mixer SDL2_ttf SDL2_image lua jansson)\n")
 
 cmake_file.close()
 
@@ -121,6 +121,23 @@ subprocess.run(["make", "-C", "./build/" + build_platform])
 # print out the executible we built
 print("----------------------------------")
 print("Built Executible:\n" + current_dir + "/build/" + build_platform + "/" + game_name)
+
+print("Cleaning up Cmake artifacts...")
+
+# remove the CMakeLists.txt file, the CMakeFiles folder, and the cmake_install.cmake file and the CMakeCache.txt file and the Makefile
+os.remove("./build/CMakeLists.txt")
+shutil.rmtree("./build/" + build_platform + "/CMakeFiles")
+os.remove("./build/" + build_platform + "/cmake_install.cmake")
+os.remove("./build/" + build_platform + "/CMakeCache.txt")
+os.remove("./build/" + build_platform + "/Makefile")
+
+print("Cleaning up headers...")
+
+# remove /build/<platform>/include
+shutil.rmtree("./build/" + build_platform + "/include")
+
+print("----------------------------------")
+
 # print out "done" in green
 print("\033[92m" + "Done!" + "\033[0m")
 
