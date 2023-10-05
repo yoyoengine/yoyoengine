@@ -1,21 +1,14 @@
 # Yoyo Engine (WIP)
 
-A 2D graphics engine (currently framework) with optional visual novel engine capabilities, written in C using SDL2, SDL2_image, SDL2_ttf, and SDL2_mixer. All dependecies besides a C compiler and standard libary are included in this repository.
+My 2D Game Engine written in C, based off of SDL.
+
+Provides most functionality you would expect from a modern game engine, including a visual editor, launcher, and build system.
+
+The editor projects are setup in such a way that all of your game logic can be implemented in C, or you can forgo C entirely and use lua scripting for your game logic. There is nothing stopping you from using both.
+
+This repository comes with most library dependencies, but you will need to install some of the external dependencies listed later in this readme.
 
 ![Drawing](https://github.com/Yoyolick/SCDG/assets/43967290/f98545d1-c4ba-419e-a674-da436f591d23)
-
-## Goals
-
-- allow usage as
-  - a framework in C
-  - a framework with python bindings
-- an engine through an editor
-  - some sort of scripting integration
-    - lua?
-    - C#?
-    - native C scripting?
-- optional visual novel features that can be opted into as scene presets
-  - maybe this takes the form of easily sharable scenes exportable into presets
 
 ## Notices
 
@@ -25,6 +18,8 @@ This section is temporary and will be used to denote any important facts I need 
 - only text or png images can have their alpha modulated
 - The engine is single threaded (except for audio)
 - Logging is unavailable until the engine is initialized (SDL needs loaded before we can use it)
+- THE LAUNCHER AND EDITOR TOOLCHAIN HAS ONLY BEEN TESTED ON LINUX. OPEN AN ISSUE IF YOU NEED WINDOWS SUPPORT.
+- NOTE: make this section limitations and have a seperate notices
 
 ### editor
 
@@ -32,12 +27,22 @@ This section is temporary and will be used to denote any important facts I need 
 
 ## Dependencies
 
-> [!NOTE]  
-> All C dependencies are included in this repository, besides a compiler and stdlib. Python dependencies are not included, and will need to be downloaded via pip.
+> [!WARNING]  
+> You will need all of the below dependencies installed, besides the **Core & Editor** dependencies, as they come preinstalled.
 
-To build you need `cmake` and `make` installed. To run the editor you need `python3` and to run the launcher you need the tkinter dependencies listed below.
+### Tooling
+
+- A C compiler (gcc, clang, etc)
+- [git](https://git-scm.com/)
+- [cmake](https://cmake.org/)
+- [make](https://www.gnu.org/software/make/)
+- [python3](https://www.python.org/)
+- [pip](https://pypi.org/project/pip/)
 
 ### Core & Editor
+
+> [!NOTE]  
+> All of these libraries are included in this repository, and do not need to be installed.
 
 - [SDL2](https://www.libsdl.org/)
 - [SDL2_image](https://www.libsdl.org/projects/SDL_image/)
@@ -68,9 +73,9 @@ You can create, delete, and launch projects through this easily.
 
 The editor is currently being worked on as a visual scene editor and build manager.
 
-## Framework
+## Core
 
-The framework is implemented in C, and is planned to have a Cpython wrapper available as well. Extensive docs to the framework API will be linked here when complete.
+The core engine is implemented in C, with a possible Cpython wrapper available later on. Extensive docs to the framework API will be linked here when complete.
 
 ## Plans
 
@@ -79,20 +84,20 @@ These plans are currently sorted in order of my anticipated completion.
 - [X] Basic engine functionality (Audio, Rendering, Text, etc)
 - [X] Nuklear UI integration
 - [x] Entity Component System
-- [ ] Collision detection
+- [X] Serialization
+- [X] Visual Editor
 - [ ] Implement native C scripting
-- [ ] Decide on a non native (lua, C#) scripting language and implement it
+- [ ] Lua Scripting API
+- [ ] Collision detection
 - [ ] Stabilize the core framework API
-- [ ] Serialization
-- [ ] Implement a Cpython wrapper
-- [ ] Visual Editor
 - [ ] Overhaul the Project Manager
 - [ ] Example projects and tutorials
 - [ ] Documentation website
-- [ ] Networking (Stretch for after 1.0)
 
 Some features that aren't planned but I would like to implement eventually:
 
+- [ ] Networking (Stretch for after 1.0)
+- [ ] Implement a Cpython wrapper
 - [ ] Bundling assets into production data files
 - [ ] 3D rendering
 - [ ] Mac support
@@ -100,4 +105,4 @@ Some features that aren't planned but I would like to implement eventually:
 
 ## Credit
 
-- The dependencies and Jojo's Bizarre Adventure for the bootup screen sound effect.
+- The listed dependencies and Jojo's Bizarre Adventure for the bootup screen sound effect.
