@@ -26,3 +26,16 @@ The launcher will create a project directory with the following structure:
 `/resources` contains a `style.yoyo` file which describes all declared fonts and colors to be used in the project.
 
 `/resources/scenes` contains all the scenes in the project. Scenes are `.yoyo` files which contain a list of entities and components.
+
+## build system
+
+should actually be pretty easy now that we are using cmake.
+
+1. Get the build parameters from the project file
+   1. Platform
+   2. Compiler (prob force gcc)
+   3. Any extra C files they want to include. The entry point might also need auto generated, unless we make a generic entry point which loads params from file. This is prob the best choice. It has gotten absurdly messy to try to pass everything in as flags with overrides.
+2. Generate a `CMakeLists.txt` file
+3. Run cmake
+4. Build the project
+5. Thats it!

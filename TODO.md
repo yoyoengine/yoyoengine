@@ -175,6 +175,8 @@ another problem to solve is that we also need to make font and color work seamle
 
 - better error detection and messages for paths rather than segfault. validate the result if the item even exists
 
+- read "editor preferences" out of .yoyo for persisting some state between sessions. not rlly necessary but would be nice
+
 ## build system
 
 {

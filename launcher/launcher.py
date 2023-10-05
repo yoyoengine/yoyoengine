@@ -114,34 +114,17 @@ def new_project():
 
     # Create a new directory for the project
     new_project_path = os.path.join(project_path, project_name)
-    os.makedirs(new_project_path)
 
-    """
-    Construct the following directory structure inside the project dir:
-    .
-    ├── resources
-    │   ├── scenes
-    │   │   └── scene1.yoyo
-    │   └── style.yoyo
-    ├── settings.yoyo
-    └── Makefile
-    """
-    os.makedirs(os.path.join(new_project_path, "resources"))
-    os.makedirs(os.path.join(new_project_path, "resources", "scenes"))
-    with open(os.path.join(new_project_path, "resources", "scenes", "scene1.yoyo"), "w") as f:
-        f.write("{}")
-    with open(os.path.join(new_project_path, "resources", "style.yoyo"), "w") as f:
-        f.write("{}")
-    with open(os.path.join(new_project_path, "settings.yoyo"), "w") as f:
-        f.write("{}")
-    with open(os.path.join(new_project_path, "Makefile"), "w") as f:
-        f.write("")
+    # copy ./templates/* to new_project_path
+    import shutil
+    print(os.path.join(script_dir, "template"))
+    shutil.copytree(os.path.join(script_dir, "template"), new_project_path)
 
     # Update launcher.json
     launcher_json["projects"].append({"name": project_name, "path": project_path})
     update_json()
 
-    open_editor(project_path)
+    open_editor(new_project_path)
 
 # Create buttons for new project and settings
 new_project_button = customtkinter.CTkButton(master=app, text="New Project", command=new_project)

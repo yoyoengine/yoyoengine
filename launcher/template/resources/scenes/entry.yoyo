@@ -1,0 +1,39 @@
+{
+    "name": "entry",
+    "version": 0,
+    "styles":["styles.yoyo"],
+    "prefabs":[],
+    "scene":{
+        "default camera":"scene camera",
+        "entities":[
+            {
+                "name":"scene camera",
+                "active":true,
+                "components":{
+                    "transform":{
+                        "active":true,
+                        "bounds":{
+                            "x":0,
+                            "y":0,
+                            "w":1920,
+                            "h":1080
+                        },
+                        "angle":0,
+                        "alignment":0,
+                        "flipped_x":false,
+                        "flipped_y":false,
+                        "center":{"x":0,"y":0},
+                        "z":999
+                    },
+                    "camera":{
+                        "active":true,
+                        "view field":{
+                            "w":1920,
+                            "h":1080
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
