@@ -54,7 +54,21 @@ if(UNIX)
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${ENGINE_BUILD_DIR}/engine_resources" "${EDITOR_BUILD_DIR}/engine_resources"
     )
-    
+
+    # Copy over editor files (settings.yoyo)
+    add_custom_command(
+        TARGET ${EXECUTABLE_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/settings.yoyo" "${EDITOR_BUILD_DIR}/settings.yoyo"
+    )
+
+    # create a BUILD_DIR/PLATFORM/resources directory
+    add_custom_command(
+        TARGET ${EXECUTABLE_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${EDITOR_BUILD_DIR}/resources"
+    ) # this is a really dumb hack. The engine, in order to get settings.yoyo, traverses into resources/../settings.yoyo which means this folder needs to exist
+
 else()
     message(FATAL_ERROR "The editor is only supported on Linux. If this is a dealbreaker for you, please open an Issue and I will port it. Probably.")
 endif()

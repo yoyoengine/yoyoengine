@@ -208,3 +208,5 @@ Cmake for editor output
 ## TODO
 
 - finalize api for custom declarations of C scripts, and port editor over to use it as a genuine actual engine project
+
+editor settings file, set nuklear ui color and font maybe

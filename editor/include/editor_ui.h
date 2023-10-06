@@ -16,27 +16,24 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_EDITOR
-#define YE_EDITOR
+#ifndef YE_EDITOR_UI_H
+#define YE_EDITOR_UI_H
 
-#include <stdbool.h>
+void ye_editor_paint_hiearchy(struct nk_context *ctx);
 
-// global variables
-extern bool quit;
-extern bool dragging;
-extern int last_x;
-extern int last_y;
-extern struct ye_entity * editor_camera;
-extern struct ye_entity * origin;
-extern int screenWidth;
-extern int screenHeight;
-extern struct ye_entity_node * entity_list_head;
-extern char *project_path;
+/*
+    The entity preview will be a snapshot of the entity when selected, it will stash current state, and allow editing of the entity until
+    dev clicks "save" or "cancel"
+*/
+void ye_editor_paint_entity(struct nk_context *ctx);
 
-// some fields for current selected entity tracking (this will be messy)
-// actually lets be really smart and keep local copy
-extern struct ye_entity staged_entity;
-extern struct ye_component_transform staged_transform;
-extern json_t * SETTINGS;
+void ye_editor_paint_project(struct nk_context *ctx);
 
-#endif // YE_EDITOR
+/*
+    TODO:
+    - paintbounds somehow starts out checked even though its not, so have to double click to turn on
+    - if console is opened when we tick one of these, closing the console crashes
+*/
+void ye_editor_paint_options(struct nk_context *ctx);
+
+#endif // YE_EDITOR_UI

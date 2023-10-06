@@ -148,6 +148,8 @@ void ye_process_frame();
 
 float ye_get_delta_time();
 
+void ye_update_resources(char *path);
+
 /*
     entry point to the engine, initializes all subsystems
     Will look at ./settings.yoyo for initialization parameters (if empty or nonexistant will use defaults)

@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef YE_ENGINE_MAIN_H
+#define YE_ENGINE_MAIN_H
+
 /*
     Include all our headers in one place.
     This lets the game use
@@ -23,7 +26,9 @@
     defined the header and lib paths correctly.
 */
 #include "engine.h"
+#include "json.h"
 #include "graphics.h"
+#include "uthash.h"
 #include "cache.h"
 #include "utils.h"
 #include "ui.h"
@@ -31,7 +36,7 @@
 #include "timer.h"
 #include "audio.h"
 #include "logging.h"
-#include "uthash.h"
 #include "lua.h"
-#include "json.h"
 #include "scene.h"
+
+#endif // YE_ENGINE_MAIN_H

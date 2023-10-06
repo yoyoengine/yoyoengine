@@ -35,15 +35,19 @@
 
 #include <stdio.h>
 #include <yoyoengine/yoyoengine.h>
+#include "editor_ui.h"
+#include "editor.h"
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR
 
 #define YE_EDITOR_VERSION "v0.1.0"
 
-// global variables
-bool quit = false;
-bool dragging = false;
+/*
+    INITIALIZE ALL
+*/
+bool quit;
+bool dragging;
 int last_x;
 int last_y;
 struct ye_entity * editor_camera;
@@ -52,11 +56,12 @@ int screenWidth;
 int screenHeight;
 struct ye_entity_node * entity_list_head;
 char *project_path;
-
-// some fields for current selected entity tracking (this will be messy)
-// actually lets be really smart and keep local copy
 struct ye_entity staged_entity;
 struct ye_component_transform staged_transform;
+json_t * SETTINGS;
+/*
+    ALL GLOBALS INITIALIZED
+*/
 
 /*
     Registered input handler
@@ -120,144 +125,6 @@ void handle_input(SDL_Event event) {
     }
 }
 
-
-
-// EDITOR PANELS //
-
-
-void ye_editor_paint_hiearchy(struct nk_context *ctx){
-    // if no selected entity its height will be full height, else its half
-    int height = engine_runtime_state.selected_entity == NULL ? screenHeight : screenHeight/2;
-    if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
-        NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "Controls:", NK_TEXT_LEFT);
-            if(nk_button_label(ctx, "New Entity")){
-                ye_create_entity();
-                entity_list_head = ye_get_entity_list_head();
-            }
-
-            nk_label(ctx, "Entities:", NK_TEXT_LEFT);
-
-            // iterate through entity_list_head and display the names of each entity as a button
-            struct ye_entity_node *current = entity_list_head;
-            while(current != NULL){
-                /*
-                    Honestly, should just leave editor camera in the heiarchy for fun lol
-                    Kinda funny that you could just nuke it if you wanted
-                */
-                if(current->entity == editor_camera || current->entity == origin){
-                    current = current->next;
-                    continue;
-                }
-                if(nk_button_label(ctx, current->entity->name)){
-                    if(engine_runtime_state.selected_entity == current->entity){
-                        engine_runtime_state.selected_entity = NULL;
-                        break;
-                    }
-                    engine_runtime_state.selected_entity = current->entity;
-                    entity_list_head = ye_get_entity_list_head();
-                    // set all our current entity staging fields
-                    staged_entity = *current->entity;
-                    break;
-                }
-                current = current->next;
-            }
-        nk_end(ctx);
-    }
-}
-
-/*
-    The entity preview will be a snapshot of the entity when selected, it will stash current state, and allow editing of the entity until
-    dev clicks "save" or "cancel"
-*/
-void ye_editor_paint_entity(struct nk_context *ctx){
-    if(engine_runtime_state.selected_entity == NULL){
-        return;
-    }
-    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 2, screenWidth - screenWidth/1.5, screenHeight),
-        NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            if(engine_runtime_state.selected_entity == NULL){
-                nk_layout_row_dynamic(ctx, 25, 1);
-                nk_label_colored(ctx, "No entity selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
-            }
-            else{
-                nk_layout_row_dynamic(ctx, 25, 2);
-                nk_label(ctx, "Name:", NK_TEXT_LEFT);
-                nk_label(ctx, engine_runtime_state.selected_entity->name, NK_TEXT_LEFT);
-
-                nk_layout_row_dynamic(ctx, 25, 1);
-                nk_label(ctx, "Components:", NK_TEXT_LEFT);
-                // iterate through the components and display them
-                // struct ye_component_node *current = selected_entity->component_list_head;
-                // while(current != NULL){
-                //     nk_layout_row_dynamic(ctx, 25, 1);
-                //     nk_label(ctx, current->component->name, NK_TEXT_LEFT);
-                //     current = current->next;
-                // }
-
-                // save or cancel buttons
-                nk_layout_row_dynamic(ctx, 25, 2);
-                if(nk_button_label(ctx, "Save")){}
-                if(nk_button_label(ctx, "Cancel")){
-                    engine_runtime_state.selected_entity = NULL;
-                }
-            }
-        nk_end(ctx);
-    }
-}
-
-void ye_editor_paint_project(struct nk_context *ctx){
-    if (nk_begin(ctx, "Project", nk_rect(0, screenHeight/1.5, screenWidth/1.5 / 2, screenHeight/1.5),
-        NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            nk_layout_row_dynamic(ctx, 25, 1);
-            // button to open project settings
-            if(nk_button_label(ctx, "Project Settings")){}
-            if(nk_button_label(ctx, "Browse Project Files")){
-                char command[256];
-                snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path);
-
-                // Execute the command.
-                int status = system(command);
-            }
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
-        nk_end(ctx);
-    }
-}
-
-/*
-    TODO:
-    - paintbounds somehow starts out checked even though its not, so have to double click to turn on
-    - if console is opened when we tick one of these, closing the console crashes
-*/
-void ye_editor_paint_options(struct nk_context *ctx){
-    if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
-        NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            nk_layout_row_dynamic(ctx, 25, 1);
-            
-            nk_label(ctx, "Visual Debugging:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 2);
-            nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);
-            nk_checkbox_label(ctx, "Paintbounds", &engine_state.paintbounds_visible);
-
-            nk_label(ctx, "Preferences:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Draw Lines", &engine_runtime_state.editor_display_viewport_lines);
-
-            nk_label(ctx, "Extra:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Stretch Viewport", &engine_state.stretch_viewport);
-        nk_end(ctx);
-    }
-}
-
-
-///////////////////
-
-
-
 /*
     main function
     accepts one string argument of the path to the project folder
@@ -268,12 +135,12 @@ int main(int argc, char **argv) {
     printf("path: %s\n", path);
     project_path = path;
 
-    // print the path
-    // printf("path: %s\n", path);
-
+    // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
 
-    engine_state.editor_mode = true;
+    // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
+    ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
+
     engine_state.handle_input = handle_input;
 
     // update screenWidth and screenHeight
@@ -306,7 +173,7 @@ int main(int argc, char **argv) {
     ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("originwhite.png"));
 
     // load the scene out of the project settings::entry scene
-    json_t * SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
     ye_json_log(SETTINGS);
 
     SDL_Color red = {255, 0, 0, 255};

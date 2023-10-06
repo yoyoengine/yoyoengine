@@ -39,3 +39,7 @@ should actually be pretty easy now that we are using cmake.
 3. Run cmake
 4. Build the project
 5. Thats it!
+
+## afterword to future ryan
+
+I dont feel like porting this to be a true project structure just yet, ill wait until that structure is actually fully completed.

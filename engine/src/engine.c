@@ -188,6 +188,13 @@ void set_setting_float(const char* key, float* value, json_t* settings) {
     }
 }
 
+// update the resources path
+void ye_update_resources(char *path){
+    // update the engine state
+    free(engine_state.game_resources_path);
+    engine_state.game_resources_path = strdup(path);
+}
+
 /*
     Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
 */
@@ -239,7 +246,7 @@ void ye_init_engine() {
         set_setting_int("framecap", &engine_state.framecap, SETTINGS);
 
         set_setting_bool("debug_mode", &engine_state.debug_mode, SETTINGS);
-        set_setting_bool("skipintro", &engine_state.skipintro, SETTINGS);
+        set_setting_bool("skip_intro", &engine_state.skipintro, SETTINGS);
         set_setting_bool("editor_mode", &engine_state.editor_mode, SETTINGS);
 
         json_decref(SETTINGS);

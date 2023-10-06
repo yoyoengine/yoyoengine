@@ -45,4 +45,8 @@ void ui_render();
 
 void shutdown_ui();
 
+void ui_register_component(const char* key, void (*render_function)());
+
+void remove_ui_component(const char* key);
+
 #endif
