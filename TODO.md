@@ -210,3 +210,8 @@ Cmake for editor output
 - finalize api for custom declarations of C scripts, and port editor over to use it as a genuine actual engine project
 
 editor settings file, set nuklear ui color and font maybe
+
+## cross build notes
+
+- I set up a windows vm, attempt to just build it with cmake on that? Maybe we dont actually need all these annoying toolchains and hard to digest syntax
+- Could also look into cmake docs. Maybe there are good videos or cogmaster/acerola/accela people who can help
