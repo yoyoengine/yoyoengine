@@ -18,6 +18,7 @@
 
 #ifndef YE_ENGINE_MAIN_H
 #define YE_ENGINE_MAIN_H
+#define NK_INCLUDE_FIXED_TYPES
 
 /*
     Include all our headers in one place.

@@ -78,9 +78,10 @@ void ye_pre_cache_scene(json_t *scene){
             continue;
         }
 
+        char *src = NULL; // comply with mingw & clang
+        char *path = NULL; // comply with mingw & clang
         switch(type){
             case YE_RENDERER_TYPE_IMAGE:
-                char *src = NULL;
                 if(!ye_json_string(impl,"src",&src)){
                     continue;
                 }
@@ -88,7 +89,6 @@ void ye_pre_cache_scene(json_t *scene){
                 break;
             case YE_RENDERER_TYPE_ANIMATION:
                 // cache all images in animation path/framenum.extension
-                char *path = NULL;
                 if(!ye_json_string(impl,"animation path",&path)){
                     continue;
                 }

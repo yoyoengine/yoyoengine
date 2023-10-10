@@ -175,12 +175,17 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
         return;
     }
 
+    char *animation_path = NULL; // comply with mingw & clang
+    char *_text = NULL; // comply with mingw & clang
+    char *src = NULL; // comply with mingw & clang
+    char *text = NULL; // comply with mingw & clang
+    char *font = NULL; // comply with mingw & clang
+    char *color = NULL; // comply with mingw & clang
     switch(type){
         // ye_logf(info,"Constructing renderer: %s\n", entity_name);
         case YE_RENDERER_TYPE_IMAGE:
 
             // set src to impl->src
-            char *src = NULL;
             if(!ye_json_string(impl,"src",&src)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the impl->src field\n", entity_name);
                 return;
@@ -190,21 +195,18 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
             break;
         case YE_RENDERER_TYPE_TEXT:
             // get the text field
-            char *text = NULL;
             if(!ye_json_string(impl,"text",&text)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the text field\n", entity_name);
                 return;
             }
 
             // get the font field
-            char *font = NULL;
             if(!ye_json_string(impl,"font",&font)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the font field\n", entity_name);
                 return;
             }
 
             // get the color field
-            char *color = NULL;
             if(!ye_json_string(impl,"color",&color)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the color field\n", entity_name);
                 return;
@@ -214,7 +216,6 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
-            char *_text = NULL;
             if(!ye_json_string(impl,"text",&_text)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the text field\n", entity_name);
                 return;
@@ -253,7 +254,6 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
             break;
         case YE_RENDERER_TYPE_ANIMATION:
             // get the animation path string
-            char *animation_path = NULL;
             if(!ye_json_string(impl,"animation path",&animation_path)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the animation path field\n", entity_name);
                 return;

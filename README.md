@@ -32,7 +32,7 @@ This section is temporary and will be used to denote any important facts I need 
 
 ### Tooling
 
-- A C compiler (gcc, clang, etc)
+- A C compiler (gcc, clang, etc) (Mingw for cross compilation)
 - [git](https://git-scm.com/)
 - [cmake](https://cmake.org/)
 - [make](https://www.gnu.org/software/make/)

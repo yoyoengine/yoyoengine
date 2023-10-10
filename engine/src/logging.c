@@ -334,7 +334,7 @@ void ye_log_init(char * log_file_path){
 
     // windows specific tweak to enable ansi colors
     #ifdef _WIN32
-    enableVirtualTerminal();
+    ye_enable_virtual_terminal();
     #endif
 
     // open log file the first time in w mode to overwrite any existing log
