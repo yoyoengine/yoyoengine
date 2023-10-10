@@ -54,7 +54,7 @@ game_name = settings["name"].replace(" ", "_")
 
 build_platform = build["platform"]
 build_cflags = build["cflags"]
-build_engine_path = build["engine_build_path"]
+build_engine_path = build["engine_build_path"] + "/" + build_platform
 
 # Check if the engine build path exists
 if not os.path.exists(build_engine_path):
@@ -76,6 +76,11 @@ shutil.copytree("./resources", "./build/" + build_platform + "/resources", dirs_
 shutil.copyfile("./settings.yoyo", "./build/" + build_platform + "/settings.yoyo")
 
 print("Building \"" + game_name + "\" for " + build_platform + " with flags: " + build_cflags)
+
+# create a toolchain-win.cmake file in that folder
+toolchain_file = open("./build/toolchain-win.cmake", "w")
+toolchain_file.write("set(CMAKE_SYSTEM_NAME Windows)\nset(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)\nset(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)\nset(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)\nset(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)")
+toolchain_file.close()
 
 # create a CMakeLists.txt file in that folder
 cmake_file = open("./build/CMakeLists.txt", "w")
@@ -100,7 +105,9 @@ cmake_file.write("add_executable(${EXECUTIBLE_NAME} ${SOURCES} ${CUSTOM_SOURCES}
 
 cmake_file.write("file(GLOB LIB_FILES "+build_dir+"/lib/*.so)\n")
 
-cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES} SDL2_mixer SDL2_ttf SDL2_image lua jansson)\n")
+cmake_file.write("target_link_directories(${EXECUTIBLE_NAME} PRIVATE "+build_dir+"/lib)\n")
+
+cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES} SDL2_mixer SDL2_ttf SDL2_image lua jansson yoyoengine)\n")
 
 cmake_file.close()
 
@@ -109,7 +116,13 @@ print("Running cmake...")
 print("----------------------------------")
 
 # run cmake
-subprocess.run(["cmake", "-B", "./build/" + build_platform, "-S", "./build"])
+if(build_platform == "linux"):
+    subprocess.run(["cmake", "-S", "./build", "-B", "./build/" + build_platform])
+elif(build_platform == "windows"):
+    subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=../toolchain-win.cmake", "-S", "./build", "-B", "./build/" + build_platform])
+else:
+    print("Error: Unknown platform \"" + build_platform + "\"")
+    sys.exit()
 
 print("----------------------------------")
 print("Running make...")
@@ -117,6 +130,21 @@ print("----------------------------------")
 
 # run make
 subprocess.run(["make", "-C", "./build/" + build_platform])
+
+# if windows, we need to copy the dlls to the build folder and delete /lib
+if(build_platform == "windows"):
+    shutil.copyfile("./build/" + build_platform + "/lib/libSDL2.dll", "./build/" + build_platform + "/SDL2.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libSDL2_image.dll", "./build/" + build_platform + "/SDL2_image.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libSDL2_mixer.dll", "./build/" + build_platform + "/SDL2_mixer.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libSDL2_ttf.dll", "./build/" + build_platform + "/SDL2_ttf.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/liblua.dll", "./build/" + build_platform + "/lua54.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libjansson.dll", "./build/" + build_platform + "/libjansson-4.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libyoyoengine.dll", "./build/" + build_platform + "/libyoyoengine.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libfreetype-6.dll", "./build/" + build_platform + "/libfreetype-6.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libmpg123-0.dll", "./build/" + build_platform + "/libmpg123-0.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libpng16-16.dll", "./build/" + build_platform + "/libpng16-16.dll")
+    shutil.rmtree("./build/" + build_platform + "/lib")
+    print("Copied dlls to build folder.")
 
 # print out the executible we built
 print("----------------------------------")
@@ -126,6 +154,7 @@ print("Cleaning up Cmake artifacts...")
 
 # remove the CMakeLists.txt file, the CMakeFiles folder, and the cmake_install.cmake file and the CMakeCache.txt file and the Makefile
 os.remove("./build/CMakeLists.txt")
+os.remove("./build/toolchain-win.cmake")
 shutil.rmtree("./build/" + build_platform + "/CMakeFiles")
 os.remove("./build/" + build_platform + "/cmake_install.cmake")
 os.remove("./build/" + build_platform + "/CMakeCache.txt")

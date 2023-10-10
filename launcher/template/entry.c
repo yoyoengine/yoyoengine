@@ -26,12 +26,17 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+// if windows include windows.h
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 /*
     MAIN ENTRY POINT: TODO WORK FOR WINDOWS
 
     THIS CONTAINS THE GAME LOOP
 */
-int main(/*int argc, char** argv*/){
+int main(int argc, char** argv){
     #ifdef YOYO_PRE_INIT
         // run the pre init function
     #endif
@@ -68,3 +73,11 @@ int main(/*int argc, char** argv*/){
     printf("Game exited successfully\n");
     return 0;
 }
+
+#ifdef _WIN32
+    int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+    {
+        // Call the main function
+        return main(__argc, __argv);
+    }
+#endif

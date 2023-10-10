@@ -326,6 +326,8 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
 
     if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
         ye_logf(error, "IMG_Init error: %s", IMG_GetError());
+        // print the img error
+        printf("IMG_Init error: %s", IMG_GetError());
         exit(1);
     }
     ye_logf(info, "IMG initialized.\n");
