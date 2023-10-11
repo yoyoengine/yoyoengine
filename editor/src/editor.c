@@ -48,6 +48,7 @@
 */
 bool quit;
 bool dragging;
+bool lock_viewport_interaction;
 int last_x;
 int last_y;
 struct ye_entity * editor_camera;
@@ -83,7 +84,8 @@ void handle_input(SDL_Event event) {
     else if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_RIGHT) {
             if (event.button.x > 0 && event.button.x < screenWidth/1.5 &&
-                event.button.y > 0 && event.button.y < screenHeight/1.5) {
+                event.button.y > 0 && event.button.y < screenHeight/1.5 &&
+                !lock_viewport_interaction) {
                 dragging = true;
                 last_x = event.button.x;
                 last_y = event.button.y;
@@ -111,14 +113,16 @@ void handle_input(SDL_Event event) {
         int x, y;
         SDL_GetMouseState(&x, &y);
         if (event.wheel.y > 0 && x > 0 && x < screenWidth/1.5 &&
-            y > 0 && y < screenHeight/1.5) {
+            y > 0 && y < screenHeight/1.5 &&
+            !lock_viewport_interaction) {
             if(editor_camera->camera->view_field.w > 16){
                 editor_camera->camera->view_field.w -= 16;
                 editor_camera->camera->view_field.h -= 9;
             }
         }
         else if (event.wheel.y < 0 && x > 0 && x < screenWidth/1.5 &&
-            y > 0 && y < screenHeight/1.5) {
+            y > 0 && y < screenHeight/1.5 &&
+            !lock_viewport_interaction) {
             editor_camera->camera->view_field.w += 16;
             editor_camera->camera->view_field.h += 9;
         }
@@ -161,32 +165,25 @@ int main(int argc, char **argv) {
     ui_register_component("options",ye_editor_paint_options);
     ui_register_component("project",ye_editor_paint_project);
 
-    /*
-        Heiarchy function that implements listing all items
-        This is called by two heiarchy ui's: full and mini. full is default, mini is shown when we have an entity selected
-
-        This is all proposed ^^^ more complicated than just maintaining mini because it will be on screen most of the time anyway
-    */
-
     origin = ye_create_entity_named("origin");
     ye_add_transform_component(origin, (struct ye_rectf){-50, -50, 100, 100}, 0, YE_ALIGN_MID_CENTER);
     ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("originwhite.png"));
 
-    // load the scene out of the project settings::entry scene
+    // load the scene out of the project settings::entry_scene
     SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
-    ye_json_log(SETTINGS);
+    // ye_json_log(SETTINGS);
 
     SDL_Color red = {255, 0, 0, 255};
     ye_cache_color("warning", red);
 
-    // get the scene to load from "entry scene"
+    // get the scene to load from "entry_scene"
     char * entry_scene; 
-    if(!ye_json_string(SETTINGS, "entry scene", &entry_scene)){
-        ye_logf(error, "entry scene not found in settings file. No scene has been loaded.");
+    if(!ye_json_string(SETTINGS, "entry_scene", &entry_scene)){
+        ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
         // TODO: future me create a text entity easily in the center of the scene alerting this fact
         struct ye_entity *text = ye_create_entity_named("warning text");
         ye_add_transform_component(text, (struct ye_rectf){0, 0, 1920, 500}, 900, YE_ALIGN_MID_CENTER);
-        ye_temp_add_text_renderer_component(text, "entry scene not found in settings file. No scene has been loaded.", ye_font("default"), ye_color("warning"));
+        ye_temp_add_text_renderer_component(text, "entry_scene not found in settings file. No scene has been loaded.", ye_font("default"), ye_color("warning"));
     }
     else{
         ye_load_scene(ye_get_resource_static(entry_scene));
@@ -202,4 +199,10 @@ int main(int argc, char **argv) {
     json_decref(SETTINGS);
     // exit
     return 0;
+}
+
+void editor_reload_settings(){
+    if(SETTINGS)
+        json_decref(SETTINGS);
+    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
 }

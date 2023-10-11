@@ -24,6 +24,7 @@
 // global variables
 extern bool quit;
 extern bool dragging;
+extern bool lock_viewport_interaction;
 extern int last_x;
 extern int last_y;
 extern struct ye_entity * editor_camera;

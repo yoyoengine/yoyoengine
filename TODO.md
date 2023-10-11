@@ -177,7 +177,9 @@ another problem to solve is that we also need to make font and color work seamle
 
 - read "editor preferences" out of .yoyo for persisting some state between sessions. not rlly necessary but would be nice
 
-## build system
+## auto build vscode
+
+tasks.json build on save
 
 {
     "version": "2.0.0",
@@ -195,23 +197,26 @@ another problem to solve is that we also need to make font and color work seamle
     ]
 }
 
-tasks.json build on save
-
-test windows build
-
-Cmake for editor output
-
-## rn
-
-- port over old pass in engine config system to use settings.yoyo
-
 ## TODO
 
 - finalize api for custom declarations of C scripts, and port editor over to use it as a genuine actual engine project
 
 editor settings file, set nuklear ui color and font maybe
 
-## cross build notes
+## Build system
 
-- I set up a windows vm, attempt to just build it with cmake on that? Maybe we dont actually need all these annoying toolchains and hard to digest syntax
-- Could also look into cmake docs. Maybe there are good videos or cogmaster/acerola/accela people who can help
+- The custom libs linking have not been implemented into the build.py script
+
+## nuklear
+
+close button on window actually closes (no custom close buttons or keybinds)
+
+- this would be nice for editor as well as console
+
+```c
+if(nk_window_is_closed(ctx, "Settings") == 1){
+  project_settings_open = false;
+  lock_viewport_interaction = false;
+  remove_ui_component("project settings");
+}
+```

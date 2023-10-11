@@ -3,5 +3,8 @@
     "log_level":0,
     "game_resources_path":"/home/ryan/repos/yoyoengine/examples/test/resources",
     "volume":0,
-    "skip_intro":true
+    "skip_intro":true,
+    "screen_width":2560,
+    "screen_height":1440,
+    "window_title":"Yoyo Engine Editor"
 }

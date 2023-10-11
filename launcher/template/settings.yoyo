@@ -1,5 +1,5 @@
 {
-    "entry scene":"scenes/entry.yoyo",
+    "entry_scene":"scenes/entry.yoyo",
     "name":"Default Project",
     "version":"1.0.0"
 }
