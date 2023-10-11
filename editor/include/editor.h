@@ -20,6 +20,7 @@
 #define YE_EDITOR
 
 #include <stdbool.h>
+#include <jansson/jansson.h>
 
 // global variables
 extern bool quit;

@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <yoyoengine/yoyoengine.h>
 #include "editor_ui.h"
+#include "editor_settings_ui.h"
 #include "editor.h"
 
 // make some editor specific declarations to change engine core behavior
@@ -134,6 +135,10 @@ void handle_input(SDL_Event event) {
     accepts one string argument of the path to the project folder
 */
 int main(int argc, char **argv) {
+
+    // build up editor contexts
+    editor_settings_ui_init();
+
     // get our path from the command line
     char *path = argv[1];
     printf("path: %s\n", path);
@@ -197,6 +202,10 @@ int main(int argc, char **argv) {
 
     ye_shutdown_engine();
     json_decref(SETTINGS);
+
+    // shutdown editor and teardown contextx
+    editor_settings_ui_shutdown();
+
     // exit
     return 0;
 }

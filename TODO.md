@@ -220,3 +220,10 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
   remove_ui_component("project settings");
 }
 ```
+
+## TODO TOMORROW
+
+- I mentally wrestled with memory leaks over using internal jansson memory vs mallocing in the beginning, but that was overwritten by some fields in jansson, 
+  - TLDR: currently we rely on the json for settings and build already having every key existant or it fails, to counteract this we could malloc up front and then strcpy the jansson temp values into the final global holders.
+  - decide if this is worth it or not or make a note to fix this limitation later on.
+- project settings, set icon path

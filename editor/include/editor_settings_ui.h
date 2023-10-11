@@ -16,22 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_EDITOR_UI_H
-#define YE_EDITOR_UI_H
+#ifndef YE_EDITOR_SETTINGS_UI_H
+#define YE_EDITOR_SETTINGS_UI_H
 
-void ye_editor_paint_hiearchy(struct nk_context *ctx);
+void editor_settings_ui_init();
 
-/*
-    The entity preview will be a snapshot of the entity when selected, it will stash current state, and allow editing of the entity until
-    dev clicks "save" or "cancel"
-*/
-void ye_editor_paint_entity(struct nk_context *ctx);
+void editor_settings_ui_shutdown();
 
-/*
-    TODO:
-    - paintbounds somehow starts out checked even though its not, so have to double click to turn on
-    - if console is opened when we tick one of these, closing the console crashes
-*/
-void ye_editor_paint_options(struct nk_context *ctx);
+void ye_editor_paint_project_settings(struct nk_context *ctx);
+void ye_editor_paint_project(struct nk_context *ctx);
 
-#endif // YE_EDITOR_UI
+#endif // YE_EDITOR_SETTINGS_UI_H

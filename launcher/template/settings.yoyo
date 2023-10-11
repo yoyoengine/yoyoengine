@@ -1,5 +1,15 @@
 {
-    "entry_scene":"scenes/entry.yoyo",
-    "name":"Default Project",
-    "version":"1.0.0"
+    "IMPORTANT NOTICE":"DO NOT EDIT THESE DIRECTLY OR DELETE THEM, PLEASE CONFIGURE PROJECTS THROUGH THE EDITOR (unless you are going to programatically change these and know what youre doing.",
+
+    "name": "Yoyo Engine Game",
+    "entry_scene": "scenes/entry.yoyo",
+    "window_mode": 0,
+    "window_title": "Yoyo Engine Game",
+    "screen_width": 1920,
+    "screen_height": 1080,
+    "debug_mode": false,
+    "log_level": 0,
+    "framecap": -1,
+    "stretch_viewport": false,
+    "volume": 128
 }
