@@ -35,6 +35,7 @@ extern struct ye_entity_node *transform_list_head;
 extern struct ye_entity_node *renderer_list_head;
 extern struct ye_entity_node *camera_list_head;
 extern struct ye_entity_node *physics_list_head;
+extern struct ye_entity_node *tag_list_head;
 
 // Define a linked list structure for storing entities
 struct ye_entity_node {
@@ -43,6 +44,16 @@ struct ye_entity_node {
 };
 
 struct ye_entity_node * ye_get_entity_list_head();
+
+/*
+    Add an entity to a list
+*/
+void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity);
+
+/*
+    Remove an entity from a list
+*/
+void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity);
 
 /*
     =============================================================
@@ -61,12 +72,6 @@ struct ye_entity {
     int id;             // unique id for this entity
     char *name;         // name that can also be used to access the entity
 
-    /*
-        TODO: tag should become its own component, we dont want to check EVERY entity
-        for posessing a tag when only 1/100 entities have a tag component
-    */
-    // char *tags[10];     // up to 10 tags that can also be used to access the entity
-
     struct ye_component_transform *transform;       // transform component
     struct ye_component_renderer *renderer;         // renderer component
     struct ye_component_script *script;             // script component
@@ -74,6 +79,7 @@ struct ye_entity {
     struct ye_component_camera *camera;             // camera component
     struct ye_component_physics *physics;           // physics component
     struct ye_component_collider *collider;         // collider component
+    struct ye_component_tag *tag;                   // tag component
 
     /* NOTE/TODO:
         We can have arrays in the future malloced to the
@@ -181,7 +187,12 @@ void ye_destroy_entity(struct ye_entity * entity);
 /*
     Find entity by name, returns pointer to first entity of specified name, NULL if not found
 */
-struct ye_entity * ye_find_entity_named(char *name);
+struct ye_entity * ye_get_entity_by_name(char *name);
+
+/*
+    Find an entity by tag (if there are more than one entity with this tag, it will return the first one, and NOT by distance)
+*/
+struct ye_entity * ye_get_entity_by_tag(char *tag);
 
 /*
     =============================================================

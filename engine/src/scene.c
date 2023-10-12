@@ -344,6 +344,27 @@ void ye_construct_physics(struct ye_entity* e, json_t* physics, char* entity_nam
     }
 }
 
+void ye_construct_tag(struct ye_entity* e, json_t* tag, char* entity_name){
+    // add tag component
+    ye_add_tag_component(e);
+
+    // update active state
+    if(ye_json_has_key(tag,"active")){
+        bool active = true;    ye_json_bool(tag,"active",&active);
+        e->tag->active = active;
+    }
+
+    // if tags array exists, add each tag
+    json_t *tags = NULL;
+    if(ye_json_array(tag,"tags",&tags)) {
+        // add each tag in the array
+        for(int i = 0; i < json_array_size(tags); i++){
+            char *tag_name = NULL; ye_json_arr_string(tags,i,&tag_name);
+            ye_add_tag(e,tag_name);
+        }
+    }
+}
+
 /*
     ===================================================================
     ===================================================================
@@ -413,6 +434,16 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_physics(e,physics,entity_name);
+        }
+
+        // if we have a tag component on our entity
+        if(ye_json_has_key(components,"tag")){
+            json_t *tag = NULL; ye_json_object(components,"tag",&tag);
+            if(tag == NULL){
+                ye_logf(warning,"Entity %s has a tag field, but it's invalid.\n", entity_name);
+                continue;
+            }
+            ye_construct_tag(e,tag,entity_name);
         }
     }
 }
@@ -487,7 +518,7 @@ void ye_load_scene(const char *scene_path){
         ye_logf(error,"Scene \"%s\" has no default camera\n", scene_path);
     }
     else{
-        struct ye_entity *camera = ye_find_entity_named(default_camera_name);
+        struct ye_entity *camera = ye_get_entity_by_name(default_camera_name);
         if(!engine_state.editor_mode){
             ye_logf(info,"Setting default camera to: %s\n", default_camera_name);
             if(camera == NULL){

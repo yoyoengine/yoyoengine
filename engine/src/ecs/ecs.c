@@ -124,6 +124,7 @@ struct ye_entity_node *transform_list_head;
 struct ye_entity_node *renderer_list_head;
 struct ye_entity_node *camera_list_head;
 struct ye_entity_node *physics_list_head;
+struct ye_entity_node *tag_list_head;
 
 // struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
@@ -157,6 +158,7 @@ struct ye_entity * ye_create_entity(){
     entity->interactible = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
+    entity->tag = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -189,6 +191,7 @@ struct ye_entity * ye_create_entity_named(char *name){
     entity->interactible = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
+    entity->tag = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -230,6 +233,9 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // if(entity->interactible != NULL) ye_add_interactible_component(new_entity, entity->interactible->interactible_type);
     if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
     // if(entity->collider != NULL) ye_add_collider_component(new_entity, entity->collider->collider_type, entity->collider->collider_impl);
+    
+    // create new tag comp
+    // loop through tag component items, adding them one by one to the new entity tag component
 
     return new_entity;
 }
@@ -251,6 +257,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->renderer != NULL) ye_remove_renderer_component(entity);
     if(entity->camera != NULL) ye_remove_camera_component(entity);
     if(entity->physics != NULL) ye_remove_physics_component(entity);
+    if(entity->tag != NULL) ye_remove_tag_component(entity);
     // if(entity->script != NULL) ye_remove_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
 
@@ -272,12 +279,27 @@ void ye_destroy_entity(struct ye_entity * entity){
     engine_runtime_state.entity_count--;
 }
 
-struct ye_entity * ye_find_entity_named(char *name){
+struct ye_entity * ye_get_entity_by_name(char *name){
     struct ye_entity_node *current = entity_list_head;
 
     while(current != NULL){
         if(strcmp(current->entity->name, name) == 0){
             return current->entity;
+        }
+        current = current->next;
+    }
+
+    return NULL;
+}
+
+struct ye_entity * ye_get_entity_by_tag(char *tag){
+    struct ye_entity_node *current = tag_list_head;
+
+    while(current != NULL){
+        for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
+            if(strcmp(current->entity->tag->tags[i], tag) == 0){
+                return current->entity;
+            }
         }
         current = current->next;
     }
@@ -306,6 +328,7 @@ void ye_init_ecs(){
     renderer_list_head = ye_entity_list_create();
     camera_list_head = ye_entity_list_create();
     physics_list_head = ye_entity_list_create();
+    tag_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
 
@@ -322,6 +345,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&renderer_list_head);
     ye_entity_list_destroy(&camera_list_head);
     ye_entity_list_destroy(&physics_list_head);
+    ye_entity_list_destroy(&tag_list_head);
 
     ye_logf(info, "Shut down ECS\n");
 }
@@ -334,7 +358,7 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d T:%d R:%d C:%d I:%d S:%d P:%d C:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Transform:%d Renderer:%d Camera:%d Interactible:%d Script:%d Physics:%d Collider:%d Tag:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
@@ -342,7 +366,8 @@ void ye_print_entities(){
             current->entity->interactible != NULL,
             current->entity->script != NULL,
             current->entity->physics != NULL,
-            current->entity->collider != NULL
+            current->entity->collider != NULL,
+            current->entity->tag != NULL
         );
         ye_logf(debug, b);
         current = current->next;

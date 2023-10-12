@@ -39,6 +39,7 @@
 #include "ecs/physics.h"
 #include "ecs/renderer.h"
 #include "ecs/transform.h"
+#include "ecs/tag.h"
 #include "timer.h"
 #include "audio.h"
 #include "logging.h"

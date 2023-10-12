@@ -227,3 +227,11 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
   - TLDR: currently we rely on the json for settings and build already having every key existant or it fails, to counteract this we could malloc up front and then strcpy the jansson temp values into the final global holders.
   - decide if this is worth it or not or make a note to fix this limitation later on.
 - project settings, set icon path
+
+## tags
+
+- we dont check if a tag already exists before adding currently
+
+## editor bugfix
+
+- when the game is running the editor is unresponsive and not re-rendering
