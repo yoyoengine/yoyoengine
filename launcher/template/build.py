@@ -170,10 +170,10 @@ print("----------------------------------")
 # print out "done" in green
 print("\033[92m" + "Done!" + "\033[0m")
 
-# if we recieved a command line argument, run the game
+# if we received a command line argument, run the game
 if len(sys.argv) > 1:
     if sys.argv[1] == "run":
         print("\n----------------------------------")
         print("Running game...")
         print("----------------------------------")
-        subprocess.run(["./build/" + build_platform + "/" + game_name])
+        subprocess.Popen(["./build/" + build_platform + "/" + game_name])
