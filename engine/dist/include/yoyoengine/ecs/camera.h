@@ -16,33 +16,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_ENGINE_MAIN_H
-#define YE_ENGINE_MAIN_H
-#define NK_INCLUDE_FIXED_TYPES
+#ifndef YE_CAMERA_H
+#define YE_CAMERA_H
+
+#include <yoyoengine/yoyoengine.h>
 
 /*
-    Include all our headers in one place.
-    This lets the game use
-    #include <yoyoengine/yoyoengine.h> assuming they have
-    defined the header and lib paths correctly.
-*/
-#include "engine.h"
-#include "json.h"
-#include "graphics.h"
-#include "uthash.h"
-#include "cache.h"
-#include "utils.h"
-#include "ui.h"
-#include "ecs/ecs.h"
-#include "ecs/camera.h"
-#include "ecs/ecs.h"
-#include "ecs/physics.h"
-#include "ecs/renderer.h"
-#include "ecs/transform.h"
-#include "timer.h"
-#include "audio.h"
-#include "logging.h"
-#include "lua.h"
-#include "scene.h"
+    Camera component
 
-#endif // YE_ENGINE_MAIN_H
+    Holds some information about a camera and its view field (the x and y of the view field are unused, as its location is inferred from its transform)
+*/
+struct ye_component_camera {
+    bool active;    // controls whether system will act upon this component
+
+    SDL_Rect view_field;    // view field of camera
+};
+
+void ye_set_camera(struct ye_entity *entity);
+
+void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field);
+
+void ye_remove_camera_component(struct ye_entity *entity);
+
+#endif

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27.2)
 project(yoyoengine)
 
 # Source files
-file(GLOB SOURCES src/*.c) # TODO: dont want to add EVERYTHING later on, platform specific entries
+file(GLOB SOURCES src/*.c src/ecs/*.c) # TODO: dont want to add EVERYTHING later on, platform specific entries
 
 # Define the library
 add_library(yoyoengine SHARED ${SOURCES})
