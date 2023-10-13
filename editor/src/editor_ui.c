@@ -61,7 +61,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     flag = true;
                 }
                 else if(!current->entity->active){
-                    nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(40,40,40))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(60,60,60))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(75,75,75))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
+                    nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(40,40,40))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(20,20,20))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(75,75,75))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                     flag = true;
                 }
 
@@ -168,6 +168,8 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);
             nk_checkbox_label(ctx, "Paintbounds", &engine_state.paintbounds_visible);
+            nk_checkbox_label(ctx, "Colliders", &engine_state.colliders_visible);
+            nk_checkbox_label(ctx, "Scene Camera Viewport", &engine_state.scene_camera_bounds_visible);
 
             nk_label(ctx, "Preferences:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);

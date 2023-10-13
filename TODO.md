@@ -181,6 +181,12 @@ another problem to solve is that we also need to make font and color work seamle
 
 - frame glitch when deselecting entity because we break before the frame can finish painting it NOT there (i think)
 
+- logical groups in scene files (does not actually pair items together, or does it?). lets you organize things together to collapse them in hiearchy
+
+- editor settings would be nice, change gui theme and others... layouting?
+
+- editor needs the ability to accomidate differently sized cameras... it would ceratinly be ideal if we could paint the size of the viewport that has no ui covering it so we can manipulate more of the scene at once, like unity does
+
 ## auto build vscode
 
 tasks.json build on save
@@ -241,3 +247,7 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
 - when the game is running the editor is unresponsive and not re-rendering
 
 - deleting scene camera crashes
+
+## decide on relative and offsets
+
+- what components should even be able to have positions? everything should just inherit from entities transform?

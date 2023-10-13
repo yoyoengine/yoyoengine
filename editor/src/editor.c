@@ -148,7 +148,12 @@ int main(int argc, char **argv) {
     ye_init_engine();
 
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
-    ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
+    if(path != NULL){
+        ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
+    }
+    else{
+        ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
+    }
 
     engine_state.handle_input = handle_input;
 

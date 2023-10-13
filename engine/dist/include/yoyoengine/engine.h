@@ -104,8 +104,10 @@ struct engine_data {
         could technically be mutated by the game
     */
     bool paintbounds_visible;
+    bool colliders_visible;
     bool metrics_visible;
     bool console_visible;
+    bool scene_camera_bounds_visible;
 
     bool freecam_enabled;
 

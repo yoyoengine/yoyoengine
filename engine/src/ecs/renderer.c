@@ -353,6 +353,25 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
                         SDL_DestroyTexture(text_texture);
                     }
+
+                    if(engine_state.colliders_visible && current->entity->collider != NULL){
+                        // paint the collider
+                        SDL_Rect collider_rect = ye_convert_rectf_rect(current->entity->collider->rect);
+                        collider_rect.x = collider_rect.x - camera_rect.x;
+                        collider_rect.y = collider_rect.y - camera_rect.y;
+                        // yellow trigger collider
+                        if(current->entity->collider->is_trigger){
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                            SDL_RenderDrawRect(renderer, &collider_rect);
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        }
+                        // blue static collider
+                        else{
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                            SDL_RenderDrawRect(renderer, &collider_rect);
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        }
+                    }
                 }
             }
         }
@@ -363,7 +382,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         additional post processing for editor mode    
         RUNS ONCE AFTER ALL ENTITES ARE PAINTED
     */
-    if(engine_state.editor_mode && engine_runtime_state.scene_default_camera != NULL){
+    if(engine_state.editor_mode && engine_state.scene_camera_bounds_visible && engine_runtime_state.scene_default_camera != NULL){
         // draw box around viewport of engine_runtime_state.scene_default_camera
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_Rect scene_camera_rect = ye_convert_rectf_rect(engine_runtime_state.scene_default_camera->transform->rect);

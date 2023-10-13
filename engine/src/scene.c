@@ -28,6 +28,11 @@ void ye_init_scene_manager(){
 }
 
 /*
+    TODO: cut down on code duplication by doing the following:
+    - repetitive fields like xywh, active could be done in a single function
+*/
+
+/*
     ===================================================================
     REALLY BORING REPETITIVE COMPONENT CONSTRUCTION FUNCTIONS:
     literally just validating fields and calling component constructors
@@ -368,6 +373,48 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag, char* entity_name){
     }
 }
 
+void ye_construct_collider(struct ye_entity* e, json_t* collider, char* entity_name){
+    // validate bounds field
+    json_t *bounds = NULL;
+    struct ye_rectf b;
+    if(!ye_json_object(collider,"rect",&bounds)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the rect field\n", entity_name);
+        b = (struct ye_rectf){0,0,0,0};
+    } else {
+        int x,y,w,h;
+        if(!ye_json_int(bounds,"x",&x) || !ye_json_int(bounds,"y",&y) || !ye_json_int(bounds,"w",&w) || !ye_json_int(bounds,"h",&h)) {
+            ye_logf(warning,"Entity %s has a collider component with invalid rect field\n", entity_name);
+            b = (struct ye_rectf){0,0,0,0};
+        } else {
+            b = (struct ye_rectf){
+                .x = (float)x,
+                .y = (float)y,
+                .w = (float)w,
+                .h = (float)h
+            };
+        }
+    }
+
+    // validate is_trigger field
+    bool is_trigger;
+    if(!ye_json_bool(collider,"is_trigger",&is_trigger)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the is_trigger field\n", entity_name);
+        is_trigger = false;
+    }
+
+    // add the collider component
+    if(!is_trigger)
+        ye_add_static_collider_component(e,b);
+    // else
+        // ye_add_trigger_collider_component(e,b);
+        
+    // update active state
+    if(ye_json_has_key(collider,"active")){
+        bool active = true;    ye_json_bool(collider,"active",&active);
+        e->collider->active = active;
+    }
+}
+
 /*
     ===================================================================
     ===================================================================
@@ -447,6 +494,16 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_tag(e,tag,entity_name);
+        }
+
+        // if we have a collider component on our entity
+        if(ye_json_has_key(components,"collider")){
+            json_t *collider = NULL; ye_json_object(components,"collider",&collider);
+            if(collider == NULL){
+                ye_logf(warning,"Entity %s has a collider field, but it's invalid.\n", entity_name);
+                continue;
+            }
+            ye_construct_collider(e,collider,entity_name);
         }
     }
 }

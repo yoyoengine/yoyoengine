@@ -36,6 +36,7 @@ extern struct ye_entity_node *renderer_list_head;
 extern struct ye_entity_node *camera_list_head;
 extern struct ye_entity_node *physics_list_head;
 extern struct ye_entity_node *tag_list_head;
+extern struct ye_entity_node *collider_list_head;
 
 // Define a linked list structure for storing entities
 struct ye_entity_node {
@@ -102,24 +103,6 @@ struct ye_entity {
 struct ye_vec2f {
     float x;
     float y;
-};
-
-enum ye_collider_type {
-    YE_COLLIDER_TYPE_RECT,
-    YE_COLLIDER_TYPE_CIRCLE
-};
-
-/*
-    Collider component
-    
-    Holds information on how an entity collides with other entities.
-*/
-struct ye_component_collider {
-    bool active;    // controls whether system will act upon this component
-
-    enum ye_collider_type type; // type of collider
-    bool is_trigger;            // whether collider is a trigger or not
-    SDL_Rect rect;              // collider bounds
 };
 
 /*
@@ -199,6 +182,11 @@ struct ye_entity * ye_get_entity_by_name(char *name);
     Find an entity by tag (if there are more than one entity with this tag, it will return the first one, and NOT by distance)
 */
 struct ye_entity * ye_get_entity_by_tag(char *tag);
+
+/*
+    Find an entity by id, returns pointer to first entity of specified id, NULL if not found
+*/
+struct ye_entity *ye_get_entity_by_id(int id);
 
 /*
     =============================================================

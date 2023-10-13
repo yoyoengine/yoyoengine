@@ -125,6 +125,7 @@ struct ye_entity_node *renderer_list_head;
 struct ye_entity_node *camera_list_head;
 struct ye_entity_node *physics_list_head;
 struct ye_entity_node *tag_list_head;
+struct ye_entity_node *collider_list_head;
 
 // struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
@@ -232,10 +233,22 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // if(entity->script != NULL) ye_add_script_component(new_entity, entity->script->script_path);
     // if(entity->interactible != NULL) ye_add_interactible_component(new_entity, entity->interactible->interactible_type);
     if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
-    // if(entity->collider != NULL) ye_add_collider_component(new_entity, entity->collider->collider_type, entity->collider->collider_impl);
-    
-    // create new tag comp
-    // loop through tag component items, adding them one by one to the new entity tag component
+    if(entity->collider != NULL){
+        if(entity->collider->is_trigger){
+            // ye_add_trigger_collider_component(new_entity, entity->collider->type, entity->collider->rect);
+        }
+        else{
+            ye_add_static_collider_component(new_entity, entity->collider->rect);
+        }
+    }    
+    if(entity->tag != NULL){
+        ye_add_tag_component(new_entity);
+        for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
+            if(entity->tag->tags[i] != NULL){
+                ye_add_tag(new_entity, entity->tag->tags[i]);
+            }
+        }
+    }
 
     return new_entity;
 }
@@ -260,14 +273,9 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->tag != NULL) ye_remove_tag_component(entity);
     // if(entity->script != NULL) ye_remove_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
-
+    if(entity->collider != NULL) ye_remove_collider_component(entity);
     // free the entity name
     free(entity->name);
-
-    // free all tags
-    // for(int i = 0; i < 10; i++){
-    //     if(entity->tags[i] != NULL) free(entity->tags[i]);
-    // }
 
     // free the entity
     free(entity);
@@ -307,11 +315,18 @@ struct ye_entity * ye_get_entity_by_tag(char *tag){
     return NULL;
 }
 
-// struct ye_entity *ye_get_entity_by_id(int id){}
+struct ye_entity *ye_get_entity_by_id(int id){
+    struct ye_entity_node *current = entity_list_head;
 
-// struct ye_entity *ye_get_entity_by_name(char *name){}
+    while(current != NULL){
+        if(current->entity->id == id){
+            return current->entity;
+        }
+        current = current->next;
+    }
 
-// struct ye_entity *ye_get_entity_by_tag(char *tag){}
+    return NULL;
+}
 
 /////////////////////////  SYSTEMS  ////////////////////////////
 
@@ -329,6 +344,7 @@ void ye_init_ecs(){
     camera_list_head = ye_entity_list_create();
     physics_list_head = ye_entity_list_create();
     tag_list_head = ye_entity_list_create();
+    collider_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
 
@@ -346,6 +362,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&camera_list_head);
     ye_entity_list_destroy(&physics_list_head);
     ye_entity_list_destroy(&tag_list_head);
+    ye_entity_list_destroy(&collider_list_head);
 
     ye_logf(info, "Shut down ECS\n");
 }
@@ -358,7 +375,7 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Transform:%d Renderer:%d Camera:%d Interactible:%d Script:%d Physics:%d Collider:%d Tag:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Int:%d Scr:%d Phy:%d Col:%d Tag:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 

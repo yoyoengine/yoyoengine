@@ -16,35 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_ENGINE_MAIN_H
-#define YE_ENGINE_MAIN_H
-#define NK_INCLUDE_FIXED_TYPES
+#include <yoyoengine/yoyoengine.h>
 
-/*
-    Include all our headers in one place.
-    This lets the game use
-    #include <yoyoengine/yoyoengine.h> assuming they have
-    defined the header and lib paths correctly.
-*/
-#include "engine.h"
-#include "json.h"
-#include "graphics.h"
-#include "uthash.h"
-#include "cache.h"
-#include "ui.h"
-#include "ecs/ecs.h"
-#include "ecs/camera.h"
-#include "ecs/ecs.h"
-#include "ecs/physics.h"
-#include "ecs/renderer.h"
-#include "ecs/transform.h"
-#include "ecs/collider.h"
-#include "ecs/tag.h"
-#include "utils.h"
-#include "timer.h"
-#include "audio.h"
-#include "logging.h"
-#include "lua.h"
-#include "scene.h"
+void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf rect){
+    struct ye_component_collider *collider = malloc(sizeof(struct ye_component_collider));
+    collider->active = true;
+    collider->rect = rect;
+    collider->is_trigger = false;
+    entity->collider = collider;
+    ye_entity_list_add(&collider_list_head, entity);
+}
 
-#endif // YE_ENGINE_MAIN_H
+void ye_remove_collider_component(struct ye_entity *entity){
+    free(entity->collider);
+    entity->collider = NULL;
+    ye_entity_list_remove(&collider_list_head, entity);
+}
