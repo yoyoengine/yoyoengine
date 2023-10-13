@@ -287,14 +287,17 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
                 return;
             }
 
+            ye_temp_add_animation_renderer_component(e,ye_get_resource_static(animation_path),image_format,frame_count,frame_delay,loops);
+
             // get the paused bool
             bool paused;
             if(!ye_json_bool(impl,"paused",&paused)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the paused field\n", entity_name);
                 return;
             }
-
-            ye_temp_add_animation_renderer_component(e,ye_get_resource_static(animation_path),image_format,frame_count,frame_delay,loops,paused);
+            if(paused){
+                e->renderer->renderer_impl.animation->paused = true;
+            }
 
             break;
         default:

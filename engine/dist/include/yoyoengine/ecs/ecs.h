@@ -51,6 +51,12 @@ struct ye_entity_node * ye_get_entity_list_head();
 void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity);
 
 /*
+    Add an entity to a list sorted by its Z transform value
+    (This is used for rendering order)
+*/
+void ye_entity_list_add_sorted_z(struct ye_entity_node **list, struct ye_entity *entity);
+
+/*
     Remove an entity from a list
 */
 void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity);

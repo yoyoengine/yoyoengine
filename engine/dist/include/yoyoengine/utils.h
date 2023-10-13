@@ -51,7 +51,9 @@ enum ye_alignment {
 
     TODO: SDL_Point should be floating too
 */
-//void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center);
+
+struct ye_rectf; // this forward declaration ignores a bunch of compiler warnings, and i have no clue why
+void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center);
 
 SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
 

@@ -43,6 +43,11 @@ void ye_init_scene_manager();
 void ye_load_scene(const char *scene_name);
 
 /*
+    Reloads the current scene from disk
+*/
+void ye_reload_scene();
+
+/*
     Returns the current scene name
 */
 char *ye_get_scene_name();

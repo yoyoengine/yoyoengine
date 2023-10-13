@@ -49,6 +49,9 @@ void ye_enable_virtual_terminal() {
 }
 #endif
 
+// define prototype for this function so they can be "out of order" in this file without the compiler crying
+void ye_add_to_log_buffer(enum logLevel level, const char *text);
+
 const char* ye_get_timestamp() {
     static char datetime_str[20];
     time_t now = time(NULL);
