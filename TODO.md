@@ -177,6 +177,10 @@ another problem to solve is that we also need to make font and color work seamle
 
 - read "editor preferences" out of .yoyo for persisting some state between sessions. not rlly necessary but would be nice
 
+- | NK_WINDOW_BACKGROUND with initializing heiarchy and other perma-background windows will keep popups from getting lost in them, but at the tradeoff of seeming disabling scroll-over behavior
+
+- frame glitch when deselecting entity because we break before the frame can finish painting it NOT there (i think)
+
 ## auto build vscode
 
 tasks.json build on save
@@ -235,3 +239,5 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
 ## editor bugfix
 
 - when the game is running the editor is unresponsive and not re-rendering
+
+- deleting scene camera crashes
