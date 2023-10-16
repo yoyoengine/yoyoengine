@@ -251,3 +251,29 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
 ## decide on relative and offsets
 
 - what components should even be able to have positions? everything should just inherit from entities transform?
+
+## colliders
+
+- collider and paintbounds arent painted unless entity has a renderer
+
+- how exactly do colliders work... static should not be able to move through static, trigger will trigger from anything that collides with it
+
+## benchmark timers
+
+```c
+  ye_register_benchmark_timer("engine frame stall",&output);
+  ye_start_btimer("engine frame stall");
+  ...
+  ye_stop_btimer("engine frame stall");
+
+  printf("engine frame stall: %f\n",output);
+```
+
+## bugs and ignoring stuff
+
+- physics system currently dgaf about the entity bounds transform, maybe it should only modulate bounds and then the renderer can auto calculate the rect
+- dumb chatgpt collision hack
+- temp input handling for projects, but really should be default so you can close it without having to write that yourself
+- depending on framerate things will collide at different places:
+  - check if we totally went through another collidable object and if so, move back to the last position
+  - if we are going to collide, after setting velocity to nothing move to the furthest possible position without colliding

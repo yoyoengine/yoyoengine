@@ -34,7 +34,7 @@ struct ye_component_transform {
     enum ye_alignment alignment;    // alignment of entity within its bounds
     struct ye_rectf rect;           // real location of entity computed from desired alignment
 
-    float rotation;                   // rotation of entity in degrees
+    float rotation;                 // rotation of entity in degrees
     bool flipped_x;                 // whether entity is flipped on x axis
     bool flipped_y;                 // whether entity is flipped on y axis
     SDL_Point center;               // center of rotation
