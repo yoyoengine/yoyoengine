@@ -273,7 +273,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 }
             }
             // paint the entity
-            if (current->entity->transform != NULL && 
+            if (current->entity->active &&
+                current->entity->transform != NULL && current->entity->renderer != NULL && current->entity->renderer->active &&
                 current->entity->transform->active &&
                 current->entity->transform->z <= engine_state.target_camera->transform->z // only render if the entity is on or in front of the camera
             ) {
@@ -391,6 +392,16 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         scene_camera_rect.w = engine_runtime_state.scene_default_camera->camera->view_field.w;
         scene_camera_rect.h = engine_runtime_state.scene_default_camera->camera->view_field.h;
         SDL_RenderDrawRect(renderer, &scene_camera_rect);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    }
+
+    if(engine_state.editor_mode && engine_runtime_state.selected_entity != NULL){
+        // draw a pink rect around the selected entity rect
+        SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+        SDL_Rect selected_entity_rect = ye_convert_rectf_rect(engine_runtime_state.selected_entity->transform->rect);
+        selected_entity_rect.x = selected_entity_rect.x - camera_rect.x;
+        selected_entity_rect.y = selected_entity_rect.y - camera_rect.y;
+        SDL_RenderDrawRect(renderer, &selected_entity_rect);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 }
