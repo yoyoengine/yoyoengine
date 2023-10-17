@@ -1,14 +1,19 @@
 #!/bin/bash
 
-# Delete the build directory if it exists
-if [ -d "./build" ]; then
-    echo "Deleting existing build directory..."
-    rm -r "./build"
+# Check if the script was called with the "--preserve" argument
+if [ "$1" == "--preserve" ]; then
+    # Preserve the existing build directory
+    echo "Preserving existing build directory..."
+else
+    # Delete the build directory if it exists
+    if [ -d "./build" ]; then
+        echo "Deleting existing build directory..."
+        rm -r "./build"
+    fi
+    # Create a new build directory
+    echo "Creating a new build directory..."
+    mkdir "./build"
 fi
-
-# Create a new build directory
-echo "Creating a new build directory..."
-mkdir "./build"
 
 # Navigate into the build directory
 cd "./build"
