@@ -1,19 +1,5 @@
 # engine TODO
 
-- Need to think about how much of it is a graphics engine vs a game engine.
-  - Most callback stuff is located in SCDG game code right now, and not actually in the engine.
-  - Furthermore, do we want it to be a visual novel game engine strictly? That would involve a lot of code-moving to the engine from SCDG
-
-- cpython allow framework to be used to create visual novels easily in python?
-  - lua approach require c but lua build games on top
-  - this decision depends on what the actual goals for the engine are. graphics vs game engine vs visual novel engine
-
-- cmake?
-
-- lua wrap one C function to dispatch lua calls to C, that way we dont have to rewrite every function
-
-ive decided. its a visual novel engine that provides the extensibility to do other things and scenes with it, you have a lot of presets and options but do not have to stick to them. you also get custom lua scripting provided by the data files
-
 cpython wrap engine so can use whole thing from python?
 
 - design way to add custom overlays from json or other structure (does engine allow Nuklear functionality to users or is this just for editor?)
@@ -128,9 +114,6 @@ it would be nice if scene manager knew entry point or last scene loaded to retur
 
 ## MEMORY LEAKS
 
-- CRITICAL
-  - all engine resource gets are STRDUPED?!??!?! WTF WAS I THINKING
-
 ## notes
 
 - most things serialized to json are integers rather than floats.
@@ -140,16 +123,6 @@ it would be nice if scene manager knew entry point or last scene loaded to retur
 The actual implementation for scene change persisting already cached textures
 
 Caching prefab files assets pre. Loading prefabs into their own list so they are already constructed to instantiate? prefab is a field in entity struct but looks up into prefab list for it?
-
-## camera
-
-rendering at a scale and from a camera pov is necessary for an engine, but this is tilting me so unbelievably hard. figure it out or make it a limitation. bitch.
-
-<https://chat.openai.com/share/8b657109-efd2-4b98-bf1c-0da309bed9f6>
-
-## left off
-
-editor test object into scene verify game resource path constructed from path (editor specific things change bc editor executible is completely different folder)
 
 ## renderer improvements
 
@@ -277,3 +250,12 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
 - depending on framerate things will collide at different places:
   - check if we totally went through another collidable object and if so, move back to the last position
   - if we are going to collide, after setting velocity to nothing move to the furthest possible position without colliding
+
+## custom symbols
+
+NK_LIB void
+nk_draw_symbol(struct nk_command_buffer *out, enum nk_symbol_type type,
+    struct nk_rect content, struct nk_color background, struct nk_color foreground,
+    float border_width, const struct nk_user_font *font)
+
+is what you would modify

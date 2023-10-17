@@ -154,16 +154,53 @@ void ye_editor_paint_entity(struct nk_context *ctx){
     }
 }
 
+
+/*
+    Paint some info on the current scene
+*/
+void ye_editor_paint_info_overlay(struct nk_context *ctx){
+    if (nk_begin(ctx, "Info", nk_rect(0, 0, 200, 200),
+        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "Mouse Screen Pos:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            char buf[32];
+            // sprintf(buf, "%d,%d", mouse_world_x, mouse_world_y);
+            // nk_label(ctx, buf, NK_TEXT_LEFT);
+            sprintf(buf, "%d,%d", mouse_view_x, mouse_view_y);
+            nk_label(ctx, buf, NK_TEXT_LEFT);
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "Scene Name:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, engine_runtime_state.scene_name, NK_TEXT_LEFT);
+        nk_end(ctx);
+    }
+}
+
 /*
     TODO:
     - paintbounds somehow starts out checked even though its not, so have to double click to turn on
     - if console is opened when we tick one of these, closing the console crashes
 */
+bool show_info_overlay = false;
 void ye_editor_paint_options(struct nk_context *ctx){
     if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             
+            nk_label(ctx, "Overlays:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if(nk_checkbox_label(ctx, "Info", &show_info_overlay)){
+                if(show_info_overlay){
+                    ui_register_component("info_overlay",ye_editor_paint_info_overlay);
+                }
+                else{
+                    remove_ui_component("info_overlay");
+                }
+            }
+
+            nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Visual Debugging:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);

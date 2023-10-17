@@ -41,4 +41,9 @@ extern struct ye_entity staged_entity;
 extern struct ye_component_transform staged_transform;
 extern json_t * SETTINGS;
 
+// extern int mouse_world_x;
+// extern int mouse_world_y;
+extern int mouse_view_x;
+extern int mouse_view_y;
+
 #endif // YE_EDITOR

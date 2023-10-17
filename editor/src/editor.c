@@ -61,6 +61,11 @@ char *project_path;
 struct ye_entity staged_entity;
 struct ye_component_transform staged_transform;
 json_t * SETTINGS;
+
+// int mouse_world_x = 0;
+// int mouse_world_y = 0;
+int mouse_view_x = 0;
+int mouse_view_y = 0;
 /*
     ALL GLOBALS INITIALIZED
 */
@@ -101,6 +106,13 @@ void handle_input(SDL_Event event) {
         }
     }
     else if (event.type == SDL_MOUSEMOTION) {
+        // set our mouse world position
+        // mouse_world_x = event.motion.x + editor_camera->transform->rect.x;
+        // mouse_world_y = event.motion.y + editor_camera->transform->rect.y;
+        // set our mouse view position
+        mouse_view_x = event.motion.x;
+        mouse_view_y = event.motion.y;
+        
         if (dragging) {
             int dx = event.motion.x - last_x;
             int dy = event.motion.y - last_y;
