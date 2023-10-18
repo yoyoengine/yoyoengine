@@ -202,7 +202,8 @@ void renderAll() {
 
     if(!engine_state.stretch_viewport){
         float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
-        SDL_RenderSetScale(pRenderer, scaleX, scaleX);
+        float scaleY = (float)engine_state.screen_height / (float)engine_state.target_camera->camera->view_field.h;
+        SDL_RenderSetScale(pRenderer, scaleX, scaleY);
     }
 
     /*
