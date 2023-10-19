@@ -6,5 +6,6 @@
     "skip_intro":true,
     "screen_width":2560,
     "screen_height":1440,
-    "window_title":"Yoyo Engine Editor"
+    "window_title":"Yoyo Engine Editor",
+    "framecap":-1
 }

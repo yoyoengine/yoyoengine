@@ -88,10 +88,6 @@ void ye_close_log(){
     - not reliant on SDL and could be used whenever
 */
 void ye_logf(enum logLevel level, const char *format, ...){
-    // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
-    if(engine_state.log_level > level || logFile == 0x0){ // idk why i wrote null like this i just want to feel cool
-        return;
-    }
 
     // prepare our formatted string
     va_list args;
@@ -102,8 +98,19 @@ void ye_logf(enum logLevel level, const char *format, ...){
 
     va_end(args);
     
-    // printf("%s",text);
-    // return;
+    // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
+    if(engine_state.log_level > level){ // idk why i wrote null like this i just want to feel cool
+        return;
+    }
+    // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
+    if(logFile == 0x0){
+        ye_add_to_log_buffer(level, text);
+        // if we are in debug mode put it in stdout as well
+        if(engine_state.debug_mode){
+            printf("%s",text);
+        }
+        return;
+    }
 
     switch (level) {
         case debug:
