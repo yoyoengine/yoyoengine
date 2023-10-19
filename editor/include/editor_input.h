@@ -16,32 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_EDITOR
-#define YE_EDITOR
+#ifndef YE_EDITOR_INPUT_H
+#define YE_EDITOR_INPUT_H
 
-#include <stdbool.h>
-#include <jansson/jansson.h>
+#include <yoyoengine/yoyoengine.h>
 
-// global variables
-extern bool quit;
-extern bool dragging;
-extern bool lock_viewport_interaction;
-extern int last_x;
-extern int last_y;
-extern struct ye_entity * editor_camera;
-extern struct ye_entity * origin;
-extern int screenWidth;
-extern int screenHeight;
-extern struct ye_entity_node * entity_list_head;
-extern char *project_path;
+bool is_hovering_editor(int x, int y);
 
-// some fields for current selected entity tracking (this will be messy)
-// actually lets be really smart and keep local copy
-extern struct ye_entity staged_entity;
-extern struct ye_component_transform staged_transform;
-extern json_t * SETTINGS;
+void editor_input_panning(SDL_Event event);
 
-extern int mouse_world_x;
-extern int mouse_world_y;
+void editor_input_selection(SDL_Event event);
 
-#endif // YE_EDITOR
+void editor_input_misc(SDL_Event event);
+
+void editor_input_shortcuts(SDL_Event event);
+
+void editor_handle_input(SDL_Event event);
+
+#endif // YE_EDITOR_INPUT_H

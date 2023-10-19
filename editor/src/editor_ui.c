@@ -77,7 +77,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     engine_runtime_state.selected_entity = current->entity;
                     entity_list_head = ye_get_entity_list_head();
                     // set all our current entity staging fields
-                    staged_entity = *current->entity;
+                    staged_entity = *current->entity; // TODO this is hard because we have to copy all the components too... maybe we just need to let modification of fields directly and skip them if they are invalid
                     // pop our style items if we pushed them
                     if(flag){ // if we are selected, pop our style items
                         nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
@@ -119,35 +119,99 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
     dev clicks "save" or "cancel"
 */
 void ye_editor_paint_entity(struct nk_context *ctx){
-    if(engine_runtime_state.selected_entity == NULL){
+    struct ye_entity *ent = engine_runtime_state.selected_entity;
+    if(ent == NULL){
         return;
     }
     if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 2, screenWidth - screenWidth/1.5, screenHeight),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            if(engine_runtime_state.selected_entity == NULL){
+            if(ent == NULL){
                 nk_layout_row_dynamic(ctx, 25, 1);
                 nk_label_colored(ctx, "No entity selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
             }
             else{
                 nk_layout_row_dynamic(ctx, 25, 2);
                 nk_label(ctx, "Name:", NK_TEXT_LEFT);
-                nk_label(ctx, engine_runtime_state.selected_entity->name, NK_TEXT_LEFT);
+                // nk_label(ctx, ent->name, NK_TEXT_LEFT); // TODO: make modifiable
+
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_checkbox_label(ctx, "Active", &ent->active);
 
                 nk_layout_row_dynamic(ctx, 25, 1);
                 nk_label(ctx, "Components:", NK_TEXT_LEFT);
-                // iterate through the components and display them
-                // struct ye_component_node *current = selected_entity->component_list_head;
-                // while(current != NULL){
-                //     nk_layout_row_dynamic(ctx, 25, 1);
-                //     nk_label(ctx, current->component->name, NK_TEXT_LEFT);
-                //     current = current->next;
-                // }
+                
+                if(ent->transform != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Transform", NK_MAXIMIZED)){
+                        nk_layout_row_dynamic(ctx, 25, 4);
+                        nk_label(ctx, "X:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#x", -1000000, &ent->transform->rect.x, 1000000, 1, 5);
+                        nk_label(ctx, "Y:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#y", -1000000, &ent->transform->rect.y, 1000000, 1, 5);
+                        nk_layout_row_dynamic(ctx, 25, 4);
+                        nk_label(ctx, "W:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#w", -1000000, &ent->transform->rect.w, 1000000, 1, 5);
+                        nk_label(ctx, "W:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#h", -1000000, &ent->transform->rect.h, 1000000, 1, 5);
+                        nk_tree_pop(ctx);
+                    }
+                }
+
+                if(ent->renderer != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Renderer", NK_MAXIMIZED)){
+                        nk_label(ctx, "Test", NK_TEXT_LEFT);
+                        nk_tree_pop(ctx);
+                    }
+                }
+
+                if(ent->physics != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Phyiscs", NK_MAXIMIZED)){
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_checkbox_label(ctx, "Active", &ent->physics->active);
+                        nk_layout_row_dynamic(ctx, 25, 4);
+                        nk_label(ctx, "X Velocity:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#xv", -1000000, &ent->physics->velocity.x, 1000000, 1, 5);
+                        nk_label(ctx, "Y Velocity:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#yv", -1000000, &ent->physics->velocity.y, 1000000, 1, 5);
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Rotational Velocity:", NK_TEXT_CENTERED);
+                        nk_property_float(ctx, "#rv", -1000000, &ent->physics->rotational_velocity, 1000000, 1, 5);
+                        nk_tree_pop(ctx);
+                    }
+                }
+
+                if(ent->collider != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Collider", NK_MAXIMIZED)){
+                        nk_label(ctx, "Test", NK_TEXT_LEFT);
+                        nk_tree_pop(ctx);
+                    }
+                }
+
+                if(ent->tag != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Tag", NK_MAXIMIZED)){
+                        // tag components can hold 10 buffers (TODO: sync this somehow with the #define in engine) so we want to just show them all as editable text boxes
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_label(ctx, "Tag Buffers:", NK_TEXT_LEFT);
+                        for(int i = 0; i < 10;){
+                            nk_layout_row_dynamic(ctx, 25, 2);
+                            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->tag->tags[i], 20, nk_filter_default); i++;
+                            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->tag->tags[i], 20, nk_filter_default); i++;
+                        }
+                        nk_tree_pop(ctx);
+                    }
+                }
+
+                if(ent->camera != NULL){
+                    if(nk_tree_push(ctx, NK_TREE_TAB, "Camera", NK_MAXIMIZED)){
+                        nk_label(ctx, "Test", NK_TEXT_LEFT);
+                        nk_tree_pop(ctx);
+                    }
+                }
 
                 // save or cancel buttons
                 nk_layout_row_dynamic(ctx, 25, 2);
                 if(nk_button_label(ctx, "Save")){}
                 if(nk_button_label(ctx, "Cancel")){
-                    engine_runtime_state.selected_entity = NULL;
+                    ent = NULL;
                 }
             }
         nk_end(ctx);
@@ -162,14 +226,12 @@ void ye_editor_paint_info_overlay(struct nk_context *ctx){
     if (nk_begin(ctx, "Info", nk_rect(0, 0, 200, 200),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "Mouse Screen Pos:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_label(ctx, "Mouse World Pos:", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 1);
             char buf[32];
-            // sprintf(buf, "%d,%d", mouse_world_x, mouse_world_y);
-            // nk_label(ctx, buf, NK_TEXT_LEFT);
-            sprintf(buf, "%d,%d", mouse_view_x, mouse_view_y);
+            sprintf(buf, "%d,%d", mouse_world_x, mouse_world_y);
             nk_label(ctx, buf, NK_TEXT_LEFT);
-
+            
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Scene Name:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);

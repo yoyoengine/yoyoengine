@@ -197,16 +197,16 @@ close button on window actually closes (no custom close buttons or keybinds)
 - this would be nice for editor as well as console
 
 ```c
-if(nk_window_is_closed(ctx, "Settings") == 1){
-  project_settings_open = false;
-  lock_viewport_interaction = false;
-  remove_ui_component("project settings");
-}
+  if(nk_window_is_closed(ctx, "Settings") == 1){
+    project_settings_open = false;
+    lock_viewport_interaction = false;
+    remove_ui_component("project settings");
+  }
 ```
 
 ## TODO TOMORROW
 
-- I mentally wrestled with memory leaks over using internal jansson memory vs mallocing in the beginning, but that was overwritten by some fields in jansson, 
+- I mentally wrestled with memory leaks over using internal jansson memory vs mallocing in the beginning, but that was overwritten by some fields in jansson,
   - TLDR: currently we rely on the json for settings and build already having every key existant or it fails, to counteract this we could malloc up front and then strcpy the jansson temp values into the final global holders.
   - decide if this is worth it or not or make a note to fix this limitation later on.
 - project settings, set icon path
@@ -256,6 +256,94 @@ if(nk_window_is_closed(ctx, "Settings") == 1){
 NK_LIB void
 nk_draw_symbol(struct nk_command_buffer *out, enum nk_symbol_type type,
     struct nk_rect content, struct nk_color background, struct nk_color foreground,
-    float border_width, const struct nk_user_font *font)
+    float border_width, const struct nk_user_font*font)
 
 is what you would modify
+
+saving scene, editor mouse invisible bug, edit styles and others, open files in vscode.
+
+- bug in nuklear? sometimes it hides when proprty dragging sometimes it doesnt <https://github.com/vurtun/nuklear/issues/631>
+
+- solve world mouse point in editor
+
+resources i found on custom symbols while i give up for now:
+
+```c
+  struct nk_image {nk_handle handle; nk_ushort w, h; nk_ushort region[4];};
+
+  nk_image_ptr(void *ptr)
+  {
+      struct nk_image s;
+      nk_zero(&s, sizeof(s));
+      NK_ASSERT(ptr);
+      s.handle.ptr = ptr;
+      s.w = 0; s.h = 0;
+      s.region[0] = 0;
+      s.region[1] = 0;
+      s.region[2] = 0;
+      s.region[3] = 0;
+      return s;
+  }
+
+  SDL_Surface *IMG_Load(const char *file)
+  {
+  #if __EMSCRIPTEN__
+      int w, h;
+      char *data;
+      SDL_Surface *surf;
+
+      data = emscripten_get_preloaded_image_data(file, &w, &h);
+      if (data != NULL) {
+          surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
+          if (surf != NULL) {
+              SDL_memcpy(surf->pixels, data, w * h * 4);
+          }
+          free(data); /* This should NOT be SDL_free() */
+          return surf;
+      }
+  #endif
+
+      SDL_RWops *src = SDL_RWFromFile(file, "rb");
+      const char *ext = SDL_strrchr(file, '.');
+      if (ext) {
+          ext++;
+      }
+      if (!src) {
+          /* The error message has been set in SDL_RWFromFile */
+          return NULL;
+      }
+      return IMG_LoadTyped_RW(src, SDL_TRUE, ext);
+  }
+
+  //BROKEN CHATGPT SNIP
+  // static struct nk_image icon_load(const char *filename, SDL_Renderer* renderer) {
+  //     SDL_Texture *texture = NULL;
+  //     SDL_Surface* surface = IMG_Load(filename);
+  //     if (!surface) {
+  //         // Handle loading error
+  //         printf("[SDL]: failed to load image: %s", filename);
+  //     }
+
+  //     // Create a texture from the loaded surface
+  //     texture = SDL_CreateTextureFromSurface(renderer, surface);
+  //     SDL_FreeSurface(surface);  // Free the surface since we no longer need it
+
+  //     struct nk_image nuklearImage;
+  //     nuklearImage.handle.ptr = texture;  // Use the texture as the handle
+  //     nuklearImage.w = 150;
+  //     nuklearImage.h = 150;
+
+  //     return nuklearImage;
+  // }
+```
+
+<https://github.com/vurtun/nuklear/issues/476>
+<https://www.reddit.com/r/opengl/comments/ej43ct/help_with_nuklear_how_to_display_an_image_buffer/>
+<https://www.khronos.org/opengl/wiki/Image_Load_Store>
+<https://github.com/libsdl-org/SDL_image/blob/0eddb391e57a6b11a50dfdb61986315030480985/src/IMG.c#L277>
+<https://github.com/libsdl-org/SDL_image/blob/0eddb391e57a6b11a50dfdb61986315030480985/src/IMG.c#L217>
+<https://wiki.libsdl.org/SDL2/SDL_RWops>
+<https://gamedev.stackexchange.com/questions/131138/how-to-pass-png-image-data-directly-to-sdl>
+<https://github.com/vurtun/nuklear/blob/master/example/file_browser.c#L539>
+<https://www.reddit.com/r/opengl/comments/ehkmvv/help_displaying_image_buffer_in_nuklear/>
+<https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/overview.c#L2>

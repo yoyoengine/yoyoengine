@@ -259,7 +259,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
 void ye_editor_paint_project(struct nk_context *ctx){
     if (nk_begin(ctx, "Project", nk_rect(0, screenHeight/1.5, screenWidth/1.5 / 2, screenHeight/1.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            // build buttons
+            // TODO: build buttons with icons
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Build Options:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
             nk_layout_row_dynamic(ctx, 25, 2);

@@ -38,6 +38,9 @@
 #include "editor_ui.h"
 #include "editor_settings_ui.h"
 #include "editor.h"
+#include "editor_input.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR
@@ -52,94 +55,31 @@ bool dragging;
 bool lock_viewport_interaction;
 int last_x;
 int last_y;
-struct ye_entity * editor_camera;
-struct ye_entity * origin;
+struct ye_entity *editor_camera;
+struct ye_entity *origin;
 int screenWidth;
 int screenHeight;
-struct ye_entity_node * entity_list_head;
+struct ye_entity_node *entity_list_head;
 char *project_path;
 struct ye_entity staged_entity;
 struct ye_component_transform staged_transform;
-json_t * SETTINGS;
+json_t *SETTINGS;
 
-// int mouse_world_x = 0;
-// int mouse_world_y = 0;
-int mouse_view_x = 0;
-int mouse_view_y = 0;
+int mouse_world_x = 0;
+int mouse_world_y = 0;
+
+// TESTING
+struct ye_entity *snerfbot = NULL;
+
 /*
     ALL GLOBALS INITIALIZED
 */
 
-/*
-    Registered input handler
-
-    TODO: 
-    - zoom in should center on the mouse or the center of the screen
-    - zoom should not work when not hovering viewport
-*/
-void handle_input(SDL_Event event) {
-    if(event.type == SDL_QUIT) {
-        quit = true;
-    }
-    else if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-            default:
-                break;
-        }
-    }
-    else if (event.type == SDL_MOUSEBUTTONDOWN) {
-        if (event.button.button == SDL_BUTTON_RIGHT) {
-            if (event.button.x > 0 && event.button.x < screenWidth/1.5 &&
-                event.button.y > 0 && event.button.y < screenHeight/1.5 &&
-                !lock_viewport_interaction) {
-                dragging = true;
-                last_x = event.button.x;
-                last_y = event.button.y;
-                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL));
-            }
-        }
-    }
-    else if (event.type == SDL_MOUSEBUTTONUP) {
-        if (event.button.button == SDL_BUTTON_RIGHT) {
-            dragging = false;
-            SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
-        }
-    }
-    else if (event.type == SDL_MOUSEMOTION) {
-        // set our mouse world position
-        // mouse_world_x = event.motion.x + editor_camera->transform->rect.x;
-        // mouse_world_y = event.motion.y + editor_camera->transform->rect.y;
-        // set our mouse view position
-        mouse_view_x = event.motion.x;
-        mouse_view_y = event.motion.y;
-        
-        if (dragging) {
-            int dx = event.motion.x - last_x;
-            int dy = event.motion.y - last_y;
-            editor_camera->transform->rect.x -= dx;
-            editor_camera->transform->rect.y -= dy;
-            last_x = event.motion.x;
-            last_y = event.motion.y;
-        }
-    }
-    else if (event.type == SDL_MOUSEWHEEL) {
-        int x, y;
-        SDL_GetMouseState(&x, &y);
-        if (event.wheel.y > 0 && x > 0 && x < screenWidth/1.5 &&
-            y > 0 && y < screenHeight/1.5 &&
-            !lock_viewport_interaction) {
-            if(editor_camera->camera->view_field.w > 16){
-                editor_camera->camera->view_field.w -= 16;
-                editor_camera->camera->view_field.h -= 9;
-            }
-        }
-        else if (event.wheel.y < 0 && x > 0 && x < screenWidth/1.5 &&
-            y > 0 && y < screenHeight/1.5 &&
-            !lock_viewport_interaction) {
-            editor_camera->camera->view_field.w += 16;
-            editor_camera->camera->view_field.h += 9;
-        }
-    }
+bool ye_point_in_rect(int x, int y, SDL_Rect rect)
+{ // TODO: MOVEME TO ENGINE
+    if (x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h)
+        return true;
+    return false;
 }
 
 /*
@@ -147,7 +87,6 @@ void handle_input(SDL_Event event) {
     accepts one string argument of the path to the project folder
 */
 int main(int argc, char **argv) {
-
     // build up editor contexts
     editor_settings_ui_init();
 
@@ -160,14 +99,12 @@ int main(int argc, char **argv) {
     ye_init_engine();
 
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
-    if(path != NULL){
+    if (path != NULL)
         ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
-    }
-    else{
+    else
         ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
-    }
 
-    engine_state.handle_input = handle_input;
+    engine_state.handle_input = editor_handle_input;
 
     // update screenWidth and screenHeight
     struct ScreenSize screenSize = ye_get_screen_size();
@@ -181,11 +118,16 @@ int main(int argc, char **argv) {
     ye_add_camera_component(editor_camera, (SDL_Rect){0, 0, 2560, 1440});
     ye_set_camera(editor_camera);
 
+    // create a silly little snerfbot at our mouse world pos
+    snerfbot = ye_create_entity_named("snerfbot");
+    ye_add_transform_component(snerfbot, (struct ye_rectf){0, 0, 100, 100}, 998, YE_ALIGN_MID_CENTER);
+    ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
+
     // register all editor ui components
-    ui_register_component("heiarchy",ye_editor_paint_hiearchy);
-    ui_register_component("entity",ye_editor_paint_entity);
-    ui_register_component("options",ye_editor_paint_options);
-    ui_register_component("project",ye_editor_paint_project);
+    ui_register_component("heiarchy", ye_editor_paint_hiearchy);
+    ui_register_component("entity", ye_editor_paint_entity);
+    ui_register_component("options", ye_editor_paint_options);
+    ui_register_component("project", ye_editor_paint_project);
 
     origin = ye_create_entity_named("origin");
     ye_add_transform_component(origin, (struct ye_rectf){-50, -50, 100, 100}, 0, YE_ALIGN_MID_CENTER);
@@ -199,21 +141,25 @@ int main(int argc, char **argv) {
     ye_cache_color("warning", red);
 
     // get the scene to load from "entry_scene"
-    char * entry_scene; 
-    if(!ye_json_string(SETTINGS, "entry_scene", &entry_scene)){
+    char *entry_scene;
+    if (!ye_json_string(SETTINGS, "entry_scene", &entry_scene))
+    {
         ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
         // TODO: future me create a text entity easily in the center of the scene alerting this fact
         struct ye_entity *text = ye_create_entity_named("warning text");
         ye_add_transform_component(text, (struct ye_rectf){0, 0, 1920, 500}, 900, YE_ALIGN_MID_CENTER);
         ye_temp_add_text_renderer_component(text, "entry_scene not found in settings file. No scene has been loaded.", ye_font("default"), ye_color("warning"));
     }
-    else{
+    else
+    {
         ye_load_scene(ye_get_resource_static(entry_scene));
     }
 
     entity_list_head = ye_get_entity_list_head();
 
     while(!quit) {
+        snerfbot->transform->rect.x = mouse_world_x;
+        snerfbot->transform->rect.y = mouse_world_y;
         ye_process_frame();
     }
 
@@ -228,7 +174,7 @@ int main(int argc, char **argv) {
 }
 
 void editor_reload_settings(){
-    if(SETTINGS)
+    if (SETTINGS)
         json_decref(SETTINGS);
     SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
 }
