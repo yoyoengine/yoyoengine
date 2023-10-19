@@ -18,7 +18,21 @@
 
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
+#include <math.h>
 
+/*
+    Getting this equation right was exponentially more difficult than you could possibly imagine
+*/
+void editor_update_mouse_world_pos(int x, int y){
+    float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
+    float scaleY = (float)engine_state.screen_height / (float)engine_state.target_camera->camera->view_field.h;
+    mouse_world_x = ((x / scaleX) + editor_camera->transform->rect.x);
+    mouse_world_y = ((y / scaleY) + editor_camera->transform->rect.y);
+}
+
+/*
+    Checks if the mouse is within the editor viewport
+*/
 bool is_hovering_editor(int x, int y){
     return (x > 0 && x < screenWidth / 1.5 &&
             y > 0 && y < screenHeight / 1.5);
@@ -27,10 +41,14 @@ bool is_hovering_editor(int x, int y){
 float camera_zoom = 1.0;
 float camera_zoom_sens = 1.0;
 void editor_input_panning(SDL_Event event){
+    // get the actual mouse position (the mouse wheel event will not give us the actual mouse position)
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+
     // initial right click down, initialize panning
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_RIGHT) {
-            if (is_hovering_editor(event.button.x, event.button.y) &&
+            if (is_hovering_editor(x, y) &&
                 !lock_viewport_interaction)
             {
                 dragging = true;
@@ -61,35 +79,29 @@ void editor_input_panning(SDL_Event event){
         }
     }
     // camera zooming TODO: disabled. Im losing my mind.
-    // else if (event.type == SDL_MOUSEWHEEL)
-    // {
-    //     float dt = (float)engine_runtime_state.frame_time / 1000.0;
-    //     // float zoom_sensitive = 0.1;
-    //     if (event.wheel.y > 0)
-    //    {
-    //         float new_zoom = camera_zoom + camera_zoom_sens * dt;
-    //         printf("new zoom: %f\n", new_zoom);
-    //         // 10x zoom is the max
-    //         if(camera_zoom < 10){
-    //             editor_camera->camera->view_field.w = screenWidth / new_zoom;
-    //             editor_camera->camera->view_field.h = screenHeight / new_zoom;
+    else if (event.type == SDL_MOUSEWHEEL)
+    {
+        float dt = (float)engine_runtime_state.frame_time / 1000.0;
+        float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
 
-    //             camera_zoom = new_zoom;
-    //         }
-    //     }
-    //     else if (event.wheel.y < 0)
-    //     {
-    //         float new_zoom = camera_zoom - camera_zoom_sens * dt;
-    //         printf("new zoom: %f\n", new_zoom);
-    //         // 0.1x zoom is the min
-    //         if(camera_zoom > 0.1){
-    //             editor_camera->camera->view_field.w = screenWidth / new_zoom;
-    //             editor_camera->camera->view_field.h = screenHeight / new_zoom;
+        if (event.wheel.y > 0)
+        {
+            camera_zoom *= pow(200.0f, zoom_factor * dt);
+            // Ensure camera_zoom doesn't go above 10x
+            camera_zoom = fmin(camera_zoom, 10.0f);
+        }
+        else if (event.wheel.y < 0)
+        {
+            camera_zoom /= pow(200.0f, zoom_factor * dt);
+            // Ensure camera_zoom doesn't go below 0.1x
+            camera_zoom = fmax(camera_zoom, 0.1f);
+        }
 
-    //             camera_zoom = new_zoom;
-    //         }
-    //     }
-    // }
+        editor_camera->camera->view_field.w = screenWidth / camera_zoom;
+        editor_camera->camera->view_field.h = screenHeight / camera_zoom;
+
+        editor_update_mouse_world_pos(x, y);
+    }
 }
 
 /*
@@ -137,11 +149,7 @@ void editor_input_selection(SDL_Event event){
 void editor_input_misc(SDL_Event event){
     // update the mouse world position
     if(event.type == SDL_MOUSEMOTION){
-        float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
-        float scaleY = (float)engine_state.screen_height / (float)engine_state.target_camera->camera->view_field.h;
-
-        mouse_world_x = ((event.motion.x + editor_camera->transform->rect.x) / scaleX);
-        mouse_world_y = ((event.motion.y + editor_camera->transform->rect.y) / scaleY);
+        editor_update_mouse_world_pos(event.motion.x, event.motion.y);
     }
 }
 

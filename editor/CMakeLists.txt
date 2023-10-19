@@ -39,6 +39,7 @@ if(UNIX)
         SDL2_image
         lua
         jansson
+        m
     )
 
     # Specify that the executable should be placed in the 'linux' directory
