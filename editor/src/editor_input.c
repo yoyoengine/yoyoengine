@@ -108,36 +108,38 @@ void editor_input_panning(SDL_Event event){
     Selecting entities and manipulating them
 */
 void editor_input_selection(SDL_Event event){
-    if (event.button.button == SDL_BUTTON_LEFT) {   
-        // dont do anything if we are outside the viewport
-        if (is_hovering_editor(event.button.x,event.button.y) &&
-            !lock_viewport_interaction){
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if (event.button.button == SDL_BUTTON_LEFT) {   
+            // dont do anything if we are outside the viewport
+            if (is_hovering_editor(event.button.x,event.button.y) &&
+                !lock_viewport_interaction){
 
-            bool nothing = true;
-            // check what entity we clicked over, we clicked on an entity (thats ignoring our current selection) we should change the current selection, else we deselect
-            struct ye_entity_node *clicked_entity = entity_list_head;
-            while (clicked_entity != NULL)
-            {
-                if(clicked_entity->entity == engine_runtime_state.selected_entity)
+                bool nothing = true;
+                // check what entity we clicked over, we clicked on an entity (thats ignoring our current selection) we should change the current selection, else we deselect
+                struct ye_entity_node *clicked_entity = entity_list_head;
+                while (clicked_entity != NULL)
                 {
-                    clicked_entity = clicked_entity->next;
-                    continue;
-                }
-
-                if (ye_point_in_rect(mouse_world_x, mouse_world_y, ye_convert_rectf_rect(clicked_entity->entity->transform->bounds))) // TODO: bounds vs rect here
-                {
-                    // we clicked on this entity
-                    if (clicked_entity != engine_runtime_state.selected_entity)
+                    if(clicked_entity->entity == engine_runtime_state.selected_entity || clicked_entity->entity->camera != NULL)
                     {
-                        engine_runtime_state.selected_entity = clicked_entity->entity;
+                        clicked_entity = clicked_entity->next;
+                        continue;
                     }
-                    nothing = false;
-                    break;
+
+                    if (ye_point_in_rect(mouse_world_x, mouse_world_y, ye_convert_rectf_rect(clicked_entity->entity->transform->bounds))) // TODO: bounds vs rect here
+                    {
+                        // we clicked on this entity
+                        if (clicked_entity != engine_runtime_state.selected_entity)
+                        {
+                            engine_runtime_state.selected_entity = clicked_entity->entity;
+                        }
+                        nothing = false;
+                        break;
+                    }
+                    clicked_entity = clicked_entity->next; // TODO: solve world mouse point
                 }
-                clicked_entity = clicked_entity->next; // TODO: solve world mouse point
-            }
-            if(nothing){
-                engine_runtime_state.selected_entity = NULL;
+                if(nothing){
+                    engine_runtime_state.selected_entity = NULL;
+                }
             }
         }
     }

@@ -347,3 +347,7 @@ resources i found on custom symbols while i give up for now:
 <https://github.com/vurtun/nuklear/blob/master/example/file_browser.c#L539>
 <https://www.reddit.com/r/opengl/comments/ehkmvv/help_displaying_image_buffer_in_nuklear/>
 <https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/overview.c#L2>
+
+## bounds vs rect
+
+- where do they stand in realation to each other and how to minimize the confusion
