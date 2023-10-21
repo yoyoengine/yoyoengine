@@ -308,11 +308,11 @@ void ye_init_engine() {
     }
 
     // startup audio systems
-    initAudio();
+    ye_audio_init();
 
     // before we play our loud ass startup sound, lets check what volume the game wants
     // the engine to be at initially
-    setVolume(-1, engine_state.volume);
+    ye_set_volume(-1, engine_state.volume);
 
     /*
         Part of the engine startup which isnt configurable by the game is displaying
@@ -323,7 +323,7 @@ void ye_init_engine() {
         ye_logf(info,"Skipping Intro.\n");
     }
     else{
-        playSound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
+        ye_play_sound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
@@ -407,7 +407,7 @@ void ye_shutdown_engine(){
     ye_logf(info, "Shut down graphics.\n");
 
     // shutdown audio
-    shutdownAudio();
+    ye_audio_shutdown();
     ye_logf(info, "Shut down audio.\n");
 
     // shutdown logging

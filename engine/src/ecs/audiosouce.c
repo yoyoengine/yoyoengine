@@ -16,36 +16,4 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_ENGINE_MAIN_H
-#define YE_ENGINE_MAIN_H
-#define NK_INCLUDE_FIXED_TYPES
-
-/*
-    Include all our headers in one place.
-    This lets the game use
-    #include <yoyoengine/yoyoengine.h> assuming they have
-    defined the header and lib paths correctly.
-*/
-#include "engine.h"
-#include "json.h"
-#include "graphics.h"
-#include "uthash.h"
-#include "cache.h"
-#include "ui.h"
-#include "ecs/ecs.h"
-#include "ecs/audiosource.h"
-#include "ecs/camera.h"
-#include "ecs/ecs.h"
-#include "ecs/physics.h"
-#include "ecs/renderer.h"
-#include "ecs/transform.h"
-#include "ecs/collider.h"
-#include "ecs/tag.h"
-#include "utils.h"
-#include "timer.h"
-#include "audio.h"
-#include "logging.h"
-#include "lua.h"
-#include "scene.h"
-
-#endif // YE_ENGINE_MAIN_H
+#include <yoyoengine/yoyoengine.h>
