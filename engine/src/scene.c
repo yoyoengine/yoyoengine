@@ -316,6 +316,16 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
         e->renderer->alpha = alpha;
     }
 
+    // check for flipped_x and flipped_y and update
+    if(ye_json_has_key(renderer,"flipped_x")){
+        bool flipped_x = false;    ye_json_bool(renderer,"flipped_x",&flipped_x);
+        e->renderer->flipped_x = flipped_x;
+    }
+    if(ye_json_has_key(renderer,"flipped_y")){
+        bool flipped_y = false;    ye_json_bool(renderer,"flipped_y",&flipped_y);
+        e->renderer->flipped_y = flipped_y;
+    }
+
     // update active state
     if(ye_json_has_key(renderer,"active")){
         bool active = true;    ye_json_bool(renderer,"active",&active);

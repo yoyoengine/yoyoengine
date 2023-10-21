@@ -45,6 +45,9 @@ struct ye_component_renderer {
 
     int alpha;  // alpha of texture
 
+    bool flipped_x;
+    bool flipped_y;
+
     union renderer_impl{ // hold the data for the specific renderer type
         struct ye_component_renderer_text *text;
         struct ye_component_renderer_text_outlined *text_outlined;

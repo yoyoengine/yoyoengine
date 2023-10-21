@@ -20,8 +20,6 @@
                         },
                         "angle":0,
                         "alignment":0,
-                        "flipped_x":false,
-                        "flipped_y":false,
                         "center":{"x":0,"y":0},
                         "z":999
                     },

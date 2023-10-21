@@ -23,7 +23,9 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     entity->renderer->active = true;
     entity->renderer->type = type;
     entity->renderer->alpha = 255; // by default renderer is fully opaque
-    
+    entity->renderer->flipped_x = false;
+    entity->renderer->flipped_y = false;
+
     if(type == YE_RENDERER_TYPE_IMAGE){
         entity->renderer->renderer_impl.image = data;
     }
@@ -304,15 +306,15 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     entity_rect.y = entity_rect.y - camera_rect.y;
 
                     // if transform is flipped or rotated render it differently
-                    if(current->entity->transform->flipped_x || current->entity->transform->flipped_y){
+                    if(current->entity->renderer->flipped_x || current->entity->renderer->flipped_y){
                         SDL_RendererFlip flip = SDL_FLIP_NONE;
-                        if(current->entity->transform->flipped_x && current->entity->transform->flipped_y){
+                        if(current->entity->renderer->flipped_x && current->entity->renderer->flipped_y){
                             flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
                         }
-                        else if(current->entity->transform->flipped_x){
+                        else if(current->entity->renderer->flipped_x){
                             flip = SDL_FLIP_HORIZONTAL;
                         }
-                        else if(current->entity->transform->flipped_y){
+                        else if(current->entity->renderer->flipped_y){
                             flip = SDL_FLIP_VERTICAL;
                         }
                         SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->transform->rotation, NULL, flip);
