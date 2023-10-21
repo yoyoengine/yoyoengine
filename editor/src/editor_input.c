@@ -78,8 +78,7 @@ void editor_input_panning(SDL_Event event){
             last_y = event.motion.y;
         }
     }
-    // camera zooming TODO: disabled. Im losing my mind.
-    else if (event.type == SDL_MOUSEWHEEL)
+    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(x, y))
     {
         float dt = (float)engine_runtime_state.frame_time / 1000.0;
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
@@ -119,7 +118,7 @@ void editor_input_selection(SDL_Event event){
                 struct ye_entity_node *clicked_entity = entity_list_head;
                 while (clicked_entity != NULL)
                 {
-                    if(clicked_entity->entity == engine_runtime_state.selected_entity || clicked_entity->entity->camera != NULL)
+                    if(clicked_entity->entity == engine_runtime_state.selected_entity || clicked_entity->entity->camera != NULL || clicked_entity->entity == origin)
                     {
                         clicked_entity = clicked_entity->next;
                         continue;

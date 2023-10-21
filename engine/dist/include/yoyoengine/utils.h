@@ -41,7 +41,8 @@ typedef enum {
 enum ye_alignment {
     YE_ALIGN_TOP_LEFT,  YE_ALIGN_TOP_CENTER,    YE_ALIGN_TOP_RIGHT,
     YE_ALIGN_MID_LEFT,  YE_ALIGN_MID_CENTER,    YE_ALIGN_MID_RIGHT,
-    YE_ALIGN_BOT_LEFT,  YE_ALIGN_BOT_CENTER,    YE_ALIGN_BOT_RIGHT
+    YE_ALIGN_BOT_LEFT,  YE_ALIGN_BOT_CENTER,    YE_ALIGN_BOT_RIGHT,
+    YE_ALIGN_STRETCH
 };
 
 /*
@@ -67,5 +68,16 @@ struct ye_rectf {
 SDL_Rect ye_convert_rectf_rect(struct ye_rectf rect);
 
 struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect);
+
+enum ye_component_type {
+    YE_COMPONENT_TRANSFORM,
+    YE_COMPONENT_RENDERER,
+    YE_COMPONENT_PHYSICS,
+    YE_COMPONENT_COLLIDER,
+    YE_COMPONENT_SCRIPT,
+    YE_COMPONENT_AUDIOSOURCE,
+    YE_COMPONENT_CAMERA,
+    YE_COMPONENT_TAG
+};
 
 #endif

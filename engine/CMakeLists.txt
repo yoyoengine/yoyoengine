@@ -54,4 +54,5 @@ target_link_libraries(yoyoengine
     SDL2_image
     SDL2_mixer
     SDL2_ttf
+    m
 )
