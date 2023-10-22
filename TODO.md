@@ -351,3 +351,7 @@ resources i found on custom symbols while i give up for now:
 ## bounds vs rect
 
 - where do they stand in realation to each other and how to minimize the confusion
+
+## editor polish
+
+- when mouse enters viewport, deselect any nuklear windows open (heiarchy fixed location ones ofc)

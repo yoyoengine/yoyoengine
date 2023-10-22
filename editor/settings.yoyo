@@ -4,8 +4,8 @@
     "game_resources_path":"/home/ryan/repos/yoyoengine/examples/test/resources",
     "volume":0,
     "skip_intro":true,
-    "screen_width":2560,
-    "screen_height":1440,
+    "screen_width":1920,
+    "screen_height":1080,
     "window_title":"Yoyo Engine Editor",
     "framecap":-1
 }

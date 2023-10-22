@@ -163,7 +163,7 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_layout_row_dynamic(ctx, 25, 2);
                         nk_checkbox_label(ctx, "Flipped X", &ent->renderer->flipped_x);
                         nk_checkbox_label(ctx, "Flipped Y", &ent->renderer->flipped_y);
-                        ye_editor_paint_position(ctx, &ent->renderer->position);
+                        // ye_editor_paint_position(ctx, &ent->renderer->position); TODO: removeme, stashed attempt 1 rework
                         nk_tree_pop(ctx);
                     }
                 }
