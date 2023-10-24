@@ -31,10 +31,10 @@ int convertToRealPixelHeight(float in);
 
 SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
 
-TTF_Font *ye_load_font(char *pFontPath, int fontSize);
+TTF_Font *ye_load_font(const char *pFontPath, int fontSize);
 
 // Create a texture from image path, returns NULL for failure
-SDL_Texture * ye_create_image_texture(char *pPath);
+SDL_Texture * ye_create_image_texture(const char *pPath);
 
 SDL_Texture *createTextTextureWithOutline();
 
@@ -52,9 +52,9 @@ struct ScreenSize getCurrentResolution();
 
 void changeResolution(int width, int height);
 
-void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path);
+void ye_init_graphics();
 
-void shutdownGraphics();
+void ye_shutdown_graphics();
 
 struct ScreenSize ye_get_screen_size();
 

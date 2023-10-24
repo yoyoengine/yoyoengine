@@ -39,7 +39,7 @@ void ye_init_scene_manager(){
     ===================================================================
 */
 
-void ye_construct_transform(struct ye_entity* e, json_t* transform, char* entity_name) {
+void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* entity_name) {
     // validate bounds field
     json_t *bounds = NULL;
     struct ye_rectf b;
@@ -137,7 +137,7 @@ void ye_construct_transform(struct ye_entity* e, json_t* transform, char* entity
     }    
 }
 
-void ye_construct_camera(struct ye_entity* e, json_t* camera, char* entity_name){
+void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity_name){
     // validate the view field
     json_t *view_filed = NULL;
     if(!ye_json_object(camera,"view field",&view_filed)) {
@@ -162,7 +162,7 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, char* entity_name)
     }
 }
 
-void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_name){
+void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* entity_name){
     
     // get the type of renderer
     int type_int;
@@ -180,12 +180,12 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
         return;
     }
 
-    char *animation_path = NULL; // comply with mingw & clang
-    char *_text = NULL; // comply with mingw & clang
-    char *src = NULL; // comply with mingw & clang
-    char *text = NULL; // comply with mingw & clang
-    char *font = NULL; // comply with mingw & clang
-    char *color = NULL; // comply with mingw & clang
+    const char *animation_path = NULL; // comply with mingw & clang
+    const char *_text = NULL; // comply with mingw & clang
+    const char *src = NULL; // comply with mingw & clang
+    const char *text = NULL; // comply with mingw & clang
+    const char *font = NULL; // comply with mingw & clang
+    const char *color = NULL; // comply with mingw & clang
     switch(type){
         // ye_logf(info,"Constructing renderer: %s\n", entity_name);
         case YE_RENDERER_TYPE_IMAGE:
@@ -227,21 +227,21 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
             }
 
             // get the font field
-            char *_font = NULL;
+            const char *_font = NULL;
             if(!ye_json_string(impl,"font",&_font)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the font field\n", entity_name);
                 return;
             }
 
             // get the color field
-            char *_color = NULL;
+            const char *_color = NULL;
             if(!ye_json_string(impl,"color",&_color)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the color field\n", entity_name);
                 return;
             }
 
             // get the outline color field
-            char *outline_color = NULL;
+            const char *outline_color = NULL;
             if(!ye_json_string(impl,"outline color",&outline_color)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the outline color field\n", entity_name);
                 return;
@@ -265,7 +265,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
             }
 
             // get the image format string
-            char *image_format = NULL;
+            const char *image_format = NULL;
             if(!ye_json_string(impl,"image format",&image_format)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the image format field\n", entity_name);
                 return;
@@ -333,7 +333,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, char* entity_n
     }
 }
 
-void ye_construct_physics(struct ye_entity* e, json_t* physics, char* entity_name){
+void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* entity_name){
     // get velocity
     if(ye_json_has_key(physics,"velocity")){
         json_t *velocity = NULL;
@@ -362,7 +362,7 @@ void ye_construct_physics(struct ye_entity* e, json_t* physics, char* entity_nam
     }
 }
 
-void ye_construct_tag(struct ye_entity* e, json_t* tag, char* entity_name){
+void ye_construct_tag(struct ye_entity* e, json_t* tag, const char* entity_name){
     // add tag component
     ye_add_tag_component(e);
 
@@ -377,13 +377,13 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag, char* entity_name){
     if(ye_json_array(tag,"tags",&tags)) {
         // add each tag in the array
         for(int i = 0; i < json_array_size(tags); i++){
-            char *tag_name = NULL; ye_json_arr_string(tags,i,&tag_name);
+            const char *tag_name = NULL; ye_json_arr_string(tags,i,&tag_name);
             ye_add_tag(e,tag_name);
         }
     }
 }
 
-void ye_construct_collider(struct ye_entity* e, json_t* collider, char* entity_name){
+void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* entity_name){
     // validate bounds field
     json_t *bounds = NULL;
     struct ye_rectf b;
@@ -435,7 +435,7 @@ void ye_construct_scene(json_t *entities){
         json_t *entity = NULL;      ye_json_arr_object(entities,i,&entity);    
         
         // get entity name
-        char *entity_name = NULL;   ye_json_string(entity,"name",&entity_name);
+        const char *entity_name = NULL;   ye_json_string(entity,"name",&entity_name);
         struct ye_entity *e = NULL;
         if(entity_name == NULL){
             ye_logf(warning,"Unnamed entity in scene file. It's name will be automatically assigned.\n");
@@ -548,7 +548,7 @@ void ye_load_scene(const char *scene_path){
         return;
     }
 
-    char *scene_name; 
+    const char *scene_name; 
     if(!ye_json_string(SCENE, "name", &scene_name)){
         ye_logf(warning,"Un-named scene loaded %s\n", scene_path);
     }
@@ -563,7 +563,7 @@ void ye_load_scene(const char *scene_path){
     json_t *styles; ye_json_array(SCENE, "styles", &styles);
     // cache each styles file in array
     for(int i = 0; i < json_array_size(styles); i++){
-        char *path; ye_json_arr_string(styles, i, &path);
+        const char *path; ye_json_arr_string(styles, i, &path);
         ye_pre_cache_styles(ye_get_resource_static(path));
     }
 
@@ -583,7 +583,7 @@ void ye_load_scene(const char *scene_path){
     ye_construct_scene(entities);
 
     // check if the scene has a default camera and set it if so, if not log error
-    char* default_camera_name = NULL;
+    const char* default_camera_name = NULL;
     if(!ye_json_string(scene,"default camera",&default_camera_name)){
         ye_logf(error,"Scene \"%s\" has no default camera\n", scene_path);
     }

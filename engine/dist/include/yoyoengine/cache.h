@@ -96,7 +96,7 @@ void ye_pre_cache_scene(json_t *scene);
         }
     }
 */
-void ye_pre_cache_styles(char *styles_path);
+void ye_pre_cache_styles(const char *styles_path);
 
 /*
     Will close all cached textures.
@@ -174,17 +174,17 @@ struct ye_color_node {
 /*
     Returns the pointer to a cached texture, loading it if its not already cached.
 */
-SDL_Texture * ye_image(char *path);
+SDL_Texture * ye_image(const char *path);
 
 /*
     Returns the pointer to a cached font based on name and size, returning a fallback default font if not found.
 */
-TTF_Font * ye_font(char *name);
+TTF_Font * ye_font(const char *name);
 
 /*
     Caches a single color, returning a fallback default color if not found.
 */
-SDL_Color * ye_color(char *name);
+SDL_Color * ye_color(const char *name);
 
 
 
@@ -199,31 +199,31 @@ SDL_Color * ye_color(char *name);
 /*
     Create a texture from path
 */
-SDL_Texture * ye_cache_texture(char *path);
+SDL_Texture * ye_cache_texture(const char *path);
 
 /*
     Create a font from name, size, and path
 */
-TTF_Font * ye_cache_font(char *name, int size, char *path);
+TTF_Font * ye_cache_font(const char *name, int size, const char *path);
 
 /*
     Cache a SDL_Color
 */
-SDL_Color * ye_cache_color(char *name, SDL_Color color);
+SDL_Color * ye_cache_color(const char *name, SDL_Color color);
 
 /*
     Destroy a cached texture from path
 */
-void ye_destroy_texture(char *path);
+void ye_destroy_texture(const char *path);
 
 /*
     Destroy a cached font from name
 */
-void ye_destroy_font(char *name);
+void ye_destroy_font(const char *name);
 
 /*
     Destroy a cached color from name
 */
-void ye_destroy_color(char *name);
+void ye_destroy_color(const char *name);
 
 #endif

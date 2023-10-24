@@ -52,7 +52,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     continue;
                 }
                 nk_layout_row(ctx, NK_DYNAMIC, 25, 3, ratio);
-                nk_checkbox_label(ctx, "", &current->entity->active);
+                nk_checkbox_label(ctx, "", (nk_bool*)&current->entity->active);
 
                 // if the entity is selected, display it as a different color
                 bool flag = false; // messy way to do this, but it works
@@ -135,7 +135,7 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                 // nk_label(ctx, ent->name, NK_TEXT_LEFT); // TODO: make modifiable
 
                 nk_layout_row_dynamic(ctx, 25, 1);
-                nk_checkbox_label(ctx, "Active", &ent->active);
+                nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->active);
 
                 nk_layout_row_dynamic(ctx, 25, 1);
                 nk_label(ctx, "Components:", NK_TEXT_LEFT);
@@ -161,8 +161,8 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_label(ctx, "Test", NK_TEXT_LEFT);
 
                         nk_layout_row_dynamic(ctx, 25, 2);
-                        nk_checkbox_label(ctx, "Flipped X", &ent->renderer->flipped_x);
-                        nk_checkbox_label(ctx, "Flipped Y", &ent->renderer->flipped_y);
+                        nk_checkbox_label(ctx, "Flipped X", (nk_bool*)&ent->renderer->flipped_x);
+                        nk_checkbox_label(ctx, "Flipped Y", (nk_bool*)&ent->renderer->flipped_y);
                         // ye_editor_paint_position(ctx, &ent->renderer->position); TODO: removeme, stashed attempt 1 rework
                         nk_tree_pop(ctx);
                     }
@@ -171,7 +171,7 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                 if(ent->physics != NULL){
                     if(nk_tree_push(ctx, NK_TREE_TAB, "Phyiscs", NK_MAXIMIZED)){
                         nk_layout_row_dynamic(ctx, 25, 1);
-                        nk_checkbox_label(ctx, "Active", &ent->physics->active);
+                        nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->physics->active);
                         nk_layout_row_dynamic(ctx, 25, 4);
                         nk_label(ctx, "X Velocity:", NK_TEXT_CENTERED);
                         nk_property_float(ctx, "#xv", -1000000, &ent->physics->velocity.x, 1000000, 1, 5);
@@ -258,7 +258,7 @@ void ye_editor_paint_options(struct nk_context *ctx){
             
             nk_label(ctx, "Overlays:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            if(nk_checkbox_label(ctx, "Info", &show_info_overlay)){
+            if(nk_checkbox_label(ctx, "Info", (nk_bool*)&show_info_overlay)){
                 if(show_info_overlay){
                     ui_register_component("info_overlay",ye_editor_paint_info_overlay);
                 }
@@ -270,18 +270,18 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Visual Debugging:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 2);
-            nk_checkbox_label(ctx, "Display Names", &YE_STATE.editor.display_names);
-            nk_checkbox_label(ctx, "Paintbounds", &YE_STATE.editor.paintbounds_visible);
-            nk_checkbox_label(ctx, "Colliders", &YE_STATE.editor.colliders_visible);
-            nk_checkbox_label(ctx, "Scene Camera Viewport", &YE_STATE.editor.scene_camera_bounds_visible);
+            nk_checkbox_label(ctx, "Display Names", (nk_bool*)&YE_STATE.editor.display_names);
+            nk_checkbox_label(ctx, "Paintbounds", (nk_bool*)&YE_STATE.editor.paintbounds_visible);
+            nk_checkbox_label(ctx, "Colliders", (nk_bool*)&YE_STATE.editor.colliders_visible);
+            nk_checkbox_label(ctx, "Scene Camera Viewport", (nk_bool*)&YE_STATE.editor.scene_camera_bounds_visible);
 
             nk_label(ctx, "Preferences:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Draw Lines", &YE_STATE.editor.editor_display_viewport_lines);
+            nk_checkbox_label(ctx, "Draw Lines", (nk_bool*)&YE_STATE.editor.editor_display_viewport_lines);
 
             nk_label(ctx, "Extra:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Stretch Viewport", &YE_STATE.engine.stretch_viewport);
+            nk_checkbox_label(ctx, "Stretch Viewport", (nk_bool*)&YE_STATE.engine.stretch_viewport);
         nk_end(ctx);
     }
 }

@@ -82,11 +82,19 @@ bool ye_point_in_rect(int x, int y, SDL_Rect rect)
     return false;
 }
 
+void editor_reload_settings(){
+    if (SETTINGS)
+        json_decref(SETTINGS);
+    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+}
+
 /*
     main function
     accepts one string argument of the path to the project folder
 */
 int main(int argc, char **argv) {
+    (void)argc; // supress compiler warning
+
     // build up editor contexts
     editor_settings_ui_init();
 
@@ -141,7 +149,7 @@ int main(int argc, char **argv) {
     ye_cache_color("warning", red);
 
     // get the scene to load from "entry_scene"
-    char *entry_scene;
+    const char *entry_scene;
     if (!ye_json_string(SETTINGS, "entry_scene", &entry_scene))
     {
         ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
@@ -171,10 +179,4 @@ int main(int argc, char **argv) {
 
     // exit
     return 0;
-}
-
-void editor_reload_settings(){
-    if (SETTINGS)
-        json_decref(SETTINGS);
-    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
 }

@@ -21,6 +21,7 @@
 
 #include <stdbool.h>
 #include <jansson/jansson.h>
+#include <yoyoengine/yoyoengine.h>
 
 // global variables
 extern bool quit;
@@ -43,5 +44,7 @@ extern json_t * SETTINGS;
 
 extern int mouse_world_x;
 extern int mouse_world_y;
+
+bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
 #endif // YE_EDITOR

@@ -165,28 +165,28 @@ float ye_delta_time(){
     return YE_STATE.runtime.delta_time;
 }
 
-void set_setting_string(const char* key, char** value, json_t* settings) {
-    char * json_value;
+void set_setting_string(char* key, char** value, json_t* settings) {
+    const char * json_value;
     if (ye_json_string(settings, key, &json_value)) {
         *value = strdup(json_value);
     }
 }
 
-void set_setting_int(const char* key, int* value, json_t* settings) {
+void set_setting_int(char* key, int* value, json_t* settings) {
     int json_value;
     if (ye_json_int(settings, key, &json_value)) {
         *value = json_value;
     }
 }
 
-void set_setting_bool(const char* key, bool* value, json_t* settings) {
+void set_setting_bool(char* key, bool* value, json_t* settings) {
     bool json_value;
     if (ye_json_bool(settings, key, &json_value)) {
         *value = json_value;
     }
 }
 
-void set_setting_float(const char* key, float* value, json_t* settings) {
+void set_setting_float(char* key, float* value, json_t* settings) {
     float json_value;
     if (ye_json_float(settings, key, &json_value)) {
         *value = json_value;
@@ -401,7 +401,7 @@ void ye_shutdown_engine(){
     ye_shutdown_cache();
 
     // shutdown graphics
-    shutdownGraphics();
+    ye_shutdown_graphics();
     ye_logf(info, "Shut down graphics.\n");
 
     // shutdown audio

@@ -19,6 +19,7 @@
 #include "editor.h"
 #include "editor_ui.h"
 #include <yoyoengine/yoyoengine.h>
+#include <unistd.h>
 
 /*
     INITIALIZE VARIABLES FOR JUST THIS FILE
@@ -52,6 +53,14 @@ char *build_additional_cflags;
 char *build_platform;
 int build_platform_int;
 char *build_engine_build_path;
+
+/*
+    Helper functions
+*/
+void editor_reload_build_file(){
+    json_decref(BUILD_FILE);
+    BUILD_FILE = ye_json_read(ye_get_resource_static("../build.yoyo"));
+}
 
 void ye_editor_paint_project_settings(struct nk_context *ctx){
     if (nk_begin(ctx, "Settings", nk_rect(screenWidth/2 - 250, screenHeight/2 - 250, 500, 500),
@@ -160,7 +169,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 Checkbox for debug mode
             */
             bounds = nk_widget_bounds(ctx);
-            nk_checkbox_label(ctx, "Debug Mode", &project_debug_mode);
+            nk_checkbox_label(ctx, "Debug Mode", (nk_bool*)&project_debug_mode);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "If checked, the game will run in debug mode, which will allow you to use the console and other debug features.");
 
@@ -168,7 +177,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 Checkbox for stretch viewport
             */
             bounds = nk_widget_bounds(ctx);
-            nk_checkbox_label(ctx, "Stretch Viewport", &project_stretch_viewport);
+            nk_checkbox_label(ctx, "Stretch Viewport", (nk_bool*)&project_stretch_viewport);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "If checked, the viewport will stretch to the size of the window, if unchecked, the viewport will render from its actual perspective.");
 
@@ -442,7 +451,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                 snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path);
 
                 // Execute the command.
-                int status = system(command);
+                system(command);
             }
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -459,11 +468,6 @@ void editor_settings_ui_init(){
     /*
         dumbass, you could just have all of these malloced and then strcpy a temp var extracted from json to them.
     */
-}
-
-void editor_reload_build_file(){
-    json_decref(BUILD_FILE);
-    BUILD_FILE = ye_json_read(ye_get_resource_static("../build.yoyo"));
 }
 
 void editor_settings_ui_shutdown(){

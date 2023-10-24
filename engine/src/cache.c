@@ -78,8 +78,8 @@ void ye_pre_cache_scene(json_t *scene){
             continue;
         }
 
-        char *src = NULL; // comply with mingw & clang
-        char *path = NULL; // comply with mingw & clang
+        const char *src = NULL; // comply with mingw & clang
+        const char *path = NULL; // comply with mingw & clang
         switch(type){
             case YE_RENDERER_TYPE_IMAGE:
                 if(!ye_json_string(impl,"src",&src)){
@@ -96,7 +96,7 @@ void ye_pre_cache_scene(json_t *scene){
                 if(!ye_json_int(impl,"frame count",&frame_count)){
                     continue;
                 }
-                char *extension = NULL;
+                const char *extension = NULL;
                 if(!ye_json_string(impl,"image format",&extension)){
                     continue;
                 }
@@ -112,7 +112,7 @@ void ye_pre_cache_scene(json_t *scene){
     }
 }
 
-void ye_pre_cache_styles(char *styles_path){
+void ye_pre_cache_styles(const char *styles_path){
     if(styles_path == NULL){
         ye_logf(debug,"%s","No styles path provided.\n");
         return;
@@ -149,7 +149,7 @@ void ye_pre_cache_styles(char *styles_path){
                 ye_logf(error,"Font %s does not have a size.\n",font_name);
                 continue;
             }
-            char *font_path;    ye_json_string(font,"path",&font_path);
+            const char *font_path;    ye_json_string(font,"path",&font_path);
             int font_size;      ye_json_int(font,"size",&font_size);
             ye_cache_font(font_name,font_size,ye_get_resource_static(font_path));
         }
@@ -197,7 +197,7 @@ void ye_pre_cache_styles(char *styles_path){
     json_decref(STYLES);
 }
 
-void ye_init_cache(char *styles_path){
+void ye_init_cache(){
     cached_textures_head = NULL;
     cached_fonts_head = NULL;
     cached_colors_head = NULL;
@@ -253,7 +253,7 @@ void ye_shutdown_cache(){
     This is the intended interface with the cache system, but assumes you have pre cached fonts and colors.
 */
 
-SDL_Texture * ye_image(char *path){
+SDL_Texture * ye_image(const char *path){
     // check cache for texture named by path
     struct ye_texture_node *node = cached_textures_head;
     HASH_FIND_STR(cached_textures_head, path, node);
@@ -267,7 +267,7 @@ SDL_Texture * ye_image(char *path){
     return ye_cache_texture(path);
 }
 
-TTF_Font * ye_font(char *name){
+TTF_Font * ye_font(const char *name){
     // check cache for font named by name and size
     struct ye_font_node *node;
     for(node = cached_fonts_head; node != NULL; node = node->hh.next) {
@@ -281,7 +281,7 @@ TTF_Font * ye_font(char *name){
     return YE_STATE.engine.pEngineFont;
 }
 
-SDL_Color * ye_color(char *name){
+SDL_Color * ye_color(const char *name){
     // check cache for color named by name
     struct ye_color_node *node;
     for(node = cached_colors_head; node != NULL; node = node->hh.next) {
@@ -300,7 +300,7 @@ SDL_Color * ye_color(char *name){
     This is used by the primary API but can also be used directly by the developer.
 */
 
-SDL_Texture * ye_cache_texture(char *path){
+SDL_Texture * ye_cache_texture(const char *path){
     SDL_Texture *texture = ye_create_image_texture(path);
 
     // cache the texture
@@ -313,7 +313,7 @@ SDL_Texture * ye_cache_texture(char *path){
     return texture;
 }
 
-TTF_Font * ye_cache_font(char *name, int size, char *path){
+TTF_Font * ye_cache_font(const char *name, int size, const char *path){
     TTF_Font *font = ye_load_font(path, size);
 
     // cache the font
@@ -327,7 +327,7 @@ TTF_Font * ye_cache_font(char *name, int size, char *path){
     return font;
 }
 
-SDL_Color * ye_cache_color(char *name, SDL_Color color){
+SDL_Color * ye_cache_color(const char *name, SDL_Color color){
     // cache the color
     struct ye_color_node *new_node = malloc(sizeof(struct ye_color_node));
     new_node->color = color;

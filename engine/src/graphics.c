@@ -44,12 +44,12 @@ char * render_scale_quality = "linear"; // also available: best (high def, high 
 /*
     Loads a font from a path and size, returns a pointer to the font, or NULL if failed
 */
-TTF_Font * ye_load_font(char *pFontPath, int fontSize) {
+TTF_Font * ye_load_font(const char *pFontPath, int fontSize) {
     if(fontSize > 500){
         ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
         return YE_STATE.engine.pEngineFont;
     }
-    char *fontpath = pFontPath;
+    const char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
         ye_logf(error, "Could not access file '%s'.\n", fontpath);
         return YE_STATE.engine.pEngineFont;
@@ -132,7 +132,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
 /*
     Create a texture from a local image path, returns a pointer to the texture (and to the missing texture texture if it fails)
 */
-SDL_Texture * ye_create_image_texture(char *pPath) {
+SDL_Texture * ye_create_image_texture(const char *pPath) {
     // check the file exists
     if(access(pPath, F_OK) == -1){
         ye_logf(error, "Could not access file '%s'.\n", pPath);
@@ -342,7 +342,7 @@ void ye_init_graphics(){
 }
 
 // shuts down all initialzied graphics systems
-void shutdownGraphics(){
+void ye_shutdown_graphics(){
     // shutdown TTF
     TTF_Quit();
     ye_logf(info, "Shut down TTF.\n");

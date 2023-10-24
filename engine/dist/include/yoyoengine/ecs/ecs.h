@@ -156,7 +156,7 @@ struct ye_entity * ye_create_entity();
 
     we must allocate space for the name and copy it
 */
-struct ye_entity * ye_create_entity_named(char *name);
+struct ye_entity * ye_create_entity_named(const char *name);
 
 /*
     Rename an entity by pointer
@@ -176,12 +176,12 @@ void ye_destroy_entity(struct ye_entity * entity);
 /*
     Find entity by name, returns pointer to first entity of specified name, NULL if not found
 */
-struct ye_entity * ye_get_entity_by_name(char *name);
+struct ye_entity * ye_get_entity_by_name(const char *name);
 
 /*
     Find an entity by tag (if there are more than one entity with this tag, it will return the first one, and NOT by distance)
 */
-struct ye_entity * ye_get_entity_by_tag(char *tag);
+struct ye_entity * ye_get_entity_by_tag(const char *tag);
 
 /*
     Find an entity by id, returns pointer to first entity of specified id, NULL if not found

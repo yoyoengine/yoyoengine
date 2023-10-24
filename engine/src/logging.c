@@ -217,7 +217,7 @@ void ye_paint_console(struct nk_context *ctx){
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
         
         nk_layout_row_dynamic(ctx, 30, 3);
-        nk_checkbox_label(ctx, "Color by log level", &color_code);
+        nk_checkbox_label(ctx, "Color by log level", (nk_bool*)&color_code);
         
         nk_label(ctx, "Threshold:", NK_TEXT_RIGHT);
         switch(YE_STATE.engine.log_level){
@@ -255,7 +255,7 @@ void ye_paint_console(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 15, 1);
 
             // Create a formatted log entry with timestamp and color
-            char formattedLog[256];
+            char formattedLog[512];
             snprintf(formattedLog, sizeof(formattedLog), "<%s> %s", logBuffer[i].timestamp, logBuffer[i].text);
 
             // Display the formatted log entry

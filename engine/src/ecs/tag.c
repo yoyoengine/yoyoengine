@@ -38,7 +38,7 @@ void ye_add_tag_component(struct ye_entity *entity){
     ye_entity_list_add(&tag_list_head, entity);
 }
 
-void ye_add_tag(struct ye_entity *entity, char *tag){
+void ye_add_tag(struct ye_entity *entity, const char *tag){
     // add tag component if it doesnt exist
     if(!entity->tag){
         ye_add_tag_component(entity);
@@ -66,7 +66,7 @@ void ye_add_tag(struct ye_entity *entity, char *tag){
     // ye_logf(debug, "Added tag \"%s\" to entity %d\n", tag, entity->id);
 }
 
-void ye_remove_tag(struct ye_entity *entity, char *tag){
+void ye_remove_tag(struct ye_entity *entity, const char *tag){
     // check if tag component exists
     if(!entity->tag){
         ye_logf(error, "Could not remove tag \"%s\" from entity #%d. Entity has no tag component.\n", tag, entity->id);

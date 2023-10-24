@@ -175,7 +175,7 @@ struct ye_entity * ye_create_entity(){
 
     we must allocate space for the name and copy it
 */
-struct ye_entity * ye_create_entity_named(char *name){
+struct ye_entity * ye_create_entity_named(const char *name){
     struct ye_entity *entity = malloc(sizeof(struct ye_entity));
     entity->id = eid++; // assign unique id to entity
     entity->active = true;
@@ -287,7 +287,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     YE_STATE.runtime.entity_count--;
 }
 
-struct ye_entity * ye_get_entity_by_name(char *name){
+struct ye_entity * ye_get_entity_by_name(const char *name){
     struct ye_entity_node *current = entity_list_head;
 
     while(current != NULL){
@@ -300,7 +300,7 @@ struct ye_entity * ye_get_entity_by_name(char *name){
     return NULL;
 }
 
-struct ye_entity * ye_get_entity_by_tag(char *tag){
+struct ye_entity * ye_get_entity_by_tag(const char *tag){
     struct ye_entity_node *current = tag_list_head;
 
     while(current != NULL){

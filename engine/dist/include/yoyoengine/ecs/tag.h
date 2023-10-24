@@ -38,12 +38,12 @@ void ye_add_tag_component(struct ye_entity *entity);
 /*
     Add a tag to an entity, creating a tag component for that entity if it doesnt exist
 */
-void ye_add_tag(struct ye_entity *entity, char *tag);
+void ye_add_tag(struct ye_entity *entity, const char *tag);
 
 /*
     Remove a tag from an entity, removing its tag component if it has no more tags
 */
-void ye_remove_tag(struct ye_entity *entity, char *tag);
+void ye_remove_tag(struct ye_entity *entity, const char *tag);
 
 /*
     Remove a tag component from an entity

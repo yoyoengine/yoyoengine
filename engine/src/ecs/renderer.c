@@ -43,7 +43,7 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     // ye_logf(debug, "Added renderer to entity %d\n", entity->id);
 }
 
-void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
+void ye_temp_add_image_renderer_component(struct ye_entity *entity, const char *src){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
     // copy src to image->src
     image->src = malloc(sizeof(char) * strlen(src));
@@ -67,7 +67,7 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src){
     }
 }
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color){
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
     text_renderer->font = font;
@@ -91,7 +91,7 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, T
     }
 }
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
     text_renderer->font = font;
@@ -117,7 +117,7 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char
     }
 }
 
-void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *path, char *format, size_t count, int frame_delay, int loops){
+void ye_temp_add_animation_renderer_component(struct ye_entity *entity, const char *path, const char *format, size_t count, int frame_delay, int loops){
     struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
     animation->animation_path = strdup(path);
     animation->image_format = strdup(format);

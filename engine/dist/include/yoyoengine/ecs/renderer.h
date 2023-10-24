@@ -97,13 +97,13 @@ struct ye_component_renderer_animation {
 */
 void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, void *data);
 
-void ye_temp_add_image_renderer_component(struct ye_entity *entity, char *src);
+void ye_temp_add_image_renderer_component(struct ye_entity *entity, const char *src);
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color);
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color);
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size);
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size);
 
-void ye_temp_add_animation_renderer_component(struct ye_entity *entity, char *path, char *format, size_t count, int frame_delay, int loops);
+void ye_temp_add_animation_renderer_component(struct ye_entity *entity, const char *path, const char *format, size_t count, int frame_delay, int loops);
 
 void ye_remove_renderer_component(struct ye_entity *entity);
 

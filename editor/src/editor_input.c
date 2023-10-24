@@ -127,7 +127,7 @@ void editor_input_selection(SDL_Event event){
                     if (ye_point_in_rect(mouse_world_x, mouse_world_y, ye_convert_rectf_rect(clicked_entity->entity->transform->bounds))) // TODO: bounds vs rect here
                     {
                         // we clicked on this entity
-                        if (clicked_entity != YE_STATE.editor.selected_entity)
+                        if (clicked_entity->entity != YE_STATE.editor.selected_entity)
                         {
                             YE_STATE.editor.selected_entity = clicked_entity->entity;
                         }

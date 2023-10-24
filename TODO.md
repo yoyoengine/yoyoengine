@@ -356,19 +356,9 @@ resources i found on custom symbols while i give up for now:
 
 - when mouse enters viewport, deselect any nuklear windows open (heiarchy fixed location ones ofc)
 
-## state rework shaping
-
-one master YE_STATE struct split into engine, editor, runtime.
-runtime is information thats meant to be readonly that can provide valuable insight into the current state of the engine.
-
-editor provides configuration for editor specific execution paramters for the core engine.
-
-engine contains all configuration for the actual engine itself.
-
-also use this rework as an opportunity to clean up old code and reduce tech debt.
-
-<https://chat.openai.com/share/2fab73ac-649a-4e83-ab3a-5ffdcc1a4569>
-
 ## next steps
 
-- please go through and get rid of all compiler warnings.
+- segfault when selecting newly created entity
+- fix up editor compiler warnings
+  - you have a bunch of char * that are holding state for menus, which jansson is using them as if they were const to represent internal values
+  - additionally, you are setting their values to const json settings read from file, and then modifying them with nuklear fields.
