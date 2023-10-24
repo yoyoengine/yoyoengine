@@ -34,15 +34,8 @@ char path_buffer[1024];
 // get the base path
 char *base_path = NULL;
 
-// initialize engine internal variable globals to NULL
-SDL_Color *pEngineFontColor = NULL;
-TTF_Font *pEngineFont = NULL;
-
 // expose our engine state data to the whole engine
-struct engine_data engine_state;
-
-// runtime global information about the engine (used everywhere)
-struct engine_runtime_data engine_runtime_state; // this technically initializes it to 0
+struct ye_engine_state YE_STATE;
 
 // helper function to get the screen size
 // TODO: consider moving graphics.c TODO: yes move to graphics.c
@@ -76,31 +69,38 @@ char *executable_path = NULL;
 char* ye_get_resource_static(const char *sub_path) {
     static char resource_buffer[256];  // Adjust the buffer size as per your requirement
 
-    if (engine_state.game_resources_path == NULL) {
+    if (YE_STATE.engine.game_resources_path == NULL) {
         ye_logf(error, "Resource paths not set!\n");
         return NULL;
     }
 
-    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", engine_state.game_resources_path, sub_path);
+    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", YE_STATE.engine.game_resources_path, sub_path);
     return resource_buffer;
 }
 
 char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
-    if (engine_state.engine_resources_path == NULL) {
+    if (YE_STATE.engine.engine_resources_path == NULL) {
         ye_logf(error, "Engine reserved paths not set!\n");
         return NULL;
     }
 
-    snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", engine_state.engine_resources_path, sub_path);
+    snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", YE_STATE.engine.engine_resources_path, sub_path);
     return engine_reserved_buffer;
 }
 
 // event polled for per frame
 SDL_Event e;
 
+int last_frame_time = 0;
+bool console_visible = false;
 void ye_process_frame(){
+    // update time delta
+    YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
+    last_frame_time = SDL_GetTicks64();
+
+    int input_time = SDL_GetTicks64();
     ui_begin_input_checks();
     while (SDL_PollEvent(&e)) {
         ui_handle_input(&e);
@@ -109,12 +109,12 @@ void ye_process_frame(){
         if(e.type == SDL_KEYDOWN){
             switch(e.key.keysym.sym){
                 case SDLK_BACKQUOTE:
-                    if(engine_state.console_visible){
-                        engine_state.console_visible = false;
+                    if(console_visible){
+                        console_visible = false;
                         remove_ui_component("console");
                     }
                     else{
-                        engine_state.console_visible = true;
+                        console_visible = true;
                         ui_register_component("console",ye_paint_console);
                     }
                     break;
@@ -122,42 +122,47 @@ void ye_process_frame(){
                     break;
             }
             // if freecam is on (rare) TODO: allow changing of freecam scale
-            if(engine_state.freecam_enabled){
+            if(YE_STATE.editor.freecam_enabled){
                 switch(e.key.keysym.sym){     
                     case SDLK_LEFT:
-                        engine_state.target_camera->transform->rect.x -= 100.0;
+                        YE_STATE.engine.target_camera->transform->rect.x -= 100.0;
                         break;
                     case SDLK_RIGHT:
-                        engine_state.target_camera->transform->rect.x += 100.0;
+                        YE_STATE.engine.target_camera->transform->rect.x += 100.0;
                         break;
                     case SDLK_UP:
-                        engine_state.target_camera->transform->rect.y -= 100.0;
+                        YE_STATE.engine.target_camera->transform->rect.y -= 100.0;
                         break;
                     case SDLK_DOWN:
-                        engine_state.target_camera->transform->rect.y += 100.0;
+                        YE_STATE.engine.target_camera->transform->rect.y += 100.0;
                         break;
                 }
             }
         }
 
         // send event to callback specified by game (if needed)
-        if(engine_state.handle_input != NULL){
-            engine_state.handle_input(e);
+        if(YE_STATE.engine.handle_input != NULL){
+            YE_STATE.engine.handle_input(e);
         }
     }
     ui_end_input_checks();
+    YE_STATE.runtime.input_time = SDL_GetTicks64() - input_time;
 
-    if(!engine_state.editor_mode){
+    int physics_time = SDL_GetTicks64();
+    if(!YE_STATE.editor.editor_mode){
         // update physics
         ye_system_physics(); // TODO: decouple from framerate
     }
+    YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
 
     // render frame
     renderAll();
+
+    YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
 }
 
-float ye_get_delta_time(){
-    return (float)engine_runtime_state.frame_time / 1000.0;
+float ye_delta_time(){
+    return YE_STATE.runtime.delta_time;
 }
 
 void set_setting_string(const char* key, char** value, json_t* settings) {
@@ -191,8 +196,8 @@ void set_setting_float(const char* key, float* value, json_t* settings) {
 // update the resources path
 void ye_update_resources(char *path){
     // update the engine state
-    free(engine_state.game_resources_path);
-    engine_state.game_resources_path = strdup(path);
+    free(YE_STATE.engine.game_resources_path);
+    YE_STATE.engine.game_resources_path = strdup(path);
 }
 
 /*
@@ -209,20 +214,20 @@ void ye_init_engine() {
     snprintf(log_default_path, sizeof(log_default_path), "%sdebug.log", executable_path);
 
     // set defaults for engine state
-    engine_state.framecap = -1;
-    engine_state.screen_width = 1920;
-    engine_state.screen_height = 1080;
-    engine_state.window_mode = 0;
-    engine_state.volume = 64;
-    engine_state.window_title = "Yoyo Engine Window";
+    YE_STATE.engine.framecap = -1;
+    YE_STATE.engine.screen_width = 1920;
+    YE_STATE.engine.screen_height = 1080;
+    YE_STATE.engine.window_mode = 0;
+    YE_STATE.engine.volume = 64;
+    YE_STATE.engine.window_title = "Yoyo Engine Window";
 
     // set default paths, if we have an override we can change them later
-    engine_state.engine_resources_path = strdup(engine_default_path);
-    engine_state.game_resources_path = strdup(game_default_path);
-    engine_state.log_file_path = strdup(log_default_path);
-    engine_state.icon_path = strdup(ye_get_engine_resource_static("enginelogo.png"));
+    YE_STATE.engine.engine_resources_path = strdup(engine_default_path);
+    YE_STATE.engine.game_resources_path = strdup(game_default_path);
+    YE_STATE.engine.log_file_path = strdup(log_default_path);
+    YE_STATE.engine.icon_path = strdup(ye_get_engine_resource_static("enginelogo.png"));
 
-    engine_state.log_level = 4;
+    YE_STATE.engine.log_level = 4;
 
     // check if ./settings.yoyo exists (if not, use defaults)
     json_t *SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
@@ -232,42 +237,35 @@ void ye_init_engine() {
     else{
         ye_logf(info, "Found settings.yoyo file, using values from it.\n");
 
-        set_setting_string("engine_resources_path", &engine_state.engine_resources_path, SETTINGS);
-        set_setting_string("game_resources_path", &engine_state.game_resources_path, SETTINGS);
-        set_setting_string("log_file_path", &engine_state.log_file_path, SETTINGS);
-        set_setting_string("icon_path", &engine_state.icon_path, SETTINGS);
-        set_setting_string("window_title", &engine_state.window_title, SETTINGS);
+        set_setting_string("engine_resources_path", &YE_STATE.engine.engine_resources_path, SETTINGS);
+        set_setting_string("game_resources_path", &YE_STATE.engine.game_resources_path, SETTINGS);
+        set_setting_string("log_file_path", &YE_STATE.engine.log_file_path, SETTINGS);
+        set_setting_string("icon_path", &YE_STATE.engine.icon_path, SETTINGS);
+        set_setting_string("window_title", &YE_STATE.engine.window_title, SETTINGS);
 
-        set_setting_int("window_mode", &engine_state.window_mode, SETTINGS);
-        set_setting_int("volume", &engine_state.volume, SETTINGS);
-        set_setting_int("log_level", &engine_state.log_level, SETTINGS);
-        set_setting_int("screen_width", &engine_state.screen_width, SETTINGS);
-        set_setting_int("screen_height", &engine_state.screen_height, SETTINGS);
-        set_setting_int("framecap", &engine_state.framecap, SETTINGS);
+        set_setting_int("window_mode", &YE_STATE.engine.window_mode, SETTINGS);
+        set_setting_int("volume", &YE_STATE.engine.volume, SETTINGS);
+        set_setting_int("log_level", &YE_STATE.engine.log_level, SETTINGS);
+        set_setting_int("screen_width", &YE_STATE.engine.screen_width, SETTINGS);
+        set_setting_int("screen_height", &YE_STATE.engine.screen_height, SETTINGS);
+        set_setting_int("framecap", &YE_STATE.engine.framecap, SETTINGS);
 
-        set_setting_bool("debug_mode", &engine_state.debug_mode, SETTINGS);
-        set_setting_bool("skip_intro", &engine_state.skipintro, SETTINGS);
-        set_setting_bool("editor_mode", &engine_state.editor_mode, SETTINGS);
+        set_setting_bool("debug_mode", &YE_STATE.engine.debug_mode, SETTINGS);
+        set_setting_bool("skip_intro", &YE_STATE.engine.skipintro, SETTINGS);
+        set_setting_bool("editor_mode", &YE_STATE.editor.editor_mode, SETTINGS);
 
         json_decref(SETTINGS);
     }
 
-    // initialize the runtime state
-    engine_runtime_state.scene_default_camera = NULL;
-    engine_runtime_state.selected_entity = NULL;
+    // initialize some editor state
+    YE_STATE.editor.scene_default_camera = NULL;
+    YE_STATE.editor.selected_entity = NULL;
 
     // ----------------- Begin Setup -------------------
 
     // initialize graphics systems, creating window renderer, etc
     // TODO: should this just take in engine state struct? would make things a lot easier tbh
-    initGraphics(
-        engine_state.screen_width,
-        engine_state.screen_height,
-        engine_state.window_mode,
-        engine_state.framecap,
-        engine_state.window_title,
-        engine_state.icon_path
-    );
+    ye_init_graphics();
 
     // init timers
     ye_init_timers();
@@ -276,22 +274,22 @@ void ye_init_engine() {
     ye_init_cache();
 
     // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
-    pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 64);
+    YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 64);
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // this is also returned as a color if a user specified one cannot be loaded
     SDL_Color engineFontColor = {255, 255, 0, 255};
-    pEngineFontColor = &engineFontColor;
-    pEngineFontColor = malloc(sizeof(SDL_Color));
-    pEngineFontColor->r = 255;
-    pEngineFontColor->g = 255;
-    pEngineFontColor->b = 0;
-    pEngineFontColor->a = 255;
+    YE_STATE.engine.pEngineFontColor = &engineFontColor;
+    YE_STATE.engine.pEngineFontColor = malloc(sizeof(SDL_Color));
+    YE_STATE.engine.pEngineFontColor->r = 255;
+    YE_STATE.engine.pEngineFontColor->g = 255;
+    YE_STATE.engine.pEngineFontColor->b = 0;
+    YE_STATE.engine.pEngineFontColor->a = 255;
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
-    ye_log_init(engine_state.log_file_path);
+    ye_log_init(YE_STATE.engine.log_file_path);
 
-    if(engine_state.editor_mode){
+    if(YE_STATE.editor.editor_mode){
         ye_logf(info, "Detected editor mode.\n");
     }
 
@@ -299,10 +297,7 @@ void ye_init_engine() {
     ye_init_ecs();
 
     // if we are in debug mode
-    if(engine_state.debug_mode){
-        // we will open the metrics by default in debug mode
-        engine_state.metrics_visible = true;
-
+    if(YE_STATE.engine.debug_mode){
         // display in console
         ye_logf(debug, "Debug mode enabled.\n");
     }
@@ -312,14 +307,17 @@ void ye_init_engine() {
 
     // before we play our loud ass startup sound, lets check what volume the game wants
     // the engine to be at initially
-    ye_set_volume(-1, engine_state.volume);
+    ye_set_volume(-1, YE_STATE.engine.volume);
+
+    // set our last frame time now because we might play the intro
+    last_frame_time = SDL_GetTicks64();
 
     /*
         Part of the engine startup which isnt configurable by the game is displaying
         a splash screen with the engine title and logo for 2550ms and playing a
         startup noise
     */
-    if(engine_state.skipintro){
+    if(YE_STATE.engine.skipintro){
         ye_logf(info,"Skipping Intro.\n");
     }
     else{
@@ -387,11 +385,11 @@ void ye_shutdown_engine(){
     ye_logf(info, "Shut down lua.\n");
 
     // free the engine font color
-    free(pEngineFontColor);
-    pEngineFontColor = NULL;
+    free(YE_STATE.engine.pEngineFontColor);
+    YE_STATE.engine.pEngineFontColor = NULL;
 
     // free the engine font
-    TTF_CloseFont(pEngineFont);
+    TTF_CloseFont(YE_STATE.engine.pEngineFont);
 
     // shutdown ECS
     ye_shutdown_ecs();
@@ -413,10 +411,10 @@ void ye_shutdown_engine(){
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();
-    free(engine_state.log_file_path);
-    free(engine_state.engine_resources_path);
-    free(engine_state.game_resources_path);
-    free(engine_state.icon_path);
+    free(YE_STATE.engine.log_file_path);
+    free(YE_STATE.engine.engine_resources_path);
+    free(YE_STATE.engine.game_resources_path);
+    free(YE_STATE.engine.icon_path);
     SDL_free(base_path); // free base path after (used by logging)
     SDL_free(executable_path); // free base path after (used by logging)
 

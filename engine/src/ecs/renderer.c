@@ -216,31 +216,31 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 */
 void ye_system_renderer(SDL_Renderer *renderer) {
     // if we are in editor mode
-    if(engine_state.editor_mode && engine_runtime_state.editor_display_viewport_lines){
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
         // draw a grid of white evently spaced lines across the screen
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 50);
-        for(int i = 0; i < engine_state.target_camera->camera->view_field.w; i += 32){
-            SDL_RenderDrawLine(renderer, i, 0, i, engine_state.target_camera->camera->view_field.h);
+        for(int i = 0; i < YE_STATE.engine.target_camera->camera->view_field.w; i += 32){
+            SDL_RenderDrawLine(renderer, i, 0, i, YE_STATE.engine.target_camera->camera->view_field.h);
         }
-        for(int i = 0; i < engine_state.target_camera->camera->view_field.h; i += 32){
-            SDL_RenderDrawLine(renderer, 0, i, engine_state.target_camera->camera->view_field.w, i);
+        for(int i = 0; i < YE_STATE.engine.target_camera->camera->view_field.h; i += 32){
+            SDL_RenderDrawLine(renderer, 0, i, YE_STATE.engine.target_camera->camera->view_field.w, i);
         }
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 
     // check if we have a non-null, active camera targeted
-    if (engine_state.target_camera == NULL || engine_state.target_camera->camera == NULL || !engine_state.target_camera->camera->active) {
+    if (YE_STATE.engine.target_camera == NULL || YE_STATE.engine.target_camera->camera == NULL || !YE_STATE.engine.target_camera->camera->active) {
         ye_logf(warning, "No active camera targeted. Skipping renderer system\n");
         return;
     }
 
-    engine_runtime_state.painted_entity_count = 0;
+    YE_STATE.runtime.painted_entity_count = 0;
 
     // Get the camera's position in world coordinates
-    SDL_Rect camera_rect = ye_convert_rectf_rect(engine_state.target_camera->transform->rect); // TODO profile conversion overhead
+    SDL_Rect camera_rect = ye_convert_rectf_rect(YE_STATE.engine.target_camera->transform->rect); // TODO profile conversion overhead
     
-    SDL_Rect view_field = engine_state.target_camera->camera->view_field;
+    SDL_Rect view_field = YE_STATE.engine.target_camera->camera->view_field;
     camera_rect.w = view_field.w;
     camera_rect.h = view_field.h;
     // update camera rect to contain the view field w,h
@@ -253,7 +253,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             // TODO: this should be decoupled from the renderer and become its own system
             if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
                 // if not editor mode (we want to not run animations in editor)
-                if(!engine_state.editor_mode){
+                if(!YE_STATE.editor.editor_mode){
                     struct ye_component_renderer_animation *animation = current->entity->renderer->renderer_impl.animation;
                     if(!animation->paused){
                         int now = SDL_GetTicks();
@@ -278,7 +278,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             if (current->entity->active &&
                 current->entity->transform != NULL && current->entity->renderer != NULL && current->entity->renderer->active &&
                 current->entity->transform->active &&
-                current->entity->transform->z <= engine_state.target_camera->transform->z // only render if the entity is on or in front of the camera
+                current->entity->transform->z <= YE_STATE.engine.target_camera->transform->z // only render if the entity is on or in front of the camera
             ) {
                 SDL_Rect entity_rect = ye_convert_rectf_rect(current->entity->transform->rect); // where the entity is in the world by pixel (x, y, w, h)
 
@@ -326,10 +326,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
                     }
                     
-                    engine_runtime_state.painted_entity_count++;
+                    YE_STATE.runtime.painted_entity_count++;
                     
                     // paint bounds, my beloved <3
-                    if (engine_state.paintbounds_visible) {
+                    if (YE_STATE.editor.paintbounds_visible) {
                         // create entity bounds offset by camera
                         SDL_Rect entity_bounds = ye_convert_rectf_rect(current->entity->transform->bounds);
                         entity_bounds.x = entity_bounds.x - camera_rect.x;
@@ -347,17 +347,17 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }
 
-                    if(engine_state.editor_mode && engine_runtime_state.display_names){
+                    if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
                         // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
                         SDL_Color color = {255, 255, 255, 255};
-                        SDL_Texture *text_texture = createTextTexture(current->entity->name, pEngineFont, &color);
+                        SDL_Texture *text_texture = createTextTexture(current->entity->name, YE_STATE.engine.pEngineFont, &color);
                         SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
                         SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
                         SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
                         SDL_DestroyTexture(text_texture);
                     }
 
-                    if(engine_state.colliders_visible && current->entity->collider != NULL){
+                    if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
                         // paint the collider
                         SDL_Rect collider_rect = ye_convert_rectf_rect(current->entity->collider->rect);
                         collider_rect.x = collider_rect.x - camera_rect.x;
@@ -385,22 +385,22 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         additional post processing for editor mode    
         RUNS ONCE AFTER ALL ENTITES ARE PAINTED
     */
-    if(engine_state.editor_mode && engine_state.scene_camera_bounds_visible && engine_runtime_state.scene_default_camera != NULL){
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.scene_camera_bounds_visible && YE_STATE.editor.scene_default_camera != NULL){
         // draw box around viewport of engine_runtime_state.scene_default_camera
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_Rect scene_camera_rect = ye_convert_rectf_rect(engine_runtime_state.scene_default_camera->transform->rect);
+        SDL_Rect scene_camera_rect = ye_convert_rectf_rect(YE_STATE.editor.scene_default_camera->transform->rect);
         scene_camera_rect.x = scene_camera_rect.x - camera_rect.x;
         scene_camera_rect.y = scene_camera_rect.y - camera_rect.y;
-        scene_camera_rect.w = engine_runtime_state.scene_default_camera->camera->view_field.w;
-        scene_camera_rect.h = engine_runtime_state.scene_default_camera->camera->view_field.h;
+        scene_camera_rect.w = YE_STATE.editor.scene_default_camera->camera->view_field.w;
+        scene_camera_rect.h = YE_STATE.editor.scene_default_camera->camera->view_field.h;
         SDL_RenderDrawRect(renderer, &scene_camera_rect);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 
-    if(engine_state.editor_mode && engine_runtime_state.selected_entity != NULL){
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL){
         // draw a pink rect around the selected entity rect
         SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-        SDL_Rect selected_entity_rect = ye_convert_rectf_rect(engine_runtime_state.selected_entity->transform->rect);
+        SDL_Rect selected_entity_rect = ye_convert_rectf_rect(YE_STATE.editor.selected_entity->transform->rect);
         selected_entity_rect.x = selected_entity_rect.x - camera_rect.x;
         selected_entity_rect.y = selected_entity_rect.y - camera_rect.y;
         SDL_RenderDrawRect(renderer, &selected_entity_rect);

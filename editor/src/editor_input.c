@@ -24,8 +24,8 @@
     Getting this equation right was exponentially more difficult than you could possibly imagine
 */
 void editor_update_mouse_world_pos(int x, int y){
-    float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
-    float scaleY = (float)engine_state.screen_height / (float)engine_state.target_camera->camera->view_field.h;
+    float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
+    float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
     mouse_world_x = ((x / scaleX) + editor_camera->transform->rect.x);
     mouse_world_y = ((y / scaleY) + editor_camera->transform->rect.y);
 }
@@ -80,7 +80,7 @@ void editor_input_panning(SDL_Event event){
     }
     else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(x, y))
     {
-        float dt = (float)engine_runtime_state.frame_time / 1000.0;
+        float dt = ye_delta_time();
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
 
         if (event.wheel.y > 0)
@@ -118,7 +118,7 @@ void editor_input_selection(SDL_Event event){
                 struct ye_entity_node *clicked_entity = entity_list_head;
                 while (clicked_entity != NULL)
                 {
-                    if(clicked_entity->entity == engine_runtime_state.selected_entity || clicked_entity->entity->camera != NULL || clicked_entity->entity == origin)
+                    if(clicked_entity->entity == YE_STATE.editor.selected_entity || clicked_entity->entity->camera != NULL || clicked_entity->entity == origin)
                     {
                         clicked_entity = clicked_entity->next;
                         continue;
@@ -127,9 +127,9 @@ void editor_input_selection(SDL_Event event){
                     if (ye_point_in_rect(mouse_world_x, mouse_world_y, ye_convert_rectf_rect(clicked_entity->entity->transform->bounds))) // TODO: bounds vs rect here
                     {
                         // we clicked on this entity
-                        if (clicked_entity != engine_runtime_state.selected_entity)
+                        if (clicked_entity != YE_STATE.editor.selected_entity)
                         {
-                            engine_runtime_state.selected_entity = clicked_entity->entity;
+                            YE_STATE.editor.selected_entity = clicked_entity->entity;
                         }
                         nothing = false;
                         break;
@@ -137,7 +137,7 @@ void editor_input_selection(SDL_Event event){
                     clicked_entity = clicked_entity->next; // TODO: solve world mouse point
                 }
                 if(nothing){
-                    engine_runtime_state.selected_entity = NULL;
+                    YE_STATE.editor.selected_entity = NULL;
                 }
             }
         }

@@ -32,14 +32,6 @@ SDL_Surface *pScreenSurface = NULL;
 SDL_Renderer *pRenderer = NULL;
 SDL_Texture* screen_buffer = NULL;
 
-// fps related counters
-int fpsUpdateTime = 0;
-int frameCounter = 0;
-int fps = 0;
-int startTime = 0;
-int fpscap = 0;
-int desiredFrameTime = 0;
-
 /*
     Texture used for missing textures
 */
@@ -55,17 +47,17 @@ char * render_scale_quality = "linear"; // also available: best (high def, high 
 TTF_Font * ye_load_font(char *pFontPath, int fontSize) {
     if(fontSize > 500){
         ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
-        return pEngineFont;
+        return YE_STATE.engine.pEngineFont;
     }
     char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
         ye_logf(error, "Could not access file '%s'.\n", fontpath);
-        return pEngineFont;
+        return YE_STATE.engine.pEngineFont;
     }
     TTF_Font *pFont = TTF_OpenFont(fontpath, fontSize);
     if (pFont == NULL) {
         ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
-        return pEngineFont;
+        return YE_STATE.engine.pEngineFont;
     }
     ye_logf(debug, "Loaded font: %s\n", pFontPath);
     return pFont;
@@ -173,21 +165,25 @@ SDL_Texture * ye_create_image_texture(char *pPath) {
 }
 
 // render everything in the scene
+int frame_counter = 0;
+int desired_frame_time = 0;
+int fpsUpdateTime = 0;
+int fps = 0;
 void renderAll() {
     int frameStart = SDL_GetTicks();
 
-    // if we are showing metrics and need to update them (this does not really save that much perf)
-    if(engine_state.metrics_visible){
+    // TODO: potential optimization here, only count fps if we need to.
+    if(true){
         // increment the frame counter
-        frameCounter++;
+        frame_counter++;
 
         // if we have waited long enough to update the display
         if (SDL_GetTicks() - fpsUpdateTime >= 250) {
             // get the elapsed time and scale it to our time factor to get fps
             fpsUpdateTime = SDL_GetTicks();
-            fps = frameCounter * 4;
-            frameCounter = 0; // reset counted frames
-            engine_runtime_state.fps = fps;
+            fps = frame_counter * 4;
+            frame_counter = 0; // reset counted frames
+            YE_STATE.runtime.fps = fps;
         }
     }
 
@@ -200,16 +196,16 @@ void renderAll() {
     // Clear the window with the set background color
     SDL_RenderClear(pRenderer);
 
-    if(!engine_state.stretch_viewport){
-        float scaleX = (float)engine_state.screen_width / (float)engine_state.target_camera->camera->view_field.w;
-        float scaleY = (float)engine_state.screen_height / (float)engine_state.target_camera->camera->view_field.h;
+    if(!YE_STATE.engine.stretch_viewport){
+        float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
+        float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
         SDL_RenderSetScale(pRenderer, scaleX, scaleY);
     }
 
     /*
         Do anything special in editor mode
     */
-    if(engine_state.editor_mode){
+    if(YE_STATE.editor.editor_mode){
         // render all entities
         ye_system_renderer(pRenderer);
 
@@ -218,8 +214,8 @@ void renderAll() {
         SDL_Rect viewport;
         viewport.x = 0;
         viewport.y = 0;
-        viewport.w = engine_state.screen_width / 1.5;
-        viewport.h = engine_state.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
+        viewport.w = YE_STATE.engine.screen_width / 1.5;
+        viewport.h = YE_STATE.engine.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
         SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);
     }
     else{
@@ -255,22 +251,20 @@ void renderAll() {
     // set the end of the render frame
     int frameEnd = SDL_GetTicks();
 
-    engine_runtime_state.frame_time = frameEnd - frameStart;
+    YE_STATE.runtime.paint_time = frameEnd - frameStart;
 
     // if we arent on vsync we need to preform some frame calculations to delay next frame
-    if(fpscap != -1){
+    if(YE_STATE.engine.framecap != -1){
         // check the desired FPS cap and add delay if needed
-        if (engine_runtime_state.frame_time < desiredFrameTime) {
-            SDL_Delay(desiredFrameTime - engine_runtime_state.frame_time);
+        if(frameEnd - frameStart < desired_frame_time){
+            SDL_Delay(desired_frame_time - (frameEnd - frameStart));
         }
     }
-
-    engine_runtime_state.frame_time = SDL_GetTicks() - frameStart;
 }
 
 
-// initialize graphics
-void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap, char *title, char *icon_path){
+// initialize graphics TODO: remove parameters
+void ye_init_graphics(){
     // test for video init, alarm if failed
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
@@ -283,7 +277,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
 
     // test for window init, alarm if failed
-    pWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | windowMode | SDL_WINDOW_ALLOW_HIGHDPI);
+    pWindow = SDL_CreateWindow(YE_STATE.engine.window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, YE_STATE.engine.screen_width, YE_STATE.engine.screen_height, SDL_WINDOW_SHOWN | YE_STATE.engine.window_mode | SDL_WINDOW_ALLOW_HIGHDPI);
     if (pWindow == NULL) {
         ye_logf(debug, "Window creation failed: %s\n", SDL_GetError());
         exit(1);
@@ -293,16 +287,15 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     
     // set our fps cap to the frame cap param
     // (-1) for vsync
-    fpscap = framecap;
-    desiredFrameTime = 1000 / fpscap;  
+    desired_frame_time = (int)(1000 / YE_STATE.engine.framecap);  
 
     // if vsync is on
-    if(fpscap == -1) {
+    if(YE_STATE.engine.framecap == -1) {
         ye_logf(info, "Starting renderer with vsync... \n");
         pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     }
     else {
-        ye_logf(debug, "Starting renderer with maxfps %d... \n",framecap);
+        ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
         pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
     }
 
@@ -334,7 +327,7 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     ye_logf(info, "IMG initialized.\n");
 
     // load icon to surface
-    SDL_Surface *pIconSurface = IMG_Load(icon_path);
+    SDL_Surface *pIconSurface = IMG_Load(YE_STATE.engine.icon_path);
     if (pIconSurface == NULL) {
         ye_logf(error, "IMG_Load error: %s", IMG_GetError());
         exit(1);
@@ -346,9 +339,6 @@ void initGraphics(int screenWidth,int screenHeight, int windowMode, int framecap
     SDL_FreeSurface(pIconSurface);
 
     ye_logf(info, "Window icon set.\n");
-
-    // set a start time for counting fps
-    startTime = SDL_GetTicks();
 }
 
 // shuts down all initialzied graphics systems

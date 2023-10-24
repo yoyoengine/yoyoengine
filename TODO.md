@@ -368,3 +368,7 @@ engine contains all configuration for the actual engine itself.
 also use this rework as an opportunity to clean up old code and reduce tech debt.
 
 <https://chat.openai.com/share/2fab73ac-649a-4e83-ab3a-5ffdcc1a4569>
+
+## next steps
+
+- please go through and get rid of all compiler warnings.

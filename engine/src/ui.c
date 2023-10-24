@@ -135,21 +135,36 @@ void ui_end_input_checks(){
 void ui_paint_debug_overlay(){
     // put all the parameters into strings for display
     char fps_str[100];
+    char input_time_str[100];
+    char physics_time_str[100];
     char paint_time_str[100];
+    char frame_time_str[100];
+    char delta_time_str[100];
+
     char entity_count_str[100];
     char audio_chunk_count_str[100];
     char log_line_count_str[100];
-    sprintf(fps_str, "fps: %d", engine_runtime_state.fps);
-    sprintf(paint_time_str, "paint time: %dms", engine_runtime_state.frame_time);
-    sprintf(entity_count_str, "visible entities: %d/%d", engine_runtime_state.painted_entity_count, engine_runtime_state.entity_count);
-    sprintf(audio_chunk_count_str, "audio chunk count: %d", engine_runtime_state.audio_chunk_count);
-    sprintf(log_line_count_str, "log line count: %d", engine_runtime_state.log_line_count);
+    sprintf(fps_str, "fps: %d", YE_STATE.runtime.fps);
+    sprintf(input_time_str, "input time: %dms", YE_STATE.runtime.input_time);
+    sprintf(physics_time_str, "physics time: %dms", YE_STATE.runtime.physics_time);
+    sprintf(paint_time_str, "paint time: %dms", YE_STATE.runtime.paint_time);
+    sprintf(frame_time_str, "frame time: %dms", YE_STATE.runtime.frame_time);
+    sprintf(delta_time_str, "delta time: %f", YE_STATE.runtime.delta_time);
     
+    sprintf(entity_count_str, "entity count: %d", YE_STATE.runtime.entity_count);
+    sprintf(audio_chunk_count_str, "audio chunk count: %d", YE_STATE.runtime.audio_chunk_count);
+    sprintf(log_line_count_str, "log line count: %d", YE_STATE.runtime.log_line_count);
+
     if (nk_begin(ctx, "Metrics", nk_rect(10, 10, 220, 200),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, fps_str, NK_TEXT_LEFT);
+        nk_label(ctx, input_time_str, NK_TEXT_LEFT);
+        nk_label(ctx, physics_time_str, NK_TEXT_LEFT);
         nk_label(ctx, paint_time_str, NK_TEXT_LEFT);
+        nk_label(ctx, frame_time_str, NK_TEXT_LEFT);
+        nk_label(ctx, delta_time_str, NK_TEXT_LEFT);
+
         nk_label(ctx, entity_count_str, NK_TEXT_LEFT);
         nk_label(ctx, audio_chunk_count_str, NK_TEXT_LEFT);
         nk_label(ctx, log_line_count_str, NK_TEXT_LEFT);
@@ -167,11 +182,11 @@ void ui_paint_cam_info(){
     char h_str[100];
     char z_str[100];
 
-    sprintf(x_str, "x: %f", engine_state.target_camera->transform->rect.x);
-    sprintf(y_str, "y: %f", engine_state.target_camera->transform->rect.y);
-    sprintf(w_str, "w: %d", engine_state.target_camera->camera->view_field.w);
-    sprintf(h_str, "h: %d", engine_state.target_camera->camera->view_field.h);
-    sprintf(z_str, "z: %d", engine_state.target_camera->transform->z);
+    sprintf(x_str, "x: %f", YE_STATE.engine.target_camera->transform->rect.x);
+    sprintf(y_str, "y: %f", YE_STATE.engine.target_camera->transform->rect.y);
+    sprintf(w_str, "w: %d", YE_STATE.engine.target_camera->camera->view_field.w);
+    sprintf(h_str, "h: %d", YE_STATE.engine.target_camera->camera->view_field.h);
+    sprintf(z_str, "z: %d", YE_STATE.engine.target_camera->transform->z);
 
     // Create the GUI layout
     if (nk_begin(ctx, "Camera", nk_rect(250, 10, 100, 200),
@@ -243,7 +258,7 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
 
     // ui_register_component("test",paint_test);
-    if(engine_state.debug_mode){
+    if(YE_STATE.engine.debug_mode){
         ui_register_component("debug_overlay",ui_paint_debug_overlay);
         ui_register_component("cam_info",ui_paint_cam_info);
     }

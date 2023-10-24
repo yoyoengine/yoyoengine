@@ -165,7 +165,7 @@ struct ye_entity * ye_create_entity(){
     ye_entity_list_add(&entity_list_head, entity);
     // ye_logf(debug, "Created and added an entity\n");
 
-    engine_runtime_state.entity_count++;
+    YE_STATE.runtime.entity_count++;
 
     return entity;
 }
@@ -198,7 +198,7 @@ struct ye_entity * ye_create_entity_named(char *name){
     ye_entity_list_add(&entity_list_head, entity);
     // ye_logf(debug, "Created and added an entity\n");
 
-    engine_runtime_state.entity_count++;
+    YE_STATE.runtime.entity_count++;
 
     return entity;
 }
@@ -284,7 +284,7 @@ void ye_destroy_entity(struct ye_entity * entity){
 
     // ye_logf(debug, "Destroyed an entity\n");
 
-    engine_runtime_state.entity_count--;
+    YE_STATE.runtime.entity_count--;
 }
 
 struct ye_entity * ye_get_entity_by_name(char *name){

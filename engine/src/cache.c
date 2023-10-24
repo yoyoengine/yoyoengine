@@ -278,7 +278,7 @@ TTF_Font * ye_font(char *name){
     }
 
     ye_logf(error,"Font cache miss: %s. Returning default.\n",name);
-    return pEngineFont;
+    return YE_STATE.engine.pEngineFont;
 }
 
 SDL_Color * ye_color(char *name){
@@ -292,7 +292,7 @@ SDL_Color * ye_color(char *name){
     }
 
     ye_logf(error,"Color cache miss: %s. Returning default.\n",name);
-    return pEngineFontColor;
+    return YE_STATE.engine.pEngineFontColor;
 }
 
 /*

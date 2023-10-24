@@ -37,16 +37,9 @@
         Do things like limit the debug log output unless override is set
     */
 #endif
-/*
-    Reserve an internal font and color for the engine to use rendering
-    overlays such as the fpsCounter. Font NULL until initialized in init()
-*/
-extern SDL_Color *pEngineFontColor;
-extern TTF_Font *pEngineFont;
 
-extern struct engine_data engine_state;
 
-extern struct engine_runtime_data engine_runtime_state;
+extern struct ye_engine_state YE_STATE;
 
 // struct to hold screen points
 struct ScreenSize {
@@ -63,17 +56,20 @@ char *ye_get_resource_static(const char *sub_path);
 char* ye_get_engine_resource_static(const char *sub_path);
 
 /*
-    constructor for engine (any fields can be left blank for defaults)
-
-    There are some private fields at the bottom that can TECHNICALLY be overridden
-    by the game for some extra control (hence why they are exposed here)
+    The config state pertaining to the core engine.
 */
-struct engine_data {
+struct ye_engine_config {
+    /*
+        Window Properties
+        Do not update in realtime, only on init
+    */
     int screen_width;
     int screen_height;
     int volume;
     int window_mode;
     int framecap;
+    char *window_title;
+    char *icon_path;
 
     /*
         0 - debug and higher
@@ -83,34 +79,35 @@ struct engine_data {
         4 - nothing
     */
     int log_level;
-    
-    bool debug_mode; // does not need override
-    bool skipintro; // does not need override
-    bool editor_mode; // does not need override
 
-    char *window_title;
-    char *icon_path;
+    /*
+        Provides some internal override behavior over defaults.
+        Ex: logging will print to stdout before init.
+    */
+    bool debug_mode;
+
+    /*
+        TODO: remove me?
+    */
+    bool skipintro;
+
+    /*
+        Allocated strings for resource accessing paths.
+    */
     char *engine_resources_path;
     char *game_resources_path;
     char *log_file_path;
 
-    // added the above for editor: allow overriding the path entirely, not assuming it starts from the executable
-
-    // void pointer to a function that will be called to handle game input (takes in a SDL key)
+    /*
+        Void pointer to the game's registered input handler.
+        After the engine processes input events, it will send them to
+        the game.
+    */
     void (*handle_input)(SDL_Event event);
 
     /*
-        State that is reserved to the engine, but 
-        could technically be mutated by the game
+        Controls which camera the scene is rendered from the perspective of.
     */
-    bool paintbounds_visible;
-    bool colliders_visible;
-    bool metrics_visible;
-    bool console_visible;
-    bool scene_camera_bounds_visible;
-
-    bool freecam_enabled;
-
     struct ye_entity *target_camera;
 
     /*
@@ -119,36 +116,90 @@ struct engine_data {
         cameras view cone to the viewport actual position
     */
     bool stretch_viewport;
+
+    /*
+        The font and color used for when the engine needs to render text
+        but is missing a font or color from. This will be automatically freed
+        at the end of the engine's lifecycle, so if you replace these manually please
+        free the old pointers.
+    */
+    SDL_Color *pEngineFontColor;
+    TTF_Font *pEngineFont;
 };
 
-/*
-    Struct to hold and persist globals to the engine (for ease documentation and use)
-    This will be instantiated to one global variable in engine.c and used throughout the engine
-*/
-struct engine_runtime_data {
-    int fps;
-    int frame_time;
-    int entity_count;
-    int painted_entity_count;
-    int log_line_count;
-    int audio_chunk_count;
+struct ye_editor_config {
+    /*
+        Controls whether the engine is in "editor mode"
+        This has implications for how rendering is handled and which systems are enabled.
+    */
+    bool editor_mode;
 
-    char *scene_name;
-
-    // EDITOR SPECIFIC FIELDS BELOW
-
-    struct ye_entity *scene_default_camera; // this is set when the scene has its own declared camera, which cannot override the editor camera. we can draw a viewport for this cam
-
+    /*
+        A whole bunch of editor flags
+        that can also be changed at runtime
+        to debug or potentially for visual effect
+    */
+    bool paintbounds_visible;
+    bool colliders_visible;
     bool display_names;
-
+    bool freecam_enabled;
+    /*
+        Only work with editor_mode enabled:
+    */
     bool editor_display_viewport_lines;
+    bool scene_camera_bounds_visible;
 
+    /*
+        Used to track the selected editor entity
+    */
     struct ye_entity *selected_entity;
+
+    /*
+        Only used in editor mode to designate the camera the scene file has marked
+        as default, so when we replace the rendering camera with the editor camera
+        we still know which camera the scene file has marked as default
+
+        ex: Draw camera viewport outline
+    */
+    struct ye_entity *scene_default_camera;
+};
+
+struct ye_runtime_data {
+    /*
+        Some variables tracking things we might
+        be interested in at any given time:
+    */
+    int entity_count;           // scene entities
+    int painted_entity_count;   // scene entities actually painted
+    int fps;                    // our current fps (updated every frame)
+    
+    int paint_time;             // time in ms it took to paint the last frame
+    int frame_time;             // overall time in ms it took to process the last frame (the delay included)
+    int input_time;             // time in ms it took to process the input for the last frame
+    int physics_time;           // time in ms it took to process the physics for the last frame
+    float delta_time;           // the delta time in SECONDS between the last frame and the current frame
+    
+    int log_line_count;         // the number of lines in the log file
+    int audio_chunk_count;      // the number of audio chunks currently allocated and playing
+    
+    char *scene_name;           // TODO: store current scene path for reloading in editor?
+}; // TODO: move a bunch more information here, audio capacity comes to mind. expose some stuff here just for usage.
+
+/*
+    Struct that defines the state for the entire core engine, as well as some important editor state
+    that is not necessarily part of the engine, but is important to the editor injecting its
+    own behavior into the core and renderer
+*/
+struct ye_engine_state {
+    struct ye_engine_config engine;
+    struct ye_runtime_data runtime;
+    struct ye_editor_config editor;
 };
 
 void ye_process_frame();
 
-float ye_get_delta_time();
+// TODO: get delta function to easily get the delta out of the state
+float ye_delta_time();
 
 void ye_update_resources(char *path);
 

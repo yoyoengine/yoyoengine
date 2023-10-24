@@ -22,7 +22,7 @@
     Set a camera as the active camera renderer
 */
 void ye_set_camera(struct ye_entity *entity){
-    engine_state.target_camera = entity;
+    YE_STATE.engine.target_camera = entity;
 }
 
 void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field){

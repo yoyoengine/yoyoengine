@@ -77,9 +77,7 @@ bool ye_rectf_collision(struct ye_rectf rect1, struct ye_rectf rect2){
     - trigger colliders are needed
 */
 void ye_system_physics(){
-    // calculate our offset based on the frame time
-    float offset = (float)engine_runtime_state.frame_time / 1000.0;
-
+    float delta = ye_delta_time();
     // iterate over all entities with physics
     struct ye_entity_node *current = physics_list_head;
     while (current != NULL) {
@@ -88,8 +86,8 @@ void ye_system_physics(){
             // if we have velocity proceed with checks
             if(current->entity->physics->velocity.x != 0 || current->entity->physics->velocity.y != 0){
                 // calculate where this entity will be after this frame
-                struct ye_rectf new_position = {current->entity->transform->rect.x + current->entity->physics->velocity.x * offset,
-                                                current->entity->transform->rect.y + current->entity->physics->velocity.y * offset,
+                struct ye_rectf new_position = {current->entity->transform->rect.x + current->entity->physics->velocity.x * delta,
+                                                current->entity->transform->rect.y + current->entity->physics->velocity.y * delta,
                                                 current->entity->transform->rect.w,
                                                 current->entity->transform->rect.h};
 
@@ -138,8 +136,8 @@ void ye_system_physics(){
 
                         // TODO: FIXME THIS IS A TEMPORARY HACK. ALL COMPS SHOULD HAVE A POSITION THAT IS OPTIONAL AND IF NOT IS RELATIVE TO PARENT
                         // move the entities collider forwards too, add the difference in x increase and y increase to the colliders rect
-                        current->entity->collider->rect.x += current->entity->physics->velocity.x * offset;
-                        current->entity->collider->rect.y += current->entity->physics->velocity.y * offset;
+                        current->entity->collider->rect.x += current->entity->physics->velocity.x * delta;
+                        current->entity->collider->rect.y += current->entity->physics->velocity.y * delta;
                     }
                 } 
                 else { // if there is no static collider on this entity, nothing else is able to stop it, so we can just move it to its new pos
@@ -149,7 +147,7 @@ void ye_system_physics(){
             // if we have rotational velocity apply it
             if(current->entity->physics->rotational_velocity != 0){
                 // update the entity's rotation based on its rotational velocity
-                current->entity->transform->rotation += current->entity->physics->rotational_velocity * offset;
+                current->entity->transform->rotation += current->entity->physics->rotational_velocity * delta;
                 if(current->entity->transform->rotation > 360) current->entity->transform->rotation -= 360;
                 if(current->entity->transform->rotation < 0) current->entity->transform->rotation += 360;
             }

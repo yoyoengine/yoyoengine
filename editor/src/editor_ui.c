@@ -23,7 +23,7 @@
 const float ratio[] = {0.03f, 0.92f, 0.05};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
-    int height = engine_runtime_state.selected_entity == NULL ? screenHeight : screenHeight/2;
+    int height = YE_STATE.editor.selected_entity == NULL ? screenHeight : screenHeight/2;
     if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -56,7 +56,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
 
                 // if the entity is selected, display it as a different color
                 bool flag = false; // messy way to do this, but it works
-                if(engine_runtime_state.selected_entity == current->entity){
+                if(YE_STATE.editor.selected_entity == current->entity){
                     nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(100,100,100))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(75,75,75))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(50,50,50))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                     flag = true;
                 }
@@ -66,15 +66,15 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 }
 
                 if(nk_button_label(ctx, current->entity->name)){
-                    if(engine_runtime_state.selected_entity == current->entity){
-                        engine_runtime_state.selected_entity = NULL;
+                    if(YE_STATE.editor.selected_entity == current->entity){
+                        YE_STATE.editor.selected_entity = NULL;
                         // pop our style items if we pushed them
                         if(flag){ // if we are selected, pop our style items
                             nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                         }
                         break;
                     }
-                    engine_runtime_state.selected_entity = current->entity;
+                    YE_STATE.editor.selected_entity = current->entity;
                     entity_list_head = ye_get_entity_list_head();
                     // set all our current entity staging fields
                     staged_entity = *current->entity; // TODO this is hard because we have to copy all the components too... maybe we just need to let modification of fields directly and skip them if they are invalid
@@ -95,8 +95,8 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 
                 if(nk_button_symbol(ctx, NK_SYMBOL_X)){
                     // if our selected entity is the current entity, close the hiearchy
-                    if(engine_runtime_state.selected_entity == current->entity){
-                        engine_runtime_state.selected_entity = NULL;
+                    if(YE_STATE.editor.selected_entity == current->entity){
+                        YE_STATE.editor.selected_entity = NULL;
                     }
 
                     ye_destroy_entity(current->entity);
@@ -119,7 +119,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
     dev clicks "save" or "cancel"
 */
 void ye_editor_paint_entity(struct nk_context *ctx){
-    struct ye_entity *ent = engine_runtime_state.selected_entity;
+    struct ye_entity *ent = YE_STATE.editor.selected_entity;
     if(ent == NULL){
         return;
     }
@@ -240,7 +240,7 @@ void ye_editor_paint_info_overlay(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Scene Name:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, engine_runtime_state.scene_name, NK_TEXT_LEFT);
+            nk_label(ctx, YE_STATE.runtime.scene_name, NK_TEXT_LEFT);
         nk_end(ctx);
     }
 }
@@ -270,18 +270,18 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Visual Debugging:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 2);
-            nk_checkbox_label(ctx, "Display Names", &engine_runtime_state.display_names);
-            nk_checkbox_label(ctx, "Paintbounds", &engine_state.paintbounds_visible);
-            nk_checkbox_label(ctx, "Colliders", &engine_state.colliders_visible);
-            nk_checkbox_label(ctx, "Scene Camera Viewport", &engine_state.scene_camera_bounds_visible);
+            nk_checkbox_label(ctx, "Display Names", &YE_STATE.editor.display_names);
+            nk_checkbox_label(ctx, "Paintbounds", &YE_STATE.editor.paintbounds_visible);
+            nk_checkbox_label(ctx, "Colliders", &YE_STATE.editor.colliders_visible);
+            nk_checkbox_label(ctx, "Scene Camera Viewport", &YE_STATE.editor.scene_camera_bounds_visible);
 
             nk_label(ctx, "Preferences:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Draw Lines", &engine_runtime_state.editor_display_viewport_lines);
+            nk_checkbox_label(ctx, "Draw Lines", &YE_STATE.editor.editor_display_viewport_lines);
 
             nk_label(ctx, "Extra:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_checkbox_label(ctx, "Stretch Viewport", &engine_state.stretch_viewport);
+            nk_checkbox_label(ctx, "Stretch Viewport", &YE_STATE.engine.stretch_viewport);
         nk_end(ctx);
     }
 }

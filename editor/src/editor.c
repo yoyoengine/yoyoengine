@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     else
         ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
 
-    engine_state.handle_input = editor_handle_input;
+    YE_STATE.engine.handle_input = editor_handle_input;
 
     // update screenWidth and screenHeight
     struct ScreenSize screenSize = ye_get_screen_size();

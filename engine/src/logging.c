@@ -99,14 +99,14 @@ void ye_logf(enum logLevel level, const char *format, ...){
     va_end(args);
     
     // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
-    if(engine_state.log_level > level){ // idk why i wrote null like this i just want to feel cool
+    if(YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
         return;
     }
     // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
     if(logFile == 0x0){
         ye_add_to_log_buffer(level, text);
         // if we are in debug mode put it in stdout as well
-        if(engine_state.debug_mode){
+        if(YE_STATE.engine.debug_mode){
             printf("%s",text);
         }
         return;
@@ -134,7 +134,7 @@ void ye_logf(enum logLevel level, const char *format, ...){
             printf("%s[%s] [%sERROR%s]: %s", RED, ye_get_timestamp(), RED, RESET, "Invalid log level\n");
             break;
     }
-    engine_runtime_state.log_line_count++;
+    YE_STATE.runtime.log_line_count++;
 
     // Add to the log buffer
     ye_add_to_log_buffer(level, text);
@@ -142,7 +142,7 @@ void ye_logf(enum logLevel level, const char *format, ...){
 
 void ye_log_newline(enum logLevel level){
     // if logging is disabled, or the log level is below the threshold, return
-    if(engine_state.log_level > level){
+    if(YE_STATE.engine.log_level > level){
         return;
     }
     fprintf(logFile, "\n");
@@ -220,7 +220,7 @@ void ye_paint_console(struct nk_context *ctx){
         nk_checkbox_label(ctx, "Color by log level", &color_code);
         
         nk_label(ctx, "Threshold:", NK_TEXT_RIGHT);
-        switch(engine_state.log_level){
+        switch(YE_STATE.engine.log_level){
             case 0:
                 nk_text_colored(ctx, "debug+", 6, NK_TEXT_LEFT, nk_rgb(252, 186, 3));  // Green text
                 break;
@@ -307,11 +307,11 @@ void ye_paint_console(struct nk_context *ctx){
                 else if(strncmp(userInput,"toggle",6)==0){
                     // check if the second word is "debug"
                     if(strncmp(userInput+7,"paintbounds",11)==0){
-                        engine_state.paintbounds_visible = !engine_state.paintbounds_visible;
+                        YE_STATE.editor.paintbounds_visible = !YE_STATE.editor.paintbounds_visible;
                     }
                     else if(strncmp(userInput+7,"freecam",7)==0){
-                        engine_state.freecam_enabled = !engine_state.freecam_enabled;
-                        if(engine_state.freecam_enabled){
+                        YE_STATE.editor.freecam_enabled = !YE_STATE.editor.freecam_enabled;
+                        if(YE_STATE.editor.freecam_enabled){
                             ye_logf(debug,"Freecam enabled\n");
                         }
                         else{
@@ -348,15 +348,15 @@ void ye_log_init(char * log_file_path){
     #endif
 
     // open log file the first time in w mode to overwrite any existing log
-    if(engine_state.log_level < 4){
+    if(YE_STATE.engine.log_level < 4){
         ye_open_log();
         ye_logf(info, "Logging initialized\n");
-        engine_runtime_state.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
+        YE_STATE.runtime.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
     }
 }
 
 void ye_log_shutdown(){
     ye_logf(info, "Logging shutdown\n");
-    engine_runtime_state.log_line_count++;
+    YE_STATE.runtime.log_line_count++;
     ye_close_log();
 }

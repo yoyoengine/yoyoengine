@@ -72,7 +72,7 @@ void ye_free_channel(int channel) {
         totalChunks--;
     }
 
-    engine_runtime_state.audio_chunk_count = totalChunks;
+    YE_STATE.runtime.audio_chunk_count = totalChunks;
 }
 
 // function allowing a sound to be played on a channel by filename
@@ -114,7 +114,7 @@ void ye_play_sound(const char *pFilename, int chan, int loops) {
     // Free audio memory when channel finishes
     Mix_ChannelFinished(ye_free_channel);
 
-    engine_runtime_state.audio_chunk_count = totalChunks;
+    YE_STATE.runtime.audio_chunk_count = totalChunks;
 }
 
 // set a specific (or all channels if passed -1) volume level 0-128 

@@ -24,7 +24,7 @@
 char *current_scene_file_path = NULL;
 
 void ye_init_scene_manager(){
-    engine_runtime_state.scene_name = NULL;
+    YE_STATE.runtime.scene_name = NULL;
 }
 
 /*
@@ -553,9 +553,9 @@ void ye_load_scene(const char *scene_path){
         ye_logf(warning,"Un-named scene loaded %s\n", scene_path);
     }
     else{
-        if(engine_runtime_state.scene_name != NULL)
-            free(engine_runtime_state.scene_name);
-        engine_runtime_state.scene_name = strdup(scene_name);
+        if(YE_STATE.runtime.scene_name != NULL)
+            free(YE_STATE.runtime.scene_name);
+        YE_STATE.runtime.scene_name = strdup(scene_name);
         ye_logf(info,"Loaded scene: %s\n", scene_name);
     }
 
@@ -589,7 +589,7 @@ void ye_load_scene(const char *scene_path){
     }
     else{
         struct ye_entity *camera = ye_get_entity_by_name(default_camera_name);
-        if(!engine_state.editor_mode){
+        if(!YE_STATE.editor.editor_mode){
             ye_logf(info,"Setting default camera to: %s\n", default_camera_name);
             if(camera == NULL){
                 ye_logf(error,"Scene \"%s\" has no camera named \"%s\"\n", scene_path, default_camera_name);
@@ -599,7 +599,7 @@ void ye_load_scene(const char *scene_path){
             }
         }
         else{
-            engine_runtime_state.scene_default_camera = camera;
+            YE_STATE.editor.scene_default_camera = camera;
         }
     }
 
@@ -608,16 +608,16 @@ void ye_load_scene(const char *scene_path){
 }
 
 char *ye_get_scene_name(){
-    return engine_runtime_state.scene_name;
+    return YE_STATE.runtime.scene_name;
 }
 
 void ye_shutdown_scene_manager(){
-    if(engine_runtime_state.scene_name != NULL)
-        free(engine_runtime_state.scene_name);
+    if(YE_STATE.runtime.scene_name != NULL)
+        free(YE_STATE.runtime.scene_name);
 }
 
 void ye_reload_scene(){
-    if(engine_runtime_state.scene_name == NULL){
+    if(YE_STATE.runtime.scene_name == NULL){
         ye_logf(error,"%s","No scene loaded to reload.\n");
         return;
     }
