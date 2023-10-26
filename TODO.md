@@ -358,7 +358,6 @@ resources i found on custom symbols while i give up for now:
 
 ## next steps
 
-- segfault when selecting newly created entity
 - fix up editor compiler warnings
   - you have a bunch of char * that are holding state for menus, which jansson is using them as if they were const to represent internal values
   - additionally, you are setting their values to const json settings read from file, and then modifying them with nuklear fields.

@@ -397,7 +397,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 
-    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL){
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL && YE_STATE.editor.selected_entity->transform != NULL){
         // draw a pink rect around the selected entity rect
         SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
         SDL_Rect selected_entity_rect = ye_convert_rectf_rect(YE_STATE.editor.selected_entity->transform->rect);
