@@ -33,8 +33,8 @@ json_t *BUILD_FILE;
 /*
     Popout panel for the project settings
 */
-char * project_name;
-char * project_entry_scene;
+char project_name[256];
+char project_entry_scene[256];
 int project_log_level; // 0-4 (debug, info, warning, error, none)
 int project_volume; // 0-128
 bool project_debug_mode; // true or false
@@ -43,16 +43,16 @@ int project_window_mode_UNPROCESSED; // 0-2 (windowed, fullscreen, borderless) -
 // we need to process the window mode, 3 should become SDL_WINDOW_FULLSCREEN_DESKTOP
 int project_framecap; // -1 for vsync, else 0-MAXINT
 char _project_framecap_label[10];
-char * project_window_title;
+char project_window_title[256];
 bool project_stretch_viewport; // true or false
 
 /*
     Build settings variables
 */
-char *build_additional_cflags;
-char *build_platform;
+char build_additional_cflags[128];
+char build_platform[32];
 int build_platform_int;
-char *build_engine_build_path;
+char build_engine_build_path[256];
 
 /*
     Helper functions
@@ -315,23 +315,33 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     /*
                         Project Name
                     */
-                    if(!ye_json_string(SETTINGS, "name", &project_name)){
-                        strcpy(project_name, "Yoyo Engine Game");
+                    const char * tmp_project_name; 
+                    if(!ye_json_string(SETTINGS, "name", &tmp_project_name)){
+                        strcpy((char*)tmp_project_name, "Yoyo Engine Game");
                     }
+                    strncpy(project_name, (char*)tmp_project_name, (size_t)sizeof(project_name) - 1);
+                    project_name[(size_t)sizeof(project_name) - 1] = '\0'; // null terminate just in case TODO: write helper?
+
 
                     /*
                         Entry Scene
                     */
-                    if(!ye_json_string(SETTINGS,"entry_scene", &project_entry_scene)){
-                        strcpy(project_entry_scene, "scenes/entry.yoyo");
+                    const char * tmp_project_entry_scene;
+                    if(!ye_json_string(SETTINGS,"entry_scene", &tmp_project_entry_scene)){
+                        strcpy((char*)tmp_project_entry_scene, "scenes/entry.yoyo");
                     }
+                    strncpy(project_entry_scene, (char*)tmp_project_entry_scene, (size_t)sizeof(project_entry_scene) - 1);
+                    project_entry_scene[(size_t)sizeof(project_entry_scene) - 1] = '\0'; // null terminate just in case TODO: write helper?
 
                     /*
                         Window Title
                     */
-                    if(!ye_json_string(SETTINGS, "window_title", &project_window_title)){
-                        strcpy(project_window_title, "Yoyo Engine Game");
+                    const char * tmp_project_window_title;
+                    if(!ye_json_string(SETTINGS, "window_title", &tmp_project_window_title)){
+                        strcpy((char*)tmp_project_window_title, "Yoyo Engine Game");
                     }
+                    strncpy(project_window_title, (char*)tmp_project_window_title, (size_t)sizeof(project_window_title) - 1);
+                    project_window_title[(size_t)sizeof(project_window_title) - 1] = '\0'; // null terminate just in case TODO: write helper?
 
                     /*
                         Log Level
@@ -410,39 +420,48 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         /*
                             Additional C Flags
                         */
-                        if(!ye_json_string(BUILD_FILE, "cflags", &build_additional_cflags)){
-                            strcpy(build_additional_cflags,"");
+                        const char * tmp_build_additional_cflags;
+                        if(!ye_json_string(BUILD_FILE, "cflags", &tmp_build_additional_cflags)){
+                            strcpy((char*)tmp_build_additional_cflags,"");
                         }
+                        strncpy(build_additional_cflags, (char*)tmp_build_additional_cflags, (size_t)sizeof(build_additional_cflags) - 1);
+                        build_additional_cflags[(size_t)sizeof(build_additional_cflags) - 1] = '\0'; // null terminate just in case TODO: write helper?
 
                         /*
                             Platform
                         */
-                        if(!ye_json_string(BUILD_FILE, "platform", &build_platform)){
-                            strcpy(build_platform,"linux");
+                        const char * tmp_build_platform;
+                        if(!ye_json_string(BUILD_FILE, "platform", &tmp_build_platform)){
+                            strcpy((char*)tmp_build_platform,"linux");
                             build_platform_int = 0;
                         }
                         else{
-                            if(strcmp(build_platform, "windows") == 0){
+                            if(strcmp(tmp_build_platform, "windows") == 0){
                                 build_platform_int = 1;
                             }
                             else{
                                 build_platform_int = 0;
                             }
                         }
+                        strncpy(build_platform, (char*)tmp_build_platform, (size_t)sizeof(build_platform) - 1);
+                        build_platform[(size_t)sizeof(build_platform) - 1] = '\0'; // null terminate just in case TODO: write helper?
 
                         /*
                             Engine Build Path
                         */
-                        if(!ye_json_string(BUILD_FILE, "engine_build_path", &build_engine_build_path)){
-                            strcpy(build_engine_build_path,"");
+                        const char * tmp_build_engine_build_path;
+                        if(!ye_json_string(BUILD_FILE, "engine_build_path", &tmp_build_engine_build_path)){
+                            strcpy((char*)tmp_build_engine_build_path,"");
                         }
+                        strncpy(build_engine_build_path, (char*)tmp_build_engine_build_path, (size_t)sizeof(build_engine_build_path) - 1);
+                        build_engine_build_path[(size_t)sizeof(build_engine_build_path) - 1] = '\0'; // null terminate just in case TODO: write helper?
                     }
                     else{
                         ye_logf(error, "build.yoyo not found.");
-                        strcpy(build_additional_cflags,"");
-                        strcpy(build_platform,"linux");
+                        strcpy((char*)build_additional_cflags,"");
+                        strcpy((char*)build_platform,"linux");
                         build_platform_int = 0;
-                        strcpy(build_engine_build_path,"");
+                        strcpy((char*)build_engine_build_path,"");
                     }
                 }
             }

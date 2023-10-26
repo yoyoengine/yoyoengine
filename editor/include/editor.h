@@ -47,4 +47,6 @@ extern int mouse_world_y;
 
 bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
+void editor_reload_settings();
+
 #endif // YE_EDITOR
