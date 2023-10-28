@@ -122,14 +122,15 @@ int main(int argc, char **argv) {
 
     // create our editor camera and register it with the engine
     editor_camera = ye_create_entity_named("editor_camera");
-    ye_add_transform_component(editor_camera, (struct ye_rectf){0, 0, 0, 0}, 999, YE_ALIGN_MID_CENTER);
-    ye_add_camera_component(editor_camera, (SDL_Rect){0, 0, 2560, 1440});
+    ye_add_transform_component(editor_camera, 0, 0);
+    ye_add_camera_component(editor_camera, 999, (SDL_Rect){0, 0, 2560, 1440});
     ye_set_camera(editor_camera);
 
     // create a silly little snerfbot at our mouse world pos
     snerfbot = ye_create_entity_named("snerfbot");
-    ye_add_transform_component(snerfbot, (struct ye_rectf){0, 0, 100, 100}, 998, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(snerfbot, ye_get_resource_static("images/snerfbot.jpg"));
+    ye_add_transform_component(snerfbot, 0, 0);
+    ye_temp_add_image_renderer_component(snerfbot, 998, ye_get_resource_static("images/snerfbot.jpg"));
+    snerfbot->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
 
     // register all editor ui components
     ui_register_component("heiarchy", ye_editor_paint_hiearchy);
@@ -138,8 +139,9 @@ int main(int argc, char **argv) {
     ui_register_component("project", ye_editor_paint_project);
 
     origin = ye_create_entity_named("origin");
-    ye_add_transform_component(origin, (struct ye_rectf){-50, -50, 100, 100}, 0, YE_ALIGN_MID_CENTER);
-    ye_temp_add_image_renderer_component(origin, ye_get_engine_resource_static("originwhite.png"));
+    ye_add_transform_component(origin, -50, -50);
+    ye_temp_add_image_renderer_component(origin, 0, ye_get_engine_resource_static("originwhite.png"));
+    origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
 
     // load the scene out of the project settings::entry_scene
     SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
@@ -155,8 +157,9 @@ int main(int argc, char **argv) {
         ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
         // TODO: future me create a text entity easily in the center of the scene alerting this fact
         struct ye_entity *text = ye_create_entity_named("warning text");
-        ye_add_transform_component(text, (struct ye_rectf){0, 0, 1920, 500}, 900, YE_ALIGN_MID_CENTER);
-        ye_temp_add_text_renderer_component(text, "entry_scene not found in settings file. No scene has been loaded.", ye_font("default"), ye_color("warning"));
+        ye_add_transform_component(text, 0, 0);
+        ye_temp_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", ye_font("default"), ye_color("warning"));
+        text->renderer->rect = (struct ye_rectf){0, 0, 1920, 500};
     }
     else
     {
@@ -166,8 +169,8 @@ int main(int argc, char **argv) {
     entity_list_head = ye_get_entity_list_head();
 
     while(!quit) {
-        snerfbot->transform->rect.x = mouse_world_x;
-        snerfbot->transform->rect.y = mouse_world_y;
+        snerfbot->transform->x = mouse_world_x;
+        snerfbot->transform->y = mouse_world_y;
         ye_process_frame();
     }
 

@@ -26,8 +26,9 @@
 void editor_update_mouse_world_pos(int x, int y){
     float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
     float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
-    mouse_world_x = ((x / scaleX) + editor_camera->transform->rect.x);
-    mouse_world_y = ((y / scaleY) + editor_camera->transform->rect.y);
+    struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
+    mouse_world_x = ((x / scaleX) + campos.x);
+    mouse_world_y = ((y / scaleY) + campos.y);
 }
 
 /*
@@ -72,8 +73,8 @@ void editor_input_panning(SDL_Event event){
         {
             int dx = event.motion.x - last_x;
             int dy = event.motion.y - last_y;
-            editor_camera->transform->rect.x -= dx;
-            editor_camera->transform->rect.y -= dy;
+            editor_camera->transform->x -= dx;
+            editor_camera->transform->y -= dy; // editor camera is relative so we can just move its transform
             last_x = event.motion.x;
             last_y = event.motion.y;
         }
@@ -124,7 +125,10 @@ void editor_input_selection(SDL_Event event){
                         continue;
                     }
 
-                    if (ye_point_in_rect(mouse_world_x, mouse_world_y, ye_convert_rectf_rect(clicked_entity->entity->transform->bounds))) // TODO: bounds vs rect here
+                    // TODO: we can only select rendered objects rn
+                    if (
+                        clicked_entity->entity->renderer != NULL && 
+                        ye_point_in_rect(mouse_world_x, mouse_world_y, ye_get_position_rect(clicked_entity->entity, YE_COMPONENT_RENDERER)))
                     {
                         // we clicked on this entity
                         if (clicked_entity->entity != YE_STATE.editor.selected_entity)

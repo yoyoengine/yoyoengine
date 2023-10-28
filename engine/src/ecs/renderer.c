@@ -18,13 +18,29 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, void *data){
+void ye_add_renderer_component(
+    struct ye_entity *entity, 
+    enum ye_component_renderer_type type, 
+    int z, 
+    // struct ye_rectf rect, 
+    void *data
+    ){
+
     entity->renderer = malloc(sizeof(struct ye_component_renderer));
     entity->renderer->active = true;
     entity->renderer->type = type;
     entity->renderer->alpha = 255; // by default renderer is fully opaque
+    entity->renderer->z = z;
+    // entity->renderer->rect = rect;
+    
+    // must be modified outside of this constructor if non default desired
+    entity->renderer->rect = (struct ye_rectf){0,0,0,0};
+    entity->renderer->rotation = 0;
     entity->renderer->flipped_x = false;
     entity->renderer->flipped_y = false;
+    entity->renderer->center = (SDL_Point){0, 0}; // default center is the center of the bounds
+    entity->renderer->alignment = YE_ALIGN_MID_CENTER; // default alignment is mid center
+    entity->renderer->relative = true; // default is relative positioning
 
     if(type == YE_RENDERER_TYPE_IMAGE){
         entity->renderer->renderer_impl.image = data;
@@ -37,61 +53,48 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
     }
 
     // add this entity to the renderer component list
-    ye_entity_list_add_sorted_z(&renderer_list_head, entity);
+    ye_entity_list_add_sorted_renderer_z(&renderer_list_head, entity);
 
     // log that we added a renderer and to what ID
     // ye_logf(debug, "Added renderer to entity %d\n", entity->id);
 }
 
-void ye_temp_add_image_renderer_component(struct ye_entity *entity, const char *src){
+void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const char *src){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
     // copy src to image->src
     image->src = malloc(sizeof(char) * strlen(src));
 
     // create the renderer top level
-    ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, image);
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, z, image);
+
+    // update rect based off generated image
+    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
+    entity->renderer->rect.w = size.w;
+    entity->renderer->rect.h = size.h;
 
     // create the image texture
     entity->renderer->texture = ye_image(src);
-
-    
-    if(entity->transform != NULL){
-        // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_convert_rect_rectf(
-            ye_get_real_texture_size_rect(entity->renderer->texture)
-        );
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
-    }
-    else{
-        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
-    }
 }
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color){
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, TTF_Font *font, SDL_Color *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
     text_renderer->font = font;
     text_renderer->color = color;
 
     // create the renderer top level
-    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT, text_renderer);
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT, z, text_renderer);
 
     // create the text texture
     entity->renderer->texture = createTextTexture(text, font, color);
 
-    if(entity->transform != NULL){
-        // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_convert_rect_rectf(
-            ye_get_real_texture_size_rect(entity->renderer->texture)
-        );
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
-    }
-    else{
-        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
-    }
+    // update rect based off generated image
+    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
+    entity->renderer->rect.w = size.w;
+    entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
     text_renderer->font = font;
@@ -100,24 +103,18 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, cons
     text_renderer->outline_size = outline_size;
 
     // create the renderer top level
-    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT_OUTLINED, text_renderer);
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT_OUTLINED, z, text_renderer);
 
     // create the text texture
     entity->renderer->texture = createTextTextureWithOutline(text,outline_size,font,color,outline_color);
 
-    if(entity->transform != NULL){
-        // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_convert_rect_rectf(
-            ye_get_real_texture_size_rect(entity->renderer->texture)
-        );
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
-    }
-    else{
-        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
-    }
+    // update rect based off generated image
+    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
+    entity->renderer->rect.w = size.w;
+    entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_animation_renderer_component(struct ye_entity *entity, const char *path, const char *format, size_t count, int frame_delay, int loops){
+void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, const char *path, const char *format, size_t count, int frame_delay, int loops){
     struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
     animation->animation_path = strdup(path);
     animation->image_format = strdup(format);
@@ -137,23 +134,15 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, const ch
     }
 
     // create the renderer top level
-    ye_add_renderer_component(entity, YE_RENDERER_TYPE_ANIMATION, animation);
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_ANIMATION, z, animation);
 
     // set the texture to the first frame
     entity->renderer->texture = animation->frames[0];
 
-    // make sure we are aligned
-    if(entity->transform != NULL){
-        // calculate the actual rect of the entity based on its alignment and bounds
-        entity->transform->rect = ye_convert_rect_rectf(
-            ye_get_real_texture_size_rect(entity->renderer->texture)
-        );
-        ye_auto_fit_bounds(&entity->transform->bounds, &entity->transform->rect, entity->transform->alignment, &entity->transform->center);
-    }
-    else{
-        ye_logf(warning, "Entity has renderer but no transform. Its real paint bounds have not been computed\n");
-    }
-
+    // update rect based off generated image
+    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
+    entity->renderer->rect.w = size.w;
+    entity->renderer->rect.h = size.h;
 
     animation->last_updated = SDL_GetTicks(); // set the last updated to now so we can start ticking it accurately
 }
@@ -238,7 +227,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     YE_STATE.runtime.painted_entity_count = 0;
 
     // Get the camera's position in world coordinates
-    SDL_Rect camera_rect = ye_convert_rectf_rect(YE_STATE.engine.target_camera->transform->rect); // TODO profile conversion overhead
+    SDL_Rect camera_rect = (SDL_Rect){
+        YE_STATE.engine.target_camera->transform->x,
+        YE_STATE.engine.target_camera->transform->y
+    };
     
     SDL_Rect view_field = YE_STATE.engine.target_camera->camera->view_field;
     camera_rect.w = view_field.w;
@@ -275,12 +267,21 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 }
             }
             // paint the entity
-            if (current->entity->active &&
-                current->entity->transform != NULL && current->entity->renderer != NULL && current->entity->renderer->active &&
-                current->entity->transform->active &&
-                current->entity->transform->z <= YE_STATE.engine.target_camera->transform->z // only render if the entity is on or in front of the camera
+            if (current->entity->active && // entity active
+                current->entity->renderer != NULL && // renderer is not null
+                current->entity->renderer->active && // renderer is active
+                current->entity->renderer->z <= YE_STATE.engine.target_camera->camera->z // only render if the entity is on or in front of the camera
+                // current->entity->transform != NULL &&
+                // current->entity->transform->active &&
+                // ^ old system that relied on transform
             ) {
-                SDL_Rect entity_rect = ye_convert_rectf_rect(current->entity->transform->rect); // where the entity is in the world by pixel (x, y, w, h)
+                // TODO: call some get position method
+                struct ye_rectf temp_entity_rect = ye_get_position(current->entity,YE_COMPONENT_RENDERER);
+                struct ye_rectf texture_rect = ye_convert_rect_rectf(ye_get_real_texture_size_rect(current->entity->renderer->texture));
+                ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center);
+                SDL_Rect entity_rect = ye_convert_rectf_rect(texture_rect);
+
+                // entity rect is now a reflection of the actual calculated rect
 
                 // occlusion check
                 if (entity_rect.x + entity_rect.w < camera_rect.x ||
@@ -317,10 +318,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         else if(current->entity->renderer->flipped_y){
                             flip = SDL_FLIP_VERTICAL;
                         }
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->transform->rotation, NULL, flip);
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->renderer->rotation, NULL, flip);
                     }
-                    else if(current->entity->transform->rotation != 0.0){
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->transform->rotation, &current->entity->transform->center, SDL_FLIP_NONE);
+                    else if(current->entity->renderer->rotation != 0.0){
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->renderer->rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
                     }
                     else{
                         SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
@@ -331,17 +332,17 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     // paint bounds, my beloved <3
                     if (YE_STATE.editor.paintbounds_visible) {
                         // create entity bounds offset by camera
-                        SDL_Rect entity_bounds = ye_convert_rectf_rect(current->entity->transform->bounds);
-                        entity_bounds.x = entity_bounds.x - camera_rect.x;
-                        entity_bounds.y = entity_bounds.y - camera_rect.y;
+                        // SDL_Rect entity_bounds = ye_convert_rectf_rect(current->entity->transform->bounds);
+                        // entity_bounds.x = entity_bounds.x - camera_rect.x;
+                        // entity_bounds.y = entity_bounds.y - camera_rect.y;
                         
-                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                        SDL_RenderDrawRect(renderer, &entity_bounds);
+                        // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                        // SDL_RenderDrawRect(renderer, &entity_bounds);
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         SDL_RenderDrawRect(renderer, &entity_rect);
 
                         // paint an orange rectangle filled at the entity center (transform->center) SDL_Point
-                        SDL_Rect center_rect = {entity_rect.x + current->entity->transform->center.x - 10, entity_rect.y + current->entity->transform->center.y - 10, 20, 20};
+                        SDL_Rect center_rect = {entity_rect.x + current->entity->renderer->center.x - 10, entity_rect.y + current->entity->renderer->center.y - 10, 20, 20};
                         SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
                         SDL_RenderFillRect(renderer, &center_rect);
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -359,7 +360,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
                     if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
                         // paint the collider
-                        SDL_Rect collider_rect = ye_convert_rectf_rect(current->entity->collider->rect);
+                        SDL_Rect collider_rect = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_COLLIDER));
                         collider_rect.x = collider_rect.x - camera_rect.x;
                         collider_rect.y = collider_rect.y - camera_rect.y;
                         // yellow trigger collider
@@ -388,7 +389,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     if(YE_STATE.editor.editor_mode && YE_STATE.editor.scene_camera_bounds_visible && YE_STATE.editor.scene_default_camera != NULL){
         // draw box around viewport of engine_runtime_state.scene_default_camera
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_Rect scene_camera_rect = ye_convert_rectf_rect(YE_STATE.editor.scene_default_camera->transform->rect);
+        SDL_Rect scene_camera_rect = ye_get_position_rect(YE_STATE.editor.scene_default_camera,YE_COMPONENT_CAMERA);
         scene_camera_rect.x = scene_camera_rect.x - camera_rect.x;
         scene_camera_rect.y = scene_camera_rect.y - camera_rect.y;
         scene_camera_rect.w = YE_STATE.editor.scene_default_camera->camera->view_field.w;
@@ -397,10 +398,11 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 
-    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL && YE_STATE.editor.selected_entity->transform != NULL){
+    // TODO: selected means only draw if it has a renderer for now, need to just make this show all components (collider, etc)
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL && YE_STATE.editor.selected_entity->renderer != NULL){
         // draw a pink rect around the selected entity rect
         SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-        SDL_Rect selected_entity_rect = ye_convert_rectf_rect(YE_STATE.editor.selected_entity->transform->rect);
+        SDL_Rect selected_entity_rect = ye_get_position_rect(YE_STATE.editor.selected_entity,YE_COMPONENT_RENDERER);
         selected_entity_rect.x = selected_entity_rect.x - camera_rect.x;
         selected_entity_rect.y = selected_entity_rect.y - camera_rect.y;
         SDL_RenderDrawRect(renderer, &selected_entity_rect);

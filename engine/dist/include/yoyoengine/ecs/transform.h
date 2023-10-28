@@ -28,21 +28,13 @@
     In 2D the Z axis is the layer the entity sits on. (High Z overpaints low Z)
 */
 struct ye_component_transform {
-    bool active;    // controls whether system will act upon this component
+    // bool active;    // controls whether system will act upon this component
 
-    struct ye_rectf bounds;         // original desired pixel location of entity
-    enum ye_alignment alignment;    // alignment of entity within its bounds
-    struct ye_rectf rect;           // real location of entity computed from desired alignment
-
-    float rotation;                 // rotation of entity in degrees
-    bool flipped_x;                 // whether entity is flipped on x axis
-    bool flipped_y;                 // whether entity is flipped on y axis
-    SDL_Point center;               // center of rotation
-
-    int z;                          // layer the entity sits on
+    float x;        // the transform x position
+    float y;        // the transform y position
 };
 
-void ye_add_transform_component(struct ye_entity *entity, struct ye_rectf bounds, int z, enum ye_alignment alignment);
+void ye_add_transform_component(struct ye_entity *entity, int x, int y);
 
 void ye_remove_transform_component(struct ye_entity *entity);
 

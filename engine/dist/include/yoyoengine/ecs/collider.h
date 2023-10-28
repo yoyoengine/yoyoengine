@@ -33,9 +33,14 @@
     Its possible the collider needs broken out into
     a two different colliders, trigger and static to enable
     multiple colliders on a single entity.
+
+    TODO: consider giving this a z or a layer, colliders do not care about the layer rn
 */
 struct ye_component_collider {
     bool active;            // controls whether system will act upon this component
+    
+    bool relative;          // whether or not this comp is relative to a parent transform
+    
     struct ye_rectf rect;   // collider rectangle
 
     bool is_trigger;        // whether this collider is a trigger, if false, it is a static collider

@@ -43,7 +43,12 @@ void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) 
 /*
     Adds to the renderer list sorted by z value, lowest at head
 */
-void ye_entity_list_add_sorted_z(struct ye_entity_node **list, struct ye_entity *entity){
+void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct ye_entity *entity){
+    if(entity == NULL || entity->renderer == NULL){
+        ye_logf(warning, "Error adding to render list sorted Z, something was null.\n");
+        return;
+    }
+    
     struct ye_entity_node *newNode = malloc(sizeof(struct ye_entity_node));
     newNode->entity = entity;
     newNode->next = NULL;
@@ -55,7 +60,7 @@ void ye_entity_list_add_sorted_z(struct ye_entity_node **list, struct ye_entity 
     }
 
     // if the new node is less than the head, add to head
-    if(newNode->entity->transform->z < (*list)->entity->transform->z){
+    if(newNode->entity->renderer->z < (*list)->entity->renderer->z){
         newNode->next = *list;
         *list = newNode;
         return;
@@ -64,7 +69,7 @@ void ye_entity_list_add_sorted_z(struct ye_entity_node **list, struct ye_entity 
     // otherwise, traverse the list and find the correct spot
     struct ye_entity_node *current = *list;
     while(current->next != NULL){
-        if(newNode->entity->transform->z < current->next->entity->transform->z){
+        if(newNode->entity->renderer->z < current->next->entity->renderer->z){
             newNode->next = current->next;
             current->next = newNode;
             return;
@@ -212,24 +217,42 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     strcpy(entity->name, new_name);
 }
 
+/*
+    TODO:
+    this function is likely broken on a multitiude of levels
+*/
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
     struct ye_entity *new_entity = ye_create_entity_named(strcat(strcat(entity->name, " "), "copy"));
 
     // copy all components
-    if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->bounds, entity->transform->z, entity->transform->alignment);
+    if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);
     if(entity->renderer != NULL){
         if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
-            ye_temp_add_image_renderer_component(new_entity, entity->renderer->renderer_impl.image->src);
+            ye_temp_add_image_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.image->src);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
-            ye_temp_add_text_renderer_component(new_entity, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
+            ye_temp_add_text_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-            ye_temp_add_animation_renderer_component(new_entity, entity->renderer->renderer_impl.animation->animation_path, entity->renderer->renderer_impl.animation->image_format, entity->renderer->renderer_impl.animation->frame_count, entity->renderer->renderer_impl.animation->frame_delay, entity->renderer->renderer_impl.animation->loops);
+            ye_temp_add_animation_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.animation->animation_path, entity->renderer->renderer_impl.animation->image_format, entity->renderer->renderer_impl.animation->frame_count, entity->renderer->renderer_impl.animation->frame_delay, entity->renderer->renderer_impl.animation->loops);
         }
+        /*
+
+        TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
+
+        new_entity->renderer->flipped_x = entity->renderer->flipped_x;
+        new_entity->renderer->flipped_y = entity->renderer->flipped_y;
+        new_entity->renderer->type = entity->renderer->type;
+        new_entity->renderer->z = entity->renderer->z;
+        new_entity->renderer->active = entity->renderer->active;
+        new_entity->renderer->renderer_impl = entity->renderer->renderer_impl;
+        
+        TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
+
+        */
     }
-    if(entity->camera != NULL) ye_add_camera_component(new_entity, entity->camera->view_field);
+    if(entity->camera != NULL) ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
     // if(entity->script != NULL) ye_add_script_component(new_entity, entity->script->script_path);
     // if(entity->interactible != NULL) ye_add_interactible_component(new_entity, entity->interactible->interactible_type);
     if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);

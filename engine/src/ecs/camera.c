@@ -25,10 +25,12 @@ void ye_set_camera(struct ye_entity *entity){
     YE_STATE.engine.target_camera = entity;
 }
 
-void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field){
+void ye_add_camera_component(struct ye_entity *entity, int z, SDL_Rect view_field){
     entity->camera = malloc(sizeof(struct ye_component_camera));
     entity->camera->active = true;
     entity->camera->view_field = view_field; // the width height is all that matters here, because the actual x and y are inferred by its transform
+    entity->camera->z = z;
+    entity->camera->relative = true;
 
     // log that we added a transform and to what ID
     // ye_logf(debug, "Added camera to entity %d\n", entity->id);

@@ -348,16 +348,21 @@ resources i found on custom symbols while i give up for now:
 <https://www.reddit.com/r/opengl/comments/ehkmvv/help_displaying_image_buffer_in_nuklear/>
 <https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/overview.c#L2>
 
-## bounds vs rect
-
-- where do they stand in realation to each other and how to minimize the confusion
-
 ## editor polish
 
 - when mouse enters viewport, deselect any nuklear windows open (heiarchy fixed location ones ofc)
 
-## next steps
+each component should have its own z
 
-- fix up editor compiler warnings
-  - you have a bunch of char * that are holding state for menus, which jansson is using them as if they were const to represent internal values
-  - additionally, you are setting their values to const json settings read from file, and then modifying them with nuklear fields.
+TODO: it would be nice if adding a renderer auto added it as the size of the image
+
+changing Z in editor only changes the value, it does not re sort the list.
+TODO: impl re sorting the list on z value change
+
+stretch alignment seems to default back to pixel size of image. might not be a bug, but actually a feature
+
+BUG: mouse world point is incorrect if cam is scaled and we are stretched viewport.
+
+actual editor needs state struct. its getting hard to track everything
+
+TODO: actual duplicate button in editor

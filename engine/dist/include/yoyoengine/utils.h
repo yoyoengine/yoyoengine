@@ -70,4 +70,8 @@ enum ye_component_type {
     YE_COMPONENT_TAG
 };
 
+struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type type);
+
+SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type);
+
 #endif

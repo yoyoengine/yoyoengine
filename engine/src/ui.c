@@ -182,11 +182,11 @@ void ui_paint_cam_info(){
     char h_str[100];
     char z_str[100];
 
-    sprintf(x_str, "x: %f", YE_STATE.engine.target_camera->transform->rect.x);
-    sprintf(y_str, "y: %f", YE_STATE.engine.target_camera->transform->rect.y);
+    sprintf(x_str, "x: %f", YE_STATE.engine.target_camera->transform->x);
+    sprintf(y_str, "y: %f", YE_STATE.engine.target_camera->transform->y);
     sprintf(w_str, "w: %d", YE_STATE.engine.target_camera->camera->view_field.w);
     sprintf(h_str, "h: %d", YE_STATE.engine.target_camera->camera->view_field.h);
-    sprintf(z_str, "z: %d", YE_STATE.engine.target_camera->transform->z);
+    sprintf(z_str, "z: %d", YE_STATE.engine.target_camera->camera->z);
 
     // Create the GUI layout
     if (nk_begin(ctx, "Camera", nk_rect(250, 10, 100, 200),
@@ -262,7 +262,7 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         ui_register_component("debug_overlay",ui_paint_debug_overlay);
         ui_register_component("cam_info",ui_paint_cam_info);
     }
-    ye_logf(info, "ui initialized");
+    ye_logf(info, "ui initialized\n");
 }
 
 void shutdown_ui(){

@@ -125,16 +125,16 @@ void ye_process_frame(){
             if(YE_STATE.editor.freecam_enabled){
                 switch(e.key.keysym.sym){     
                     case SDLK_LEFT:
-                        YE_STATE.engine.target_camera->transform->rect.x -= 100.0;
+                        YE_STATE.engine.target_camera->transform->x -= 100.0;
                         break;
                     case SDLK_RIGHT:
-                        YE_STATE.engine.target_camera->transform->rect.x += 100.0;
+                        YE_STATE.engine.target_camera->transform->x += 100.0;
                         break;
                     case SDLK_UP:
-                        YE_STATE.engine.target_camera->transform->rect.y -= 100.0;
+                        YE_STATE.engine.target_camera->transform->y -= 100.0;
                         break;
                     case SDLK_DOWN:
-                        YE_STATE.engine.target_camera->transform->rect.y += 100.0;
+                        YE_STATE.engine.target_camera->transform->y += 100.0;
                         break;
                 }
             }
@@ -325,32 +325,31 @@ void ye_init_engine() {
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
-        ye_add_transform_component(splash_cam, (struct ye_rectf){0,0,1920,1080}, 99, YE_ALIGN_MID_CENTER);
-        ye_add_camera_component(splash_cam, (SDL_Rect){0,0,1920,1080});
+        ye_add_transform_component(splash_cam, 0,0);
+        ye_add_camera_component(splash_cam, 999, (SDL_Rect){0,0,1920,1080});
         ye_set_camera(splash_cam);
 
         // background for splash
         struct ye_entity * splash_bg = ye_create_entity();
-        ye_add_transform_component(splash_bg, (struct ye_rectf){0,0,1920,1080}, 0, YE_ALIGN_MID_CENTER);
-        ye_temp_add_image_renderer_component(splash_bg, ye_get_engine_resource_static("splash_bg.png"));
+        ye_add_transform_component(splash_bg, 0,0);
+        ye_temp_add_image_renderer_component(splash_bg, 1, ye_get_engine_resource_static("splash_bg.png"));
+        splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
 
         // foreground logo for splash
         struct ye_entity * splash_y = ye_create_entity();
-        ye_add_transform_component(splash_y, (struct ye_rectf){1920/2 - 350/2 - 100,1080/2 - 350/2,350,350}, 2, YE_ALIGN_MID_CENTER);
-        ye_temp_add_image_renderer_component(splash_y, ye_get_engine_resource_static("splash_y.png"));
+        ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
+        ye_temp_add_image_renderer_component(splash_y, 1, ye_get_engine_resource_static("splash_y.png"));
+        splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
 
         // gear spinning below logo
         struct ye_entity * splash_gear = ye_create_entity();
-        ye_add_transform_component(splash_gear, (struct ye_rectf){1920/2,1080/2 - 110,300,300}, 1, YE_ALIGN_MID_CENTER);
-        ye_temp_add_image_renderer_component(splash_gear, ye_get_engine_resource_static("splash_gear.png"));
+        ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
+        ye_temp_add_image_renderer_component(splash_gear, 1, ye_get_engine_resource_static("splash_gear.png"));
+        splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
         ye_add_physics_component(splash_gear,0,0);
         splash_gear->physics->rotational_velocity = 90;
 
         // TODO: version numbers back please (awaiting text renderer)
-
-        // pause on engine splash for 2550ms (TODO: consider alternatives)
-        // SDL_Delay(3000); maybe a more reasonable time scale?
-        // SDL_Delay(2550);
 
         // get current ticks
         int ticks = SDL_GetTicks();

@@ -29,12 +29,15 @@
 struct ye_component_camera {
     bool active;    // controls whether system will act upon this component
 
+    bool relative;  // whether or not this comp is relative to a parent transform
+    int z; // the layer the camera sits on
+
     SDL_Rect view_field;    // view field of camera
 };
 
 void ye_set_camera(struct ye_entity *entity);
 
-void ye_add_camera_component(struct ye_entity *entity, SDL_Rect view_field);
+void ye_add_camera_component(struct ye_entity *entity, int z, SDL_Rect view_field);
 
 void ye_remove_camera_component(struct ye_entity *entity);
 

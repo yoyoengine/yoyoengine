@@ -39,20 +39,20 @@ void ye_init_scene_manager(){
     ===================================================================
 */
 
-void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* entity_name) {
-    // validate bounds field
-    json_t *bounds = NULL;
+struct ye_rectf ye_retrieve_position(json_t *parent){
+    // validate position field
+    json_t *position = NULL;
     struct ye_rectf b;
-    if(!ye_json_object(transform,"bounds",&bounds)) {
-        ye_logf(warning,"Entity %s has a transform component, but it is missing the bounds field\n", entity_name);
-        b = (struct ye_rectf){0,0,0,0};
+    if(!ye_json_object(parent,"position",&position)) {
+        ye_logf(warning,"Entity %s has a transform component, but it is missing the position field\n");
+        return (struct ye_rectf){0,0,0,0};
     } else {
         int x,y,w,h;
-        if(!ye_json_int(bounds,"x",&x) || !ye_json_int(bounds,"y",&y) || !ye_json_int(bounds,"w",&w) || !ye_json_int(bounds,"h",&h)) {
-            ye_logf(warning,"Entity %s has a transform component with invalid bounds field\n", entity_name);
+        if(!ye_json_int(position,"x",&x) || !ye_json_int(position,"y",&y) || !ye_json_int(position,"w",&w) || !ye_json_int(position,"h",&h)) {
+            ye_logf(warning,"Entity %s has a transform component with invalid position field\n");
             b = (struct ye_rectf){0,0,0,0};
         } else {
-            b = (struct ye_rectf){
+            return (struct ye_rectf){
                 .x = (float)x,
                 .y = (float)y,
                 .w = (float)w,
@@ -60,81 +60,18 @@ void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* 
             };
         }
     }
+}
 
-    // validate z field
-    int z;
-    if(!ye_json_int(transform,"z",&z)) {
-        ye_logf(warning,"Entity %s has a transform component, but it is missing the z field\n", entity_name);
-        z = 0;
-    }
-
-    // validate alignment field
-    enum ye_alignment alignment;
-    if(!ye_json_int(transform,"alignment",(int*)&alignment)) {
-        ye_logf(warning,"Entity %s has a transform component, but it is missing the alignment field\n", entity_name);
-        alignment = YE_ALIGN_TOP_LEFT;
+void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* entity_name) {
+    int x, y;
+    if(!ye_json_int(transform,"x",&x) || !ye_json_int(transform,"y",&y)) {
+        ye_logf(warning,"Entity %s has a transform component with invalid position field\n", entity_name);
+        x = 0;
+        y = 0;
     }
 
     // construct transform component
-    ye_add_transform_component(e,b,z,alignment);
-
-    // get a rotation if existant and update it
-    if(ye_json_has_key(transform,"rotation")){
-        int angle = 0;    ye_json_int(transform,"rotation",&angle);
-        e->transform->rotation = (float)angle;
-    }
-
-    // check for flipped_x and flipped_y and update
-    if(ye_json_has_key(transform,"flipped_x")){
-        bool flipped_x = false;    ye_json_bool(transform,"flipped_x",&flipped_x);
-        e->transform->flipped_x = flipped_x;
-    }
-    if(ye_json_has_key(transform,"flipped_y")){
-        bool flipped_y = false;    ye_json_bool(transform,"flipped_y",&flipped_y);
-        e->transform->flipped_y = flipped_y;
-    }
-
-    // if "center" exists validate x and y and set them
-    if(ye_json_has_key(transform,"center")){
-        json_t *center = NULL;
-        if(!ye_json_object(transform,"center",&center)) {
-            ye_logf(warning,"Entity \"%s\" has a transform component, but it is missing the center field\n", entity_name);
-        } else {
-            int x,y;
-            if(!ye_json_int(center,"x",&x) || !ye_json_int(center,"y",&y)) {
-                ye_logf(warning,"Entity %s has a transform component with invalid center field\n", entity_name);
-            } else {
-                e->transform->center = (struct SDL_Point){x,y};
-            }
-        }
-    }
-
-    // validate rect field
-    if(ye_json_has_key(transform,"rect")) {
-        json_t *rect = NULL;
-        if(!ye_json_object(transform,"rect",&rect)) {
-            ye_logf(warning,"Entity \"%s\" has a rect field, but it's invalid.\n", entity_name);
-        } else {
-            int x,y,w,h;
-            if(!ye_json_int(rect,"x",&x) || !ye_json_int(rect,"y",&y) || !ye_json_int(rect,"w",&w) || !ye_json_int(rect,"h",&h)) {
-                ye_logf(warning,"Entity %s has a transform component with invalid rect field\n", entity_name);
-            } else {
-                struct ye_rectf r = {
-                    .x = (float)x,
-                    .y = (float)y,
-                    .w = (float)w,
-                    .h = (float)h
-                };
-                e->transform->rect = r;
-            }
-        }
-    }
-
-    // update active state
-    if(ye_json_has_key(transform,"active")){
-        bool active = true;    ye_json_bool(transform,"active",&active);
-        e->transform->active = active;
-    }    
+    ye_add_transform_component(e,x,y); 
 }
 
 void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity_name){
@@ -152,8 +89,14 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
         return;
     }
 
+    int z;
+    if(!ye_json_int(camera,"z",&z)) {
+        ye_logf(warning,"Entity %s has a camera component, but it is missing the z field\n", entity_name);
+        z = 999;
+    }
+
     // add the camera component
-    ye_add_camera_component(e,(SDL_Rect){0,0,w,h});
+    ye_add_camera_component(e,z,(SDL_Rect){0,0,w,h});
 
     // update active state
     if(ye_json_has_key(camera,"active")){
@@ -180,6 +123,14 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
         return;
     }
 
+    int z;
+    if(!ye_json_int(renderer,"z",&z)) {
+        ye_logf(warning,"Entity %s has a renderer component, but it is missing the z field\n", entity_name);
+        z = 999;
+    }
+
+    struct ye_rectf rect = ye_retrieve_position(renderer);
+
     const char *animation_path = NULL; // comply with mingw & clang
     const char *_text = NULL; // comply with mingw & clang
     const char *src = NULL; // comply with mingw & clang
@@ -196,7 +147,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_image_renderer_component(e,ye_get_resource_static(src));
+            ye_temp_add_image_renderer_component(e,z,ye_get_resource_static(src));
             break;
         case YE_RENDERER_TYPE_TEXT:
             // get the text field
@@ -217,7 +168,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_renderer_component(e,text,ye_font(font),ye_color(color));
+            ye_temp_add_text_renderer_component(e,z,text,ye_font(font),ye_color(color));
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
@@ -254,7 +205,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_outlined_renderer_component(e,_text,ye_font(_font),ye_color(_color),ye_color(outline_color),outline_size);
+            ye_temp_add_text_outlined_renderer_component(e,z,_text,ye_font(_font),ye_color(_color),ye_color(outline_color),outline_size);
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:
@@ -292,7 +243,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_animation_renderer_component(e,ye_get_resource_static(animation_path),image_format,frame_count,frame_delay,loops);
+            ye_temp_add_animation_renderer_component(e,z,ye_get_resource_static(animation_path),image_format,frame_count,frame_delay,loops);
 
             // get the paused bool
             bool paused;
@@ -310,6 +261,9 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
             break;
     }
     
+    // set the rect
+    e->renderer->rect = rect;
+
     // update the aplha (if exists)
     if(ye_json_has_key(renderer,"alpha")){
         int alpha = 255;    ye_json_int(renderer,"alpha",&alpha);
@@ -324,6 +278,36 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
     if(ye_json_has_key(renderer,"flipped_y")){
         bool flipped_y = false;    ye_json_bool(renderer,"flipped_y",&flipped_y);
         e->renderer->flipped_y = flipped_y;
+    }
+
+    // update the alignment (if exists)
+    enum ye_alignment alignment;
+    if(!ye_json_int(renderer,"alignment",(int*)&alignment)) {
+        ye_logf(warning,"Entity %s has a renderer component, but it is missing the alignment field\n", entity_name);
+        alignment = YE_ALIGN_MID_CENTER;
+    }
+    // printf("alignment of %s: %d\n", entity_name, alignment);
+    e->renderer->alignment = alignment;
+
+    // get a rotation if existant and update it
+    if(ye_json_has_key(renderer,"rotation")){
+        int angle = 0;    ye_json_int(renderer,"rotation",&angle);
+        e->renderer->rotation = (float)angle;
+    }
+
+    // if "center" exists validate x and y and set them
+    if(ye_json_has_key(renderer,"center")){
+        json_t *center = NULL;
+        if(!ye_json_object(renderer,"center",&center)) {
+            ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the center field\n", entity_name);
+        } else {
+            int x,y;
+            if(!ye_json_int(center,"x",&x) || !ye_json_int(center,"y",&y)) {
+                ye_logf(warning,"Entity %s has a renderer component with invalid center field\n", entity_name);
+            } else {
+                e->renderer->center = (struct SDL_Point){x,y};
+            }
+        }
     }
 
     // update active state
@@ -387,13 +371,13 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
     // validate bounds field
     json_t *bounds = NULL;
     struct ye_rectf b;
-    if(!ye_json_object(collider,"rect",&bounds)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the rect field\n", entity_name);
+    if(!ye_json_object(collider,"position",&bounds)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the position field\n", entity_name);
         b = (struct ye_rectf){0,0,0,0};
     } else {
         int x,y,w,h;
         if(!ye_json_int(bounds,"x",&x) || !ye_json_int(bounds,"y",&y) || !ye_json_int(bounds,"w",&w) || !ye_json_int(bounds,"h",&h)) {
-            ye_logf(warning,"Entity %s has a collider component with invalid rect field\n", entity_name);
+            ye_logf(warning,"Entity %s has a collider component with invalid position field\n", entity_name);
             b = (struct ye_rectf){0,0,0,0};
         } else {
             b = (struct ye_rectf){
@@ -417,6 +401,14 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
         ye_add_static_collider_component(e,b);
     // else
         // ye_add_trigger_collider_component(e,b);
+
+    // validate the relative field
+    bool relative;
+    if(!ye_json_bool(collider,"relative",&relative)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the relative field\n", entity_name);
+        relative = true;
+    }
+    e->collider->relative = relative;
         
     // update active state
     if(ye_json_has_key(collider,"active")){

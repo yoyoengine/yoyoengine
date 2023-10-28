@@ -23,22 +23,11 @@
     at the same time we can have a transform without a renderer (sometimes i guess)
     which means we need to query the texture size
 */
-void ye_add_transform_component(struct ye_entity *entity, struct ye_rectf bounds, int z, enum ye_alignment alignment){
+void ye_add_transform_component(struct ye_entity *entity, int x,int y){
     entity->transform = malloc(sizeof(struct ye_component_transform));
-    entity->transform->active = true;
-    entity->transform->bounds = bounds;
-    entity->transform->z = z;
-
-    // must be modified outside of this constructor if non default desired
-    entity->transform->rotation = 0;
-    entity->transform->flipped_x = false;
-    entity->transform->flipped_y = false;
-    entity->transform->center = (SDL_Point){bounds.w / 2, bounds.h / 2}; // default center is the center of the bounds
-    
-    // we will first set the rect equal to the bounds, for the purposes of rendering the renderer on mount
-    // will then calculate the actual rect of the entity based on its alignment and bounds
-    entity->transform->rect = bounds;
-    entity->transform->alignment = YE_ALIGN_MID_CENTER;
+    // entity->transform->active = true; transform doesnt need active
+    entity->transform->x = x;
+    entity->transform->y = y;
 
     // add this entity to the transform component list
     ye_entity_list_add(&transform_list_head, entity);

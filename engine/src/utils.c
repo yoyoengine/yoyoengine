@@ -200,3 +200,85 @@ float ye_get_angle(float x1, float y1, float x2, float y2){
     }
     return angle;
 }
+
+/*
+    Takes in an entity and a component type and returns the position of that component
+    (sending transform will get you just the transform, a specific component will get
+    its actual position, factoring in relativity)
+*/
+struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type type){
+    if(entity == NULL){
+        ye_logf(error, "Tried to get position for null entity \"%s\". returning (0,0,0,0)\n",entity->name);
+        return (struct ye_rectf){0,0,0,0};
+    }
+
+    struct ye_rectf pos = {0,0,0,0};
+
+    switch(type){
+        case YE_COMPONENT_TRANSFORM:
+            pos.x = entity->transform->x;
+            pos.y = entity->transform->y;
+            return pos;
+        case YE_COMPONENT_RENDERER:
+            if(entity->renderer != NULL){
+                // set x,y,w,h
+                pos = entity->renderer->rect;
+                pos.w = entity->renderer->rect.w;
+                pos.h = entity->renderer->rect.h;
+
+                // if relative adjust its position
+                if(entity->renderer->relative && entity->transform != NULL){
+                    pos.x += entity->transform->x;
+                    pos.y += entity->transform->y;
+                }
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null renderer component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
+        case YE_COMPONENT_CAMERA:
+            if(entity->camera != NULL){
+                // set x,y,w,h
+                pos = ye_convert_rect_rectf(entity->camera->view_field);
+
+                // if relative adjust its position
+                if(entity->camera->relative && entity->transform != NULL){
+                    pos.x += entity->transform->x;
+                    pos.y += entity->transform->y;
+                }
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null camera component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
+        case YE_COMPONENT_COLLIDER:
+            if(entity->collider != NULL){
+                // set x,y,w,h
+                pos = entity->collider->rect;
+                pos.w = entity->collider->rect.w;
+                pos.h = entity->collider->rect.h;
+
+                // if relative adjust its position
+                if(entity->collider->relative && entity->transform != NULL){
+                    pos.x += entity->transform->x;
+                    pos.y += entity->transform->y;
+                }
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
+        default:
+            ye_logf(error, "Tried to get position for component on \"%s\" that does not have a position or size. returning (0,0,0,0)\n",entity->name);
+            return pos;
+    }
+}
+
+/*
+    Wrapper for ye_get_position(), returning a SDL_Rect of integers
+*/
+SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type){
+    struct ye_rectf pos = ye_get_position(entity, type);
+    SDL_Rect rect = {pos.x, pos.y, pos.w, pos.h};
+    return rect;
+}
