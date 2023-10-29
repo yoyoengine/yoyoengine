@@ -366,3 +366,27 @@ BUG: mouse world point is incorrect if cam is scaled and we are stretched viewpo
 actual editor needs state struct. its getting hard to track everything
 
 TODO: actual duplicate button in editor
+
+## physics
+
+- we still need to move on last frame before full collision to max distance possible without colliding
+- we also on lower framerates phase through walls entirely because next position is outside them. we could take the staged position and just create a path rect from initial to staged and check that for collision because its any place between it would have been
+
+## mental notes
+
+- things that need to happen
+  - adding components to entities
+  - duplication fixes and button in editor
+  - serialize/update the scene file with new data from scene
+  - onclick interaction handler, message system
+  - prefabs and styles editing
+
+## styles baked in on a per scene basis and can reference an outside sheet too? easy way to edit them in editor without openign files? maybe thats for later
+
+## cut content
+
+- it would be fun to make stuff like a file browser but at the end of the day im only one person and i would like to get a basic engine done, and then i can enhance it later on with fun stuff like that, it will be easier then as well ebcause my knowledge of nuklear will be better
+
+need more robust way to know when errors happen in editor for things that might be hard or a lot of work to visually show- ie: scene file already exists but trying to create a new one of the same name
+
+need some generic dialog popups as global state. functions can call like "input submitted" and get the result of the popup dialog if they were waiting for it, something like save or discard when loading a new scene

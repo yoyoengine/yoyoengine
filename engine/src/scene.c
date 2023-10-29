@@ -563,6 +563,32 @@ void ye_load_scene(const char *scene_path){
     json_t *scene = NULL; ye_json_object(SCENE, "scene", &scene);
     ye_pre_cache_scene(scene); // lowercase scene is the actual key
 
+    // TODO: intelligently clear current scene
+    // if we are editor mode then we need to clear the current scene whilst preserving
+    // important editor entities, like the editor camera
+    // if we arent then we can just clear the entirety of the scene
+
+    // if(YE_STATE.editor.editor_mode){
+    //     // clear the scene of all entities except the editor camera
+    //     struct ye_entity_node *current = entity_list_head;
+    //     while(current != NULL){
+    //         if(strcmp(current->entity->name,"editor camera") != 0
+    //         && strcmp(current->entity->name,"origin") != 0
+    //         && strcmp(current->entity->name,"snerfbot") != 0){
+    //             ye_destroy_entity(current->entity);
+    //         }
+    //         current = current->next;
+    //     }
+    // }
+    // else{
+    //     // clear the scene of all entities
+    //     struct ye_entity_node *current = entity_list_head;
+    //     while(current != NULL){
+    //         ye_destroy_entity(current->entity);
+    //         current = current->next;
+    //     }
+    // }
+
     // construct all entities and components
     json_t *entities = NULL;
     ye_json_array(scene,"entities",&entities);

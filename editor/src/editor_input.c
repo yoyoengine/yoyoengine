@@ -79,7 +79,7 @@ void editor_input_panning(SDL_Event event){
             last_y = event.motion.y;
         }
     }
-    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(x, y))
+    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(x, y) && !lock_viewport_interaction)
     {
         float dt = ye_delta_time();
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
