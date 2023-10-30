@@ -72,6 +72,11 @@ bool ye_rectf_collision(struct ye_rectf rect1, struct ye_rectf rect2){
     position based on their velocity and acceleration. Multiply by delta time to get
     the actual change in position. (engine_runtime_state.frame_time).
 
+    Currently, we will always do CCD (continuous collision detection) for all entities with physics.
+    In the future, a great optimization would be to only perform CCD for entities meeting certain velocity
+    thresholds, or if we are below a certain framerate. We could also expose a bool for CCD on the physics
+    component to allow more fine grained control, as well as an integer for specifying the number of steps.
+
     TODO/Considerations:
     - maybe we want to check for hitting multiple overlapping triggers?
     - trigger colliders are needed
@@ -79,6 +84,9 @@ bool ye_rectf_collision(struct ye_rectf rect1, struct ye_rectf rect2){
     Physics entities need a transform component to work, we apply these forces to the transform not the component position.
 */
 void ye_system_physics(){
+    // current time - left for debugging
+    // unsigned long start = SDL_GetTicks64();
+
     float delta = ye_delta_time();
     // iterate over all entities with physics
     struct ye_entity_node *current = physics_list_head;
@@ -88,68 +96,69 @@ void ye_system_physics(){
             // if we have velocity proceed with checks
             if(current->entity->physics->velocity.x != 0 || current->entity->physics->velocity.y != 0){
                 // get the current collider position
-                struct ye_rectf new_position = ye_get_position(current->entity,YE_COMPONENT_COLLIDER);
-                
-                // calculate where this entity will be after this frame
+                struct ye_rectf old_position = ye_get_position(current->entity,YE_COMPONENT_COLLIDER);
+                struct ye_rectf new_position = old_position;
+
+                // calculate the change in position based on the velocity
                 float dx = current->entity->physics->velocity.x * delta;
                 float dy = current->entity->physics->velocity.y * delta;
-                new_position.x += dx;
-                new_position.y += dy;
 
                 // if this entity has a static collider, we need to check if we are colliding with any other static colliders
                 if(current->entity->collider && !current->entity->collider->is_trigger && current->entity->collider->active){
-                    // check for collisions by comparing this entity to all entities with colliders
-                    struct ye_entity_node *current_collider = collider_list_head;
-                    while (current_collider != NULL) {
-                        // if a collider is on a different entity and is active
-                        if (current_collider->entity->id != current->entity->id && current_collider->entity->collider != NULL && current_collider->entity->collider->active) {
-                            // check if we collide with it
-                            if(ye_rectf_collision(new_position, ye_get_position(current_collider->entity,YE_COMPONENT_COLLIDER))){
-                                break;
+                    for(int i = 0; i < YE_PHYSICS_SUBSTEPS; i++){
+                        float substep = (i + 1) / (float)YE_PHYSICS_SUBSTEPS;  // Calculate sub-step factor
+
+                        // Calculate the interpolated position based on the sub-step
+                        new_position.x = old_position.x + substep * dx;
+                        new_position.y = old_position.y + substep * dy;
+                        
+                        // check for collisions by comparing this interpolated position with all other colliders
+                        struct ye_entity_node *current_collider = collider_list_head;
+                        while (current_collider != NULL) {
+                            // if a collider is on a different entity and is active
+                            if (current_collider->entity->id != current->entity->id && current_collider->entity->collider != NULL && current_collider->entity->collider->active) {
+                                // check if we collide with it
+                                if(ye_rectf_collision(new_position, ye_get_position(current_collider->entity,YE_COMPONENT_COLLIDER))){
+                                    break;
+                                }
                             }
+                            current_collider = current_collider->next;
                         }
-                        current_collider = current_collider->next;
+
+                        // if we actually hit a collider this step, current_collider will not be NULL
+                        if(current_collider != NULL){
+                            // ye_logf(debug, "Hit collider on entity %d\n", current_collider->entity->id);
+                            // if collider we touched is static
+                            if(!current_collider->entity->collider->is_trigger){
+                                current->entity->physics->velocity.x = 0;
+                                current->entity->physics->velocity.y = 0;
+
+                                /*
+                                    Saving for later as it may be relevant to the future:
+
+                                    // calculate the distance between the entity and the collider in both directions
+                                    int dx = current_collider->entity->collider->rect.x - (current->entity->transform->rect.w + current->entity->collider->rect.w) - current->entity->transform->rect.x;
+                                    int dy = current_collider->entity->collider->rect.y - (current->entity->transform->rect.h + current->entity->collider->rect.h) - current->entity->transform->rect.y;
+
+                                    // move the entity in the direction with the smaller distance, unless already overlapping
+                                    if (abs(dx) < abs(dy) && dx != 0) {
+                                        current->entity->transform->rect.x += dx + current->entity->collider->rect.w;
+                                    } else if (abs(dy) < abs(dx) && dy != 0) {
+                                        current->entity->transform->rect.y += dy;
+                                    }
+                                */
+                                
+                                break; // break out of the substep loop
+                            }
+                        } // TODO: do we want to cancel rotational velocity here too?
                     }
-
-                    // if we actually hit a collider, current_collider will not be NULL
-                    if(current_collider != NULL){
-                        // ye_logf(debug, "Hit collider on entity %d\n", current_collider->entity->id);
-                        // if collider we touched is static
-                        if(!current_collider->entity->collider->is_trigger){
-                            current->entity->physics->velocity.x = 0;
-                            current->entity->physics->velocity.y = 0;
-
-                            // // START DUMB CHATGPT COLLISION HACK
-
-                            //     // calculate the distance between the entity and the collider in both directions
-                            //     int dx = current_collider->entity->collider->rect.x - (current->entity->transform->rect.w + current->entity->collider->rect.w) - current->entity->transform->rect.x;
-                            //     int dy = current_collider->entity->collider->rect.y - (current->entity->transform->rect.h + current->entity->collider->rect.h) - current->entity->transform->rect.y;
-
-                            //     // move the entity in the direction with the smaller distance, unless already overlapping
-                            //     if (abs(dx) < abs(dy) && dx != 0) {
-                            //         current->entity->transform->rect.x += dx + current->entity->collider->rect.w;
-                            //     } else if (abs(dy) < abs(dx) && dy != 0) {
-                            //         current->entity->transform->rect.y += dy;
-                            //     }
-
-                            // // END DUMB CHATGPT COLLISION HACK
-
-                        }
-                    } // TODO: do we want to cancel rotational velocity here too?
-                    else{
-                        current->entity->transform->x += dx;
-                        current->entity->transform->y += dy;
-
-                        // TODO: FIXME THIS IS A TEMPORARY HACK. ALL COMPS SHOULD HAVE A POSITION THAT IS OPTIONAL AND IF NOT IS RELATIVE TO PARENT
-                        // move the entities collider forwards too, add the difference in x increase and y increase to the colliders rect
-                        // current->entity->collider->rect.x += dx;
-                        // current->entity->collider->rect.y += dy; // TODO: REMOVEME. leaving here now for context
-                    }
-                } 
-                else { // if there is no static collider on this entity, nothing else is able to stop it, so we can just move it to its new pos
-                    current->entity->transform->x += dx;
-                    current->entity->transform->y += dy;
                 }
+                /*
+                    even if we havent changed our new position at all from the old, this line is still true.
+                    We are changing whatever position this entity needs to be based on whatever substep max it hit or change it needs to be.
+                */
+                current->entity->transform->x = new_position.x;
+                current->entity->transform->y = new_position.y;
             }
             // if we have rotational velocity apply it (if we have a renderer)
             if(current->entity->physics->rotational_velocity != 0 && current->entity->renderer != NULL){
@@ -161,4 +170,5 @@ void ye_system_physics(){
         }
         current = current->next;
     }
+    // printf("Physics system took %lu ms\n", SDL_GetTicks64() - start);
 }

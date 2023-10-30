@@ -22,6 +22,13 @@
 #include <yoyoengine/yoyoengine.h>
 
 /*
+    Set a default of 10 substeps if the developer does not override it
+*/
+#ifndef YE_PHYSICS_SUBSTEPS
+    #define YE_PHYSICS_SUBSTEPS 10
+#endif
+
+/*
     Physics component
     
     Holds information on how an entity moves.

@@ -390,3 +390,15 @@ TODO: actual duplicate button in editor
 need more robust way to know when errors happen in editor for things that might be hard or a lot of work to visually show- ie: scene file already exists but trying to create a new one of the same name
 
 need some generic dialog popups as global state. functions can call like "input submitted" and get the result of the popup dialog if they were waiting for it, something like save or discard when loading a new scene
+
+## tilemaps
+
+having good first class tilemap support would be huge
+
+## debug frame stepping
+
+allow a crazy low timestep debug view type thing so we only advance frames when told, even though we keep rendering them we dont paint anything new or refresh, just keep presenting the same buffer
+
+will be super useful for physics
+
+all #defines we should add a #ifndef before defining them so they can technically be set by user if they want to
