@@ -402,3 +402,9 @@ allow a crazy low timestep debug view type thing so we only advance frames when 
 will be super useful for physics
 
 all #defines we should add a #ifndef before defining them so they can technically be set by user if they want to
+
+## TODO
+
+animation tick fix, record both side by side to illustrate how they are synced
+
+CCD substepping should be calculated based on the framecap

@@ -250,9 +250,16 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     if(!animation->paused){
                         int now = SDL_GetTicks();
                         if(now - animation->last_updated >= animation->frame_delay){
-                            animation->current_frame_index++;
+                            // the difference between now and last updated
+                            int diff = (now - animation->last_updated);// / (animation->frame_delay); 
+
+                            // the number of frames we need to advance
+                            int frames_to_advance = diff / animation->frame_delay;
+
+                            // advance the frame index and wrap around as needed
+                            animation->current_frame_index += frames_to_advance;
                             if(animation->current_frame_index >= animation->frame_count){
-                                animation->current_frame_index = 0;
+                                animation->current_frame_index = animation->current_frame_index % animation->frame_count;
                                 if(animation->loops != -1){
                                     animation->loops--;
                                     if(animation->loops == 0){
