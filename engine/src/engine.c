@@ -156,7 +156,7 @@ void ye_process_frame(){
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
 
     // render frame
-    renderAll();
+    ye_render_all();
 
     YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
 }

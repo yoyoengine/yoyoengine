@@ -40,7 +40,7 @@ SDL_Texture *createTextTextureWithOutline();
 
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor);
 
-void renderAll();
+void ye_render_all();
 
 void setViewport(int screenWidth, int screenHeight);
 

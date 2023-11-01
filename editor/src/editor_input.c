@@ -24,6 +24,8 @@
     Getting this equation right was exponentially more difficult than you could possibly imagine
 */
 void editor_update_mouse_world_pos(int x, int y){
+    y = y - 35; // account for the menu bar
+
     float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
     float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
     struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
@@ -36,7 +38,7 @@ void editor_update_mouse_world_pos(int x, int y){
 */
 bool is_hovering_editor(int x, int y){
     return (x > 0 && x < screenWidth / 1.5 &&
-            y > 0 && y < screenHeight / 1.5);
+            y > 35 && y < 35 + screenHeight / 1.5);
 }
 
 float camera_zoom = 1.0;

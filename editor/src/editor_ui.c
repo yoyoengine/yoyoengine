@@ -17,6 +17,7 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
 #include "editor_ui.h"
@@ -328,7 +329,7 @@ void ye_editor_paint_entity(struct nk_context *ctx){
     Paint some info on the current scene
 */
 void ye_editor_paint_info_overlay(struct nk_context *ctx){
-    if (nk_begin(ctx, "Info", nk_rect(0, 0, 200, 200),
+    if (nk_begin(ctx, "Info", nk_rect(0, 40, 200, 200),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Mouse World Pos:", NK_TEXT_LEFT);
@@ -352,7 +353,7 @@ void ye_editor_paint_info_overlay(struct nk_context *ctx){
 */
 bool show_info_overlay = false;
 void ye_editor_paint_options(struct nk_context *ctx){
-    if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, screenHeight/1.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/1.5),
+    if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, 40 + screenHeight/1.5, screenWidth - screenWidth/1.5, (screenHeight - screenHeight/1.5) - 40),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             
@@ -382,6 +383,195 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_label(ctx, "Extra:", NK_TEXT_LEFT);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_checkbox_label(ctx, "Stretch Viewport", (nk_bool*)&YE_STATE.engine.stretch_viewport);
+        nk_end(ctx);
+    }
+}
+
+/*
+    Editor top menu bar
+*/
+bool new_scene_popup_open = false;
+char new_scene_name[256];
+void ye_editor_paint_menu(struct nk_context *ctx){
+    if (nk_begin(ctx, "Menu", nk_rect(0, 0, screenWidth / 1.5, 35), 0)) {
+        
+        /*
+            Popup for getting information to create new scenes
+        */
+        if(new_scene_popup_open){
+            struct nk_rect s = { 0, 0, 400, 300 };
+            if (nk_popup_begin(ctx, NK_POPUP_STATIC, "About", NK_WINDOW_MOVABLE, s)) {
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label(ctx, "Scene Name", NK_TEXT_CENTERED);
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, new_scene_name, 256, nk_filter_default);
+                nk_layout_row_dynamic(ctx, 25, 2);
+                if(nk_button_label(ctx, "Abort")){
+                    new_scene_popup_open = false;
+                }
+                if(nk_button_label(ctx, "Create")){
+                    
+                    /*
+                        Build the new scene file and write it to disk
+                    */
+
+                    json_t *new_scene = json_object();
+                    json_object_set_new(new_scene, "name", json_string(new_scene_name));
+                    json_object_set_new(new_scene, "version", json_integer(0)); // TODO: this should be a macro
+                    json_object_set_new(new_scene, "styles", json_array());
+                    json_object_set_new(new_scene, "prefabs", json_array());
+
+                    json_t *scene = json_object();
+                    json_object_set_new(scene, "default camera", json_string("camera"));
+                    json_object_set_new(scene, "entities", json_array());
+                    json_object_set_new(new_scene, "scene", scene);
+
+                    // In entities, let's make the "camera" default camera
+                    json_t *camera = json_object();
+                    json_object_set_new(camera, "name", json_string("camera"));
+                    json_object_set_new(camera, "active", json_true());
+
+                    json_t *components = json_object();
+                    json_object_set_new(components, "transform", json_object());
+                    json_object_set_new(components, "camera", json_object());
+
+                    json_object_set_new(json_object_get(components, "transform"), "x", json_integer(0));
+                    json_object_set_new(json_object_get(components, "transform"), "y", json_integer(0));
+
+                    json_object_set_new(json_object_get(components, "camera"), "active", json_true());
+                    json_object_set_new(json_object_get(components, "camera"), "z", json_integer(999));
+
+                    json_t *view_field = json_object();
+                    json_object_set_new(view_field, "w", json_integer(1920));
+                    json_object_set_new(view_field, "h", json_integer(1080));
+                    json_object_set_new(json_object_get(components, "camera"), "view field", view_field);
+
+                    json_object_set_new(camera, "components", components);
+                    json_array_append_new(json_object_get(scene, "entities"), camera);
+
+                    // get the path of our new scene, it will be scenes/NAME.yoyo
+                    char new_scene_path[256 + 12];
+                    snprintf(new_scene_path, sizeof(new_scene_path), "scenes/%s.yoyo", new_scene_name);
+
+                    // check if this scene already exists
+                    if(access(ye_get_resource_static(new_scene_path), F_OK) != -1){
+                        // file exists
+                        ye_logf(error, "Scene already exists.\n");
+                    }
+                    else{
+                        ye_json_write(ye_get_resource_static(new_scene_path), new_scene);
+                        new_scene_popup_open = false;
+                        ye_load_scene(ye_get_resource_static(new_scene_path));
+                    }
+                    
+                    // cleanup
+                    json_decref(new_scene); // TODO: check for memroy leak, need to free camera?
+                }
+                nk_popup_end(ctx);
+            }
+        }
+        
+        nk_menubar_begin(ctx);
+        nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
+        nk_layout_row_push(ctx, 45);
+        if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 200))) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {    
+                // get the path to this scene file TODO: THIS NEEDS TO BE BASED ON THE SCENE FILE PATH IN SCENE.c EVENTUALLY!!!! RIGHT NOW THIS ASSUMES THE NAME IS THE SAME AS THE PATH
+                char scene_path[256 + 12];
+                snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
+
+                // load the scene file into a json_t
+                json_t *scene = ye_json_read(ye_get_resource_static(scene_path));
+
+                // create a json_t array listing all entities in the scene
+                json_t *entities = json_array();
+                for(int i = 0; i < YE_STATE.runtime.entity_count; i++){
+                    json_array_append_new(entities, json_string("meow!"));
+                }
+
+                // update the scene file with the new entity list
+                json_object_set_new(json_object_get(scene, "scene"), "entities", entities);
+
+                ye_json_log(scene); //TODO: figure out how we update the name version styles and prefabs
+
+                // write the scene file
+                // ye_json_write(ye_get_resource_static(scene_path), YE_STATE.runtime.scene);                      
+            }
+            nk_menu_end(ctx);
+
+            /*
+                TODO:
+                build, build and run, build and debug, build and run and debug
+            */
+        }
+        nk_layout_row_push(ctx, 55);
+        if (nk_menu_begin_label(ctx, "Scene", NK_TEXT_LEFT, nk_vec2(200, 200))) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            
+            if (nk_menu_item_label(ctx, "Open Scene", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+                printf("Open\n"); // TODO
+            }
+
+            if (nk_menu_item_label(ctx, "New Scene", NK_TEXT_LEFT)) {
+                    new_scene_popup_open = !new_scene_popup_open;
+                    // reset fields
+                    strcpy(new_scene_name, "");
+            }
+            
+            if (nk_menu_item_label(ctx, "Delete Current Scene", NK_TEXT_LEFT)) {
+                
+                // TODO: are you sure? dialog
+                
+                // delete the scene file
+                char scene_path[256 + 12];
+                snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
+
+                if(remove(ye_get_resource_static(scene_path)) == 0){
+                    ye_logf(info, "Deleted scene %s\n", YE_STATE.runtime.scene_name);
+                }
+                else{
+                    ye_logf(error, "Failed to delete scene %s\n", YE_STATE.runtime.scene_name);
+                }
+            }
+            nk_menu_end(ctx);
+        }
+        nk_layout_row_push(ctx, 85);
+        if (nk_menu_begin_label(ctx, "Settings", NK_TEXT_LEFT, nk_vec2(120, 200))) {
+            
+            /*
+                TODO:
+
+                edit project settings
+                editor preferences (color theme, windows, etc)
+            */
+
+            nk_menu_end(ctx);
+        }
+        nk_layout_row_push(ctx, 45);
+        if (nk_menu_begin_label(ctx, "Help", NK_TEXT_LEFT, nk_vec2(200, 200))) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if (nk_menu_item_label(ctx, "Shortcuts", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+                printf("Open\n"); // TODO
+            }
+            if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+                #ifdef _WIN32
+                    system("start https://github.com/yoyolick/yoyoengine") 
+                #else
+                    system("xdg-open https://github.com/yoyolick/yoyoengine");
+                #endif
+            }
+            nk_menu_end(ctx);
+        }
+        nk_layout_row_push(ctx, 45);
+        if (nk_menu_begin_label(ctx, "Quit", NK_TEXT_LEFT, nk_vec2(200, 200))) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if (nk_menu_item_label(ctx, "Exit (without saving)", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+                quit = true;
+            }
+            nk_menu_end(ctx);
+        }
+        nk_menubar_end(ctx);
         nk_end(ctx);
     }
 }

@@ -30,7 +30,6 @@
 SDL_Window *pWindow = NULL;
 SDL_Surface *pScreenSurface = NULL;
 SDL_Renderer *pRenderer = NULL;
-SDL_Texture* screen_buffer = NULL;
 
 /*
     Texture used for missing textures
@@ -164,12 +163,19 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
     return pTexture;
 }
 
-// render everything in the scene
+// variables for render all :3
 int frame_counter = 0;
 int desired_frame_time = 0;
 int fpsUpdateTime = 0;
 int fps = 0;
-void renderAll() {
+
+/*
+    Responsible for rendering all graphical parts of the frame to the screen.
+    Will call the ECS renderer system as well as the UI renderer.
+
+    TODO: Viewports are a blessing and should actually be used for dynamic screen sizing.
+*/
+void ye_render_all() {
     int frameStart = SDL_GetTicks();
 
     // TODO: potential optimization here, only count fps if we need to.
@@ -187,65 +193,48 @@ void renderAll() {
         }
     }
 
-    // Set the render target to the screen
-    SDL_SetRenderTarget(pRenderer, NULL);
-    
-    // Set background color to black
+    /*
+        Clear the screen
+    */
+    // SDL_SetRenderTarget(pRenderer, NULL); Disabled, redundant since we dont change targets anymore
     SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-
-    // Clear the window with the set background color
     SDL_RenderClear(pRenderer);
 
+    /*
+        If we are in editor mode paint to a viewport
+    */
+    if(YE_STATE.editor.editor_mode){
+        SDL_Rect viewport;
+        viewport.x = 0;
+        viewport.y = 35;
+        viewport.w = YE_STATE.engine.screen_width / 1.5;
+        viewport.h = 35 + YE_STATE.engine.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
+        SDL_RenderSetViewport(pRenderer, &viewport);
+    }
+
+    /*
+        If we are not keeping the viewport aspect ratio,we can calculate
+        our scale to scale the results as if we were zooming in or out
+    */
     if(!YE_STATE.engine.stretch_viewport){
         float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
         float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
         SDL_RenderSetScale(pRenderer, scaleX, scaleY);
     }
 
+    ye_system_renderer(pRenderer);
+
     /*
-        Do anything special in editor mode
+        Reset the viewport and scale to render the ui on top.
+
+        TODO: profile the performance of doing this even if these havent changed
     */
-    if(YE_STATE.editor.editor_mode){
-        // render all entities
-        ye_system_renderer(pRenderer);
+    SDL_RenderSetViewport(pRenderer, NULL);
+    SDL_RenderSetScale(pRenderer, 1.0f, 1.0f);
 
-        // seems like we arent going to be able to paint the SDL_Texture into nuklear viewport (wihtout significant modification)
-        // so for now, lets just paint it to the upper 25% of the screen
-        SDL_Rect viewport;
-        viewport.x = 0;
-        viewport.y = 0;
-        viewport.w = YE_STATE.engine.screen_width / 1.5;
-        viewport.h = YE_STATE.engine.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
-        SDL_RenderCopy(pRenderer, screen_buffer, NULL, &viewport);
-    }
-    else{
-        // Set the render target to the screen buffer
-        SDL_SetRenderTarget(pRenderer, screen_buffer);
+    ui_render();
 
-        // Set background color to black
-        SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
-
-        // Clear the window with the set background color
-        SDL_RenderClear(pRenderer);
-
-        // render all entities
-        ye_system_renderer(pRenderer);
-
-        // Reset the render target to the default
-        SDL_SetRenderTarget(pRenderer, NULL);
-
-        // render the screen buffer to the screen
-        SDL_RenderCopy(pRenderer, screen_buffer, NULL, NULL);
-    }
-    SDL_RenderSetScale(pRenderer, 1.0f, 1.0f); // TODO profile performance of this, can look at source
-
-    // update ui (TODO: profile if this is an expensive op)
-    ui_render(); 
-
-    // present our new changes to the renderer
     SDL_RenderPresent(pRenderer);
-
-    // update the window to reflect the new renderer changes
     SDL_UpdateWindowSurface(pWindow);
 
     // set the end of the render frame

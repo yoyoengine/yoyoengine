@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
     ui_register_component("entity", ye_editor_paint_entity);
     ui_register_component("options", ye_editor_paint_options);
     ui_register_component("project", ye_editor_paint_project);
+    ui_register_component("editor_menu_bar", ye_editor_paint_menu);
 
     origin = ye_create_entity_named("origin");
     ye_add_transform_component(origin, -50, -50);

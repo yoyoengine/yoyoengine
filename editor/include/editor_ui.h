@@ -34,4 +34,6 @@ void ye_editor_paint_entity(struct nk_context *ctx);
 */
 void ye_editor_paint_options(struct nk_context *ctx);
 
+void ye_editor_paint_menu(struct nk_context *ctx);
+
 #endif // YE_EDITOR_UI
