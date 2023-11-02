@@ -2,7 +2,7 @@
     Yoinked from:
     https://github.com/vurtun/nuklear/blob/master/demo/style.c
 */
-enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK};
+enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK, THEME_AMOLED};
 
 static void
 set_style(struct nk_context *ctx, enum theme theme)
@@ -128,7 +128,47 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE] = nk_rgba(58, 93, 121, 255);
         table[NK_COLOR_TAB_HEADER] = nk_rgba(48, 83, 111, 255);
         nk_style_from_table(ctx, table);
-    } else {
+    } else if (theme == THEME_AMOLED) {
+        
+        /*
+            AMOLED Theme by Ryan Zmuda 2023
+            :3
+        */
+        
+        #define amoled_white nk_rgba(255, 255, 255, 255)
+        #define amoled_black nk_rgba(0, 0, 0, 255)
+
+        table[NK_COLOR_TEXT]=                       amoled_white;
+        table[NK_COLOR_WINDOW]=                     amoled_black;
+        table[NK_COLOR_HEADER]=                     nk_rgba(20, 20, 20, 255);
+        table[NK_COLOR_BORDER]=                     nk_rgba(40, 40, 40, 255);
+        table[NK_COLOR_BUTTON]=                     amoled_black;
+        table[NK_COLOR_BUTTON_HOVER]=               amoled_black;
+        table[NK_COLOR_BUTTON_ACTIVE]=              amoled_black;
+        table[NK_COLOR_TOGGLE]=                     nk_rgba(40, 40, 40, 255);
+        table[NK_COLOR_TOGGLE_HOVER]=               nk_rgba(80, 80, 80, 255);
+        table[NK_COLOR_TOGGLE_CURSOR]=              amoled_white;//nk_rgba(220, 220, 220, 255);
+        table[NK_COLOR_SELECT]=                     amoled_black;
+        table[NK_COLOR_SELECT_ACTIVE]=              amoled_white;
+        table[NK_COLOR_SLIDER]=                     nk_rgba(80, 80, 80, 255);
+        table[NK_COLOR_SLIDER_CURSOR]=              amoled_white;
+        table[NK_COLOR_SLIDER_CURSOR_HOVER]=        amoled_white;
+        table[NK_COLOR_SLIDER_CURSOR_ACTIVE]=       amoled_white;
+        table[NK_COLOR_PROPERTY]=                   amoled_black;
+        table[NK_COLOR_EDIT]=                       amoled_black;
+        table[NK_COLOR_EDIT_CURSOR]=                amoled_black;
+        table[NK_COLOR_COMBO]=                      amoled_black;
+        table[NK_COLOR_CHART]=                      amoled_black;
+        table[NK_COLOR_CHART_COLOR]=                amoled_black;
+        table[NK_COLOR_CHART_COLOR_HIGHLIGHT]=      amoled_black;
+        table[NK_COLOR_SCROLLBAR]=                  amoled_black;
+        table[NK_COLOR_SCROLLBAR_CURSOR]=           amoled_white;
+        table[NK_COLOR_SCROLLBAR_CURSOR_HOVER]=     amoled_white;
+        table[NK_COLOR_SCROLLBAR_CURSOR_ACTIVE]=    amoled_white;
+        table[NK_COLOR_TAB_HEADER]=                 amoled_black;
+        nk_style_from_table(ctx, table);
+    }
+    else {
         nk_style_default(ctx);
     }
 }

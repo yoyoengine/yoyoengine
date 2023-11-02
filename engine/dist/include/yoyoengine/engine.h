@@ -125,6 +125,9 @@ struct ye_engine_config {
     */
     SDL_Color *pEngineFontColor;
     TTF_Font *pEngineFont;
+
+    // the nuklear context
+    struct nk_context *ctx;
 };
 
 struct ye_editor_config {

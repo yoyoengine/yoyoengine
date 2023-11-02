@@ -388,9 +388,70 @@ void ye_editor_paint_options(struct nk_context *ctx){
 }
 
 /*
+    Editor settings window
+*/
+int editor_ui_color_selection = 0; // TODO: this should default have selected what we loaded from json
+void ye_editor_paint_editor_settings(struct nk_context *ctx){
+    if (nk_begin(ctx, "Editor Settings", nk_rect(screenWidth/2 - 250, screenHeight/2 - 100, 500,200),
+        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE)) {
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label(ctx, "Yoyo Editor Settings", NK_TEXT_CENTERED);
+        nk_label(ctx, "", NK_TEXT_CENTERED);
+        nk_layout_row_dynamic(ctx, 25, 2);
+        nk_label(ctx, "UI Color Theme:", NK_TEXT_CENTERED);
+
+        // combo box with color theme choices
+        static const char *color_schemes[] = {"black", "dark", "blue", "red", "white", "amoled"};
+        nk_combobox(ctx, color_schemes, NK_LEN(color_schemes), &editor_ui_color_selection, 25, nk_vec2(200,200));
+
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label(ctx, "", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 25, 2);
+        if(nk_button_label(ctx, "Cancel")){
+            remove_ui_component("editor_settings");
+            lock_viewport_interaction = !lock_viewport_interaction;
+        }
+        if(nk_button_label(ctx, "Apply")){
+
+            /*
+                Load the editor settings file, and change "preferences":"theme" to the name of the scheme
+            */
+            json_t *settings = ye_json_read(editor_settings_path);
+            json_object_set_new(json_object_get(settings, "preferences"), "theme", json_string(color_schemes[editor_ui_color_selection]));
+            ye_json_write(editor_settings_path, settings);
+            json_decref(settings);
+
+            if(strcmp(color_schemes[editor_ui_color_selection], "dark") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_DARK);
+            else if(strcmp(color_schemes[editor_ui_color_selection], "red") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_RED);
+            else if(strcmp(color_schemes[editor_ui_color_selection], "black") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_BLACK);
+            else if(strcmp(color_schemes[editor_ui_color_selection], "white") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_WHITE);
+            else if(strcmp(color_schemes[editor_ui_color_selection], "blue") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_BLUE);
+            else if(strcmp(color_schemes[editor_ui_color_selection], "amoled") == 0)
+                set_style(YE_STATE.engine.ctx, THEME_AMOLED);
+            remove_ui_component("editor_settings");
+            lock_viewport_interaction = !lock_viewport_interaction;
+        }
+        nk_end(ctx);
+    }
+}
+
+/*
     Editor top menu bar
+
+    This function is actually so yucky and should be greatly refactored but tbh this editor code
+    should never be seen by another living human being so im ok with living with it.
+
+    TODO: locking viewport should be handled better. It would be nice if when any submenu item is 
+    dropped down clicking on it does not select an entity (since its over the viewport)
 */
 bool new_scene_popup_open = false;
+bool scene_deletion_popup_open = false;
 char new_scene_name[256];
 void ye_editor_paint_menu(struct nk_context *ctx){
     if (nk_begin(ctx, "Menu", nk_rect(0, 0, screenWidth / 1.5, 35), 0)) {
@@ -408,6 +469,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 nk_layout_row_dynamic(ctx, 25, 2);
                 if(nk_button_label(ctx, "Abort")){
                     new_scene_popup_open = false;
+                    lock_viewport_interaction = !lock_viewport_interaction;
                 }
                 if(nk_button_label(ctx, "Create")){
                     
@@ -466,11 +528,47 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     
                     // cleanup
                     json_decref(new_scene); // TODO: check for memroy leak, need to free camera?
+                    lock_viewport_interaction = !lock_viewport_interaction;
                 }
                 nk_popup_end(ctx);
             }
         }
         
+        /*
+            Popup for confirming scene deletion
+        */
+        if(scene_deletion_popup_open){
+            struct nk_rect s = { 0, 0, 450, 150 };
+            if (nk_popup_begin(ctx, NK_POPUP_STATIC, "About", NK_WINDOW_MOVABLE, s)) {
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label(ctx, "Are you sure you want to delete this scene?", NK_TEXT_CENTERED);
+                nk_label(ctx, "This action is irreversible.", NK_TEXT_CENTERED);
+                nk_label(ctx, "", NK_TEXT_CENTERED);
+                nk_layout_row_dynamic(ctx, 25, 2);
+                if(nk_button_label(ctx, "No")){
+                    scene_deletion_popup_open = false;
+                    lock_viewport_interaction = !lock_viewport_interaction;
+                }
+                if(nk_button_label(ctx, "Yes")){
+
+                    // delete the scene file
+                    char scene_path[256 + 12];
+                    snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
+
+                    if(remove(ye_get_resource_static(scene_path)) == 0){
+                        ye_logf(info, "Deleted scene %s\n", YE_STATE.runtime.scene_name);
+                    }
+                    else{
+                        ye_logf(error, "Failed to delete scene %s\n", YE_STATE.runtime.scene_name);
+                    }
+
+                    scene_deletion_popup_open = false;
+                    lock_viewport_interaction = !lock_viewport_interaction;
+                }
+                nk_popup_end(ctx);
+            }
+        }
+
         nk_menubar_begin(ctx);
         nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
         nk_layout_row_push(ctx, 45);
@@ -515,24 +613,14 @@ void ye_editor_paint_menu(struct nk_context *ctx){
 
             if (nk_menu_item_label(ctx, "New Scene", NK_TEXT_LEFT)) {
                     new_scene_popup_open = !new_scene_popup_open;
+                    lock_viewport_interaction = !lock_viewport_interaction;
                     // reset fields
                     strcpy(new_scene_name, "");
             }
             
             if (nk_menu_item_label(ctx, "Delete Current Scene", NK_TEXT_LEFT)) {
-                
-                // TODO: are you sure? dialog
-                
-                // delete the scene file
-                char scene_path[256 + 12];
-                snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
-
-                if(remove(ye_get_resource_static(scene_path)) == 0){
-                    ye_logf(info, "Deleted scene %s\n", YE_STATE.runtime.scene_name);
-                }
-                else{
-                    ye_logf(error, "Failed to delete scene %s\n", YE_STATE.runtime.scene_name);
-                }
+                scene_deletion_popup_open = !scene_deletion_popup_open;
+                lock_viewport_interaction = !lock_viewport_interaction;
             }
             nk_menu_end(ctx);
         }
@@ -545,6 +633,16 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 edit project settings
                 editor preferences (color theme, windows, etc)
             */
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if(nk_menu_item_label(ctx, "Editor Settings", NK_TEXT_LEFT)){
+                if(!ui_component_exists("editor_settings")){
+                    ui_register_component("editor_settings", ye_editor_paint_editor_settings);
+                }
+                else{
+                    remove_ui_component("editor_settings");
+                }
+                lock_viewport_interaction = !lock_viewport_interaction;
+            }
 
             nk_menu_end(ctx);
         }

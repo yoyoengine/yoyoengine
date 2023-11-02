@@ -405,6 +405,41 @@ all #defines we should add a #ifndef before defining them so they can technicall
 
 ## TODO
 
-animation tick fix, record both side by side to illustrate how they are synced
-
 CCD substepping should be calculated based on the framecap
+
+## confirmation pop ups
+
+```c
+  SDL_MessageBoxButtonData buttons[] = {
+      { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
+      { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+  };
+
+  SDL_MessageBoxData messagebox;
+  messagebox.flags = SDL_MESSAGEBOX_INFORMATION;
+  messagebox.window = NULL; // Use NULL to create a simple message box
+  messagebox.title = "Confirmation";
+  messagebox.message = "Do you want to continue?";
+  messagebox.numbuttons = SDL_arraysize(buttons);
+  messagebox.buttons = buttons;
+
+  int buttonid;
+  if (SDL_ShowMessageBox(&messagebox, &buttonid) < 0) {
+      SDL_Log("error displaying message box");
+      return;
+  }
+
+  if(buttonid == 0){
+      printf("yes\n");
+  }
+  else {
+      printf("no\n");
+  }
+  exit(0);
+```
+
+## random sectionnumber 1000000
+
+create editor settings with defaults if it doesnt exist
+
+credits popup under help, maybe its called like dependencies or something similar

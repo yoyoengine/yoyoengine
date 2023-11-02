@@ -65,6 +65,9 @@ struct ye_entity staged_entity;
 struct ye_component_transform staged_transform;
 json_t *SETTINGS;
 
+// holds the path to the editor settings file
+char editor_settings_path[1024];
+
 int mouse_world_x = 0;
 int mouse_world_y = 0;
 
@@ -105,6 +108,46 @@ int main(int argc, char **argv) {
 
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
+
+    /*
+        Set the editor settings path
+    */
+    char* basePath = SDL_GetBasePath();
+    snprintf(editor_settings_path, sizeof(editor_settings_path), "%s../../editor.yoyo", basePath);
+    free(basePath);
+
+    /*
+        Open the editor settings and get "preferences":"theme"
+    */
+    json_t *editor_settings = ye_json_read(editor_settings_path);
+    json_t *theme;
+    if (!ye_json_object(editor_settings, "preferences", &theme))
+    {
+        ye_logf(error, "editor settings file is missing preferences object. Please provide a preferences object with a theme string.");
+        return 1;
+    }
+    const char *theme_string;
+    if (!ye_json_string(theme, "theme", &theme_string))
+    {
+        ye_logf(error, "editor settings file is missing theme string. Please provide a preferences object with a theme string.");
+        return 1;
+    }
+    printf("theme: %s\n", theme_string);
+    if(strcmp(theme_string, "dark") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_DARK);
+    else if(strcmp(theme_string, "red") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_RED);
+    else if(strcmp(theme_string, "black") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_BLACK);
+    else if(strcmp(theme_string, "white") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_WHITE);
+    else if(strcmp(theme_string, "blue") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_BLUE);
+    else if(strcmp(theme_string, "amoled") == 0)
+        set_style(YE_STATE.engine.ctx, THEME_AMOLED);
+    // if else do nothing, this will result in default style
+
+    set_style(YE_STATE.engine.ctx, THEME_AMOLED);
 
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
     if (path != NULL)

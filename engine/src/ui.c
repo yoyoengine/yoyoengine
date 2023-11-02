@@ -96,6 +96,16 @@ void remove_ui_component(const char* key) {
     }
 }
 
+bool ui_component_exists(char *key) {
+    for (int i = 0; i < num_ui_components; i++) {
+        UIComponent* component = &ui_components[i];
+        if (strcmp(component->key, key) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 ////////////////////////////////
 
 // void paint_test(struct nk_context *ctx){
@@ -255,13 +265,14 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
     nk_style_set_font(ctx, &font->handle);
 
-    // set_style(ctx, THEME_DARK); TODO: might use a custom theme later on
-
     // ui_register_component("test",paint_test);
     if(YE_STATE.engine.debug_mode){
         ui_register_component("debug_overlay",ui_paint_debug_overlay);
         ui_register_component("cam_info",ui_paint_cam_info);
     }
+
+    YE_STATE.engine.ctx = ctx;
+
     ye_logf(info, "ui initialized\n");
 }
 
