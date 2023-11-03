@@ -137,24 +137,25 @@ set_style(struct nk_context *ctx, enum theme theme)
         
         #define amoled_white nk_rgba(255, 255, 255, 255)
         #define amoled_black nk_rgba(0, 0, 0, 255)
+        #define amoled_hover nk_rgba(40, 40, 40, 255)
 
         table[NK_COLOR_TEXT]=                       amoled_white;
         table[NK_COLOR_WINDOW]=                     amoled_black;
         table[NK_COLOR_HEADER]=                     nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_BORDER]=                     nk_rgba(40, 40, 40, 255);
         table[NK_COLOR_BUTTON]=                     amoled_black;
-        table[NK_COLOR_BUTTON_HOVER]=               amoled_black;
+        table[NK_COLOR_BUTTON_HOVER]=               amoled_hover;
         table[NK_COLOR_BUTTON_ACTIVE]=              amoled_black;
         table[NK_COLOR_TOGGLE]=                     nk_rgba(40, 40, 40, 255);
         table[NK_COLOR_TOGGLE_HOVER]=               nk_rgba(80, 80, 80, 255);
-        table[NK_COLOR_TOGGLE_CURSOR]=              amoled_white;//nk_rgba(220, 220, 220, 255);
-        table[NK_COLOR_SELECT]=                     amoled_black;
+        table[NK_COLOR_TOGGLE_CURSOR]=              amoled_white;//nk_rgba(230, 230, 230, 255);//nk_rgba(220, 220, 220, 255);
+        table[NK_COLOR_SELECT]=                     nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_SELECT_ACTIVE]=              amoled_white;
         table[NK_COLOR_SLIDER]=                     nk_rgba(80, 80, 80, 255);
         table[NK_COLOR_SLIDER_CURSOR]=              amoled_white;
         table[NK_COLOR_SLIDER_CURSOR_HOVER]=        amoled_white;
         table[NK_COLOR_SLIDER_CURSOR_ACTIVE]=       amoled_white;
-        table[NK_COLOR_PROPERTY]=                   amoled_black;
+        table[NK_COLOR_PROPERTY]=                   nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_EDIT]=                       amoled_black;
         table[NK_COLOR_EDIT_CURSOR]=                amoled_black;
         table[NK_COLOR_COMBO]=                      amoled_black;

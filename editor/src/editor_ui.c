@@ -169,11 +169,9 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_checkbox_label(ctx, "Flipped X", (nk_bool*)&ent->renderer->flipped_x);
                         nk_checkbox_label(ctx, "Flipped Y", (nk_bool*)&ent->renderer->flipped_y);
 
-                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_layout_row_dynamic(ctx, 25, 2);
                         // nk_label(ctx, "Alignment:", NK_TEXT_LEFT); TODO
                         nk_property_int(ctx, "#z", -1000000, &ent->renderer->z, 1000000, 1, 5);
-
-                        nk_layout_row_dynamic(ctx, 25, 1);
                         nk_property_float(ctx, "#Rotation", -1000000, &ent->renderer->rotation, 1000000, 1, 5);
 
                         if (nk_tree_push(ctx, NK_TREE_TAB, "Alignment", NK_MAXIMIZED))
@@ -625,7 +623,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             nk_menu_end(ctx);
         }
         nk_layout_row_push(ctx, 85);
-        if (nk_menu_begin_label(ctx, "Settings", NK_TEXT_LEFT, nk_vec2(120, 200))) {
+        if (nk_menu_begin_label(ctx, "Settings", NK_TEXT_LEFT, nk_vec2(160, 200))) {
             
             /*
                 TODO:

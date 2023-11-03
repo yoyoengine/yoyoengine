@@ -443,3 +443,5 @@ CCD substepping should be calculated based on the framecap
 create editor settings with defaults if it doesnt exist
 
 credits popup under help, maybe its called like dependencies or something similar
+
+editor flipping boolean for lock is not good, if we open two windows at once we get reversed behavior
