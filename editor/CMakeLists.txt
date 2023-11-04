@@ -1,5 +1,5 @@
 # Set the minimum CMake version required
-cmake_minimum_required(VERSION 3.27.2)
+cmake_minimum_required(VERSION 3.22.1)
 
 # Define the project name
 project(YoyoEditor)

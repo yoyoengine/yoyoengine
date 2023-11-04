@@ -185,7 +185,9 @@ scrollable_frame.place(relx=.5, rely=0.53, anchor=customtkinter.CENTER)
 
 # Create a button for each project in launcher.json
 for project in launcher_json["projects"]:
-    project_button = customtkinter.CTkButton(master=scrollable_frame, text=project["name"], command=lambda project_path=project["path"]: open_editor(project_path), fg_color="gray", bg_color="gray")
+    full_path = os.path.join(project["path"], project["name"])
+    print(full_path)
+    project_button = customtkinter.CTkButton(master=scrollable_frame, text=project["name"], command=lambda project_path=project["path"]: open_editor(full_path), fg_color="gray", bg_color="gray")
     project_button.pack(fill="x", padx=10, pady=10)
 
 # Create label for version
