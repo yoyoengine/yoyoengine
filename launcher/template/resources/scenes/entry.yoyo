@@ -12,16 +12,8 @@
                 "components":{
                     "transform":{
                         "active":true,
-                        "bounds":{
-                            "x":0,
-                            "y":0,
-                            "w":1920,
-                            "h":1080
-                        },
-                        "angle":0,
-                        "alignment":0,
-                        "center":{"x":0,"y":0},
-                        "z":999
+                        "x":0,
+                        "y":0
                     },
                     "camera":{
                         "active":true,

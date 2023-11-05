@@ -169,12 +169,6 @@ int main(int argc, char **argv) {
     ye_add_camera_component(editor_camera, 999, (SDL_Rect){0, 0, 2560, 1440});
     ye_set_camera(editor_camera);
 
-    // create a silly little snerfbot at our mouse world pos
-    snerfbot = ye_create_entity_named("snerfbot");
-    ye_add_transform_component(snerfbot, 0, 0);
-    ye_temp_add_image_renderer_component(snerfbot, 998, ye_get_resource_static("images/snerfbot.jpg"));
-    snerfbot->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
-
     // register all editor ui components
     ui_register_component("heiarchy", ye_editor_paint_hiearchy);
     ui_register_component("entity", ye_editor_paint_entity);
@@ -213,8 +207,6 @@ int main(int argc, char **argv) {
     entity_list_head = ye_get_entity_list_head();
 
     while(!quit) {
-        snerfbot->transform->x = mouse_world_x;
-        snerfbot->transform->y = mouse_world_y;
         ye_process_frame();
     }
 
