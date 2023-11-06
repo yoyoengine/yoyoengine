@@ -52,4 +52,14 @@ bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
 void editor_reload_settings();
 
+/*
+    Locks the editor viewport from interaction
+*/
+void lock_viewport();
+
+/*
+    Unlocks the editor viewport for interaction
+*/
+void unlock_viewport();
+
 #endif // YE_EDITOR

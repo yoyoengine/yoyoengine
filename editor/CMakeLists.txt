@@ -9,6 +9,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g")
 
 # Define the source files for your project (located in src directory)
 file(GLOB SOURCES "src/*.c")
+# add the source files from src/panels/*.c
+file(GLOB PANELS "src/panels/*.c")
 
 # Define the location of the engine build directory
 set(ENGINE_BUILD_DIR "/home/ryan/repos/yoyoengine/engine/build/linux")
@@ -26,7 +28,7 @@ if(UNIX)
     set(EDITOR_BUILD_DIR "${CMAKE_BINARY_DIR}/linux")
 
     # Create the executable
-    add_executable(${EXECUTABLE_NAME} ${SOURCES})
+    add_executable(${EXECUTABLE_NAME} ${SOURCES} ${PANELS})
 
     # Get a list of all .so files in the lib directory
     file(GLOB LIB_FILES ${ENGINE_BUILD_DIR}/lib/*.so)

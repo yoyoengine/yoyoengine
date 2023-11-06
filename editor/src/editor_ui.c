@@ -21,6 +21,7 @@
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
 #include "editor_ui.h"
+#include "editor_panels.h"
 
 const float ratio[] = {0.03f, 0.92f, 0.05};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
@@ -624,13 +625,6 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         }
         nk_layout_row_push(ctx, 85);
         if (nk_menu_begin_label(ctx, "Settings", NK_TEXT_LEFT, nk_vec2(160, 200))) {
-            
-            /*
-                TODO:
-
-                edit project settings
-                editor preferences (color theme, windows, etc)
-            */
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_menu_item_label(ctx, "Editor Settings", NK_TEXT_LEFT)){
                 if(!ui_component_exists("editor_settings")){
@@ -648,7 +642,13 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         if (nk_menu_begin_label(ctx, "Help", NK_TEXT_LEFT, nk_vec2(200, 200))) {
             nk_layout_row_dynamic(ctx, 25, 1);
             if (nk_menu_item_label(ctx, "Shortcuts", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
-                printf("Open\n"); // TODO
+                if(!ui_component_exists("editor keybinds")){
+                    ui_register_component("editor keybinds", editor_panel_keybinds);
+                    lock_viewport();
+                } else {
+                    remove_ui_component("editor keybinds");
+                    unlock_viewport();
+                }
             }
             if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
                 #ifdef _WIN32

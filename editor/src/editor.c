@@ -219,3 +219,17 @@ int main(int argc, char **argv) {
     // exit
     return 0;
 }
+
+/*
+    Locks the editor viewport from interaction
+*/
+void lock_viewport(){
+    lock_viewport_interaction = true;
+}
+
+/*
+    Unlocks the editor viewport for interaction
+*/
+void unlock_viewport(){
+    lock_viewport_interaction = false;
+}
