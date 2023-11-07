@@ -37,6 +37,9 @@ void editor_panel_keybinds(struct nk_context *ctx){
         nk_label(ctx, "Left Click - Select Object", NK_TEXT_LEFT);
 
         nk_layout_row_dynamic(ctx, 20, 1);
+        nk_label(ctx, "Back Quote (`) - Open Console", NK_TEXT_LEFT);
+
+        nk_layout_row_dynamic(ctx, 20, 1);
         nk_label(ctx, "CTRL + S - Save current scene", NK_TEXT_LEFT);
 
         nk_layout_row_dynamic(ctx, 20, 1);

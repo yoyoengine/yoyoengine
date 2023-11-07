@@ -30,15 +30,14 @@ import json
 # set some variables
 script_version = "1.0.0"
 
-# Get the current directory
-current_dir = os.getcwd()
-
 print("----------------------------------")
 print("Yoyo Engine Build Script v" + script_version)
 print("Ryan Zmuda 2023")
 print("----------------------------------")
 
-print("Working directory:\n" + current_dir)
+script_directory = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_directory)
+current_dir = os.getcwd()
 
 # open settings.yoyo (json) and build.yoyo (json) and extract their contents so we can read them
 settings_file = open("settings.yoyo", "r")
@@ -86,7 +85,7 @@ toolchain_file.close()
 cmake_file = open("./build/CMakeLists.txt", "w")
 
 # write to that file the CMakeLists.txt template
-cmake_file.write("cmake_minimum_required(VERSION 3.27.2)\n")
+cmake_file.write("cmake_minimum_required(VERSION 3.22.1)\n")
 
 cmake_file.write("project(" + game_name + ")\n")
 

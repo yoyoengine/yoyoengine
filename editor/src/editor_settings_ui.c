@@ -273,25 +273,10 @@ void ye_editor_paint_project(struct nk_context *ctx){
             nk_label_colored(ctx, "Build Options:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
             nk_layout_row_dynamic(ctx, 25, 2);
             if(nk_button_label(ctx, "Build")){
-                // build the game. call resource_static/../build.py
-                if (chdir(ye_get_resource_static("..")) != 0) {
-                    perror("chdir failed");
-                    exit(1);
-                }
-                char command[256];
-                snprintf(command, sizeof(command), "python3 \"%s\"", ye_get_resource_static("../build.py"));
-                system(command);
+                editor_build();
             }
             if(nk_button_label(ctx, "Build and Run")){
-                // build the game. call resource_static/../build.py
-                if (chdir(ye_get_resource_static("..")) != 0) {
-                    perror("chdir failed");
-                    exit(1);
-                }
-                // run the game
-                char command[256];
-                snprintf(command, sizeof(command), "python3 \"%s\" run", ye_get_resource_static("../build.py"));
-                system(command);
+                editor_build_and_run();
             }
 
             nk_layout_row_dynamic(ctx, 25, 1);

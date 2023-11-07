@@ -380,8 +380,9 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_checkbox_label(ctx, "Draw Lines", (nk_bool*)&YE_STATE.editor.editor_display_viewport_lines);
 
             nk_label(ctx, "Extra:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 2);
             nk_checkbox_label(ctx, "Stretch Viewport", (nk_bool*)&YE_STATE.engine.stretch_viewport);
+            nk_checkbox_label(ctx, "Lock Viewport", (nk_bool*)&lock_viewport_interaction);
         nk_end(ctx);
     }
 }

@@ -176,6 +176,17 @@ void editor_input_shortcuts(SDL_Event event){
                 printf("TODO: IMPLEMENT SAVING SCENE. -> Ctrl+S pressed\n");
             }
             break;
+        case SDLK_r:
+            // CTRL + R ->= build and run the project
+            if (event.key.keysym.mod & KMOD_CTRL)
+            {
+                editor_build_and_run();
+            }
+            break;
+        case SDLK_BACKQUOTE:
+            // if we opened or closed the console, lock accordingly
+            lock_viewport_interaction = ui_component_exists("console");
+            break;
         default:
             break;
         }
