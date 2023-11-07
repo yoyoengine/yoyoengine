@@ -22,6 +22,7 @@
 #include "editor.h"
 #include "editor_ui.h"
 #include "editor_panels.h"
+#include <Nuklear/style.h>
 
 const float ratio[] = {0.03f, 0.92f, 0.05};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
@@ -642,7 +643,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         nk_layout_row_push(ctx, 45);
         if (nk_menu_begin_label(ctx, "Help", NK_TEXT_LEFT, nk_vec2(200, 200))) {
             nk_layout_row_dynamic(ctx, 25, 1);
-            if (nk_menu_item_label(ctx, "Shortcuts", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+            if (nk_menu_item_label(ctx, "Shortcuts", NK_TEXT_LEFT)) {
                 if(!ui_component_exists("editor keybinds")){
                     ui_register_component("editor keybinds", editor_panel_keybinds);
                     lock_viewport();
@@ -651,12 +652,21 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     unlock_viewport();
                 }
             }
-            if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
+            if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) {
                 #ifdef _WIN32
                     system("start https://github.com/yoyolick/yoyoengine") 
                 #else
                     system("xdg-open https://github.com/yoyolick/yoyoengine");
                 #endif
+            }
+            if(nk_menu_item_label(ctx, "Credits", NK_TEXT_LEFT)) {
+                if(!ui_component_exists("credits")){
+                    ui_register_component("editor_credits", editor_panel_credits);
+                    lock_viewport();
+                } else {
+                    remove_ui_component("editor_credits");
+                    unlock_viewport();
+                }
             }
             nk_menu_end(ctx);
         }

@@ -18,6 +18,7 @@
 
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
+#include "editor_build.h"
 #include <math.h>
 
 /*

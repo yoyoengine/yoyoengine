@@ -17,7 +17,7 @@
 */
 
 /*
-    One mega header to combine all the src/panels/*.c files
+    One mega header to combine all the src/panels/.c files
 
     This will make it easier to handle without adding new headers
     for each panel, beacuse they really are just one public function per panel
@@ -28,5 +28,7 @@
 #include <yoyoengine/yoyoengine.h>
 
 void editor_panel_keybinds(struct nk_context *ctx);
+
+void editor_panel_credits(struct nk_context *ctx);
 
 #endif

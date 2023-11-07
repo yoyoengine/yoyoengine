@@ -18,6 +18,7 @@
 
 #include "editor.h"
 #include "editor_ui.h"
+#include "editor_build.h"
 #include <yoyoengine/yoyoengine.h>
 #include <unistd.h>
 

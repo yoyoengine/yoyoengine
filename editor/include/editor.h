@@ -19,10 +19,11 @@
 #ifndef YE_EDITOR
 #define YE_EDITOR
 
+#define YE_EDITOR_VERSION "DEV 0"
+
 #include <stdbool.h>
 #include <jansson/jansson.h>
 #include <yoyoengine/yoyoengine.h>
-#include <Nuklear/style.h>
 
 // global variables
 extern bool quit;

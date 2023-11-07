@@ -449,3 +449,5 @@ editor flipping boolean for lock is not good, if we open two windows at once we 
 editor gotta get rid of bools tracking windows open, use the ui.c is exist function instead
 
 locking the viewport should be a refcount for how many windows are currently locking, that way windows can specify viewport should lock with them but if we open a ton of them at once there is no issue closing one, we still know to lock until all blocking are closed
+
+easily duplicate selected entity or delete it and other quick action shortcuts

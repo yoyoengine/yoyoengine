@@ -41,11 +41,10 @@
 #include "editor_input.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <Nuklear/style.h>
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR
-
-#define YE_EDITOR_VERSION "v0.1.0"
 
 /*
     INITIALIZE ALL
@@ -103,7 +102,7 @@ int main(int argc, char **argv) {
 
     // get our path from the command line
     char *path = argv[1];
-    printf("path: %s\n", path);
+    ye_logf(info, "Editor recieved path: %s\n",path);
     project_path = path;
 
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
@@ -132,7 +131,6 @@ int main(int argc, char **argv) {
         ye_logf(error, "editor settings file is missing theme string. Please provide a preferences object with a theme string.");
         return 1;
     }
-    printf("theme: %s\n", theme_string);
     if(strcmp(theme_string, "dark") == 0)
         set_style(YE_STATE.engine.ctx, THEME_DARK);
     else if(strcmp(theme_string, "red") == 0)
@@ -205,6 +203,9 @@ int main(int argc, char **argv) {
     }
 
     entity_list_head = ye_get_entity_list_head();
+
+    ye_logf(info, "Editor fully initialized.\n");
+    ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
 
     while(!quit) {
         ye_process_frame();
