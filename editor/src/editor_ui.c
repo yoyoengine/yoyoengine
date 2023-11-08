@@ -152,6 +152,12 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_property_float(ctx, "#x", -1000000, &ent->transform->x, 1000000, 1, 5);
                         nk_label(ctx, "Y:", NK_TEXT_CENTERED);
                         nk_property_float(ctx, "#y", -1000000, &ent->transform->y, 1000000, 1, 5);
+                        
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_transform_component(ent);
+                        }
+
                         nk_tree_pop(ctx);
                     }
                 }
@@ -255,7 +261,11 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                             nk_tree_pop(ctx);
                         }
 
-                        // ye_editor_paint_position(ctx, &ent->renderer->position); TODO: removeme, stashed attempt 1 rework
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_renderer_component(ent);
+                        }
+
                         nk_tree_pop(ctx);
                     }
                 }
@@ -272,6 +282,12 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_layout_row_dynamic(ctx, 25, 2);
                         nk_label(ctx, "Rotational Velocity:", NK_TEXT_CENTERED);
                         nk_property_float(ctx, "#rv", -1000000, &ent->physics->rotational_velocity, 1000000, 1, 5);
+                        
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_physics_component(ent);
+                        }
+                        
                         nk_tree_pop(ctx);
                     }
                 }
@@ -286,6 +302,12 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_property_float(ctx, "#y", -1000000, &ent->collider->rect.y, 1000000, 1, 5);
                         nk_property_float(ctx, "#w", -1000000, &ent->collider->rect.w, 1000000, 1, 5);
                         nk_property_float(ctx, "#h", -1000000, &ent->collider->rect.h, 1000000, 1, 5);
+                        
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_collider_component(ent);
+                        }
+                        
                         nk_tree_pop(ctx);
                     }
                 }
@@ -300,6 +322,12 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->tag->tags[i], 20, nk_filter_default); i++;
                             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->tag->tags[i], 20, nk_filter_default); i++;
                         }
+
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_tag_component(ent);
+                        }
+
                         nk_tree_pop(ctx);
                     }
                 }
@@ -316,6 +344,12 @@ void ye_editor_paint_entity(struct nk_context *ctx){
                         nk_property_int(ctx, "#h", -1000000, &ent->camera->view_field.h, 1000000, 1, 5);
                         nk_layout_row_dynamic(ctx, 25, 1);
                         nk_property_int(ctx, "#z", -1000000, &ent->camera->z, 1000000, 1, 5);
+                        
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        if(nk_button_label(ctx, "Remove Component")){
+                            ye_remove_camera_component(ent);
+                        }
+                        
                         nk_tree_pop(ctx);
                     }
                 }
