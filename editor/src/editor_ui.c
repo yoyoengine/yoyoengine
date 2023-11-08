@@ -605,7 +605,19 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         }
 
         nk_menubar_begin(ctx);
-        nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
+
+        nk_layout_row_begin(ctx, NK_STATIC, 25, 8);
+        /*
+            File
+            Scene
+            Settings
+            Help
+            Quit
+            ---SPACER---
+            error count
+            warning count
+        */
+        
         nk_layout_row_push(ctx, 45);
         if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 200))) {
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -711,6 +723,33 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 quit = true;
             }
             nk_menu_end(ctx);
+        }
+        
+        // spacer //
+        nk_layout_row_push(ctx, 350);
+        nk_label(ctx, "                                                                                                                        ", NK_TEXT_LEFT);
+        ///////////
+
+        // used for tooltips
+        const struct nk_input *in = &ctx->input;
+
+        if(YE_STATE.runtime.error_count > 0){
+            char buf[64];
+            sprintf(buf, "%d errors", YE_STATE.runtime.error_count);
+            nk_layout_row_push(ctx, 110);
+            struct nk_rect bounds = nk_widget_bounds(ctx);
+            nk_label_colored(ctx, buf, NK_TEXT_CENTERED, nk_rgb(255, 0, 0));
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Open the console to view. (Help > Shortcuts) to see keybind.");
+        }
+        if(YE_STATE.runtime.warning_count > 0){
+            char buf[64];
+            sprintf(buf, "%d warnings", YE_STATE.runtime.warning_count);
+            nk_layout_row_push(ctx, 110);
+            struct nk_rect bounds = nk_widget_bounds(ctx);
+            nk_label_colored(ctx, buf, NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Open the console to view. (Help > Shortcuts) to see keybind.");
         }
         nk_menubar_end(ctx);
         nk_end(ctx);

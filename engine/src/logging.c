@@ -98,6 +98,13 @@ void ye_logf(enum logLevel level, const char *format, ...){
 
     va_end(args);
     
+    if(level == warning){
+        YE_STATE.runtime.warning_count++;
+    }
+    if(level == error){
+        YE_STATE.runtime.error_count++;
+    }
+
     // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
     if(YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
         return;
