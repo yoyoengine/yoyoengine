@@ -485,9 +485,14 @@ void ye_editor_paint_editor_settings(struct nk_context *ctx){
     TODO: locking viewport should be handled better. It would be nice if when any submenu item is 
     dropped down clicking on it does not select an entity (since its over the viewport)
 */
-bool new_scene_popup_open = false;
 bool scene_deletion_popup_open = false;
+
+bool new_scene_popup_open = false;
 char new_scene_name[256];
+
+bool open_scene_popup_open = false;
+char open_scene_name[256];
+
 void ye_editor_paint_menu(struct nk_context *ctx){
     if (nk_begin(ctx, "Menu", nk_rect(0, 0, screenWidth / 1.5, 35), 0)) {
         
@@ -558,7 +563,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     else{
                         ye_json_write(ye_get_resource_static(new_scene_path), new_scene);
                         new_scene_popup_open = false;
-                        ye_load_scene(ye_get_resource_static(new_scene_path));
+                        editor_load_scene(ye_get_resource_static(new_scene_path));
                     }
                     
                     // cleanup
@@ -585,20 +590,46 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     lock_viewport_interaction = !lock_viewport_interaction;
                 }
                 if(nk_button_label(ctx, "Yes")){
-
-                    // delete the scene file
-                    char scene_path[256 + 12];
-                    snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
-
-                    if(remove(ye_get_resource_static(scene_path)) == 0){
-                        ye_logf(info, "Deleted scene %s\n", YE_STATE.runtime.scene_name);
+                    if(remove(YE_STATE.runtime.scene_file_path) == 0){
+                        ye_logf(info, "Deleted scene %s\n", YE_STATE.runtime.scene_file_path);
                     }
                     else{
-                        ye_logf(error, "Failed to delete scene %s\n", YE_STATE.runtime.scene_name);
+                        ye_logf(error, "Failed to delete scene %s\n", YE_STATE.runtime.scene_file_path);
                     }
 
                     scene_deletion_popup_open = false;
                     lock_viewport_interaction = !lock_viewport_interaction;
+
+                    // this should get the point across
+                    struct ye_entity * warning = ye_create_entity_named("warning");
+                    ye_temp_add_text_renderer_component(warning, 0, "Destroyed Scene. Please create or open a different one.", YE_STATE.engine.pEngineFont, YE_STATE.engine.pEngineFontColor);
+                }
+                nk_popup_end(ctx);
+            }
+        }
+
+        /*
+            Popup for opening scene
+        */
+        if(open_scene_popup_open){
+            struct nk_rect s = { 0, 0, 450, 200 };
+            if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Open Scene", NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE, s)) {
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label(ctx, "What is the path (relative to resources/)?", NK_TEXT_CENTERED);
+                nk_label(ctx, "Ex: \"entry.yoyo\"", NK_TEXT_CENTERED);
+                nk_label(ctx, "", NK_TEXT_CENTERED);
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, open_scene_name, 256, nk_filter_default);
+                nk_label(ctx, "", NK_TEXT_CENTERED);
+                nk_layout_row_dynamic(ctx, 25, 2);
+                if(nk_button_label(ctx, "Abort")){
+                    open_scene_popup_open = false;
+                    unlock_viewport();
+                }
+                if(nk_button_label(ctx, "Open")){
+                    open_scene_popup_open = false;
+                    unlock_viewport();
+
+                    editor_load_scene(ye_get_resource_static(open_scene_name));
                 }
                 nk_popup_end(ctx);
             }
@@ -655,7 +686,16 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 1);
             
             if (nk_menu_item_label(ctx, "Open Scene", NK_TEXT_LEFT)) { // TODO: save prompt if unsaved
-                printf("Open\n"); // TODO
+                if(!open_scene_popup_open){
+                    open_scene_popup_open = !open_scene_popup_open;
+                    lock_viewport();
+                    // reset fields
+                    strcpy(open_scene_name, "scenes/");
+                }
+                else{
+                    open_scene_popup_open = !open_scene_popup_open;
+                    unlock_viewport();
+                }
             }
 
             if (nk_menu_item_label(ctx, "New Scene", NK_TEXT_LEFT)) {
@@ -669,6 +709,14 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 scene_deletion_popup_open = !scene_deletion_popup_open;
                 lock_viewport_interaction = !lock_viewport_interaction;
             }
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            // TODO: warning popup lose changes
+            if(nk_menu_item_label(ctx, "Reload Scene", NK_TEXT_LEFT)){
+                ye_reload_scene();
+                editor_re_attach_ecs();
+            }
+
             nk_menu_end(ctx);
         }
         nk_layout_row_push(ctx, 85);

@@ -90,6 +90,18 @@ void editor_reload_settings(){
     SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
 }
 
+void editor_load_scene(char * path){
+    ye_load_scene(path);
+    editor_re_attach_ecs();
+}
+
+void editor_re_attach_ecs(){
+    entity_list_head = ye_get_entity_list_head();
+    editor_camera = ye_get_entity_by_name("editor_camera");
+    origin = ye_get_entity_by_name("origin");
+    ye_logf(info, "Re-attatched ECS component pointers.\n");
+}
+
 /*
     main function
     accepts one string argument of the path to the project folder

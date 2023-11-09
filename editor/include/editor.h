@@ -51,6 +51,10 @@ extern char editor_settings_path[1024];
 
 bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
+void editor_load_scene(char * path);
+
+void editor_re_attach_ecs();
+
 void editor_reload_settings();
 
 /*

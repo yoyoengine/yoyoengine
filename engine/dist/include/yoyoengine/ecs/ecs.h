@@ -196,6 +196,8 @@ struct ye_entity *ye_get_entity_by_id(int id);
 
 void ye_init_ecs();
 
+void ye_purge_ecs();
+
 void ye_shutdown_ecs();
 
 void ye_print_entities();

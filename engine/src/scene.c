@@ -20,11 +20,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-// tracks the current scene file for reloading
-char *current_scene_file_path = NULL;
-
 void ye_init_scene_manager(){
     YE_STATE.runtime.scene_name = NULL;
+    YE_STATE.runtime.scene_file_path = NULL;
 }
 
 /*
@@ -511,6 +509,9 @@ void ye_construct_scene(json_t *entities){
 }
 
 void ye_load_scene(const char *scene_path){
+    // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
+    ye_purge_ecs();
+
     // try to open the scene file
     json_t * SCENE = ye_json_read(scene_path);
     if(SCENE == NULL){
@@ -519,12 +520,12 @@ void ye_load_scene(const char *scene_path){
         return;
     }
 
-    if(current_scene_file_path != NULL)
-        free(current_scene_file_path);
+    if(YE_STATE.runtime.scene_file_path != NULL)
+        free(YE_STATE.runtime.scene_file_path);
     
     // malloc new string for current scene file path and copy it over
-    current_scene_file_path = malloc(strlen(scene_path)+1);
-    strcpy(current_scene_file_path,scene_path);
+    YE_STATE.runtime.scene_file_path = malloc(strlen(scene_path)+1);
+    strcpy(YE_STATE.runtime.scene_file_path,scene_path);
 
     // read some meta about the scene and check validity
     int scene_version;
@@ -562,32 +563,6 @@ void ye_load_scene(const char *scene_path){
     // pre cache all of a scenes assets (TODO: thread this?)
     json_t *scene = NULL; ye_json_object(SCENE, "scene", &scene);
     ye_pre_cache_scene(scene); // lowercase scene is the actual key
-
-    // TODO: intelligently clear current scene
-    // if we are editor mode then we need to clear the current scene whilst preserving
-    // important editor entities, like the editor camera
-    // if we arent then we can just clear the entirety of the scene
-
-    // if(YE_STATE.editor.editor_mode){
-    //     // clear the scene of all entities except the editor camera
-    //     struct ye_entity_node *current = entity_list_head;
-    //     while(current != NULL){
-    //         if(strcmp(current->entity->name,"editor camera") != 0
-    //         && strcmp(current->entity->name,"origin") != 0
-    //         && strcmp(current->entity->name,"snerfbot") != 0){
-    //             ye_destroy_entity(current->entity);
-    //         }
-    //         current = current->next;
-    //     }
-    // }
-    // else{
-    //     // clear the scene of all entities
-    //     struct ye_entity_node *current = entity_list_head;
-    //     while(current != NULL){
-    //         ye_destroy_entity(current->entity);
-    //         current = current->next;
-    //     }
-    // }
 
     // construct all entities and components
     json_t *entities = NULL;
@@ -635,10 +610,18 @@ void ye_shutdown_scene_manager(){
 }
 
 void ye_reload_scene(){
-    if(YE_STATE.runtime.scene_name == NULL){
+    if(YE_STATE.runtime.scene_name == NULL || YE_STATE.runtime.scene_file_path == NULL){
         ye_logf(error,"%s","No scene loaded to reload.\n");
         return;
     }
-    // ye_load_scene(current_scene_file_path);
-    ye_logf(warning, "Scene reloading is not yet implemented.\n"); // TODO
+
+    // we cant pass the malloc path beacuse it will destroy it while it tries to recreate it from bad memory.
+    // create a temp malloced copy of the file path
+    char *temp = malloc(strlen(YE_STATE.runtime.scene_file_path)+1);
+    strcpy(temp,YE_STATE.runtime.scene_file_path);
+
+    ye_load_scene(temp);
+
+    // free the temp copy
+    free(temp);
 }

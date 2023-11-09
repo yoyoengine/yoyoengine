@@ -186,6 +186,7 @@ struct ye_runtime_data {
     int audio_chunk_count;      // the number of audio chunks currently allocated and playing
     
     char *scene_name;           // TODO: store current scene path for reloading in editor?
+    char *scene_file_path;      // the path to the open scene file
 
     int error_count;            // tracks the number of error level logs that have occurred
     int warning_count;          // same but for warnings

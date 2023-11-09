@@ -371,6 +371,24 @@ void ye_init_ecs(){
     ye_logf(info, "Initialized ECS\n");
 }
 
+void ye_purge_ecs(){
+    ye_shutdown_ecs();
+    ye_init_ecs();
+    ye_logf(info, "Purged ECS\n");
+    if(YE_STATE.editor.editor_mode){
+        struct ye_entity * editor_camera = ye_create_entity_named("editor_camera");
+        ye_add_transform_component(editor_camera, 0, 0);
+        ye_add_camera_component(editor_camera, 999, (SDL_Rect){0, 0, 2560, 1440});
+        ye_set_camera(editor_camera);
+
+        struct ye_entity * origin = ye_create_entity_named("origin");
+        ye_add_transform_component(origin, -50, -50);
+        ye_temp_add_image_renderer_component(origin, 0, ye_get_engine_resource_static("originwhite.png"));
+        origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
+    }
+    ye_logf(info, "Re-created editor entities.\n");
+}
+
 void ye_shutdown_ecs(){
     ye_entity_list_destroy(&entity_list_head);
     
@@ -386,6 +404,13 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&physics_list_head);
     ye_entity_list_destroy(&tag_list_head);
     ye_entity_list_destroy(&collider_list_head);
+
+    // take care of cleaning up any entity pointers that exist in global state
+    YE_STATE.engine.target_camera = NULL;
+    YE_STATE.editor.scene_default_camera = NULL;
+    YE_STATE.editor.selected_entity = NULL;
+
+    eid = 0; // TODO: is this a good choice?
 
     ye_logf(info, "Shut down ECS\n");
 }

@@ -150,6 +150,8 @@ need some generic dialog popups as global state. functions can call like "input 
 
 - easily duplicate selected entity or delete it and other quick action shortcuts
 
+- bug with changing scenes the title bar goes inactive until focusing another nuklear window then re attempting
+
 ## moving selected entity
 
 CTRL clicking and dragging or shift clicking and dragging could move and scale the selected entity respectively without having to open the properties window
@@ -163,3 +165,15 @@ way to tottally save state of editor, so that we could have a play button that w
 it honestly might be better if colors werent in this weird ahh cache system, but this is how ive set it up so i might just double down
 
 it would be better if we had a font manager that tracked the name and path to the ttf, as well as all created sizes of the font, that way we dont have to create a new font key for each size
+
+## premature optimization is the root of all evil
+
+- who cares if we are reloading duplicate assets for the next scene, we could easily update this for fun later on, not force the optimization now when it doesnt matter. the engine is so lightweight anyways
+
+## wrapped text
+
+TTF_RenderText_Blended_Wrapped EXISTS HOLY SHIT
+
+## considerations
+
+a very soft rule is please no spaces in any file names (they will break in most cases)
