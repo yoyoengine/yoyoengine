@@ -21,6 +21,7 @@
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
 #include "editor_ui.h"
+#include "editor_serialize.h"
 #include "editor_panels.h"
 #include <Nuklear/style.h>
 
@@ -613,7 +614,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         */
         if(open_scene_popup_open){
             struct nk_rect s = { 0, 0, 450, 200 };
-            if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Open Scene", NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE, s)) {
+            if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Open Scene", 0, s)) {
                 nk_layout_row_dynamic(ctx, 25, 1);
                 nk_label(ctx, "What is the path (relative to resources/)?", NK_TEXT_CENTERED);
                 nk_label(ctx, "Ex: \"entry.yoyo\"", NK_TEXT_CENTERED);
@@ -653,26 +654,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 200))) {
             nk_layout_row_dynamic(ctx, 25, 1);
             if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {    
-                // get the path to this scene file TODO: THIS NEEDS TO BE BASED ON THE SCENE FILE PATH IN SCENE.c EVENTUALLY!!!! RIGHT NOW THIS ASSUMES THE NAME IS THE SAME AS THE PATH
-                char scene_path[256 + 12];
-                snprintf(scene_path, sizeof(scene_path), "scenes/%s.yoyo", YE_STATE.runtime.scene_name);
-
-                // load the scene file into a json_t
-                json_t *scene = ye_json_read(ye_get_resource_static(scene_path));
-
-                // create a json_t array listing all entities in the scene
-                json_t *entities = json_array();
-                for(int i = 0; i < YE_STATE.runtime.entity_count; i++){
-                    json_array_append_new(entities, json_string("meow!"));
-                }
-
-                // update the scene file with the new entity list
-                json_object_set_new(json_object_get(scene, "scene"), "entities", entities);
-
-                ye_json_log(scene); //TODO: figure out how we update the name version styles and prefabs
-
-                // write the scene file
-                // ye_json_write(ye_get_resource_static(scene_path), YE_STATE.runtime.scene);                      
+                editor_write_scene_to_disk(YE_STATE.runtime.scene_file_path);
             }
             nk_menu_end(ctx);
 

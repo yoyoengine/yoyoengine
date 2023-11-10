@@ -18,6 +18,7 @@
 
 #include <yoyoengine/yoyoengine.h>
 #include "editor.h"
+#include "editor_serialize.h"
 #include "editor_build.h"
 #include <math.h>
 
@@ -173,8 +174,7 @@ void editor_input_shortcuts(SDL_Event event){
             // CTRL + S ->= save the scene
             if (event.key.keysym.mod & KMOD_CTRL)
             {
-                // TODO: save the scene
-                printf("TODO: IMPLEMENT SAVING SCENE. -> Ctrl+S pressed\n");
+                editor_write_scene_to_disk(YE_STATE.runtime.scene_file_path);
             }
             break;
         case SDLK_r:

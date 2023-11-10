@@ -63,6 +63,7 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
     // copy src to image->src
     image->src = malloc(sizeof(char) * strlen(src));
+    strcpy(image->src, src);
 
     // create the renderer top level
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, z, image);
@@ -129,7 +130,7 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, c
     // load all the frames into memory TODO: this could be futurely optimized
     for (size_t i = 0; i < (size_t)count; ++i) {
         char filename[256];  // Assuming a maximum filename length of 255 characters
-        snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, format); // TODO: dumb optimization but could cut out all except frame num insertion here
+        snprintf(filename, sizeof(filename), "%s/%d.%s", ye_get_resource_static(path), (int)i, format); // TODO: dumb optimization but could cut out all except frame num insertion here
         animation->frames[i] = ye_image(filename);
     }
 

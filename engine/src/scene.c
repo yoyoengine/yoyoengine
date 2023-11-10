@@ -129,12 +129,12 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 
     struct ye_rectf rect = ye_retrieve_position(renderer);
 
-    const char *animation_path = NULL; // comply with mingw & clang
-    const char *_text = NULL; // comply with mingw & clang
-    const char *src = NULL; // comply with mingw & clang
-    const char *text = NULL; // comply with mingw & clang
-    const char *font = NULL; // comply with mingw & clang
-    const char *color = NULL; // comply with mingw & clang
+    const char *animation_path = NULL;  // comply with mingw & clang
+    const char *_text = NULL;           // comply with mingw & clang
+    const char *src = NULL;             // comply with mingw & clang
+    const char *text = NULL;            // comply with mingw & clang
+    const char *font = NULL;            // comply with mingw & clang
+    const char *color = NULL;           // comply with mingw & clang
     switch(type){
         // ye_logf(info,"Constructing renderer: %s\n", entity_name);
         case YE_RENDERER_TYPE_IMAGE:
@@ -145,7 +145,11 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
+            // hack to preserve original not full path to src for serialization.. TODO: FIXME this will cause an issue in like 3 months i bet
             ye_temp_add_image_renderer_component(e,z,ye_get_resource_static(src));
+            free(e->renderer->renderer_impl.image->src); // free the old src
+            e->renderer->renderer_impl.image->src = malloc(strlen(src)+1); // malloc new src
+            strcpy(e->renderer->renderer_impl.image->src,src); // copy over the new src
             break;
         case YE_RENDERER_TYPE_TEXT:
             // get the text field
@@ -241,7 +245,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_animation_renderer_component(e,z,ye_get_resource_static(animation_path),image_format,frame_count,frame_delay,loops);
+            ye_temp_add_animation_renderer_component(e,z,animation_path,image_format,frame_count,frame_delay,loops);
 
             // get the paused bool
             bool paused;

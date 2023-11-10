@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef YE_EDITOR
-#define YE_EDITOR
+#ifndef YE_EDITOR_H
+#define YE_EDITOR_H
 
 #define YE_EDITOR_VERSION "DEV 0"
 

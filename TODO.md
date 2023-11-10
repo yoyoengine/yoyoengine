@@ -177,3 +177,12 @@ TTF_RenderText_Blended_Wrapped EXISTS HOLY SHIT
 ## considerations
 
 a very soft rule is please no spaces in any file names (they will break in most cases)
+
+## serialization
+
+[X] transform
+[X] camera
+[X] renderer
+[ ] physics
+[ ] colliders
+[ ] tag

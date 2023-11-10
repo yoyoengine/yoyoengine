@@ -16,7 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EDITOR_BUILD_H
+#ifndef YE_EDITOR_BUILD_H
+#define YE_EDITOR_BUILD_H
 
 void editor_build();
 

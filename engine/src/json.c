@@ -47,7 +47,7 @@ int ye_json_write(const char* path, json_t* json)
 void ye_json_log(json_t* json)
 {
     char* json_str = json_dumps(json, JSON_INDENT(4));
-    ye_logf(debug, "%s", json_str);
+    printf("%s", json_str);
     free(json_str);
 }
 

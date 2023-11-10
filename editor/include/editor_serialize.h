@@ -16,20 +16,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    One mega header to combine all the src/panels/.c files
+#ifndef EDITOR_SERIALIZE_H
+#define EDITOR_SERIALIZE_H
 
-    This will make it easier to handle without adding new headers
-    for each panel, beacuse they really are just one public function per panel
-    with maybe some private helpers.
-*/
-#ifndef YE_EDITOR_PANELS_H
-#define YE_EDITOR_PANELS_H
-
+#include "editor.h"
 #include <yoyoengine/yoyoengine.h>
 
-void editor_panel_keybinds(struct nk_context *ctx);
-
-void editor_panel_credits(struct nk_context *ctx);
+/*
+    Take the currently opened scene and write it to disk at the provided path
+*/
+void editor_write_scene_to_disk(const char *path);
 
 #endif
