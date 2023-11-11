@@ -22,6 +22,9 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+#ifndef YE_JSON_WRITE_FLAGS
+    #define YE_JSON_WRITE_FLAGS JSON_COMPACT
+#endif
 json_t* ye_json_read(const char* path)
 {
     json_error_t jerror;
@@ -36,7 +39,7 @@ json_t* ye_json_read(const char* path)
 int ye_json_write(const char* path, json_t* json)
 {
     json_error_t jerror;
-    int ret = json_dump_file(json, path, 0);
+    int ret = json_dump_file(json, path, YE_JSON_WRITE_FLAGS);
     if (ret != 0) {
         ye_logf(error, "failed to write json file %s: %s\n", path, jerror.text);
         return -1;
