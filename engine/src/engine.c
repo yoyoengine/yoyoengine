@@ -374,14 +374,16 @@ void ye_init_engine() {
     // debug output
     ye_logf(info, "Engine Fully Initialized.\n");
 
-    // retrieve and load the entry scene
-    const char * entry_scene;
-    if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
-        ye_logf(info, "Detected entry: %s.\n", entry_scene);
-        ye_load_scene(ye_get_resource_static(entry_scene));
-    }
-    else{
-        ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+    // retrieve and load the entry scene (editor mode handles this itself)
+    if(!YE_STATE.editor.editor_mode){
+        const char * entry_scene;
+        if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
+            ye_logf(info, "Detected entry: %s.\n", entry_scene);
+            ye_load_scene(ye_get_resource_static(entry_scene));
+        }
+        else{
+            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+        }
     }
 
     // free the settings json as needed

@@ -95,6 +95,31 @@ void ye_system_physics(){
         if (current->entity->physics->active && current->entity->transform != NULL) {
             // if we have velocity proceed with checks
             if(current->entity->physics->velocity.x != 0 || current->entity->physics->velocity.y != 0){
+                
+                /*
+                    CASE THAT ENTITY HAS NO COLLIDER
+                    We just apply its velocity to its transform (also account for rotational)
+                */
+                if(current->entity->collider == NULL){
+                    current->entity->transform->x += current->entity->physics->velocity.x * delta;
+                    current->entity->transform->y += current->entity->physics->velocity.y * delta;
+                    
+                    // do the rotation as well
+                    if(current->entity->physics->rotational_velocity != 0 && current->entity->renderer != NULL){
+                        // update the entity's rotation based on its rotational velocity
+                        current->entity->renderer->rotation += current->entity->physics->rotational_velocity * delta;
+                        if(current->entity->renderer->rotation > 360) current->entity->renderer->rotation -= 360;
+                        if(current->entity->renderer->rotation < 0) current->entity->renderer->rotation += 360;
+                    }
+
+                    current = current->next;
+                    continue;
+                }
+
+                /*
+                    CASE THAT ENTITY HAS A COLLIDER
+                    We need to check if we are colliding with any other colliders (CCD)
+                */
                 // get the current collider position
                 struct ye_rectf old_position = ye_get_position(current->entity,YE_COMPONENT_COLLIDER);
                 struct ye_rectf new_position = old_position;

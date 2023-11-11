@@ -178,11 +178,8 @@ TTF_RenderText_Blended_Wrapped EXISTS HOLY SHIT
 
 a very soft rule is please no spaces in any file names (they will break in most cases)
 
-## serialization
+we wont see colliders or paintbounds on cameras because thery dont get rendererd
 
-[X] transform
-[X] camera
-[X] renderer
-[ ] physics
-[ ] colliders
-[ ] tag
+## json best practice
+
+- we currently mix fields of underscore and spaces, we need to pick one and rewrite all to be the same

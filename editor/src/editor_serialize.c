@@ -184,6 +184,79 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
     json_object_set_new(renderer, "impl", impl);
 }
 
+void serialize_entity_physics(struct ye_entity *entity, json_t *entity_json){
+    // create the physics object
+    json_t *physics = json_object();
+
+    // set the active state
+    json_object_set_new(physics, "active", json_boolean(entity->physics->active));
+
+    // create the velocity object
+    json_t *velocity = json_object();
+
+    // set the x
+    json_object_set_new(velocity, "x", json_real(entity->physics->velocity.x));
+
+    // set the y
+    json_object_set_new(velocity, "y", json_real(entity->physics->velocity.y));
+
+    // set the rotational velocity
+    json_object_set_new(physics, "rotational velocity", json_real(entity->physics->rotational_velocity));
+
+    // add the velocity object to the physics object
+    json_object_set_new(physics, "velocity", velocity);
+
+    // add the physics object to the entity json
+    json_object_set_new(entity_json, "physics", physics);
+}
+
+void serialize_entity_collider(struct ye_entity *entity, json_t *entity_json){
+    // create the collider object
+    json_t *collider = json_object();
+
+    // set the active state
+    json_object_set_new(collider, "active", json_boolean(entity->collider->active));
+
+    // set the position
+    serialize_entity_position(&entity->collider->rect, collider);
+
+    // set the is trigger
+    json_object_set_new(collider, "is trigger", json_boolean(entity->collider->is_trigger));
+
+    // set the relativity
+    json_object_set_new(collider, "relative", json_boolean(entity->collider->relative));
+
+    // add the collider object to the entity json
+    json_object_set_new(entity_json, "collider", collider);
+}
+
+void serialize_entity_tag(struct ye_entity *entity, json_t *entity_json){
+    // create the tag object
+    json_t *tag = json_object();
+
+    // set the active state
+    json_object_set_new(tag, "active", json_boolean(entity->tag->active));
+
+    // set the tags array
+    json_t *tags = json_array();
+
+    // for each tag in the entity, add it to the tags array
+    for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
+        // if the tag is empty, dont add it
+        if(entity->tag->tags[i][0] == '\0'){
+            continue;
+        }
+
+        json_array_append_new(tags, json_string(entity->tag->tags[i]));
+    }
+
+    // add the tags array to the tag object
+    json_object_set_new(tag, "tags", tags);
+
+    // add the tag object to the entity json
+    json_object_set_new(entity_json, "tag", tag);
+}
+
 void editor_write_scene_to_disk(const char *path){
     ye_logf(info,"Writing scene to disk at %s\n", path);
     // load the scene file into a json_t
@@ -228,6 +301,18 @@ void editor_write_scene_to_disk(const char *path){
 
         if(entity->renderer != NULL){
             serialize_entity_renderer(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->physics != NULL){
+            serialize_entity_physics(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->collider != NULL){
+            serialize_entity_collider(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->tag != NULL){
+            serialize_entity_tag(entity, json_object_get(entity_json, "components"));
         }
 
         // add the entity to the entity json array

@@ -372,29 +372,12 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag, const char* entity_name)
 void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* entity_name){
     // validate bounds field
     json_t *bounds = NULL;
-    struct ye_rectf b;
-    if(!ye_json_object(collider,"position",&bounds)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the position field\n", entity_name);
-        b = (struct ye_rectf){0,0,0,0};
-    } else {
-        int x,y,w,h;
-        if(!ye_json_int(bounds,"x",&x) || !ye_json_int(bounds,"y",&y) || !ye_json_int(bounds,"w",&w) || !ye_json_int(bounds,"h",&h)) {
-            ye_logf(warning,"Entity %s has a collider component with invalid position field\n", entity_name);
-            b = (struct ye_rectf){0,0,0,0};
-        } else {
-            b = (struct ye_rectf){
-                .x = (float)x,
-                .y = (float)y,
-                .w = (float)w,
-                .h = (float)h
-            };
-        }
-    }
+    struct ye_rectf b = ye_retrieve_position(collider);
 
     // validate is_trigger field
     bool is_trigger;
-    if(!ye_json_bool(collider,"is_trigger",&is_trigger)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the is_trigger field\n", entity_name);
+    if(!ye_json_bool(collider,"is trigger",&is_trigger)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the is trigger field\n", entity_name);
         is_trigger = false;
     }
 
