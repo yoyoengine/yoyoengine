@@ -254,7 +254,7 @@ void ye_init_engine() {
         set_setting_bool("skip_intro", &YE_STATE.engine.skipintro, SETTINGS);
         set_setting_bool("editor_mode", &YE_STATE.editor.editor_mode, SETTINGS);
 
-        json_decref(SETTINGS);
+        // we will decref settings later on after we load the scene, so the path to the entry scene still exists
     }
 
     // initialize some editor state
@@ -373,6 +373,20 @@ void ye_init_engine() {
 
     // debug output
     ye_logf(info, "Engine Fully Initialized.\n");
+
+    // retrieve and load the entry scene
+    const char * entry_scene;
+    if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
+        ye_logf(info, "Detected entry: %s.\n", entry_scene);
+        ye_load_scene(ye_get_resource_static(entry_scene));
+    }
+    else{
+        ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+    }
+
+    // free the settings json as needed
+    if(SETTINGS != NULL)
+        json_decref(SETTINGS);
 } // control is now resumed by the game
 
 // function that shuts down all engine subsystems and components ()
