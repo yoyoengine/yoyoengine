@@ -191,5 +191,5 @@ Personally, I think its best to just use the cache system youve already created,
 
 ## Documentation
 
-all ecs need done
 go back sometime and add < to every struct field so the docs include the field comment
+use groups more
