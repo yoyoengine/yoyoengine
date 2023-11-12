@@ -1,18 +1,18 @@
 <map id="ye_entity" name="ye_entity">
-<area shape="rect" id="node1" title=" " alt="" coords="907,275,980,300"/>
-<area shape="rect" id="node2" href="$structye__component__transform.html" title=" " alt="" coords="620,101,788,127"/>
-<area shape="rect" id="node3" href="$structye__component__renderer.html" title=" " alt="" coords="624,151,784,176"/>
+<area shape="rect" id="node1" title="Entity structure. An entity is a collection of components that make up a game object." alt="" coords="907,275,980,300"/>
+<area shape="rect" id="node2" href="$structye__component__transform.html" title="The transform component." alt="" coords="620,101,788,127"/>
+<area shape="rect" id="node3" href="$structye__component__renderer.html" title="A structure to represent a component renderer." alt="" coords="624,151,784,176"/>
 <area shape="rect" id="node4" href="$structye__rectf.html" title="A rectangle made up of floats." alt="" coords="365,177,433,203"/>
-<area shape="rect" id="node15" href="$structye__component__collider.html" title=" " alt="" coords="627,200,781,225"/>
+<area shape="rect" id="node15" href="$structye__component__collider.html" title="A structure representing a collider component." alt="" coords="627,200,781,225"/>
 <area shape="rect" id="node5" href="$unionye__component__renderer_1_1renderer__impl.html" title=" " alt="" coords="319,87,479,127"/>
-<area shape="rect" id="node6" href="$structye__component__renderer__text.html" title=" " alt="" coords="5,5,193,31"/>
-<area shape="rect" id="node7" href="$structye__component__renderer__text__outlined.html" title=" " alt="" coords="19,55,179,95"/>
-<area shape="rect" id="node8" href="$structye__component__renderer__image.html" title=" " alt="" coords="19,119,179,159"/>
-<area shape="rect" id="node9" href="$structye__component__renderer__animation.html" title=" " alt="" coords="19,183,179,223"/>
-<area shape="rect" id="node10" href="$structye__component__script.html" title=" " alt="" coords="631,249,777,275"/>
-<area shape="rect" id="node11" href="$structye__component__interactible.html" title=" " alt="" coords="616,299,792,324"/>
-<area shape="rect" id="node12" href="$structye__component__camera.html" title=" " alt="" coords="626,348,782,373"/>
-<area shape="rect" id="node13" href="$structye__component__physics.html" title=" " alt="" coords="625,397,783,423"/>
-<area shape="rect" id="node14" href="$structye__vec2f.html" title=" " alt="" coords="361,397,436,423"/>
-<area shape="rect" id="node16" href="$structye__component__tag.html" title=" " alt="" coords="639,447,769,472"/>
+<area shape="rect" id="node6" href="$structye__component__renderer__text.html" title="A structure to represent a text renderer." alt="" coords="5,5,193,31"/>
+<area shape="rect" id="node7" href="$structye__component__renderer__text__outlined.html" title="A structure to represent an outlined text renderer." alt="" coords="19,55,179,95"/>
+<area shape="rect" id="node8" href="$structye__component__renderer__image.html" title="A structure to represent an image renderer." alt="" coords="19,119,179,159"/>
+<area shape="rect" id="node9" href="$structye__component__renderer__animation.html" title="A structure to represent an animation renderer." alt="" coords="19,183,179,223"/>
+<area shape="rect" id="node10" href="$structye__component__script.html" title="Script component structure. Holds information on a script that is attached to an entity...." alt="" coords="631,249,777,275"/>
+<area shape="rect" id="node11" href="$structye__component__interactible.html" title="Interactible component structure. Holds information on how an entity can be interacted with." alt="" coords="616,299,792,324"/>
+<area shape="rect" id="node12" href="$structye__component__camera.html" title="The camera component." alt="" coords="626,348,782,373"/>
+<area shape="rect" id="node13" href="$structye__component__physics.html" title="Physics component structure." alt="" coords="625,397,783,423"/>
+<area shape="rect" id="node14" href="$structye__vec2f.html" title="2D vector structure" alt="" coords="361,397,436,423"/>
+<area shape="rect" id="node16" href="$structye__component__tag.html" title="The tag component." alt="" coords="639,447,769,472"/>
 </map>

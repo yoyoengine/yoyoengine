@@ -6,16 +6,16 @@
 <area shape="rect" id="node8" href="$json_8h.html" title="The engine API for working with json data, built on top of jansson." alt="" coords="627,167,683,192"/>
 <area shape="rect" id="node10" title=" " alt="" coords="980,167,1051,192"/>
 <area shape="rect" id="node11" href="$ui_8h.html" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="862,167,905,192"/>
-<area shape="rect" id="node21" href="$ecs_8h.html" title=" " alt="" coords="708,167,787,192"/>
+<area shape="rect" id="node21" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="708,167,787,192"/>
 <area shape="rect" id="node22" href="$utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="568,240,692,265"/>
 <area shape="rect" id="node23" href="$logging_8h.html" title="The engine Logging API." alt="" coords="1099,313,1241,339"/>
-<area shape="rect" id="node25" href="$audiosource_8h.html" title=" " alt="" coords="1075,167,1201,192"/>
-<area shape="rect" id="node26" href="$camera_8h.html" title=" " alt="" coords="1225,167,1325,192"/>
-<area shape="rect" id="node27" href="$physics_8h.html" title=" " alt="" coords="1350,167,1451,192"/>
-<area shape="rect" id="node28" href="$renderer_8h.html" title=" " alt="" coords="1475,167,1579,192"/>
-<area shape="rect" id="node29" href="$transform_8h.html" title=" " alt="" coords="1603,167,1715,192"/>
-<area shape="rect" id="node30" href="$collider_8h.html" title=" " alt="" coords="1739,167,1838,192"/>
-<area shape="rect" id="node31" href="$tag_8h.html" title=" " alt="" coords="1862,167,1937,192"/>
+<area shape="rect" id="node25" href="$audiosource_8h.html" title="NOT YET DOCUMENTED OR IMPLEMENTED." alt="" coords="1075,167,1201,192"/>
+<area shape="rect" id="node26" href="$camera_8h.html" title="ECS Camera component." alt="" coords="1225,167,1325,192"/>
+<area shape="rect" id="node27" href="$physics_8h.html" title="ECS Physics component." alt="" coords="1350,167,1451,192"/>
+<area shape="rect" id="node28" href="$renderer_8h.html" title="ECS Renderer component." alt="" coords="1475,167,1579,192"/>
+<area shape="rect" id="node29" href="$transform_8h.html" title="ECS Transform component." alt="" coords="1603,167,1715,192"/>
+<area shape="rect" id="node30" href="$collider_8h.html" title="ECS Collider component." alt="" coords="1739,167,1838,192"/>
+<area shape="rect" id="node31" href="$tag_8h.html" title="ECS Tag component." alt="" coords="1862,167,1937,192"/>
 <area shape="rect" id="node32" href="$timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="542,167,603,192"/>
 <area shape="rect" id="node33" href="$audio_8h.html" title="The engine API for handling audio." alt="" coords="1961,167,2024,192"/>
 <area shape="rect" id="node34" href="$lua_8h.html" title=" " alt="" coords="2048,167,2097,192"/>

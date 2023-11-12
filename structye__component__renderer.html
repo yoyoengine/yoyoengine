@@ -101,19 +101,22 @@ $(document).ready(function(){initNavTree('structye__component__renderer.html',''
 </div><!--header-->
 <div class="contents">
 
+<p>A structure to represent a component renderer.  
+ <a href="structye__component__renderer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="renderer_8h_source.html">renderer.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ye_component_renderer:</div>
 <div class="dyncontent">
 <div class="center"><img src="structye__component__renderer__coll__graph.png" border="0" usemap="#aye__component__renderer_coll__map" alt="Collaboration graph"/></div>
 <map name="aye__component__renderer_coll__map" id="aye__component__renderer_coll__map">
-<area shape="rect" title=" " alt="" coords="616,65,776,91"/>
+<area shape="rect" title="A structure to represent a component renderer." alt="" coords="616,65,776,91"/>
 <area shape="rect" href="structye__rectf.html" title="A rectangle made up of floats." alt="" coords="365,37,433,63"/>
 <area shape="rect" href="unionye__component__renderer_1_1renderer__impl.html" title=" " alt="" coords="319,87,479,127"/>
-<area shape="rect" href="structye__component__renderer__text.html" title=" " alt="" coords="5,5,193,31"/>
-<area shape="rect" href="structye__component__renderer__text__outlined.html" title=" " alt="" coords="19,55,179,95"/>
-<area shape="rect" href="structye__component__renderer__image.html" title=" " alt="" coords="19,119,179,159"/>
-<area shape="rect" href="structye__component__renderer__animation.html" title=" " alt="" coords="19,183,179,223"/>
+<area shape="rect" href="structye__component__renderer__text.html" title="A structure to represent a text renderer." alt="" coords="5,5,193,31"/>
+<area shape="rect" href="structye__component__renderer__text__outlined.html" title="A structure to represent an outlined text renderer." alt="" coords="19,55,179,95"/>
+<area shape="rect" href="structye__component__renderer__image.html" title="A structure to represent an image renderer." alt="" coords="19,119,179,159"/>
+<area shape="rect" href="structye__component__renderer__animation.html" title="A structure to represent an animation renderer." alt="" coords="19,183,179,223"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -125,26 +128,36 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a249bb5b5e0e673b6fe2dc4f0d0438ab5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a249bb5b5e0e673b6fe2dc4f0d0438ab5">active</a></td></tr>
+<tr class="memdesc:a249bb5b5e0e673b6fe2dc4f0d0438ab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">controls whether system will act upon this component  <a href="structye__component__renderer.html#a249bb5b5e0e673b6fe2dc4f0d0438ab5">More...</a><br /></td></tr>
 <tr class="separator:a249bb5b5e0e673b6fe2dc4f0d0438ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6282c8c408d517088cc59091e8eeb28"><td class="memItemLeft" align="right" valign="top">SDL_Texture *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#ae6282c8c408d517088cc59091e8eeb28">texture</a></td></tr>
+<tr class="memdesc:ae6282c8c408d517088cc59091e8eeb28"><td class="mdescLeft">&#160;</td><td class="mdescRight">texture to render  <a href="structye__component__renderer.html#ae6282c8c408d517088cc59091e8eeb28">More...</a><br /></td></tr>
 <tr class="separator:ae6282c8c408d517088cc59091e8eeb28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38fafeca522ba7e6bde4889cc06d0ba3"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="renderer_8h.html#a5405668e1b5458063380e1977356680d">ye_component_renderer_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a38fafeca522ba7e6bde4889cc06d0ba3">type</a></td></tr>
+<tr class="memdesc:a38fafeca522ba7e6bde4889cc06d0ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">denotes which renderer is needed for this entity  <a href="structye__component__renderer.html#a38fafeca522ba7e6bde4889cc06d0ba3">More...</a><br /></td></tr>
 <tr class="separator:a38fafeca522ba7e6bde4889cc06d0ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0679fa91f7239ccf28275b1e1540aac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#af0679fa91f7239ccf28275b1e1540aac">alpha</a></td></tr>
+<tr class="memdesc:af0679fa91f7239ccf28275b1e1540aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">alpha of texture  <a href="structye__component__renderer.html#af0679fa91f7239ccf28275b1e1540aac">More...</a><br /></td></tr>
 <tr class="separator:af0679fa91f7239ccf28275b1e1540aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac60fa4431c6a03ebcd1b5a33bd234795"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#ac60fa4431c6a03ebcd1b5a33bd234795">relative</a></td></tr>
+<tr class="memdesc:ac60fa4431c6a03ebcd1b5a33bd234795"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether or not this comp is relative to a parent transform  <a href="structye__component__renderer.html#ac60fa4431c6a03ebcd1b5a33bd234795">More...</a><br /></td></tr>
 <tr class="separator:ac60fa4431c6a03ebcd1b5a33bd234795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad50acd51d8f182183d5187db19c19995"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structye__rectf.html">ye_rectf</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#ad50acd51d8f182183d5187db19c19995">rect</a></td></tr>
 <tr class="separator:ad50acd51d8f182183d5187db19c19995"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c1b6d4fd29d51878549e51881ac49ad"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="utils_8h.html#a33143256cad2c576e0a1d47a2c3d055d">ye_alignment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a7c1b6d4fd29d51878549e51881ac49ad">alignment</a></td></tr>
+<tr class="memdesc:a7c1b6d4fd29d51878549e51881ac49ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">alignment of entity within its bounds  <a href="structye__component__renderer.html#a7c1b6d4fd29d51878549e51881ac49ad">More...</a><br /></td></tr>
 <tr class="separator:a7c1b6d4fd29d51878549e51881ac49ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c1c523d3e01dd72103db54335b09891"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a7c1c523d3e01dd72103db54335b09891">z</a></td></tr>
+<tr class="memdesc:a7c1c523d3e01dd72103db54335b09891"><td class="mdescLeft">&#160;</td><td class="mdescRight">layer the entity sits on  <a href="structye__component__renderer.html#a7c1c523d3e01dd72103db54335b09891">More...</a><br /></td></tr>
 <tr class="separator:a7c1c523d3e01dd72103db54335b09891"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1501f3c3c7924a643adf5d65b0f2e0b2"><td class="memItemLeft" align="right" valign="top">SDL_Point&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a1501f3c3c7924a643adf5d65b0f2e0b2">center</a></td></tr>
+<tr class="memdesc:a1501f3c3c7924a643adf5d65b0f2e0b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">center of rotation  <a href="structye__component__renderer.html#a1501f3c3c7924a643adf5d65b0f2e0b2">More...</a><br /></td></tr>
 <tr class="separator:a1501f3c3c7924a643adf5d65b0f2e0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae74802f29ca123929306b60dd1710803"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#ae74802f29ca123929306b60dd1710803">rotation</a></td></tr>
+<tr class="memdesc:ae74802f29ca123929306b60dd1710803"><td class="mdescLeft">&#160;</td><td class="mdescRight">rotation of entity in degrees  <a href="structye__component__renderer.html#ae74802f29ca123929306b60dd1710803">More...</a><br /></td></tr>
 <tr class="separator:ae74802f29ca123929306b60dd1710803"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3d08184fb92a35b464ebc5da3e96261"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structye__rectf.html">ye_rectf</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#ac3d08184fb92a35b464ebc5da3e96261">computed_pos</a></td></tr>
+<tr class="memdesc:ac3d08184fb92a35b464ebc5da3e96261"><td class="mdescLeft">&#160;</td><td class="mdescRight">the computed pos to display the entity at  <a href="structye__component__renderer.html#ac3d08184fb92a35b464ebc5da3e96261">More...</a><br /></td></tr>
 <tr class="separator:ac3d08184fb92a35b464ebc5da3e96261"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27d249b872c11e2a2120942e4918b610"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a27d249b872c11e2a2120942e4918b610">flipped_x</a></td></tr>
 <tr class="separator:a27d249b872c11e2a2120942e4918b610"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,7 +166,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a6db51696aafe582b970f6fcb8f1aea19"><td class="memItemLeft" align="right" valign="top">union <a class="el" href="unionye__component__renderer_1_1renderer__impl.html">ye_component_renderer::renderer_impl</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__component__renderer.html#a6db51696aafe582b970f6fcb8f1aea19">renderer_impl</a></td></tr>
 <tr class="separator:a6db51696aafe582b970f6fcb8f1aea19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >A structure to represent a component renderer. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a249bb5b5e0e673b6fe2dc4f0d0438ab5" name="a249bb5b5e0e673b6fe2dc4f0d0438ab5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a249bb5b5e0e673b6fe2dc4f0d0438ab5">&#9670;&#160;</a></span>active</h2>
 
@@ -165,6 +180,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>controls whether system will act upon this component </p>
 
 </div>
 </div>
@@ -180,6 +197,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>alignment of entity within its bounds </p>
+
 </div>
 </div>
 <a id="af0679fa91f7239ccf28275b1e1540aac" name="af0679fa91f7239ccf28275b1e1540aac"></a>
@@ -193,6 +212,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>alpha of texture </p>
 
 </div>
 </div>
@@ -208,6 +229,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>center of rotation </p>
+
 </div>
 </div>
 <a id="ac3d08184fb92a35b464ebc5da3e96261" name="ac3d08184fb92a35b464ebc5da3e96261"></a>
@@ -221,6 +244,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>the computed pos to display the entity at </p>
 
 </div>
 </div>
@@ -278,6 +303,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>whether or not this comp is relative to a parent transform </p>
+
 </div>
 </div>
 <a id="a6db51696aafe582b970f6fcb8f1aea19" name="a6db51696aafe582b970f6fcb8f1aea19"></a>
@@ -306,6 +333,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>rotation of entity in degrees </p>
+
 </div>
 </div>
 <a id="ae6282c8c408d517088cc59091e8eeb28" name="ae6282c8c408d517088cc59091e8eeb28"></a>
@@ -319,6 +348,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>texture to render </p>
 
 </div>
 </div>
@@ -334,6 +365,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>denotes which renderer is needed for this entity </p>
+
 </div>
 </div>
 <a id="a7c1c523d3e01dd72103db54335b09891" name="a7c1c523d3e01dd72103db54335b09891"></a>
@@ -347,6 +380,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>layer the entity sits on </p>
 
 </div>
 </div>

@@ -112,16 +112,16 @@ Include dependency graph for renderer.c:</div>
 <area shape="rect" title=" " alt="" coords="980,152,1051,177"/>
 <area shape="rect" href="cache_8h.html" title="The engine API for caching resources." alt="" coords="1075,152,1142,177"/>
 <area shape="rect" href="ui_8h.html" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="862,152,905,177"/>
-<area shape="rect" href="ecs_8h.html" title=" " alt="" coords="708,152,787,177"/>
+<area shape="rect" href="ecs_8h.html" title="The engine ECS API." alt="" coords="708,152,787,177"/>
 <area shape="rect" href="utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="568,225,692,251"/>
 <area shape="rect" href="logging_8h.html" title="The engine Logging API." alt="" coords="1099,299,1241,324"/>
-<area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="1167,152,1293,177"/>
-<area shape="rect" href="camera_8h.html" title=" " alt="" coords="1317,152,1417,177"/>
-<area shape="rect" href="physics_8h.html" title=" " alt="" coords="1442,152,1543,177"/>
-<area shape="rect" href="renderer_8h.html" title=" " alt="" coords="1567,152,1671,177"/>
-<area shape="rect" href="transform_8h.html" title=" " alt="" coords="1695,152,1807,177"/>
-<area shape="rect" href="collider_8h.html" title=" " alt="" coords="1831,152,1930,177"/>
-<area shape="rect" href="tag_8h.html" title=" " alt="" coords="1954,152,2029,177"/>
+<area shape="rect" href="audiosource_8h.html" title="NOT YET DOCUMENTED OR IMPLEMENTED." alt="" coords="1167,152,1293,177"/>
+<area shape="rect" href="camera_8h.html" title="ECS Camera component." alt="" coords="1317,152,1417,177"/>
+<area shape="rect" href="physics_8h.html" title="ECS Physics component." alt="" coords="1442,152,1543,177"/>
+<area shape="rect" href="renderer_8h.html" title="ECS Renderer component." alt="" coords="1567,152,1671,177"/>
+<area shape="rect" href="transform_8h.html" title="ECS Transform component." alt="" coords="1695,152,1807,177"/>
+<area shape="rect" href="collider_8h.html" title="ECS Collider component." alt="" coords="1831,152,1930,177"/>
+<area shape="rect" href="tag_8h.html" title="ECS Tag component." alt="" coords="1954,152,2029,177"/>
 <area shape="rect" href="timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="542,152,603,177"/>
 <area shape="rect" href="audio_8h.html" title="The engine API for handling audio." alt="" coords="2053,152,2116,177"/>
 <area shape="rect" href="lua_8h.html" title=" " alt="" coords="2140,152,2189,177"/>
@@ -146,18 +146,25 @@ Include dependency graph for renderer.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:afa57207c5c0138c166a2561a5081db5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#afa57207c5c0138c166a2561a5081db5a">ye_add_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, enum <a class="el" href="renderer_8h.html#a5405668e1b5458063380e1977356680d">ye_component_renderer_type</a> type, int z, void *data)</td></tr>
+<tr class="memdesc:afa57207c5c0138c166a2561a5081db5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a renderer component to an entity.  <a href="renderer_8c.html#afa57207c5c0138c166a2561a5081db5a">More...</a><br /></td></tr>
 <tr class="separator:afa57207c5c0138c166a2561a5081db5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a668675fe6f40c1d823216615ade4bf50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#a668675fe6f40c1d823216615ade4bf50">ye_temp_add_image_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, int z, const char *src)</td></tr>
+<tr class="memdesc:a668675fe6f40c1d823216615ade4bf50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporarily adds an image renderer component to an entity.  <a href="renderer_8c.html#a668675fe6f40c1d823216615ade4bf50">More...</a><br /></td></tr>
 <tr class="separator:a668675fe6f40c1d823216615ade4bf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af842f1826d02b48906ebdef846cd69f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#af842f1826d02b48906ebdef846cd69f4">ye_temp_add_text_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, int z, const char *text, TTF_Font *font, SDL_Color *color)</td></tr>
+<tr class="memdesc:af842f1826d02b48906ebdef846cd69f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporarily adds a text renderer component to an entity.  <a href="renderer_8c.html#af842f1826d02b48906ebdef846cd69f4">More...</a><br /></td></tr>
 <tr class="separator:af842f1826d02b48906ebdef846cd69f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f46aa883aaaa3c5a05a2b543568a039"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#a4f46aa883aaaa3c5a05a2b543568a039">ye_temp_add_text_outlined_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, int z, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size)</td></tr>
+<tr class="memdesc:a4f46aa883aaaa3c5a05a2b543568a039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporarily adds an outlined text renderer component to an entity.  <a href="renderer_8c.html#a4f46aa883aaaa3c5a05a2b543568a039">More...</a><br /></td></tr>
 <tr class="separator:a4f46aa883aaaa3c5a05a2b543568a039"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d625af8431ccddfbb4cbe06cfcc1dc9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#a5d625af8431ccddfbb4cbe06cfcc1dc9">ye_temp_add_animation_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, int z, const char *path, const char *format, size_t count, int frame_delay, int loops)</td></tr>
+<tr class="memdesc:a5d625af8431ccddfbb4cbe06cfcc1dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporarily adds an animation renderer component to an entity.  <a href="renderer_8c.html#a5d625af8431ccddfbb4cbe06cfcc1dc9">More...</a><br /></td></tr>
 <tr class="separator:a5d625af8431ccddfbb4cbe06cfcc1dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae343455a18099ff08af249f1989677a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#aae343455a18099ff08af249f1989677a">ye_remove_renderer_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity)</td></tr>
+<tr class="memdesc:aae343455a18099ff08af249f1989677a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a renderer component from an entity.  <a href="renderer_8c.html#aae343455a18099ff08af249f1989677a">More...</a><br /></td></tr>
 <tr class="separator:aae343455a18099ff08af249f1989677a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad79a85b51b1ec75e4f09cc59eeeed78c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="renderer_8c.html#ad79a85b51b1ec75e4f09cc59eeeed78c">ye_system_renderer</a> (SDL_Renderer *renderer)</td></tr>
+<tr class="memdesc:ad79a85b51b1ec75e4f09cc59eeeed78c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the rendering system.  <a href="renderer_8c.html#ad79a85b51b1ec75e4f09cc59eeeed78c">More...</a><br /></td></tr>
 <tr class="separator:ad79a85b51b1ec75e4f09cc59eeeed78c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -199,6 +206,18 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Adds a renderer component to an entity. </p>
+<dl class="section note"><dt>Note</dt><dd>Do not use this directly unless you know what you're doing. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the renderer component to. </td></tr>
+    <tr><td class="paramname">type</td><td>The type of the renderer component. </td></tr>
+    <tr><td class="paramname">z</td><td>The z-index of the renderer component. </td></tr>
+    <tr><td class="paramname">data</td><td>A void pointer to a struct of matching type. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="aae343455a18099ff08af249f1989677a" name="aae343455a18099ff08af249f1989677a"></a>
@@ -217,6 +236,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Removes a renderer component from an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the renderer component from. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ad79a85b51b1ec75e4f09cc59eeeed78c" name="ad79a85b51b1ec75e4f09cc59eeeed78c"></a>
@@ -234,6 +261,29 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Handles the rendering system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderer</td><td>The SDL renderer to use.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Renderer system</p>
+<p >Acts upon the list of tracked entities with renderers and paints them to the screen.</p>
+<p >Uses the transform component to determine where to paint the entity. Skips entity if there is no active transform or renderer is inactive</p>
+<p >This system will paint relative to the active camera, and occlude anything outside of the active camera's view field</p>
+<p >TODO:</p><ul>
+<li>fulcrum cull rotated entities</li>
+</ul>
+<p >NOTES:</p><ul>
+<li>Initially I tried some weird really complicated impl, which I will share details of below, for future me who will likely need these in the future. For now, we literally just check an intersection of the object and the camera, and if it exists we copy the object to the renderer offset by the camera position. In the future we might want to return to the weird clip plane system, but for now this is fine.</li>
+<li>I'm making a REALLY stupid assumption that we dont really scale the camera viewfield outside of the window resolution. I dont want to deal with the paint issues that i need to solve to truly paint from the cameras POV</li>
+</ul>
+<p >Some functions and relevant snippets to the old system:</p><ul>
+<li>SDL_RenderSetClipRect(renderer, &amp;visibleRect);</li>
+<li>SDL_Rect rect = {0,0,640,320}; SDL_RenderSetViewport(pRenderer, &amp;rect); </li>
+</ul>
 
 </div>
 </div>
@@ -293,6 +343,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Temporarily adds an animation renderer component to an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the animation renderer component to. </td></tr>
+    <tr><td class="paramname">z</td><td>The z-index of the animation renderer component. </td></tr>
+    <tr><td class="paramname">path</td><td>The path to the animation. </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the animation. </td></tr>
+    <tr><td class="paramname">count</td><td>The number of frames in the animation. </td></tr>
+    <tr><td class="paramname">frame_delay</td><td>The delay between frames in the animation. </td></tr>
+    <tr><td class="paramname">loops</td><td>The number of loops in the animation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a668675fe6f40c1d823216615ade4bf50" name="a668675fe6f40c1d823216615ade4bf50"></a>
@@ -326,6 +390,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Temporarily adds an image renderer component to an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the image renderer component to. </td></tr>
+    <tr><td class="paramname">z</td><td>The z-index of the image renderer component. </td></tr>
+    <tr><td class="paramname">src</td><td>The source of the image. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -385,6 +459,20 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Temporarily adds an outlined text renderer component to an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the outlined text renderer component to. </td></tr>
+    <tr><td class="paramname">z</td><td>The z-index of the outlined text renderer component. </td></tr>
+    <tr><td class="paramname">text</td><td>The text to render. </td></tr>
+    <tr><td class="paramname">font</td><td>The font to use for rendering the text. </td></tr>
+    <tr><td class="paramname">color</td><td>The color to use for rendering the text. </td></tr>
+    <tr><td class="paramname">outline_color</td><td>The color to use for the outline of the text. </td></tr>
+    <tr><td class="paramname">outline_size</td><td>The size of the outline. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="af842f1826d02b48906ebdef846cd69f4" name="af842f1826d02b48906ebdef846cd69f4"></a>
@@ -430,6 +518,18 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Temporarily adds a text renderer component to an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the text renderer component to. </td></tr>
+    <tr><td class="paramname">z</td><td>The z-index of the text renderer component. </td></tr>
+    <tr><td class="paramname">text</td><td>The text to render. </td></tr>
+    <tr><td class="paramname">font</td><td>The font to use for rendering the text. </td></tr>
+    <tr><td class="paramname">color</td><td>The color to use for rendering the text. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

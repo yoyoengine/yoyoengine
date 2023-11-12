@@ -112,16 +112,16 @@ Include dependency graph for physics.c:</div>
 <area shape="rect" title=" " alt="" coords="980,152,1051,177"/>
 <area shape="rect" href="cache_8h.html" title="The engine API for caching resources." alt="" coords="1075,152,1142,177"/>
 <area shape="rect" href="ui_8h.html" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="862,152,905,177"/>
-<area shape="rect" href="ecs_8h.html" title=" " alt="" coords="708,152,787,177"/>
+<area shape="rect" href="ecs_8h.html" title="The engine ECS API." alt="" coords="708,152,787,177"/>
 <area shape="rect" href="utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="568,225,692,251"/>
 <area shape="rect" href="logging_8h.html" title="The engine Logging API." alt="" coords="1099,299,1241,324"/>
-<area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="1167,152,1293,177"/>
-<area shape="rect" href="camera_8h.html" title=" " alt="" coords="1317,152,1417,177"/>
-<area shape="rect" href="physics_8h.html" title=" " alt="" coords="1442,152,1543,177"/>
-<area shape="rect" href="renderer_8h.html" title=" " alt="" coords="1567,152,1671,177"/>
-<area shape="rect" href="transform_8h.html" title=" " alt="" coords="1695,152,1807,177"/>
-<area shape="rect" href="collider_8h.html" title=" " alt="" coords="1831,152,1930,177"/>
-<area shape="rect" href="tag_8h.html" title=" " alt="" coords="1954,152,2029,177"/>
+<area shape="rect" href="audiosource_8h.html" title="NOT YET DOCUMENTED OR IMPLEMENTED." alt="" coords="1167,152,1293,177"/>
+<area shape="rect" href="camera_8h.html" title="ECS Camera component." alt="" coords="1317,152,1417,177"/>
+<area shape="rect" href="physics_8h.html" title="ECS Physics component." alt="" coords="1442,152,1543,177"/>
+<area shape="rect" href="renderer_8h.html" title="ECS Renderer component." alt="" coords="1567,152,1671,177"/>
+<area shape="rect" href="transform_8h.html" title="ECS Transform component." alt="" coords="1695,152,1807,177"/>
+<area shape="rect" href="collider_8h.html" title="ECS Collider component." alt="" coords="1831,152,1930,177"/>
+<area shape="rect" href="tag_8h.html" title="ECS Tag component." alt="" coords="1954,152,2029,177"/>
 <area shape="rect" href="timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="542,152,603,177"/>
 <area shape="rect" href="audio_8h.html" title="The engine API for handling audio." alt="" coords="2053,152,2116,177"/>
 <area shape="rect" href="lua_8h.html" title=" " alt="" coords="2140,152,2189,177"/>
@@ -146,12 +146,15 @@ Include dependency graph for physics.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac46e08643c0fba429de907508bda9d39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="physics_8c.html#ac46e08643c0fba429de907508bda9d39">ye_add_physics_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity, float velocity_x, float velocity_y)</td></tr>
+<tr class="memdesc:ac46e08643c0fba429de907508bda9d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a physics component to an entity.  <a href="physics_8c.html#ac46e08643c0fba429de907508bda9d39">More...</a><br /></td></tr>
 <tr class="separator:ac46e08643c0fba429de907508bda9d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6033c18ab8ca9f54f4c2e3bda803f47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="physics_8c.html#aa6033c18ab8ca9f54f4c2e3bda803f47">ye_remove_physics_component</a> (struct <a class="el" href="structye__entity.html">ye_entity</a> *entity)</td></tr>
+<tr class="memdesc:aa6033c18ab8ca9f54f4c2e3bda803f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the physics component from an entity.  <a href="physics_8c.html#aa6033c18ab8ca9f54f4c2e3bda803f47">More...</a><br /></td></tr>
 <tr class="separator:aa6033c18ab8ca9f54f4c2e3bda803f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaad7114f4583a34badbb05925db5a3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="physics_8c.html#afaad7114f4583a34badbb05925db5a3c">ye_rectf_collision</a> (struct <a class="el" href="structye__rectf.html">ye_rectf</a> rect1, struct <a class="el" href="structye__rectf.html">ye_rectf</a> rect2)</td></tr>
 <tr class="separator:afaad7114f4583a34badbb05925db5a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a233ff29aab9780bef667db7e3f5a859e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="physics_8c.html#a233ff29aab9780bef667db7e3f5a859e">ye_system_physics</a> ()</td></tr>
+<tr class="memdesc:a233ff29aab9780bef667db7e3f5a859e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physics system function.  <a href="physics_8c.html#a233ff29aab9780bef667db7e3f5a859e">More...</a><br /></td></tr>
 <tr class="separator:a233ff29aab9780bef667db7e3f5a859e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -186,6 +189,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Adds a physics component to an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to add the component to </td></tr>
+    <tr><td class="paramname">velocity_x</td><td>The x component of the velocity </td></tr>
+    <tr><td class="paramname">velocity_y</td><td>The y component of the velocity </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -233,6 +246,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Removes the physics component from an entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>The entity to remove the component from </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a233ff29aab9780bef667db7e3f5a859e" name="a233ff29aab9780bef667db7e3f5a859e"></a>
@@ -249,6 +270,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Physics system function. </p>
+<p >This function is responsible for updating the physics components of all entities. </p>
 
 </div>
 </div>
