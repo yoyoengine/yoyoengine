@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file physics.h
+ * @brief ECS Physics component
+ */
+
 #ifndef YE_PHYSICS_H
 #define YE_PHYSICS_H
 
@@ -28,27 +33,39 @@
     #define YE_PHYSICS_SUBSTEPS 10
 #endif
 
-/*
-    Physics component
-    
-    Holds information on how an entity moves.
-
-    Velocity and acceleration are in pixels per second.
-*/
+/**
+ * @brief Physics component structure
+ *
+ * This structure holds the physics properties of an entity.
+ */
 struct ye_component_physics {
-    bool active;                        // controls whether system will act upon this component
+    bool active;                        /**< Controls whether system will act upon this component */
 
-    // float mass;                      // mass of entity
-    // float drag;                      // drag of entity when accelerating
-    struct ye_vec2f velocity;            // velocity of entity
-    float rotational_velocity;            // rotational velocity of entity
-    // struct ye_vec2 acceleration;     // acceleration of entity
+    struct ye_vec2f velocity;           /**< Velocity of entity */
+    float rotational_velocity;          /**< Rotational velocity of entity */
 };
 
+/**
+ * @brief Adds a physics component to an entity
+ *
+ * @param entity The entity to add the component to
+ * @param velocity_x The x component of the velocity
+ * @param velocity_y The y component of the velocity
+ */
 void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float velocity_y);
 
+/**
+ * @brief Removes the physics component from an entity
+ *
+ * @param entity The entity to remove the component from
+ */
 void ye_remove_physics_component(struct ye_entity *entity);
 
+/**
+ * @brief Physics system function
+ *
+ * This function is responsible for updating the physics components of all entities.
+ */
 void ye_system_physics();
 
 #endif

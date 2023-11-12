@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file audiosource.h
+ * @brief NOT YET DOCUMENTED OR IMPLEMENTED
+ */
+
 #ifndef YE_AUDIOSOURCE_H
 #define YE_AUDIOSOURCE_H
 

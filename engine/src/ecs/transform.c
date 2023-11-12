@@ -18,11 +18,6 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Problem... we need the actual size of the image to align it in bounds, but
-    at the same time we can have a transform without a renderer (sometimes i guess)
-    which means we need to query the texture size
-*/
 void ye_add_transform_component(struct ye_entity *entity, int x,int y){
     entity->transform = malloc(sizeof(struct ye_component_transform));
     // entity->transform->active = true; transform doesnt need active

@@ -16,16 +16,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file transform.h
+ * @brief ECS Transform component
+ */
+
 #ifndef YE_TRANSFORM_H
 #define YE_TRANSFORM_H
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Transform component
-    
-    Describes where the entity sits in the world.
-    In 2D the Z axis is the layer the entity sits on. (High Z overpaints low Z)
+/**
+ * @brief The transform component
+ * 
+ * Describes where the entity sits in the world.
 */
 struct ye_component_transform {
     // bool active;    // controls whether system will act upon this component
@@ -34,8 +38,20 @@ struct ye_component_transform {
     float y;        // the transform y position
 };
 
+/**
+ * @brief Adds a transform component to an entity
+ * 
+ * @param entity The entity to add the component to
+ * @param x The x position of the transform
+ * @param y The y position of the transform
+ */
 void ye_add_transform_component(struct ye_entity *entity, int x, int y);
 
+/**
+ * @brief Removes a transform component from an entity
+ * 
+ * @param entity The entity to remove the component from
+ */
 void ye_remove_transform_component(struct ye_entity *entity);
 
 #endif

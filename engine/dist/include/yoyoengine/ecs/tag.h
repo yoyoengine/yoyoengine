@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file tag.h
+ * @brief ECS Tag component
+ */
+
 #ifndef YE_TAG_H
 #define YE_TAG_H
 
@@ -24,30 +29,43 @@
 #define YE_TAG_MAX_NUMBER 10
 #define YE_TAG_MAX_LENGTH 20
 
+/**
+ * @brief The tag component
+ */
 struct ye_component_tag {
     bool active;    // controls whether system will act upon this component
 
     char tags[YE_TAG_MAX_NUMBER][YE_TAG_MAX_LENGTH]; // array of tags
 };
 
-/*
-    Add a tag component to an entity
-*/
+/**
+ * @brief Add a tag component to an entity
+ * 
+ * @param entity The entity to which the tag component will be added
+ */
 void ye_add_tag_component(struct ye_entity *entity);
 
-/*
-    Add a tag to an entity, creating a tag component for that entity if it doesnt exist
-*/
+/**
+ * @brief Add a tag to an entity, creating a tag component for that entity if it doesn't exist
+ * 
+ * @param entity The entity to which the tag will be added
+ * @param tag The tag to be added
+ */
 void ye_add_tag(struct ye_entity *entity, const char *tag);
 
-/*
-    Remove a tag from an entity, removing its tag component if it has no more tags
-*/
+/**
+ * @brief Remove a tag from an entity, removing its tag component if it has no more tags
+ * 
+ * @param entity The entity from which the tag will be removed
+ * @param tag The tag to be removed
+ */
 void ye_remove_tag(struct ye_entity *entity, const char *tag);
 
-/*
-    Remove a tag component from an entity
-*/
+/**
+ * @brief Remove a tag component from an entity
+ * 
+ * @param entity The entity from which the tag component will be removed
+ */
 void ye_remove_tag_component(struct ye_entity *entity);
 
 #endif

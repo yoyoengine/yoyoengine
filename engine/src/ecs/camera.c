@@ -18,9 +18,6 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Set a camera as the active camera renderer
-*/
 void ye_set_camera(struct ye_entity *entity){
     YE_STATE.engine.target_camera = entity;
 }

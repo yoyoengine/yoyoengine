@@ -126,7 +126,7 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, c
     animation->current_frame_index = 0;
     animation->paused = false;
     animation->frames = (SDL_Texture**)malloc(count * sizeof(SDL_Texture*));
- 
+
     // load all the frames into memory TODO: this could be futurely optimized
     for (size_t i = 0; i < (size_t)count; ++i) {
         char filename[256];  // Assuming a maximum filename length of 255 characters
@@ -176,34 +176,6 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     ye_entity_list_remove(&renderer_list_head, entity);
 }
 
-/*
-    Renderer system
-
-    Acts upon the list of tracked entities with renderers and paints them
-    to the screen.
-
-    Uses the transform component to determine where to paint the entity.
-    Skips entity if there is no active transform or renderer is inactive
-
-    This system will paint relative to the active camera, and occlude anything
-    outside of the active camera's view field
-
-    TODO:
-    - fulcrum cull rotated entities
-
-    NOTES:
-    - Initially I tried some weird really complicated impl, which I will share details
-    of below, for future me who will likely need these in the future.
-    For now, we literally just check an intersection of the object and the camera, and if it exists we
-    copy the object to the renderer offset by the camera position.
-    In the future we might want to return to the weird clip plane system, but for now this is fine.
-    - I'm making a REALLY stupid assumption that we dont really scale the camera viewfield outside of the
-    window resolution. I dont want to deal with the paint issues that i need to solve to truly paint from the cameras POV
-
-    Some functions and relevant snippets to the old system:
-    - SDL_RenderSetClipRect(renderer, &visibleRect);
-    - SDL_Rect rect = {0,0,640,320}; SDL_RenderSetViewport(pRenderer, &rect);
-*/
 void ye_system_renderer(SDL_Renderer *renderer) {
     // if we are in editor mode
     if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){

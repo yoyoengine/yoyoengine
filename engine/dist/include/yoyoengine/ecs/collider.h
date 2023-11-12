@@ -16,53 +16,56 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    TODO:
-    - the flexibility of having "round" colliders or triange colliders
-    - the ability to have multiple colliders on a single entity
-    - on enter, on exit on stay
-    - trigger colliders
-*/
+/**
+ * @file collider.h
+ * @brief ECS Collider component\
+ * 
+ * TODO:
+ * - the flexibility of having "round" colliders or triange colliders
+ * - the ability to have multiple colliders on a single entity
+ * - on enter, on exit on stay
+ * - trigger colliders
+ */
 
 #ifndef YE_COLLIDER_H
 #define YE_COLLIDER_H
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Its possible the collider needs broken out into
-    a two different colliders, trigger and static to enable
-    multiple colliders on a single entity.
-
-    TODO: consider giving this a z or a layer, colliders do not care about the layer rn
-*/
+/**
+ * @brief A structure representing a collider component.
+ *
+ * This structure might need to be broken out into two different colliders, trigger and static to enable
+ * multiple colliders on a single entity. Also, consider giving this a z or a layer, colliders do not care about the layer right now.
+ */
 struct ye_component_collider {
-    bool active;            // controls whether system will act upon this component
+    bool active;            /**< Controls whether system will act upon this component. */
     
-    bool relative;          // whether or not this comp is relative to a parent transform
+    bool relative;          /**< Specifies whether this component is relative to a parent transform. */
     
-    struct ye_rectf rect;   // collider rectangle
+    struct ye_rectf rect;   /**< The collider rectangle. */
 
-    bool is_trigger;        // whether this collider is a trigger, if false, it is a static collider
+    bool is_trigger;        /**< Specifies whether this collider is a trigger. If false, it is a static collider. */
 
     // trigger specific fields
     // how are we responding to the trigger? broadcasting a message? calling a C callback? calling a lua callback?
 };
 
-/*
-    Add a static collider to an entity
-*/
+/**
+ * @brief Adds a static collider to an entity.
+ *
+ * @param entity The entity to which the collider is to be added.
+ * @param rect The rectangle defining the collider.
+ */
 void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf rect);
 
 // TODO: add trigger collider
 
-/*
-    Remove an entity's collider component
-*/
+/**
+ * @brief Removes an entity's collider component.
+ *
+ * @param entity The entity from which the collider is to be removed.
+ */
 void ye_remove_collider_component(struct ye_entity *entity);
-
-// need bunch of helper functions... 
-
-// take in a given position and return what entity it would collide with
 
 #endif

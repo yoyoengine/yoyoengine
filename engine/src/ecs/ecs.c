@@ -27,12 +27,10 @@ int eid = 0;
 
 //////////////////////// LINKED LIST //////////////////////////
 
-// Create a linked list for entities of a specific type (e.g., renderable entities)
 struct ye_entity_node *ye_entity_list_create() {
     return NULL; // Initialize an empty list
 }
 
-// Add an entity to the linked list
 void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) {
     struct ye_entity_node *newNode = malloc(sizeof(struct ye_entity_node));
     newNode->entity = entity;
@@ -40,9 +38,6 @@ void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity) 
     *list = newNode;
 }
 
-/*
-    Adds to the renderer list sorted by z value, lowest at head
-*/
 void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct ye_entity *entity){
     if(entity == NULL || entity->renderer == NULL){
         ye_logf(warning, "Error adding to render list sorted Z, something was null.\n");
@@ -81,17 +76,6 @@ void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct y
     current->next = newNode;
 }
 
-/*
-    Remove an entity from the linked list
-
-    NOTE: THIS DOES NOT FREE THE ACTUAL ENTITY ITSELF
-    
-    This is temporarialy ok because we dont delete any at runtime but TODO
-    we need a method of this that does call the destructor for the entity
-    probably ye_entity_list_remove_free?
-    Not sure how to differentiate when this needs called though... just for actual list
-    of entities?
-*/ 
 void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity) {
     struct ye_entity_node *current = *list;
     struct ye_entity_node *prev = NULL;
@@ -111,7 +95,6 @@ void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entit
     }
 }
 
-// Clean up the entire linked list
 void ye_entity_list_destroy(struct ye_entity_node **list) {
     while (*list != NULL) {
         struct ye_entity_node *temp = *list;
@@ -135,17 +118,10 @@ struct ye_entity_node *collider_list_head;
 // struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
 
-/*
-    Get the entity list head pointer
-    (For use outside this file, ex: the editor)
-*/
 struct ye_entity_node * ye_get_entity_list_head(){
     return entity_list_head;
 }
 
-/*
-    Create a new entity and return a pointer to it
-*/
 struct ye_entity * ye_create_entity(){
     struct ye_entity *entity = malloc(sizeof(struct ye_entity));
     entity->id = eid++; // assign unique id to entity
@@ -175,11 +151,6 @@ struct ye_entity * ye_create_entity(){
     return entity;
 }
 
-/*
-    Create a new entity and return a pointer to it (named)
-
-    we must allocate space for the name and copy it
-*/
 struct ye_entity * ye_create_entity_named(const char *name){
     struct ye_entity *entity = malloc(sizeof(struct ye_entity));
     entity->id = eid++; // assign unique id to entity
@@ -217,10 +188,6 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     strcpy(entity->name, new_name);
 }
 
-/*
-    TODO:
-    this function is likely broken on a multitiude of levels
-*/
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
     struct ye_entity *new_entity = ye_create_entity_named(strcat(strcat(entity->name, " "), "copy"));
@@ -276,9 +243,6 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     return new_entity;
 }
 
-/*
-    Destroy an entity by pointer
-*/
 void ye_destroy_entity(struct ye_entity * entity){
     if(entity == NULL){
         ye_logf(warning, "Attempted to destroy a null entity\n");
@@ -415,9 +379,6 @@ void ye_shutdown_ecs(){
     ye_logf(info, "Shut down ECS\n");
 }
 
-/*
-    Function that iterates through entity list and logs all entities with their ids
-*/
 void ye_print_entities(){
     struct ye_entity_node *current = entity_list_head;
     int i = 0;
