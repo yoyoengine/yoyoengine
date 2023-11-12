@@ -2,8 +2,8 @@ name: Generate docs and push to gitHub pages
 
 on:
   push:
-    branches:
-        - main  # when we push to main, TODO: in the future this should be when we release a tag
+    tags:        
+      - '**' # Push events to all tags
 
 jobs:
   deploy:
