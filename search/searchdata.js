@@ -8,7 +8,9 @@ var indexSectionsWithContent =
   5: "ln",
   6: "ly",
   7: "deiwy",
-  8: "bcglmnry"
+  8: "bcglmnry",
+  9: "c",
+  10: "y"
 };
 
 var indexSectionNames =
@@ -21,7 +23,9 @@ var indexSectionNames =
   5: "typedefs",
   6: "enums",
   7: "enumvalues",
-  8: "defines"
+  8: "defines",
+  9: "groups",
+  10: "pages"
 };
 
 var indexSectionLabels =
@@ -34,6 +38,8 @@ var indexSectionLabels =
   5: "Typedefs",
   6: "Enumerations",
   7: "Enumerator",
-  8: "Macros"
+  8: "Macros",
+  9: "Modules",
+  10: "Pages"
 };
 

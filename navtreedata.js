@@ -25,6 +25,24 @@
 var NAVTREE =
 [
   [ "Yoyo Engine", "index.html", [
+    [ "Yoyo Engine (WIP)", "index.html", [
+      [ "Documentation", "index.html#autotoc_md1", null ],
+      [ "Notices", "index.html#autotoc_md2", [
+        [ "editor", "index.html#autotoc_md3", null ]
+      ] ],
+      [ "Dependencies", "index.html#autotoc_md4", [
+        [ "Tooling", "index.html#autotoc_md5", null ],
+        [ "Core & Editor", "index.html#autotoc_md6", null ],
+        [ "Launcher / Project Manager", "index.html#autotoc_md7", null ]
+      ] ],
+      [ "Documentation", "index.html#autotoc_md8", null ],
+      [ "Launcher", "index.html#autotoc_md9", null ],
+      [ "Editor", "index.html#autotoc_md10", null ],
+      [ "Core", "index.html#autotoc_md11", null ],
+      [ "Plans", "index.html#autotoc_md12", null ],
+      [ "Credit", "index.html#autotoc_md13", null ]
+    ] ],
+    [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -51,8 +69,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"json_8c.html#a9c5678f0cb714c16be32e932661fbba6",
-"structye__engine__config.html#a524dfb15437131ee9fdfd3a790a5baed"
+"json_8c.html#a0a4d1d4631fe971dc74cedfe76493af0",
+"structye__engine__config.html#a0b2ae88baeb709ffcd3c45161c8b1d33"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

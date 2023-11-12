@@ -1,16 +1,16 @@
 <map id="dist/include/yoyoengine/graphics.h" name="dist/include/yoyoengine/graphics.h">
-<area shape="rect" id="node1" title=" " alt="" coords="235,5,391,45"/>
+<area shape="rect" id="node1" title="The engine API for handling graphics." alt="" coords="235,5,391,45"/>
 <area shape="rect" id="node2" title=" " alt="" coords="166,240,241,265"/>
 <area shape="rect" id="node3" title=" " alt="" coords="28,240,142,265"/>
 <area shape="rect" id="node4" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="996,93,1160,119"/>
 <area shape="rect" id="node5" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="204,167,275,192"/>
-<area shape="rect" id="node7" href="$json_8h.html" title=" " alt="" coords="580,167,636,192"/>
+<area shape="rect" id="node7" href="$json_8h.html" title="The engine API for working with json data, built on top of jansson." alt="" coords="580,167,636,192"/>
 <area shape="rect" id="node9" title=" " alt="" coords="778,167,848,192"/>
-<area shape="rect" id="node10" href="$cache_8h.html" title=" " alt="" coords="873,167,940,192"/>
+<area shape="rect" id="node10" href="$cache_8h.html" title="The engine API for caching resources." alt="" coords="873,167,940,192"/>
 <area shape="rect" id="node11" href="$ui_8h.html" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="710,167,753,192"/>
 <area shape="rect" id="node21" href="$ecs_8h.html" title=" " alt="" coords="476,167,555,192"/>
 <area shape="rect" id="node22" href="$utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="266,240,390,265"/>
-<area shape="rect" id="node23" href="$logging_8h.html" title=" " alt="" coords="873,313,1014,339"/>
+<area shape="rect" id="node23" href="$logging_8h.html" title="The engine Logging API." alt="" coords="873,313,1014,339"/>
 <area shape="rect" id="node25" href="$audiosource_8h.html" title=" " alt="" coords="1015,167,1142,192"/>
 <area shape="rect" id="node26" href="$camera_8h.html" title=" " alt="" coords="1166,167,1266,192"/>
 <area shape="rect" id="node27" href="$physics_8h.html" title=" " alt="" coords="1290,167,1392,192"/>
@@ -19,7 +19,7 @@
 <area shape="rect" id="node30" href="$collider_8h.html" title=" " alt="" coords="1680,167,1778,192"/>
 <area shape="rect" id="node31" href="$tag_8h.html" title=" " alt="" coords="1802,167,1877,192"/>
 <area shape="rect" id="node32" href="$timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="390,167,452,192"/>
-<area shape="rect" id="node33" href="$audio_8h.html" title=" " alt="" coords="1902,167,1964,192"/>
+<area shape="rect" id="node33" href="$audio_8h.html" title="The engine API for handling audio." alt="" coords="1902,167,1964,192"/>
 <area shape="rect" id="node34" href="$lua_8h.html" title=" " alt="" coords="1988,167,2038,192"/>
 <area shape="rect" id="node35" href="$scene_8h.html" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="2062,167,2129,192"/>
 <area shape="rect" id="node6" title=" " alt="" coords="280,313,375,339"/>
