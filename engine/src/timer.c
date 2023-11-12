@@ -21,9 +21,6 @@
 // list to track timers
 struct ye_timer_node * timers;
 
-/*
-    Register a timer with the engine
-*/
 void ye_register_timer(struct ye_timer * timer){
     struct ye_timer_node * node = malloc(sizeof(struct ye_timer_node));
     node->timer = timer;
@@ -31,9 +28,6 @@ void ye_register_timer(struct ye_timer * timer){
     timers = node;
 }
 
-/*
-    Unregister a timer with the engine
-*/
 void ye_unregister_timer(struct ye_timer * timer){
     struct ye_timer_node * node = timers;
     struct ye_timer_node * prev = NULL;
@@ -53,9 +47,6 @@ void ye_unregister_timer(struct ye_timer * timer){
     }
 }
 
-/*
-    Unregister all timers with the engine
-*/
 void ye_unregister_all_timers(){
     struct ye_timer_node * node = timers;
     while(node != NULL){
@@ -66,9 +57,6 @@ void ye_unregister_all_timers(){
     timers = NULL;
 }
 
-/*
-    Update all timers with the engine
-*/
 void ye_update_timers(){
     struct ye_timer_node * node = timers;
     while(node != NULL){
@@ -94,17 +82,11 @@ void ye_update_timers(){
     }
 }
 
-/*
-    Initialize the timer system
-*/
 void ye_init_timers(){
     timers = NULL;
     ye_logf(info,"%s","Initialized timers.\n");
 }
 
-/*
-    Destroy the timer system
-*/
 void ye_shutdown_timers(){
     ye_unregister_all_timers();
     timers = NULL;

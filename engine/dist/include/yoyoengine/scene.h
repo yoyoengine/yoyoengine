@@ -16,45 +16,44 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    Scene manager
-
-    This file is responsible for managing scenes in the engine. It has the capacity to deserialize a scene from file,
-    pre cache all its assets and load the entities+components into memory.
-
-    In the future (TODO) I would like to allow serialization of a scene directly to a file, for a better version of a save system.
-    This is not strictly necessary for the game I wish to build with this engine, so it will be avoided for now.
-*/
+/**
+ * @file scene.h
+ * @brief Manages the active scene in the engine as well as loading in new scenes.
+ */
 
 #ifndef YE_SCENE_H
 #define YE_SCENE_H
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    Initializes the scene manager
-*/
+/**
+ * @brief Initializes the scene manager
+ */
 void ye_init_scene_manager();
 
-/*
-    Loads a scene from file (.json, .yoyo, etc) and sets the current scene name,
-    creating all entities and components as described by the file.
-*/
+/**
+ * @brief Loads a scene from file (.json, .yoyo, etc) and sets the current scene name,
+ * creating all entities and components as described by the file.
+ * 
+ * @param scene_name The name of the scene to load
+ */
 void ye_load_scene(const char *scene_name);
 
-/*
-    Reloads the current scene from disk
-*/
+/**
+ * @brief Reloads the current scene from disk
+ */
 void ye_reload_scene();
 
-/*
-    Returns the current scene name
-*/
+/**
+ * @brief Returns the current scene name
+ * 
+ * @return char* The name of the current scene
+ */
 char *ye_get_scene_name();
 
-/*
-    Tears down the scene manager context, freeing the current scene name
-*/
+/**
+ * @brief Tears down the scene manager context, freeing the current scene name
+ */
 void ye_shutdown_scene_manager();
 
 #endif

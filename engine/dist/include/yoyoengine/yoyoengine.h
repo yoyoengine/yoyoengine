@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+    @file yoyoengine.h
+    @brief The master header for yoyoengine. Includes all other headers.
+*/
+
 #ifndef YE_ENGINE_MAIN_H
 #define YE_ENGINE_MAIN_H
 #define NK_INCLUDE_FIXED_TYPES

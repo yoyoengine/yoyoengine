@@ -129,19 +129,6 @@ void ui_end_input_checks(){
     nk_input_end(ctx);
 }
 
-/*
-    TODO: goal is to abstract painting ui overlay objects.
-
-    Considerations:
-    - how do we extend gui overlay creation to lua/python? would we be forcing C?
-        - do we need to make this extensible to lua? there was some talk about lua bindings on the Nuklear Repo
-    - integration for general game inputs and such, a default settings menu ships with game scenes?
-    - relative positioning translation for ui comps... also how will we arrange viewport for game in editor
-
-    Features:
-    - would be nice to get a perf/benchmarking/timing suite in the codebase so we can see all timing elements of a frame
-      here, like how long logic/input/ui paint/object paint/interact check/physics took
-*/
 void ui_paint_debug_overlay(){
     // put all the parameters into strings for display
     char fps_str[100];
@@ -182,9 +169,6 @@ void ui_paint_debug_overlay(){
     nk_end(ctx);
 }
 
-/*
-    paint information on the current camera, x,y,w,h,z
-*/
 void ui_paint_cam_info(){
     char x_str[100];
     char y_str[100];
@@ -211,12 +195,6 @@ void ui_paint_cam_info(){
     }
 }
 
-/*
-    Will iterate and render all tracked ui components by calling their function pointers
-
-    These functions cannot take parameters (other than the Nuklear context), 
-    I would reccomend just scoping them to observe local variables in the files they reside in
-*/
 void ui_render(){
     // render all tracked ui components
     for (int i = 0; i < num_ui_components; i++) {
