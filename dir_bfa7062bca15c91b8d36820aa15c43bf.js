@@ -12,7 +12,6 @@ var dir_bfa7062bca15c91b8d36820aa15c43bf =
     [ "scene.h", "scene_8h.html", "scene_8h" ],
     [ "timer.h", "timer_8h.html", "timer_8h" ],
     [ "ui.h", "ui_8h.html", "ui_8h" ],
-    [ "uthash.h", "uthash_8h.html", "uthash_8h" ],
     [ "utils.h", "utils_8h.html", "utils_8h" ],
     [ "yoyoengine.h", "yoyoengine_8h.html", "yoyoengine_8h" ]
 ];

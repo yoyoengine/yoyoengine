@@ -1,4 +1,4 @@
 <map id="ye_component_collider" name="ye_component_collider">
 <area shape="rect" id="node1" title=" " alt="" coords="5,93,160,119"/>
-<area shape="rect" id="node2" href="$structye__rectf.html" title=" " alt="" coords="49,5,117,31"/>
+<area shape="rect" id="node2" href="$structye__rectf.html" title="A rectangle made up of floats." alt="" coords="49,5,117,31"/>
 </map>

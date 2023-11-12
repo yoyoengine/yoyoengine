@@ -99,6 +99,9 @@ $(document).ready(function(){initNavTree('timer_8h.html',''); initResizable(); }
   <div class="headertitle"><div class="title">timer.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides a simple timer system for the engine.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="yoyoengine_8h_source.html">yoyoengine/yoyoengine.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -106,42 +109,41 @@ Include dependency graph for timer.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="timer_8h__incl.png" border="0" usemap="#adist_2include_2yoyoengine_2timer_8h" alt=""/></div>
 <map name="adist_2include_2yoyoengine_2timer_8h" id="adist_2include_2yoyoengine_2timer_8h">
-<area shape="rect" title=" " alt="" coords="1036,5,1192,45"/>
-<area shape="rect" title=" " alt="" coords="188,313,263,339"/>
-<area shape="rect" href="yoyoengine_8h.html" title=" " alt="" coords="1032,93,1196,119"/>
-<area shape="rect" href="engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="370,167,441,192"/>
-<area shape="rect" href="graphics_8h.html" title=" " alt="" coords="185,240,266,265"/>
-<area shape="rect" href="json_8h.html" title=" " alt="" coords="118,167,174,192"/>
-<area shape="rect" href="uthash_8h.html" title=" " alt="" coords="660,167,730,192"/>
-<area shape="rect" href="cache_8h.html" title=" " alt="" coords="755,167,822,192"/>
-<area shape="rect" href="ui_8h.html" title=" " alt="" coords="846,167,888,192"/>
-<area shape="rect" href="ecs_8h.html" title=" " alt="" coords="505,167,584,192"/>
-<area shape="rect" href="utils_8h.html" title=" " alt="" coords="494,240,618,265"/>
-<area shape="rect" href="logging_8h.html" title=" " alt="" coords="1304,313,1446,339"/>
-<area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="913,167,1040,192"/>
-<area shape="rect" href="camera_8h.html" title=" " alt="" coords="1064,167,1164,192"/>
-<area shape="rect" href="physics_8h.html" title=" " alt="" coords="1188,167,1290,192"/>
-<area shape="rect" href="renderer_8h.html" title=" " alt="" coords="1314,167,1418,192"/>
-<area shape="rect" href="transform_8h.html" title=" " alt="" coords="1442,167,1554,192"/>
-<area shape="rect" href="collider_8h.html" title=" " alt="" coords="1578,167,1676,192"/>
-<area shape="rect" href="tag_8h.html" title=" " alt="" coords="1700,167,1775,192"/>
-<area shape="rect" href="audio_8h.html" title=" " alt="" coords="1800,167,1862,192"/>
-<area shape="rect" href="lua_8h.html" title=" " alt="" coords="1886,167,1936,192"/>
-<area shape="rect" href="scene_8h.html" title=" " alt="" coords="1960,167,2027,192"/>
-<area shape="rect" title=" " alt="" coords="509,313,604,339"/>
-<area shape="rect" title=" " alt="" coords="318,313,432,339"/>
-<area shape="rect" title=" " alt="" coords="34,240,161,265"/>
-<area shape="rect" title=" " alt="" coords="823,240,887,265"/>
-<area shape="rect" title=" " alt="" coords="642,240,710,265"/>
-<area shape="rect" title=" " alt="" coords="912,240,974,265"/>
-<area shape="rect" title=" " alt="" coords="735,240,799,265"/>
-<area shape="rect" title=" " alt="" coords="1132,240,1192,265"/>
-<area shape="rect" title=" " alt="" coords="1216,240,1284,265"/>
-<area shape="rect" title=" " alt="" coords="1308,240,1370,265"/>
-<area shape="rect" title=" " alt="" coords="1394,240,1462,265"/>
-<area shape="rect" title=" " alt="" coords="1486,240,1549,265"/>
-<area shape="rect" title=" " alt="" coords="1050,240,1108,265"/>
-<area shape="rect" title=" " alt="" coords="1314,387,1436,412"/>
+<area shape="rect" title="Provides a simple timer system for the engine." alt="" coords="1461,5,1617,45"/>
+<area shape="rect" title=" " alt="" coords="1248,313,1323,339"/>
+<area shape="rect" href="yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="1457,93,1621,119"/>
+<area shape="rect" href="engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="1042,167,1113,192"/>
+<area shape="rect" href="graphics_8h.html" title=" " alt="" coords="1245,240,1326,265"/>
+<area shape="rect" href="json_8h.html" title=" " alt="" coords="2351,167,2407,192"/>
+<area shape="rect" title=" " alt="" coords="701,167,771,192"/>
+<area shape="rect" href="cache_8h.html" title=" " alt="" coords="796,167,863,192"/>
+<area shape="rect" href="ui_8h.html" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="416,167,459,192"/>
+<area shape="rect" href="ecs_8h.html" title=" " alt="" coords="887,167,966,192"/>
+<area shape="rect" href="utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="842,240,966,265"/>
+<area shape="rect" href="logging_8h.html" title=" " alt="" coords="933,313,1075,339"/>
+<area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="1213,167,1339,192"/>
+<area shape="rect" href="camera_8h.html" title=" " alt="" coords="1363,167,1463,192"/>
+<area shape="rect" href="physics_8h.html" title=" " alt="" coords="1488,167,1589,192"/>
+<area shape="rect" href="renderer_8h.html" title=" " alt="" coords="1613,167,1717,192"/>
+<area shape="rect" href="transform_8h.html" title=" " alt="" coords="1741,167,1853,192"/>
+<area shape="rect" href="collider_8h.html" title=" " alt="" coords="1877,167,1976,192"/>
+<area shape="rect" href="tag_8h.html" title=" " alt="" coords="2000,167,2075,192"/>
+<area shape="rect" href="audio_8h.html" title=" " alt="" coords="2099,167,2162,192"/>
+<area shape="rect" href="lua_8h.html" title=" " alt="" coords="2186,167,2235,192"/>
+<area shape="rect" href="scene_8h.html" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="2260,167,2327,192"/>
+<area shape="rect" title=" " alt="" coords="814,313,909,339"/>
+<area shape="rect" title=" " alt="" coords="1104,313,1219,339"/>
+<area shape="rect" title=" " alt="" coords="2214,240,2341,265"/>
+<area shape="rect" title=" " alt="" coords="490,240,550,265"/>
+<area shape="rect" title=" " alt="" coords="574,240,637,265"/>
+<area shape="rect" title=" " alt="" coords="661,240,725,265"/>
+<area shape="rect" title=" " alt="" coords="750,240,818,265"/>
+<area shape="rect" title=" " alt="" coords="5,240,69,265"/>
+<area shape="rect" title=" " alt="" coords="93,240,155,265"/>
+<area shape="rect" title=" " alt="" coords="230,240,298,265"/>
+<area shape="rect" title=" " alt="" coords="322,240,385,265"/>
+<area shape="rect" title=" " alt="" coords="409,240,466,265"/>
+<area shape="rect" title=" " alt="" coords="943,387,1065,412"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -149,8 +151,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="timer_8h__dep__incl.png" border="0" usemap="#adist_2include_2yoyoengine_2timer_8hdep" alt=""/></div>
 <map name="adist_2include_2yoyoengine_2timer_8hdep" id="adist_2include_2yoyoengine_2timer_8hdep">
-<area shape="rect" title=" " alt="" coords="1805,5,1961,45"/>
-<area shape="rect" href="yoyoengine_8h.html" title=" " alt="" coords="1805,93,1961,133"/>
+<area shape="rect" title="Provides a simple timer system for the engine." alt="" coords="1805,5,1961,45"/>
+<area shape="rect" href="yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="1805,93,1961,133"/>
 <area shape="rect" href="cache_8h.html" title=" " alt="" coords="5,181,161,221"/>
 <area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="185,181,341,221"/>
 <area shape="rect" href="camera_8h.html" title=" " alt="" coords="365,181,521,221"/>
@@ -162,7 +164,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="rect" href="transform_8h.html" title=" " alt="" coords="1445,181,1601,221"/>
 <area shape="rect" href="graphics_8h.html" title=" " alt="" coords="1625,181,1781,221"/>
 <area shape="rect" href="json_8h.html" title=" " alt="" coords="1805,181,1961,221"/>
-<area shape="rect" href="scene_8h.html" title=" " alt="" coords="1985,181,2141,221"/>
+<area shape="rect" href="scene_8h.html" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="1985,181,2141,221"/>
 <area shape="rect" href="audio_8c.html" title=" " alt="" coords="2166,189,2251,214"/>
 <area shape="rect" href="cache_8c.html" title=" " alt="" coords="2276,189,2365,214"/>
 <area shape="rect" href="audiosouce_8c.html" title=" " alt="" coords="2389,189,2535,214"/>
@@ -190,26 +192,36 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__timer.html">ye_timer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A timer that can be registered with the engine.  <a href="structye__timer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structye__timer__node.html">ye_timer_node</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structNode.html">Node</a> in the linked list of timers.  <a href="structye__timer__node.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a297f2d4964e9f8a72c35c2afd68d10b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#a297f2d4964e9f8a72c35c2afd68d10b9">ye_register_timer</a> (struct <a class="el" href="structye__timer.html">ye_timer</a> *timer)</td></tr>
+<tr class="memdesc:a297f2d4964e9f8a72c35c2afd68d10b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a timer with the engine.  <a href="timer_8h.html#a297f2d4964e9f8a72c35c2afd68d10b9">More...</a><br /></td></tr>
 <tr class="separator:a297f2d4964e9f8a72c35c2afd68d10b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a885f5b179fa477655edd7e855d956b60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#a885f5b179fa477655edd7e855d956b60">ye_unregister_timer</a> (struct <a class="el" href="structye__timer.html">ye_timer</a> *timer)</td></tr>
+<tr class="memdesc:a885f5b179fa477655edd7e855d956b60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister a timer with the engine.  <a href="timer_8h.html#a885f5b179fa477655edd7e855d956b60">More...</a><br /></td></tr>
 <tr class="separator:a885f5b179fa477655edd7e855d956b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd01ab1b615934a99b3d9af51d2e251f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#acd01ab1b615934a99b3d9af51d2e251f">ye_unregister_all_timers</a> ()</td></tr>
+<tr class="memdesc:acd01ab1b615934a99b3d9af51d2e251f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy all timers registered with the engine.  <a href="timer_8h.html#acd01ab1b615934a99b3d9af51d2e251f">More...</a><br /></td></tr>
 <tr class="separator:acd01ab1b615934a99b3d9af51d2e251f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a492ff88156ccbe1202db19255dfc45a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#a492ff88156ccbe1202db19255dfc45a5">ye_update_timers</a> ()</td></tr>
+<tr class="memdesc:a492ff88156ccbe1202db19255dfc45a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update and tick all timers registered with the engine.  <a href="timer_8h.html#a492ff88156ccbe1202db19255dfc45a5">More...</a><br /></td></tr>
 <tr class="separator:a492ff88156ccbe1202db19255dfc45a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1da6b3192aca29b52257ce31cea60da0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#a1da6b3192aca29b52257ce31cea60da0">ye_init_timers</a> ()</td></tr>
+<tr class="memdesc:a1da6b3192aca29b52257ce31cea60da0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the timer system.  <a href="timer_8h.html#a1da6b3192aca29b52257ce31cea60da0">More...</a><br /></td></tr>
 <tr class="separator:a1da6b3192aca29b52257ce31cea60da0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e1860c96aaf3dfd71b76abc55973b78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer_8h.html#a4e1860c96aaf3dfd71b76abc55973b78">ye_shutdown_timers</a> ()</td></tr>
+<tr class="memdesc:a4e1860c96aaf3dfd71b76abc55973b78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the timer system.  <a href="timer_8h.html#a4e1860c96aaf3dfd71b76abc55973b78">More...</a><br /></td></tr>
 <tr class="separator:a4e1860c96aaf3dfd71b76abc55973b78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Provides a simple timer system for the engine. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="a1da6b3192aca29b52257ce31cea60da0" name="a1da6b3192aca29b52257ce31cea60da0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1da6b3192aca29b52257ce31cea60da0">&#9670;&#160;</a></span>ye_init_timers()</h2>
 
@@ -224,6 +236,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initialize the timer system. </p>
 
 </div>
 </div>
@@ -243,6 +257,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Register a timer with the engine. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timer</td><td>The timer to register. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a4e1860c96aaf3dfd71b76abc55973b78" name="a4e1860c96aaf3dfd71b76abc55973b78"></a>
@@ -260,6 +282,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Shutdown the timer system. </p>
+
 </div>
 </div>
 <a id="acd01ab1b615934a99b3d9af51d2e251f" name="acd01ab1b615934a99b3d9af51d2e251f"></a>
@@ -276,6 +300,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Destroy all timers registered with the engine. </p>
 
 </div>
 </div>
@@ -295,6 +321,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Unregister a timer with the engine. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timer</td><td>A pointer to the timer to unregister. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a492ff88156ccbe1202db19255dfc45a5" name="a492ff88156ccbe1202db19255dfc45a5"></a>
@@ -311,6 +345,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Update and tick all timers registered with the engine. </p>
 
 </div>
 </div>

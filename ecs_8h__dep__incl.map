@@ -1,6 +1,6 @@
 <map id="dist/include/yoyoengine/ecs/ecs.h" name="dist/include/yoyoengine/ecs/ecs.h">
 <area shape="rect" id="node1" title=" " alt="" coords="1805,5,1961,45"/>
-<area shape="rect" id="node2" href="$yoyoengine_8h.html" title=" " alt="" coords="1805,93,1961,133"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="1805,93,1961,133"/>
 <area shape="rect" id="node3" href="$cache_8h.html" title=" " alt="" coords="5,181,161,221"/>
 <area shape="rect" id="node4" href="$audiosource_8h.html" title=" " alt="" coords="185,181,341,221"/>
 <area shape="rect" id="node5" href="$camera_8h.html" title=" " alt="" coords="365,181,521,221"/>
@@ -11,8 +11,8 @@
 <area shape="rect" id="node10" href="$transform_8h.html" title=" " alt="" coords="1265,181,1421,221"/>
 <area shape="rect" id="node11" href="$graphics_8h.html" title=" " alt="" coords="1445,181,1601,221"/>
 <area shape="rect" id="node13" href="$json_8h.html" title=" " alt="" coords="1625,181,1781,221"/>
-<area shape="rect" id="node14" href="$scene_8h.html" title=" " alt="" coords="1805,181,1961,221"/>
-<area shape="rect" id="node15" href="$timer_8h.html" title=" " alt="" coords="1985,181,2141,221"/>
+<area shape="rect" id="node14" href="$scene_8h.html" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="1805,181,1961,221"/>
+<area shape="rect" id="node15" href="$timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="1985,181,2141,221"/>
 <area shape="rect" id="node16" href="$audio_8c.html" title=" " alt="" coords="2166,189,2251,214"/>
 <area shape="rect" id="node17" href="$cache_8c.html" title=" " alt="" coords="2276,189,2365,214"/>
 <area shape="rect" id="node18" href="$audiosouce_8c.html" title=" " alt="" coords="2389,189,2535,214"/>

@@ -5,7 +5,7 @@
 <area shape="rect" id="node20" href="$structye__editor__config.html" title="The struct that defines the configuration of the editor specifically." alt="" coords="1166,301,1281,327"/>
 <area shape="rect" id="node4" href="$structye__component__transform.html" title=" " alt="" coords="620,101,788,127"/>
 <area shape="rect" id="node5" href="$structye__component__renderer.html" title=" " alt="" coords="624,151,784,176"/>
-<area shape="rect" id="node6" href="$structye__rectf.html" title=" " alt="" coords="365,177,433,203"/>
+<area shape="rect" id="node6" href="$structye__rectf.html" title="A rectangle made up of floats." alt="" coords="365,177,433,203"/>
 <area shape="rect" id="node17" href="$structye__component__collider.html" title=" " alt="" coords="627,200,781,225"/>
 <area shape="rect" id="node7" href="$unionye__component__renderer_1_1renderer__impl.html" title=" " alt="" coords="319,87,479,127"/>
 <area shape="rect" id="node8" href="$structye__component__renderer__text.html" title=" " alt="" coords="5,5,193,31"/>

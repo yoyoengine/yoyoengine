@@ -11,6 +11,5 @@ var searchData=
   ['entity_5fcount_8',['entity_count',['../structye__runtime__data.html#a9e141725ada983edd27c240ab434f933',1,'ye_runtime_data']]],
   ['entity_5flist_5fhead_9',['entity_list_head',['../ecs_8c.html#ac9a5ea874a5ef25622f1041d8a994113',1,'entity_list_head():&#160;ecs.c'],['../ecs_8h.html#ac9a5ea874a5ef25622f1041d8a994113',1,'entity_list_head():&#160;ecs.c']]],
   ['error_5fcount_10',['error_count',['../structye__runtime__data.html#a84748c0db8a77e0cecb95f0583f451fb',1,'ye_runtime_data']]],
-  ['executable_5fpath_11',['executable_path',['../engine_8c.html#a8d4053cba0aef2ebf4eea16400b92975',1,'engine.c']]],
-  ['expand_5fmult_12',['expand_mult',['../structUT__hash__bucket.html#a9b739c1b69c141e8198c0c64af643b2b',1,'UT_hash_bucket']]]
+  ['executable_5fpath_11',['executable_path',['../engine_8c.html#a8d4053cba0aef2ebf4eea16400b92975',1,'engine.c']]]
 ];

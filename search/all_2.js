@@ -26,11 +26,10 @@ var searchData=
   ['console_5fvisible_23',['console_visible',['../engine_8c.html#a0a8fa4b8409a07caee60c2cf6f7e602b',1,'engine.c']]],
   ['converttorealpixelheight_24',['convertToRealPixelHeight',['../graphics_8h.html#a3fd5df49fead6cc9c9f047fa4c3116b1',1,'graphics.h']]],
   ['converttorealpixelwidth_25',['convertToRealPixelWidth',['../graphics_8h.html#a435d0dbdfa9a1e3a62dc302113430b2b',1,'graphics.h']]],
-  ['count_26',['count',['../structUT__hash__bucket.html#a5d20cc12bdcbde360398910eefb45634',1,'UT_hash_bucket']]],
-  ['createrealpixelrect_27',['createRealPixelRect',['../graphics_8h.html#a7e011b96b4f156360014cb1687f5889d',1,'graphics.h']]],
-  ['createtexttexture_28',['createTextTexture',['../graphics_8c.html#ae752630f349b3edf0638481e2cd6e323',1,'createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor):&#160;graphics.c'],['../graphics_8h.html#ae752630f349b3edf0638481e2cd6e323',1,'createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor):&#160;graphics.c']]],
-  ['createtexttexturewithoutline_29',['createTextTextureWithOutline',['../graphics_8c.html#a2628224d58d8d38b2e15f9a8ff554d94',1,'createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor):&#160;graphics.c'],['../graphics_8h.html#a0e8834b0971162aa618f0f40808b7b9b',1,'createTextTextureWithOutline():&#160;graphics.h']]],
-  ['ctx_30',['ctx',['../ui_8c.html#a619fe39ce089c292840698c4634e0261',1,'ctx():&#160;ui.c'],['../structye__engine__config.html#a524dfb15437131ee9fdfd3a790a5baed',1,'ye_engine_config::ctx()']]],
-  ['current_5fframe_5findex_31',['current_frame_index',['../structye__component__renderer__animation.html#af3ffc0105eee71cde183b9b6619ca985',1,'ye_component_renderer_animation']]],
-  ['cyan_32',['CYAN',['../logging_8c.html#ad243f93c16bc4c1d3e0a13b84421d760',1,'logging.c']]]
+  ['createrealpixelrect_26',['createRealPixelRect',['../graphics_8h.html#a7e011b96b4f156360014cb1687f5889d',1,'graphics.h']]],
+  ['createtexttexture_27',['createTextTexture',['../graphics_8h.html#ae752630f349b3edf0638481e2cd6e323',1,'createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor):&#160;graphics.c'],['../graphics_8c.html#ae752630f349b3edf0638481e2cd6e323',1,'createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor):&#160;graphics.c']]],
+  ['createtexttexturewithoutline_28',['createTextTextureWithOutline',['../graphics_8c.html#a2628224d58d8d38b2e15f9a8ff554d94',1,'createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor):&#160;graphics.c'],['../graphics_8h.html#a0e8834b0971162aa618f0f40808b7b9b',1,'createTextTextureWithOutline():&#160;graphics.h']]],
+  ['ctx_29',['ctx',['../ui_8c.html#a619fe39ce089c292840698c4634e0261',1,'ctx():&#160;ui.c'],['../structye__engine__config.html#a524dfb15437131ee9fdfd3a790a5baed',1,'ye_engine_config::ctx()']]],
+  ['current_5fframe_5findex_30',['current_frame_index',['../structye__component__renderer__animation.html#af3ffc0105eee71cde183b9b6619ca985',1,'ye_component_renderer_animation']]],
+  ['cyan_31',['CYAN',['../logging_8c.html#ad243f93c16bc4c1d3e0a13b84421d760',1,'logging.c']]]
 ];

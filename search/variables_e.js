@@ -14,7 +14,6 @@ var searchData=
   ['physics_5ftime_11',['physics_time',['../structye__runtime__data.html#a27de5d2d0e1bab4a859192209897a2f2',1,'ye_runtime_data']]],
   ['playing_12',['playing',['../structye__component__audiosource.html#ad86d635bd152c7b1f5759832b2795e19',1,'ye_component_audiosource']]],
   ['prenderer_13',['pRenderer',['../graphics_8c.html#afaba98fbd2f2bbcfe2c29c2eea453ae0',1,'graphics.c']]],
-  ['prev_14',['prev',['../structUT__hash__handle.html#abaf54a69367933df2d45575f48ca6a58',1,'UT_hash_handle']]],
-  ['pscreensurface_15',['pScreenSurface',['../graphics_8c.html#a6d06f368d79a14b248a8f6c0b383e90c',1,'graphics.c']]],
-  ['pwindow_16',['pWindow',['../graphics_8c.html#a41da1d9c960c28bf3d7e2ec2138425c8',1,'graphics.c']]]
+  ['pscreensurface_14',['pScreenSurface',['../graphics_8c.html#a6d06f368d79a14b248a8f6c0b383e90c',1,'graphics.c']]],
+  ['pwindow_15',['pWindow',['../graphics_8c.html#a41da1d9c960c28bf3d7e2ec2138425c8',1,'graphics.c']]]
 ];

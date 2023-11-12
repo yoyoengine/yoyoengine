@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['elmt_5ffrom_5fhh_0',['ELMT_FROM_HH',['../uthash_8h.html#a568e95048979b8b3e4ea1567fd91c186',1,'uthash.h']]]
+  ['log_5fbuffer_5fsize_0',['LOG_BUFFER_SIZE',['../logging_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1',1,'logging.c']]]
 ];

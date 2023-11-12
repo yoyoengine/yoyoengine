@@ -98,6 +98,9 @@ $(document).ready(function(){initNavTree('ui_8h.html',''); initResizable(); });
   <div class="headertitle"><div class="title">ui.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Provides a simple UI system for the engine, built on top of Nuklear.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -113,7 +116,7 @@ Include dependency graph for ui.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="ui_8h__incl.png" border="0" usemap="#adist_2include_2yoyoengine_2ui_8h" alt=""/></div>
 <map name="adist_2include_2yoyoengine_2ui_8h" id="adist_2include_2yoyoengine_2ui_8h">
-<area shape="rect" title=" " alt="" coords="343,5,523,31"/>
+<area shape="rect" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="343,5,523,31"/>
 <area shape="rect" title=" " alt="" coords="5,79,65,104"/>
 <area shape="rect" title=" " alt="" coords="89,79,152,104"/>
 <area shape="rect" title=" " alt="" coords="177,79,241,104"/>
@@ -131,8 +134,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="ui_8h__dep__incl.png" border="0" usemap="#adist_2include_2yoyoengine_2ui_8hdep" alt=""/></div>
 <map name="adist_2include_2yoyoengine_2ui_8hdep" id="adist_2include_2yoyoengine_2ui_8hdep">
-<area shape="rect" title=" " alt="" coords="1973,5,2153,31"/>
-<area shape="rect" href="yoyoengine_8h.html" title=" " alt="" coords="1985,79,2141,119"/>
+<area shape="rect" title="Provides a simple UI system for the engine, built on top of Nuklear." alt="" coords="1973,5,2153,31"/>
+<area shape="rect" href="yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="1985,79,2141,119"/>
 <area shape="rect" href="cache_8h.html" title=" " alt="" coords="5,167,161,207"/>
 <area shape="rect" href="audiosource_8h.html" title=" " alt="" coords="185,167,341,207"/>
 <area shape="rect" href="camera_8h.html" title=" " alt="" coords="365,167,521,207"/>
@@ -144,8 +147,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="rect" href="transform_8h.html" title=" " alt="" coords="1445,167,1601,207"/>
 <area shape="rect" href="graphics_8h.html" title=" " alt="" coords="1625,167,1781,207"/>
 <area shape="rect" href="json_8h.html" title=" " alt="" coords="1805,167,1961,207"/>
-<area shape="rect" href="scene_8h.html" title=" " alt="" coords="1985,167,2141,207"/>
-<area shape="rect" href="timer_8h.html" title=" " alt="" coords="2165,167,2321,207"/>
+<area shape="rect" href="scene_8h.html" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="1985,167,2141,207"/>
+<area shape="rect" href="timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="2165,167,2321,207"/>
 <area shape="rect" href="audio_8c.html" title=" " alt="" coords="2346,174,2431,199"/>
 <area shape="rect" href="cache_8c.html" title=" " alt="" coords="2456,174,2545,199"/>
 <area shape="rect" href="audiosouce_8c.html" title=" " alt="" coords="2569,174,2715,199"/>
@@ -173,27 +176,39 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a7406a047d382921b2d950792b5f22768"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a7406a047d382921b2d950792b5f22768">init_ui</a> (SDL_Window *win, SDL_Renderer *renderer)</td></tr>
+<tr class="memdesc:a7406a047d382921b2d950792b5f22768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the UI system.  <a href="ui_8h.html#a7406a047d382921b2d950792b5f22768">More...</a><br /></td></tr>
 <tr class="separator:a7406a047d382921b2d950792b5f22768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfae3675545c1d2f5a9bcc9ba681ec26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#acfae3675545c1d2f5a9bcc9ba681ec26">ui_handle_input</a> (SDL_Event *evt)</td></tr>
+<tr class="memdesc:acfae3675545c1d2f5a9bcc9ba681ec26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles input for the UI system for that frame.  <a href="ui_8h.html#acfae3675545c1d2f5a9bcc9ba681ec26">More...</a><br /></td></tr>
 <tr class="separator:acfae3675545c1d2f5a9bcc9ba681ec26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a658f3a6a67922659138fa6566956176f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a658f3a6a67922659138fa6566956176f">ui_begin_input_checks</a> ()</td></tr>
+<tr class="memdesc:a658f3a6a67922659138fa6566956176f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the input checks for the UI system.  <a href="ui_8h.html#a658f3a6a67922659138fa6566956176f">More...</a><br /></td></tr>
 <tr class="separator:a658f3a6a67922659138fa6566956176f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae719e4722579179269bc2d2053ae36ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#ae719e4722579179269bc2d2053ae36ba">ui_end_input_checks</a> ()</td></tr>
+<tr class="memdesc:ae719e4722579179269bc2d2053ae36ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ends the input checks for the UI system.  <a href="ui_8h.html#ae719e4722579179269bc2d2053ae36ba">More...</a><br /></td></tr>
 <tr class="separator:ae719e4722579179269bc2d2053ae36ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2957ba0c080949e7909f9851606ed83d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a2957ba0c080949e7909f9851606ed83d">ui_paint_debug_overlay</a> ()</td></tr>
+<tr class="memdesc:a2957ba0c080949e7909f9851606ed83d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paints a debug overlay.  <a href="ui_8h.html#a2957ba0c080949e7909f9851606ed83d">More...</a><br /></td></tr>
 <tr class="separator:a2957ba0c080949e7909f9851606ed83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a06ae7bae8563b699ce712ec266fe6f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a0a06ae7bae8563b699ce712ec266fe6f">ui_render</a> ()</td></tr>
+<tr class="memdesc:a0a06ae7bae8563b699ce712ec266fe6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders all registered windows in UI system onto the SDL frame buffer.  <a href="ui_8h.html#a0a06ae7bae8563b699ce712ec266fe6f">More...</a><br /></td></tr>
 <tr class="separator:a0a06ae7bae8563b699ce712ec266fe6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa014ddb888ce6fd1a802c88ae375a955"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#aa014ddb888ce6fd1a802c88ae375a955">shutdown_ui</a> ()</td></tr>
+<tr class="memdesc:aa014ddb888ce6fd1a802c88ae375a955"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shuts down the UI system.  <a href="ui_8h.html#aa014ddb888ce6fd1a802c88ae375a955">More...</a><br /></td></tr>
 <tr class="separator:aa014ddb888ce6fd1a802c88ae375a955"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d68e56eaa69dcabeeac0225fea78b00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a2d68e56eaa69dcabeeac0225fea78b00">ui_register_component</a> (const char *key, void(*render_function)())</td></tr>
+<tr class="memdesc:a2d68e56eaa69dcabeeac0225fea78b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a component with the UI system.  <a href="ui_8h.html#a2d68e56eaa69dcabeeac0225fea78b00">More...</a><br /></td></tr>
 <tr class="separator:a2d68e56eaa69dcabeeac0225fea78b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c829652b87f8f485b7036e45a95562a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a4c829652b87f8f485b7036e45a95562a">remove_ui_component</a> (const char *key)</td></tr>
+<tr class="memdesc:a4c829652b87f8f485b7036e45a95562a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a component from the UI system.  <a href="ui_8h.html#a4c829652b87f8f485b7036e45a95562a">More...</a><br /></td></tr>
 <tr class="separator:a4c829652b87f8f485b7036e45a95562a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a291f676881b8686b55e1085c35f35b7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ui_8h.html#a291f676881b8686b55e1085c35f35b7a">ui_component_exists</a> (char *key)</td></tr>
+<tr class="memdesc:a291f676881b8686b55e1085c35f35b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a component exists in the UI system.  <a href="ui_8h.html#a291f676881b8686b55e1085c35f35b7a">More...</a><br /></td></tr>
 <tr class="separator:a291f676881b8686b55e1085c35f35b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Provides a simple UI system for the engine, built on top of Nuklear. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="a7406a047d382921b2d950792b5f22768" name="a7406a047d382921b2d950792b5f22768"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7406a047d382921b2d950792b5f22768">&#9670;&#160;</a></span>init_ui()</h2>
 
@@ -220,6 +235,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Initializes the UI system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">win</td><td>The window to use. </td></tr>
+    <tr><td class="paramname">renderer</td><td>The renderer to use. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a4c829652b87f8f485b7036e45a95562a" name="a4c829652b87f8f485b7036e45a95562a"></a>
@@ -238,6 +262,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Remove a component from the UI system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The key to remove the component under. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="aa014ddb888ce6fd1a802c88ae375a955" name="aa014ddb888ce6fd1a802c88ae375a955"></a>
@@ -255,6 +287,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Shuts down the UI system. </p>
+
 </div>
 </div>
 <a id="a658f3a6a67922659138fa6566956176f" name="a658f3a6a67922659138fa6566956176f"></a>
@@ -271,6 +305,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Starts the input checks for the UI system. </p>
 
 </div>
 </div>
@@ -290,6 +326,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Checks if a component exists in the UI system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The key to check for. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true The component exists. </dd>
+<dd>
+false The component does not exist. </dd></dl>
+
 </div>
 </div>
 <a id="ae719e4722579179269bc2d2053ae36ba" name="ae719e4722579179269bc2d2053ae36ba"></a>
@@ -306,6 +353,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Ends the input checks for the UI system. </p>
 
 </div>
 </div>
@@ -325,6 +374,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Handles input for the UI system for that frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">evt</td><td>The event to handle (from SDL input). </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a2957ba0c080949e7909f9851606ed83d" name="a2957ba0c080949e7909f9851606ed83d"></a>
@@ -341,6 +398,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Paints a debug overlay. </p>
 
 </div>
 </div>
@@ -370,6 +429,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Registers a component with the UI system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The key to register the component under. </td></tr>
+    <tr><td class="paramname">render_function</td><td>The function to call to render the component. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a0a06ae7bae8563b699ce712ec266fe6f" name="a0a06ae7bae8563b699ce712ec266fe6f"></a>
@@ -386,6 +454,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Renders all registered windows in UI system onto the SDL frame buffer. </p>
 
 </div>
 </div>

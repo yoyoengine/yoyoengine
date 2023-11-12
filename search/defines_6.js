@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['if_5fhash_5fnonfatal_5foom_0',['IF_HASH_NONFATAL_OOM',['../uthash_8h.html#ade4ad2b663e35e88b95c68f1611ee199',1,'uthash.h']]]
+  ['red_0',['RED',['../logging_8c.html#a8d23feea868a983c8c2b661e1e16972f',1,'logging.c']]],
+  ['reset_1',['RESET',['../logging_8c.html#ab702106cf3b3e96750b6845ded4e0299',1,'logging.c']]]
 ];
