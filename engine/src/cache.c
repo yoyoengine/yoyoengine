@@ -27,7 +27,7 @@ struct ye_font_node * cached_fonts_head;
 struct ye_color_node * cached_colors_head;
 
 /*
-    Todo: properly error check and validate every field
+    TODO: properly error check and validate every field
 */
 void ye_pre_cache_scene(json_t *scene){
     if(scene == NULL){ // this should quite literally never be hit.

@@ -40,7 +40,6 @@ Mix_Chunk *pChunks[MAX_CHANNELS] = { NULL };
 // counter for total chunks (used in debug)
 int totalChunks = 0;
 
-// function to initialize audio system
 void ye_audio_init(){
     // opens the mixer to the format specified
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) 
@@ -54,7 +53,6 @@ void ye_audio_init(){
     ye_logf(info, "Audio initialized.\n");
 }
 
-// function to free audio chunk from memory by channel
 void ye_free_channel(int channel) {
     // if the channel is invalid
     if (channel < 0 || channel >= MAX_CHANNELS) {
@@ -75,8 +73,6 @@ void ye_free_channel(int channel) {
     YE_STATE.runtime.audio_chunk_count = totalChunks;
 }
 
-// function allowing a sound to be played on a channel by filename
-// param "chan" is channel
 void ye_play_sound(const char *pFilename, int chan, int loops) {
     // open our filename into a chunk
     Mix_Chunk *pSound = Mix_LoadWAV(pFilename);
@@ -117,13 +113,11 @@ void ye_play_sound(const char *pFilename, int chan, int loops) {
     YE_STATE.runtime.audio_chunk_count = totalChunks;
 }
 
-// set a specific (or all channels if passed -1) volume level 0-128 
 void ye_set_volume(int channel, int volume){
     ye_logf(debug, "Setting volume of channel %d to %d.\n",channel,volume);
     Mix_Volume(channel,volume);
 }
 
-// shut down all audio systems and free all audio chunks
 void ye_audio_shutdown(){
     // Halt all playing channels
     Mix_HaltChannel(-1);

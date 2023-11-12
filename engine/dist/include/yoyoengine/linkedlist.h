@@ -16,6 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file linkedlist.h
+ * @brief Unused linked list implementation
+ * 
+ * I'm not going to bother documenting this for now, seeing as its unused
+ */
+
 /*
     Usage Example:
 

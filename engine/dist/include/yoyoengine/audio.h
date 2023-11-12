@@ -16,22 +16,40 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file audio.h
+ * @brief The engine API for handling audio
+ */
+
 #ifndef YE_AUDIO_H
 #define YE_AUDIO_H
 
 // counter for audio chunks
 extern int totalChunks;
 
-// initialize audio components for engine
+/**
+ * @brief Initialize audio components for engine.
+ */
 void ye_audio_init();
 
-// play a sound by its filename path and specify number of loops (-1 for looping)
+/**
+ * @brief Play a sound by its filename path and specify number of loops.
+ * @param pFilename The path to the audio file.
+ * @param channel The audio channel to play the sound on.
+ * @param loops The number of times to loop the sound. -1 for infinite looping.
+ */
 void ye_play_sound(const char *pFilename, int channel, int loops);
 
-// set a specific (or all channels if passed -1) volume level 0-128 
+/**
+ * @brief Set a specific (or all channels if passed -1) volume level 0-128.
+ * @param channel The audio channel to set the volume for. -1 for all channels.
+ * @param volume The volume level to set. Range is 0-128.
+ */
 void ye_set_volume(int channel, int volume);
 
-// shut down all audio systems and free all memory assosciated
+/**
+ * @brief Shut down all audio systems and free all memory associated.
+ */
 void ye_audio_shutdown();
 
 #endif

@@ -40,9 +40,6 @@ SDL_Texture *missing_texture = NULL;
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
 
-/*
-    Loads a font from a path and size, returns a pointer to the font, or NULL if failed
-*/
 TTF_Font * ye_load_font(const char *pFontPath, int fontSize) {
     if(fontSize > 500){
         ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
@@ -99,9 +96,6 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     return pTexture;
 }
 
-/*
-    Create a text texture from a string, font, and color. Returns a pointer to the texture, or the default missing texture if failed
-*/
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderUTF8_Blended(pFont, pText, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
@@ -128,9 +122,6 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     return pTexture;
 }
 
-/*
-    Create a texture from a local image path, returns a pointer to the texture (and to the missing texture texture if it fails)
-*/
 SDL_Texture * ye_create_image_texture(const char *pPath) {
     // check the file exists
     if(access(pPath, F_OK) == -1){
@@ -170,9 +161,6 @@ int fpsUpdateTime = 0;
 int fps = 0;
 
 /*
-    Responsible for rendering all graphical parts of the frame to the screen.
-    Will call the ECS renderer system as well as the UI renderer.
-
     TODO: Viewports are a blessing and should actually be used for dynamic screen sizing.
 */
 void ye_render_all() {
@@ -252,7 +240,6 @@ void ye_render_all() {
 }
 
 
-// initialize graphics TODO: remove parameters
 void ye_init_graphics(){
     // test for video init, alarm if failed
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -330,7 +317,6 @@ void ye_init_graphics(){
     ye_logf(info, "Window icon set.\n");
 }
 
-// shuts down all initialzied graphics systems
 void ye_shutdown_graphics(){
     // shutdown TTF
     TTF_Quit();

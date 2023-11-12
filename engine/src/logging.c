@@ -79,14 +79,6 @@ void ye_close_log(){
     }
 }
 
-/*
-    Log a message to the console and log file
-    CAN ONLY BE USED AFTER INITIALIZING ENGINE
-
-    TODO: it would be cool to have
-    - option to log only to file or console
-    - not reliant on SDL and could be used whenever
-*/
 void ye_logf(enum logLevel level, const char *format, ...){
 
     // prepare our formatted string
@@ -170,9 +162,6 @@ struct LogMessage {
 struct LogMessage logBuffer[LOG_BUFFER_SIZE];
 int logBufferIndex = 0;
 
-/*
-    shifts old messages out of buffer
-*/
 void ye_add_to_log_buffer(enum logLevel level, const char *text) {
     // Initialize a new message
     struct LogMessage message;
@@ -206,17 +195,10 @@ char userInput[MAX_INPUT_LENGTH];
 bool color_code = true;
 
 /*
-    Paint log console
-
     in the future to save window bounds:
         nk_window_get_bounds(ctx);
     
     in the future it would also be cool to toggle the log level threshold
-
-    TODO:
-    - with advent of the editor I would like for this to get moved out of here or at least the 
-      command logic so that its something the editor has control over, 
-      and can provide a visual interface for most commands
 */
 void ye_paint_console(struct nk_context *ctx){
     // Create the GUI layout
@@ -343,8 +325,6 @@ void ye_paint_console(struct nk_context *ctx){
     }
     nk_end(ctx);
 }
-
-// INIT AND SHUTDOWN ////////////////////////
 
 void ye_log_init(char * log_file_path){
     logpath = log_file_path;

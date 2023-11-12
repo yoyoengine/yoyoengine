@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * @file logging.h
+ * @brief The engine Logging API
+ */
+
 #ifndef LOGGING_H
 #define LOGGING_H
 
@@ -24,6 +29,9 @@
 #include <Nuklear/nuklear.h>
 #endif
 
+/**
+ * @brief Describes the level of a log message
+ */
 enum logLevel {
     debug,
     info,
@@ -31,12 +39,32 @@ enum logLevel {
     error
 };
 
+/**
+ * @brief Initializes the logging system
+ * 
+ * @param log_file_path The path to the log file
+ */
 void ye_log_init(char *log_file_path);
 
+/**
+ * @brief Shuts down the logging system
+ */
 void ye_log_shutdown();
 
+/**
+ * @brief Logs a message to the console and console buffer
+ * 
+ * @param level The level of the message
+ * @param format The content of the message (similar to printf)
+ * @param ... The arguments for the format string
+ */
 void ye_logf(enum logLevel level, const char *format, ...);
 
+/**
+ * @brief UI function to paint a visual console
+ * 
+ * @param ctx The Nuklear context
+ */
 void ye_paint_console(struct nk_context *ctx);
 
 #endif
