@@ -37,32 +37,6 @@ char *base_path = NULL;
 // expose our engine state data to the whole engine
 struct ye_engine_state YE_STATE;
 
-// helper function to get the screen size
-// TODO: consider moving graphics.c TODO: yes move to graphics.c
-struct ScreenSize getScreenSize(){
-    // initialize video
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        ye_logf(error, "SDL could not initialize!\n");
-        exit(1);
-    }
-
-    // use video to initialize display mode
-    SDL_DisplayMode displayMode;
-    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
-        ye_logf(error, "SDL_GetCurrentDisplayMode failed!\n");
-        exit(1);
-    }
-
-    int screenWidth = displayMode.w;
-    int screenHeight = displayMode.h;
-    
-    ye_logf(debug, "Inferred screen size: %dx%d\n", screenWidth, screenHeight);
-
-    // return a ScreenSize struct with the screen width and height
-    struct ScreenSize screenSize = {screenWidth, screenHeight};
-    return screenSize;
-}
-
 // Global variables for resource paths
 char *executable_path = NULL;
 
@@ -193,16 +167,12 @@ void set_setting_float(char* key, float* value, json_t* settings) {
     }
 }
 
-// update the resources path
 void ye_update_resources(char *path){
     // update the engine state
     free(YE_STATE.engine.game_resources_path);
     YE_STATE.engine.game_resources_path = strdup(path);
 }
 
-/*
-    Pass in a engine_data struct, with cooresponding override flags to initialize the engine with non default values
-*/
 void ye_init_engine() {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
@@ -391,7 +361,6 @@ void ye_init_engine() {
         json_decref(SETTINGS);
 } // control is now resumed by the game
 
-// function that shuts down all engine subsystems and components ()
 void ye_shutdown_engine(){
     ye_logf(info, "Shutting down engine...\n");
 

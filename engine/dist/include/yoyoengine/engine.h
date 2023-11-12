@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+    @file engine.h
+    @brief The header for the engine entry point, contains state definitions.
+*/
+
 #ifndef ENGINE_H
 #define ENGINE_H
 
@@ -41,22 +46,39 @@
 
 extern struct ye_engine_state YE_STATE;
 
-// struct to hold screen points
+/**
+ * @brief A struct that defines a screen size by width and height.
+ */
 struct ScreenSize {
     int width;
     int height;
 };
 
-// helper function to return ScreenSize struct from getting the screensize with SDL2
-// TODO: remove me?
-struct ScreenSize getScreenSize();
-
+/**
+ * @brief Returns a string of the full path (os specific) to the resource you have referenced.
+ * 
+ * The path you provide must be relative to the resources folder.
+ * Ex: ("images/yoyo.png") will yeild something like /home/user/gamelocation/resources/images/yoyo.png on linux.
+ * 
+ * Importantly, this is just a pointer to a buffer, and as such will change its value after the next invokation.
+ * 
+ * @param sub_path The path (relative to the resources folder) of the resource you wish to access.
+ * @return char* The absolute path to the resource.
+ */
 char *ye_get_resource_static(const char *sub_path);
 
+/**
+ * @brief Returns a string of the full path (os specific) to the engine resource you have referenced.
+ * 
+ * Behaves the same as @ref ye_get_resource_static, but is meant for accessing engine resources.
+ * 
+ * @param sub_path The relative path (or just name with extension) of the engine resource you wish to access.
+ * @return char* The absolute path to the engine resource.
+ */
 char* ye_get_engine_resource_static(const char *sub_path);
 
-/*
-    The config state pertaining to the core engine.
+/**
+ * @brief The struct that defines the configuration of the engine core specifically.
 */
 struct ye_engine_config {
     /*
@@ -130,6 +152,9 @@ struct ye_engine_config {
     struct nk_context *ctx;
 };
 
+/**
+ * @brief The struct that defines the configuration of the editor specifically.
+ */
 struct ye_editor_config {
     /*
         Controls whether the engine is in "editor mode"
@@ -167,6 +192,9 @@ struct ye_editor_config {
     struct ye_entity *scene_default_camera;
 };
 
+/**
+ * @brief The struct that defines the runtime data of the engine.
+ */
 struct ye_runtime_data {
     /*
         Some variables tracking things we might
@@ -197,26 +225,67 @@ struct ye_runtime_data {
     that is not necessarily part of the engine, but is important to the editor injecting its
     own behavior into the core and renderer
 */
+/**
+ * @brief The struct that defines the state of the entire engine, editor and runtime.
+ * 
+ * This contains references to @ref ye_engine_config, @ref ye_runtime_data, and @ref ye_editor_config.
+*/
 struct ye_engine_state {
     struct ye_engine_config engine;
     struct ye_runtime_data runtime;
     struct ye_editor_config editor;
 };
 
+/**
+ * @brief The master function that returns control to the engine to process the next frame.
+ * 
+ * Will invoke many functions to process the next frame, including:
+ * - @ref ui_handle_input
+ * - @ref ye_system_physics
+ * - @ref ye_render_all
+ * 
+ * As well as many other misc operations, such as updating the current delta in @ref ye_runtime_data
+ */
 void ye_process_frame();
 
-// TODO: get delta function to easily get the delta out of the state
+/**
+ * @brief Returns the current delta time in milliseconds.
+ * 
+ * Will pull the current delta time from @ref ye_runtime_data.
+ * This exists just for ease of use and potentially wrapping later on.
+ * 
+ * @return float 
+ */
 float ye_delta_time();
 
+/**
+ * @brief Updates the engines resources path to the new path provided.
+ * 
+ * The only use of this at the moment is for the editor to switch into the game its
+ * trying to edit after it loads all its necessary editor specific resources.
+ * 
+ * @param path The (absolute) path to the new resources folder.
+ */
 void ye_update_resources(char *path);
 
 /*
     entry point to the engine, initializes all subsystems
     Will look at ./settings.yoyo for initialization parameters (if empty or nonexistant will use defaults)
 */
+
+/**
+ * @brief The entry point to the engine, initializes all subsystems.
+ * 
+ * You will need to have a 'settings.yoyo' file at the root of your project to initialize the engine. 
+ */
 void ye_init_engine();
 
-// shutdown point for engine, shuts down all subsystems
+/**
+ * @brief Shuts down the engine and all subsystems.
+ * 
+ * Does not shut down your own game logic, you will need a game loop to do that.
+ * If you are using the editor and the default entry point, both will be handled for you.
+ */
 void ye_shutdown_engine();
 
 #endif
