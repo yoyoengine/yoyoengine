@@ -1,6 +1,5 @@
 var engine_8c =
 [
-    [ "getScreenSize", "engine_8c.html#aa6bdff000d55618b9722012b162c0010", null ],
     [ "set_setting_bool", "engine_8c.html#a9712e6d20e9a501a97c2d8300121a986", null ],
     [ "set_setting_float", "engine_8c.html#a24f63f5de327b4e4f80a1285ad5284c8", null ],
     [ "set_setting_int", "engine_8c.html#a8e58ec87780aebd5c102499b7d510fdd", null ],

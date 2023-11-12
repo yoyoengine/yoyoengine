@@ -1,8 +1,8 @@
 <map id="ye_engine_state" name="ye_engine_state">
-<area shape="rect" id="node1" title=" " alt="" coords="1379,301,1495,327"/>
-<area shape="rect" id="node2" href="$structye__engine__config.html" title=" " alt="" coords="1163,247,1284,272"/>
+<area shape="rect" id="node1" title="The struct that defines the state of the entire engine, editor and runtime." alt="" coords="1379,301,1495,327"/>
+<area shape="rect" id="node2" href="$structye__engine__config.html" title="The struct that defines the configuration of the engine core specifically." alt="" coords="1163,247,1284,272"/>
 <area shape="rect" id="node3" href="$structye__entity.html" title=" " alt="" coords="907,275,980,300"/>
-<area shape="rect" id="node20" href="$structye__editor__config.html" title=" " alt="" coords="1166,301,1281,327"/>
+<area shape="rect" id="node20" href="$structye__editor__config.html" title="The struct that defines the configuration of the editor specifically." alt="" coords="1166,301,1281,327"/>
 <area shape="rect" id="node4" href="$structye__component__transform.html" title=" " alt="" coords="620,101,788,127"/>
 <area shape="rect" id="node5" href="$structye__component__renderer.html" title=" " alt="" coords="624,151,784,176"/>
 <area shape="rect" id="node6" href="$structye__rectf.html" title=" " alt="" coords="365,177,433,203"/>
@@ -18,5 +18,5 @@
 <area shape="rect" id="node15" href="$structye__component__physics.html" title=" " alt="" coords="625,397,783,423"/>
 <area shape="rect" id="node16" href="$structye__vec2f.html" title=" " alt="" coords="361,397,436,423"/>
 <area shape="rect" id="node18" href="$structye__component__tag.html" title=" " alt="" coords="639,447,769,472"/>
-<area shape="rect" id="node19" href="$structye__runtime__data.html" title=" " alt="" coords="1165,351,1282,376"/>
+<area shape="rect" id="node19" href="$structye__runtime__data.html" title="The struct that defines the runtime data of the engine." alt="" coords="1165,351,1282,376"/>
 </map>

@@ -121,7 +121,7 @@ Include dependency graph for engine.c:</div>
 <area shape="rect" title=" " alt="" coords="2318,299,2433,324"/>
 <area shape="rect" title=" " alt="" coords="2875,79,3012,104"/>
 <area shape="rect" href="yoyoengine_8h.html" title=" " alt="" coords="1719,79,1883,104"/>
-<area shape="rect" href="engine_8h.html" title=" " alt="" coords="2394,152,2464,177"/>
+<area shape="rect" href="engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="2394,152,2464,177"/>
 <area shape="rect" href="graphics_8h.html" title=" " alt="" coords="2464,225,2546,251"/>
 <area shape="rect" href="json_8h.html" title=" " alt="" coords="2654,152,2710,177"/>
 <area shape="rect" href="uthash_8h.html" title=" " alt="" coords="771,152,842,177"/>
@@ -155,15 +155,17 @@ Include dependency graph for engine.c:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa6bdff000d55618b9722012b162c0010"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structScreenSize.html">ScreenSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#aa6bdff000d55618b9722012b162c0010">getScreenSize</a> ()</td></tr>
-<tr class="separator:aa6bdff000d55618b9722012b162c0010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9a08ca58aa7f9990cb46854a383066f"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#af9a08ca58aa7f9990cb46854a383066f">ye_get_resource_static</a> (const char *sub_path)</td></tr>
+<tr class="memdesc:af9a08ca58aa7f9990cb46854a383066f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string of the full path (os specific) to the resource you have referenced.  <a href="engine_8c.html#af9a08ca58aa7f9990cb46854a383066f">More...</a><br /></td></tr>
 <tr class="separator:af9a08ca58aa7f9990cb46854a383066f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e75715a25dee2e279f643c425a679b7"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a1e75715a25dee2e279f643c425a679b7">ye_get_engine_resource_static</a> (const char *sub_path)</td></tr>
+<tr class="memdesc:a1e75715a25dee2e279f643c425a679b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a string of the full path (os specific) to the engine resource you have referenced.  <a href="engine_8c.html#a1e75715a25dee2e279f643c425a679b7">More...</a><br /></td></tr>
 <tr class="separator:a1e75715a25dee2e279f643c425a679b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad89d030746adb768467dff15774faca3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#ad89d030746adb768467dff15774faca3">ye_process_frame</a> ()</td></tr>
+<tr class="memdesc:ad89d030746adb768467dff15774faca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The master function that returns control to the engine to process the next frame.  <a href="engine_8c.html#ad89d030746adb768467dff15774faca3">More...</a><br /></td></tr>
 <tr class="separator:ad89d030746adb768467dff15774faca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b9bba2a365900164d1f4ae93bc84a50"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a9b9bba2a365900164d1f4ae93bc84a50">ye_delta_time</a> ()</td></tr>
+<tr class="memdesc:a9b9bba2a365900164d1f4ae93bc84a50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current delta time in milliseconds.  <a href="engine_8c.html#a9b9bba2a365900164d1f4ae93bc84a50">More...</a><br /></td></tr>
 <tr class="separator:a9b9bba2a365900164d1f4ae93bc84a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e0eae4a9a03da6a2c57988d91a627b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a6e0eae4a9a03da6a2c57988d91a627b9">set_setting_string</a> (char *key, char **value, json_t *settings)</td></tr>
 <tr class="separator:a6e0eae4a9a03da6a2c57988d91a627b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,10 +176,13 @@ Functions</h2></td></tr>
 <tr class="memitem:a24f63f5de327b4e4f80a1285ad5284c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a24f63f5de327b4e4f80a1285ad5284c8">set_setting_float</a> (char *key, float *value, json_t *settings)</td></tr>
 <tr class="separator:a24f63f5de327b4e4f80a1285ad5284c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a593706fa4b48a88cb6cdada1e24d39d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a593706fa4b48a88cb6cdada1e24d39d1">ye_update_resources</a> (char *path)</td></tr>
+<tr class="memdesc:a593706fa4b48a88cb6cdada1e24d39d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the engines resources path to the new path provided.  <a href="engine_8c.html#a593706fa4b48a88cb6cdada1e24d39d1">More...</a><br /></td></tr>
 <tr class="separator:a593706fa4b48a88cb6cdada1e24d39d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4605536e4724f8f41a32f9c0cb5f1132"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#a4605536e4724f8f41a32f9c0cb5f1132">ye_init_engine</a> ()</td></tr>
+<tr class="memdesc:a4605536e4724f8f41a32f9c0cb5f1132"><td class="mdescLeft">&#160;</td><td class="mdescRight">The entry point to the engine, initializes all subsystems.  <a href="engine_8c.html#a4605536e4724f8f41a32f9c0cb5f1132">More...</a><br /></td></tr>
 <tr class="separator:a4605536e4724f8f41a32f9c0cb5f1132"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae828afcbbb961783b743eb54c5d78599"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="engine_8c.html#ae828afcbbb961783b743eb54c5d78599">ye_shutdown_engine</a> ()</td></tr>
+<tr class="memdesc:ae828afcbbb961783b743eb54c5d78599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shuts down the engine and all subsystems.  <a href="engine_8c.html#ae828afcbbb961783b743eb54c5d78599">More...</a><br /></td></tr>
 <tr class="separator:ae828afcbbb961783b743eb54c5d78599"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -198,23 +203,6 @@ Variables</h2></td></tr>
 <tr class="separator:a0a8fa4b8409a07caee60c2cf6f7e602b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aa6bdff000d55618b9722012b162c0010" name="aa6bdff000d55618b9722012b162c0010"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6bdff000d55618b9722012b162c0010">&#9670;&#160;</a></span>getScreenSize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structScreenSize.html">ScreenSize</a> getScreenSize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a9712e6d20e9a501a97c2d8300121a986" name="a9712e6d20e9a501a97c2d8300121a986"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9712e6d20e9a501a97c2d8300121a986">&#9670;&#160;</a></span>set_setting_bool()</h2>
 
@@ -366,6 +354,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the current delta time in milliseconds. </p>
+<p >Will pull the current delta time from <a class="el" href="structye__runtime__data.html">ye_runtime_data</a>. This exists just for ease of use and potentially wrapping later on.</p>
+<dl class="section return"><dt>Returns</dt><dd>float </dd></dl>
+
 </div>
 </div>
 <a id="a1e75715a25dee2e279f643c425a679b7" name="a1e75715a25dee2e279f643c425a679b7"></a>
@@ -383,6 +375,16 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a string of the full path (os specific) to the engine resource you have referenced. </p>
+<p >Behaves the same as <a class="el" href="engine_8c.html#af9a08ca58aa7f9990cb46854a383066f">ye_get_resource_static</a>, but is meant for accessing engine resources.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sub_path</td><td>The relative path (or just name with extension) of the engine resource you wish to access. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char* The absolute path to the engine resource. </dd></dl>
 
 </div>
 </div>
@@ -402,6 +404,17 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns a string of the full path (os specific) to the resource you have referenced. </p>
+<p >The path you provide must be relative to the resources folder. Ex: ("images/yoyo.png") will yeild something like /home/user/gamelocation/resources/images/yoyo.png on linux.</p>
+<p >Importantly, this is just a pointer to a buffer, and as such will change its value after the next invokation.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sub_path</td><td>The path (relative to the resources folder) of the resource you wish to access. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char* The absolute path to the resource. </dd></dl>
+
 </div>
 </div>
 <a id="a4605536e4724f8f41a32f9c0cb5f1132" name="a4605536e4724f8f41a32f9c0cb5f1132"></a>
@@ -418,6 +431,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The entry point to the engine, initializes all subsystems. </p>
+<p >You will need to have a 'settings.yoyo' file at the root of your project to initialize the engine. </p>
 
 </div>
 </div>
@@ -436,6 +452,14 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The master function that returns control to the engine to process the next frame. </p>
+<p >Will invoke many functions to process the next frame, including:</p><ul>
+<li><a class="el" href="ui_8c.html#acfae3675545c1d2f5a9bcc9ba681ec26">ui_handle_input</a></li>
+<li><a class="el" href="physics_8c.html#a233ff29aab9780bef667db7e3f5a859e">ye_system_physics</a></li>
+<li><a class="el" href="graphics_8c.html#a6c5329979723f3e349916845489b73fe">ye_render_all</a></li>
+</ul>
+<p >As well as many other misc operations, such as updating the current delta in <a class="el" href="structye__runtime__data.html">ye_runtime_data</a> </p>
+
 </div>
 </div>
 <a id="ae828afcbbb961783b743eb54c5d78599" name="ae828afcbbb961783b743eb54c5d78599"></a>
@@ -452,6 +476,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Shuts down the engine and all subsystems. </p>
+<p >Does not shut down your own game logic, you will need a game loop to do that. If you are using the editor and the default entry point, both will be handled for you. </p>
 
 </div>
 </div>
@@ -470,6 +497,15 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Updates the engines resources path to the new path provided. </p>
+<p >The only use of this at the moment is for the editor to switch into the game its trying to edit after it loads all its necessary editor specific resources.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>The (absolute) path to the new resources folder. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

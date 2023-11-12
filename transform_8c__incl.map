@@ -1,7 +1,7 @@
 <map id="src/ecs/transform.c" name="src/ecs/transform.c">
 <area shape="rect" id="node1" title=" " alt="" coords="1193,5,1328,31"/>
 <area shape="rect" id="node2" href="$yoyoengine_8h.html" title=" " alt="" coords="1179,79,1343,104"/>
-<area shape="rect" id="node3" href="$engine_8h.html" title=" " alt="" coords="140,152,211,177"/>
+<area shape="rect" id="node3" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="140,152,211,177"/>
 <area shape="rect" id="node7" href="$graphics_8h.html" title=" " alt="" coords="5,225,87,251"/>
 <area shape="rect" id="node8" href="$json_8h.html" title=" " alt="" coords="658,152,714,177"/>
 <area shape="rect" id="node10" href="$uthash_8h.html" title=" " alt="" coords="893,152,964,177"/>

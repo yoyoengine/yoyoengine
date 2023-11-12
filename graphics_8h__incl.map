@@ -3,7 +3,7 @@
 <area shape="rect" id="node2" title=" " alt="" coords="166,240,241,265"/>
 <area shape="rect" id="node3" title=" " alt="" coords="28,240,142,265"/>
 <area shape="rect" id="node4" href="$yoyoengine_8h.html" title=" " alt="" coords="1027,93,1191,119"/>
-<area shape="rect" id="node5" href="$engine_8h.html" title=" " alt="" coords="204,167,275,192"/>
+<area shape="rect" id="node5" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="204,167,275,192"/>
 <area shape="rect" id="node7" href="$json_8h.html" title=" " alt="" coords="610,167,666,192"/>
 <area shape="rect" id="node9" href="$uthash_8h.html" title=" " alt="" coords="742,167,812,192"/>
 <area shape="rect" id="node14" href="$cache_8h.html" title=" " alt="" coords="904,167,970,192"/>

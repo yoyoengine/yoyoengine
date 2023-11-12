@@ -1,6 +1,6 @@
 <map id="dist/include/yoyoengine/graphics.h" name="dist/include/yoyoengine/graphics.h">
 <area shape="rect" id="node1" title=" " alt="" coords="1805,5,1961,45"/>
-<area shape="rect" id="node2" href="$engine_8h.html" title=" " alt="" coords="1677,93,1833,133"/>
+<area shape="rect" id="node2" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="1677,93,1833,133"/>
 <area shape="rect" id="node3" href="$yoyoengine_8h.html" title=" " alt="" coords="1805,181,1961,221"/>
 <area shape="rect" id="node4" href="$cache_8h.html" title=" " alt="" coords="5,269,161,309"/>
 <area shape="rect" id="node5" href="$audiosource_8h.html" title=" " alt="" coords="185,269,341,309"/>

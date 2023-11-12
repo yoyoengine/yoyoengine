@@ -7,7 +7,6 @@ var engine_8h =
     [ "ye_engine_state", "structye__engine__state.html", "structye__engine__state" ],
     [ "YE_ENGINE_SCENE_VERSION", "engine_8h.html#abd491ec2df97ed314033c5c6fdbe5129", null ],
     [ "YE_ENGINE_VERSION", "engine_8h.html#adda430bf3e09bb7f2fec63a4a1f19d87", null ],
-    [ "getScreenSize", "engine_8h.html#aa6bdff000d55618b9722012b162c0010", null ],
     [ "ye_delta_time", "engine_8h.html#a9b9bba2a365900164d1f4ae93bc84a50", null ],
     [ "ye_get_engine_resource_static", "engine_8h.html#a1e75715a25dee2e279f643c425a679b7", null ],
     [ "ye_get_resource_static", "engine_8h.html#af9a08ca58aa7f9990cb46854a383066f", null ],
