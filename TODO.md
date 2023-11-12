@@ -183,3 +183,8 @@ we wont see colliders or paintbounds on cameras because thery dont get rendererd
 ## json best practice
 
 - we currently mix fields of underscore and spaces, we need to pick one and rewrite all to be the same
+
+## serialization
+
+The font and color shit is rough, need to plan for serializing those.
+Personally, I think its best to just use the cache system youve already created, you could maybe tweak for loading unique or global style files, but you should stick to the existing system (which really isnt bad) instead of rewriting it for the 100th time.
