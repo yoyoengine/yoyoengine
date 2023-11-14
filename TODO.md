@@ -193,3 +193,7 @@ Personally, I think its best to just use the cache system youve already created,
 
 go back sometime and add < to every struct field so the docs include the field comment
 use groups more
+
+## SQUASH
+
+consider going back and squashing all those doxygen commits, there are a shit ton of them

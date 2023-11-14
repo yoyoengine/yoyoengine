@@ -106,6 +106,63 @@ bool ye_json_has_key(json_t* json, const char* key);
 bool ye_json_int(json_t* json, const char* key, int *out);
 
 /**
+ * @brief Extract a float from a json_t by key, assigning the passed float to it
+ * @param json The JSON object
+ * @param key The key to extract the float from
+ * @param out The output float
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_float(json_t* json, const char* key, float *out);
+
+/**
+ * @brief Extract a bool from a json_t by key, assigning the passed bool to it
+ * @param json The JSON object
+ * @param key The key to extract the bool from
+ * @param out The output bool
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_bool(json_t* json, const char* key, bool *out);
+
+/**
+ * @brief Extract a string from a json_t by key, assigning the passed string to it
+ * @note THIS FUNCTION SETS const char **out TO BE A REFERENCE TO THE STRING IN JANSSON, IF THIS NEEDS TO PERSIST
+ * YOU NEED TO COPY OR DUPLICATE ITS MEMORY
+ * @param json The JSON object
+ * @param key The key to extract the string from
+ * @param out The output string
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_string(json_t* json, const char* key, const char **out);
+
+/**
+ * @brief Extract a json_t from a json_t by key, assigning the passed json_t to it
+ * @param json The JSON object
+ * @param key The key to extract the json_t from
+ * @param out The output json_t
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_object(json_t* json, const char* key, json_t **out);
+
+/**
+ * @brief Extract a json_t from a json_t by key, assigning the passed json_t to it
+ * @note This function is practically the same as object, but provides a sanity check for array type
+ * @param json The JSON object
+ * @param key The key to extract the json_t from
+ * @param out The output json_t
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_array(json_t* json, const char* key, json_t **out);
+
+/**
+ * @brief Extract an int from a json_t by index, assigning the passed int to it
+ * @param json The JSON object
+ * @param index The index to extract the int from
+ * @param out The output int
+ * @return true if extraction was successful, false otherwise
+ */
+bool ye_json_arr_int(json_t* json, int index, int *out);
+
+/**
  * @brief Extracts a double from a json_t object by index.
  * @param json The json_t object.
  * @param index The index to extract the double from.
