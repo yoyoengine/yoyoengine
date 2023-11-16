@@ -158,8 +158,6 @@ CTRL clicking and dragging or shift clicking and dragging could move and scale t
 
 ## thoughts
 
-would be cool in editor somewhere - top bar? to have a X warnings, X errors yellow and red respectively to draw attention
-
 way to tottally save state of editor, so that we could have a play button that we click which just resumes running the scene at its current point as if it wasnt in editor- that way we dont have to build in order to quickly test like a physics collision
 
 it honestly might be better if colors werent in this weird ahh cache system, but this is how ive set it up so i might just double down

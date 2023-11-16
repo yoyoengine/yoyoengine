@@ -74,15 +74,15 @@ void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* 
 
 void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity_name){
     // validate the view field
-    json_t *view_filed = NULL;
-    if(!ye_json_object(camera,"view field",&view_filed)) {
+    json_t *view_field = NULL;
+    if(!ye_json_object(camera,"view field",&view_field)) {
         ye_logf(warning,"Entity %s has a camera component, but it is missing the view field\n", entity_name);
         return;
     }
 
     // validate the w,h ints in view feild
     int w,h;
-    if(!ye_json_int(view_filed,"w",&w) || !ye_json_int(view_filed,"h",&h)) {
+    if(!ye_json_int(view_field,"w",&w) || !ye_json_int(view_field,"h",&h)) {
         ye_logf(warning,"Entity %s has a camera component with invalid view field\n", entity_name);
         return;
     }
