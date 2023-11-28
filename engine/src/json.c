@@ -33,6 +33,7 @@ json_t* ye_json_read(const char* path)
         ye_logf(error, "failed to read json file %s: %s\n", path, jerror.text);
         return NULL;
     }
+    ye_logf(debug, "read json file %s\n", path);
     return json;
 }
 
@@ -44,6 +45,7 @@ int ye_json_write(const char* path, json_t* json)
         ye_logf(error, "failed to write json file %s: %s\n", path, jerror.text);
         return -1;
     }
+    ye_logf(debug, "wrote json file %s\n", path);
     return 0;
 }
 

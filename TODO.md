@@ -200,3 +200,5 @@ consider going back and squashing all those doxygen commits, there are a shit to
 
 should keep existing cache system.
 in this case selecting fonts and colors could just be a dropdown in each editor menu possible, with a popout that allows modifying the style.yoyo. Ideally though for performance we wouldnt want to load everything from a global style.yoyo but tbh this is good enough just to have a usable system, and the code is generic enough to be refactored to read and load fonts and colors from any source later on.
+
+- to take in names we need to refactor the storage of colors as the font pointer or name so we can reverse engineer what color it is - maybe just attatch its cache node to the struct

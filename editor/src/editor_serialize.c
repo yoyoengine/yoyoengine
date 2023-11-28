@@ -55,6 +55,9 @@ void serialize_entity_camera(struct ye_entity *entity, json_t *entity_json){
     // set the active state
     json_object_set_new(camera, "active", json_boolean(entity->camera->active));
 
+    // set the z
+    json_object_set_new(camera, "z", json_integer(entity->camera->z));
+
     // set the view field object
     json_t *view_field = json_object();
     json_object_set_new(view_field, "w", json_integer(entity->camera->view_field.w));
@@ -64,7 +67,7 @@ void serialize_entity_camera(struct ye_entity *entity, json_t *entity_json){
     json_object_set_new(entity_json, "camera", camera);
 
     // set the view field object
-    json_object_set_new(camera, "view_field", view_field);
+    json_object_set_new(camera, "view field", view_field);
 }
 
 /*
