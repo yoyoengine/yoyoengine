@@ -96,6 +96,14 @@ void remove_ui_component(const char* key) {
     }
 }
 
+void ui_toggle_component(char* key, void (*render_function)()) {
+    if (ui_component_exists(key)) {
+        remove_ui_component(key);
+    } else {
+        ui_register_component(key, render_function);
+    }
+}
+
 bool ui_component_exists(char *key) {
     for (int i = 0; i < num_ui_components; i++) {
         UIComponent* component = &ui_components[i];

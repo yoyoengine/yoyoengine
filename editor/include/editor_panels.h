@@ -32,4 +32,6 @@ void editor_panel_keybinds(struct nk_context *ctx);
 
 void editor_panel_credits(struct nk_context *ctx);
 
+void editor_panel_styles(struct nk_context *ctx);
+
 #endif

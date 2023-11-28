@@ -92,6 +92,16 @@ void ui_register_component(const char* key, void (*render_function)());
 void remove_ui_component(const char* key);
 
 /**
+ * @brief Toggles a component in the UI system.
+ * 
+ * @param key The key to toggle the component under.
+ * @param render_function Function pointer to the component's renderer.
+ * 
+ * The component renderer function pointer assumes it takes in a nk_context pointer.
+*/
+void ui_toggle_component(char* key, void (*render_function)());
+
+/**
  * @brief Checks if a component exists in the UI system.
  * 
  * @param key The key to check for.

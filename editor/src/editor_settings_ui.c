@@ -19,6 +19,7 @@
 #include "editor.h"
 #include "editor_ui.h"
 #include "editor_build.h"
+#include "editor_panels.h"
 #include <yoyoengine/yoyoengine.h>
 #include <unistd.h>
 
@@ -453,10 +454,22 @@ void ye_editor_paint_project(struct nk_context *ctx){
             }
             if(nk_button_label(ctx, "Browse Project Files")){
                 char command[256];
-                snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path);
+                snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path); // NOTCROSSPLATFORM
 
                 // Execute the command.
                 system(command);
+            }
+            if(nk_button_label(ctx, "Edit styles.yoyo")){
+                /*
+                    Open a popout editor for the editor styles
+                */
+                if(!ui_component_exists("editor styles")){
+                    ui_register_component("editor styles", editor_panel_styles);
+                    lock_viewport();
+                } else {
+                    remove_ui_component("editor styles");
+                    unlock_viewport();
+                }
             }
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);

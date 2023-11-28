@@ -730,6 +730,13 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             }
             if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) {
                 #ifdef _WIN32
+                    system("start https://yoyolick.github.io/yoyoengine") 
+                #else
+                    system("xdg-open https://yoyolick.github.io/yoyoengine");
+                #endif
+            }
+            if (nk_menu_item_label(ctx, "Source Code", NK_TEXT_LEFT)) {
+                #ifdef _WIN32
                     system("start https://github.com/yoyolick/yoyoengine") 
                 #else
                     system("xdg-open https://github.com/yoyolick/yoyoengine");
