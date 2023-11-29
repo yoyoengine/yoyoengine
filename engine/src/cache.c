@@ -219,7 +219,11 @@ void ye_clear_font_cache(){
     struct ye_font_node *font_node, *font_tmp;
     HASH_ITER(hh, cached_fonts_head, font_node, font_tmp) {
         HASH_DEL(cached_fonts_head, font_node);
-        TTF_CloseFont(font_node->font);
+        
+        // make sure we dont clear the engine font if we had a failure loading this font from disk
+        if(font_node->font != NULL && font_node->font != YE_STATE.engine.pEngineFont)
+            TTF_CloseFont(font_node->font);
+        
         free(font_node->name);
         free(font_node);
     }
