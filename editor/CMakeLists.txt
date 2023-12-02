@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.22.1)
 # Define the project name
 project(YoyoEditor)
 
+# # Include the engine project
+# add_subdirectory(/home/ryan/repos/yoyoengine/engine/CMakeLists.txt)
+
 # Set C/C++ compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g")
 

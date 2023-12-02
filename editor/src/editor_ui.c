@@ -28,7 +28,7 @@
 const float ratio[] = {0.03f, 0.92f, 0.05};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
-    int height = YE_STATE.editor.selected_entity == NULL ? screenHeight : screenHeight/2;
+    int height = YE_STATE.editor.selected_entity == NULL ? screenHeight : screenHeight / 3;
     if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -128,7 +128,7 @@ void ye_editor_paint_entity(struct nk_context *ctx){
     if(ent == NULL){
         return;
     }
-    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 2, screenWidth - screenWidth/1.5, screenHeight / 2),
+    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 3, screenWidth - screenWidth/1.5, screenHeight - screenHeight/3),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             if(ent == NULL){
                 nk_layout_row_dynamic(ctx, 25, 1);

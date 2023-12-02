@@ -113,6 +113,16 @@ void editor_input_panning(SDL_Event event){
 */
 void editor_input_selection(SDL_Event event){
     if (event.type == SDL_MOUSEBUTTONDOWN) {
+
+        // experimental change to deselect active window when focusing editor
+        //
+        // if(!lock_viewport_interaction){
+        //     if(is_hovering_editor(event.button.x,event.button.y)){
+        //         YE_STATE.engine.ctx->active = NULL;
+        //         ye_logf(warning, "deselecting entity\n");
+        //     }
+        // }
+
         if (event.button.button == SDL_BUTTON_LEFT) {   
             // dont do anything if we are outside the viewport
             if (is_hovering_editor(event.button.x,event.button.y) &&
