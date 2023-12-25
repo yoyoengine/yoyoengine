@@ -150,7 +150,7 @@ struct ye_engine_config {
     TTF_Font *pEngineFont;
 
     // the nuklear context
-    struct nk_context *ctx;
+    struct nk_context *ctx; // TODO: should maybe be moved to runtime but idgaf rn
 };
 
 /**
@@ -219,6 +219,12 @@ struct ye_runtime_data {
 
     int error_count;            // tracks the number of error level logs that have occurred
     int warning_count;          // same but for warnings
+
+    /*
+        References to the current SDL window and renderer
+    */
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 }; // TODO: move a bunch more information here, audio capacity comes to mind. expose some stuff here just for usage.
 
 /*

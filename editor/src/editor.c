@@ -120,6 +120,9 @@ int main(int argc, char **argv) {
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
 
+    // allow window resizing
+    SDL_SetWindowResizable(YE_STATE.runtime.window, SDL_TRUE); // maybe expose this in the json later on
+
     /*
         Set the editor settings path
     */

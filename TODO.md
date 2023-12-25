@@ -211,3 +211,12 @@ combo boxes reading from the persisted style tracking state... ?
 
 we can actually change the active window inside nuklear.h:5674 with ctx->active.
 The issue is that we dont have a reliable way to detect whether the user is doing something that we wouldnt want to defocus... other than locked viewport
+
+## window resizing
+
+for the editor:
+resizing the window will change the editors known window size, this size is used for the editor to determine the bounds of the viewport. the size of the heiarchy and other windows are fixed and the viewport is all the space thats not taken up by this.
+
+im going to commit what I have now, but for the clamping resizing I am basically thinking that we still scale the nuklear sizes based on the window size, but they can only grow so large or small, that way we preseve visibility.
+
+alt approach, maybe we dont need to clamp at all but we can just keep constant size like 500px for side panels, (does not let us work at lower res) if we do that probably include a float scaling factor to allow user to customize size of ui scaling

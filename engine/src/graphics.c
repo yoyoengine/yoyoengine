@@ -285,6 +285,10 @@ void ye_init_graphics(){
     missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
     SDL_FreeSurface(missing_surface);
 
+    // set the runtime window and renderer references
+    YE_STATE.runtime.window = pWindow;
+    YE_STATE.runtime.renderer = pRenderer;
+
     init_ui(pWindow,pRenderer);
 
     // test for TTF init, alarm if failed
