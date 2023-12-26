@@ -307,6 +307,16 @@ void ye_paint_console(struct nk_context *ctx){
                             ye_logf(debug,"Freecam disabled\n");
                         }
                     }
+                    else if(strncmp(userInput+7,"stretch",7)==0){
+                        YE_STATE.engine.stretch_resolution = !YE_STATE.engine.stretch_resolution;
+                        ye_recompute_boxing();
+                        if(YE_STATE.engine.stretch_resolution){
+                            ye_logf(debug,"Stretched Resolution enabled\n");
+                        }
+                        else{
+                            ye_logf(debug,"Stretched Resolution disabled\n");
+                        }
+                    }
                     else{
                         ye_logf(debug,"Unknown toggle command. Type 'help' for a list of commands\n");
                     }

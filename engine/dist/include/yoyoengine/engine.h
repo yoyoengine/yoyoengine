@@ -84,7 +84,7 @@ char* ye_get_engine_resource_static(const char *sub_path);
 struct ye_engine_config {
     /*
         Window Properties
-        Do not update in realtime, only on init
+        Do not update in realtime, only on init OR recompute functions
     */
     int screen_width;
     int screen_height;
@@ -93,6 +93,13 @@ struct ye_engine_config {
     int framecap;
     char *window_title;
     char *icon_path;
+    
+    /*
+        Some fields that handle pillarboxing and letterboxing
+    */
+    bool stretch_resolution;    // i dont even remember what stretch viewport does anymore... editor only? || this controls whether we even want to stretch
+    bool need_boxing;           // if we need to pillarbox or letterbox
+    SDL_Rect letterbox;        // the letterbox rect
 
     /*
         0 - debug and higher

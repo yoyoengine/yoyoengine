@@ -123,6 +123,11 @@ struct ScreenSize getCurrentResolution();
 void changeResolution(int width, int height);
 
 /**
+ * @brief Grabs the current screen resolution and recomputes the boxing as needed.
+ */
+void ye_recompute_boxing();
+
+/**
  * @brief Initializes the graphics.
  */
 void ye_init_graphics();

@@ -163,13 +163,16 @@ void ye_process_frame(){
         SDL_GetWindowSize(YE_STATE.runtime.window, &width, &height);
         
         // log the new size
-        ye_logf(info, "Window resized to %d, %d.\n", width, height);
+        ye_logf(debug, "Window resized to %d, %d.\n", width, height);
 
         // update the engine state
         YE_STATE.engine.screen_width = width;
         YE_STATE.engine.screen_height = height;
 
         // editor camera update handled in editor_input.c
+
+        // recompute pillar or letter boxing
+        ye_recompute_boxing();
     }
 
     // render frame
@@ -266,6 +269,8 @@ void ye_init_engine() {
         set_setting_bool("debug_mode", &YE_STATE.engine.debug_mode, SETTINGS);
         set_setting_bool("skip_intro", &YE_STATE.engine.skipintro, SETTINGS);
         set_setting_bool("editor_mode", &YE_STATE.editor.editor_mode, SETTINGS);
+
+        set_setting_bool("stretch_resolution", &YE_STATE.engine.stretch_resolution, SETTINGS);
 
         // we will decref settings later on after we load the scene, so the path to the entry scene still exists
     }
@@ -364,6 +369,10 @@ void ye_init_engine() {
 
         // TODO: version numbers back please (awaiting text renderer)
 
+        // some stinky cheese (i couldnt troubleshoot why boxing was weird on splash only)
+        bool temp_stretch_res_pref = YE_STATE.engine.stretch_resolution;
+        YE_STATE.engine.stretch_resolution = true;
+
         // get current ticks
         int ticks = SDL_GetTicks();
 
@@ -372,6 +381,9 @@ void ye_init_engine() {
             // process frame
             ye_process_frame();
         }
+
+        YE_STATE.engine.stretch_resolution = temp_stretch_res_pref; // reset the stretch flag
+        ye_recompute_boxing();
 
         // we need to delete everything in the ECS and reset the camera
         ye_destroy_entity(splash_cam);

@@ -201,10 +201,24 @@ void ye_render_all() {
         viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
         SDL_RenderSetViewport(pRenderer, &viewport);
     }
+    
+    /*
+        If we need to set a custom viewport to maintain ratio, do so here
+
+        stretch res determines the value of need boxing on resize events and init
+    */
+    if(YE_STATE.engine.need_boxing){
+        SDL_RenderSetViewport(pRenderer, &YE_STATE.engine.letterbox);
+    }
+    else{
+        SDL_RenderSetViewport(pRenderer, NULL);
+    }
 
     /*
         If we are not keeping the viewport aspect ratio,we can calculate
         our scale to scale the results as if we were zooming in or out
+
+        2 month later edit: wtf is the purpose of this??
     */
     if(!YE_STATE.engine.stretch_viewport){
         float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
@@ -238,6 +252,62 @@ void ye_render_all() {
         if(frameEnd - frameStart < desired_frame_time){
             SDL_Delay(desired_frame_time - (frameEnd - frameStart));
         }
+    }
+}
+
+
+void ye_recompute_boxing(){
+    // if we are ok playing with stretched res, we dont need to do any boxing
+    if(YE_STATE.engine.stretch_resolution){
+        YE_STATE.engine.need_boxing = false;
+        ye_logf(debug,"Stretching viewport enabled, no boxing will occur.\n");
+        return;
+    }
+
+    /*
+        If we have a non 16:9 aspect ratio, we need to calculate the viewport and pillarbox paint
+    */
+
+    // get the screen size
+    struct ScreenSize screenSize = ye_get_screen_size();
+
+    // calculate the aspect ratio
+    float aspectRatio = (float)screenSize.width / (float)screenSize.height;
+
+    // if the aspect ratio is not 16:9 TODO: change this to custom target and this whole thing to be generic
+    if(aspectRatio != 16.0f / 9.0f){
+        ye_logf(info,"Non targeted aspect ratio detected. Boxing will occur if stretching is disabled.\n");
+        YE_STATE.engine.need_boxing = true;
+
+        /*
+            We are targeting a 16:9 viewport in the center of the screen with pillarboxing on the sides or top depending on ratio
+
+            To achieve this, we figure out what the ratio actually is and then calculate the viewport and pillarbox size
+        */
+        float targetAspectRatio = 16.0f / 9.0f;
+
+        // calculate the target viewport size
+        int targetWidth = screenSize.height * 16 / 9;
+        int targetHeight = screenSize.height;
+
+        // calculate the pillarbox size
+        int pillarboxWidth = (screenSize.width - targetWidth) / 2;
+        int pillarboxHeight = 0;
+
+        // set the viewport
+        SDL_Rect viewport;
+        viewport.x = pillarboxWidth;
+        viewport.y = pillarboxHeight;
+        viewport.w = targetWidth;
+        viewport.h = targetHeight;
+
+        YE_STATE.engine.letterbox = viewport;
+
+        ye_logf(info, "Computed viewport with size: %d %d and offset: %d %d\n", targetWidth, targetHeight, pillarboxWidth, pillarboxHeight);
+
+        // printf("current screen size: %d %d\n", screenSize.width, screenSize.height);
+        // printf("target aspect ratio: 16:9\n");
+        // printf("viewport size: %d %d\n", targetWidth, targetHeight);
     }
 }
 

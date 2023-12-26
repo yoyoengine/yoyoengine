@@ -220,3 +220,28 @@ resizing the window will change the editors known window size, this size is used
 im going to commit what I have now, but for the clamping resizing I am basically thinking that we still scale the nuklear sizes based on the window size, but they can only grow so large or small, that way we preseve visibility.
 
 alt approach, maybe we dont need to clamp at all but we can just keep constant size like 500px for side panels, (does not let us work at lower res) if we do that probably include a float scaling factor to allow user to customize size of ui scaling
+
+## build and other icons
+I can also just straight up write in the nuklear.h my own icon definitions (hard)
+
+
+sdl renderer backend how are images formatted and stored?? holy fuck how can i upload an image to nuklear
+what format is nuklear expecting??
+
+## kalgdhljkdhglk
+
+editor save prefs when closed, like the ratio and location of the editor window. also serialize all the overlays and options
+better algorithm for selecting objects when clicking over them (unity has ruined me)
+nuklear showing 1px margin scrollbars sometimes horizontally (depends on scaling)
+reapproach editor scaling to be better to give higher size viewport eventually, also maybe repaint during rescale so its not so yuck
+add existing project in launcher
+
+## view ratios
+
+to be honest, I am only partially the way there with the work im doing on the window ratio scaling and the letter and pillar boxing. in the future, we should be allowing IN EDITOR custom camera sizes and window sizes so that the camera size is automatically projected to a maintained window size and everything works with every valid value
+
+## misc ten thousand
+
+you should really remove the console logic from logging
+
+when you do that you should overhaul it to be better and also interface with instead of toggle you can "set" a value to a input number or boolean

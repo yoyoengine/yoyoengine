@@ -47,6 +47,7 @@ int project_framecap; // -1 for vsync, else 0-MAXINT
 char _project_framecap_label[10];
 char project_window_title[256];
 bool project_stretch_viewport; // true or false
+bool project_stretch_resolution; // true or false
 
 /*
     Build settings variables
@@ -184,6 +185,15 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 nk_tooltip(ctx, "If checked, the viewport will stretch to the size of the window, if unchecked, the viewport will render from its actual perspective.");
 
             nk_layout_row_dynamic(ctx, 25, 1);
+            /*
+                Checkbox for stretch resolution
+            */
+            bounds = nk_widget_bounds(ctx);
+            nk_checkbox_label(ctx, "Stretch Resolution", (nk_bool*)&project_stretch_resolution);
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "If checked, the window will stretch the output to fill with no pillar or letter boxing.");
+
+            nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Build Settings:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
 
@@ -242,6 +252,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 }
                 json_object_set_new(SETTINGS, "framecap", json_integer(project_framecap));
                 json_object_set_new(SETTINGS, "stretch_viewport", project_stretch_viewport ? json_true() : json_false());
+                json_object_set_new(SETTINGS, "stretch_resolution", project_stretch_resolution ? json_true() : json_false());
                 // save the settings file
                 ye_json_write(ye_get_resource_static("../settings.yoyo"),SETTINGS);
                 
@@ -397,6 +408,13 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     */
                     if(!ye_json_bool(SETTINGS, "stretch_viewport", &project_stretch_viewport)){
                         project_stretch_viewport = false;
+                    }
+
+                    /*
+                        Stretch Resolution
+                    */
+                    if(!ye_json_bool(SETTINGS, "stretch_resolution", &project_stretch_resolution)){
+                        project_stretch_resolution = false;
                     }
 
                     /*
