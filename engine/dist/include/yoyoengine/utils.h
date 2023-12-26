@@ -41,6 +41,16 @@ enum ye_alignment {
 struct ye_rectf; // this forward declaration ignores a bunch of compiler warnings, and i have no clue why
 
 /**
+ * @brief Clamps a value between a minimum and maximum.
+ * 
+ * @param value The value to clamp.
+ * @param min The minimum value.
+ * @param max The maximum value.
+ * @return int The clamped value.
+ */
+int ye_clamp(int value, int min, int max);
+
+/**
  * @brief Aligns a rectangle within another rectangle (by modifying the passed values).
  * 
  * @param bounds_f The bounds to align within.

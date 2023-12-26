@@ -93,6 +93,10 @@ void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum 
     *obj_f = ye_convert_rect_rectf(*obj);
 }
 
+int ye_clamp(int value, int min, int max) {
+    return (value < min) ? min : (value > max) ? max : value;
+}
+
 SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture){
     int imgWidth, imgHeight;
     SDL_QueryTexture(pTexture, NULL, NULL, &imgWidth, &imgHeight);

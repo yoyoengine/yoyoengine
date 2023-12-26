@@ -387,19 +387,28 @@ void ye_editor_paint_info_overlay(struct nk_context *ctx){
     - if console is opened when we tick one of these, closing the console crashes
 */
 bool show_info_overlay = false;
+bool show_camera_overlay = false;
 void ye_editor_paint_options(struct nk_context *ctx){
     if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, 40 + screenHeight/1.5, screenWidth - screenWidth/1.5, (screenHeight - screenHeight/1.5) - 40),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             
             nk_label(ctx, "Overlays:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 2);
             if(nk_checkbox_label(ctx, "Info", (nk_bool*)&show_info_overlay)){
                 if(show_info_overlay){
                     ui_register_component("info_overlay",ye_editor_paint_info_overlay);
                 }
                 else{
                     remove_ui_component("info_overlay");
+                }
+            }
+            if(nk_checkbox_label(ctx, "Camera", (nk_bool*)&show_camera_overlay)){
+                if(show_camera_overlay){
+                    ui_register_component("cam_info",ui_paint_cam_info);
+                }
+                else{
+                    remove_ui_component("cam_info");
                 }
             }
 
@@ -763,7 +772,10 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         }
         
         // spacer //
-        nk_layout_row_push(ctx, 350);
+        // get the amount of space (less on small screens more on large)
+        int spacepx = ye_clamp(screenWidth - 1280,0,937);
+        // printf("spacepx: %d\n", spacepx);
+        nk_layout_row_push(ctx, spacepx);
         nk_label(ctx, "                                                                                                                        ", NK_TEXT_LEFT);
         ///////////
 

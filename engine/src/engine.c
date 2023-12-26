@@ -35,7 +35,7 @@ char path_buffer[1024];
 char *base_path = NULL;
 
 // expose our engine state data to the whole engine
-struct ye_engine_state YE_STATE;
+struct ye_engine_state YE_STATE; // TODO: should null out pointers and stuff? maybe some of them are only used SOMETIMES but not all the time
 
 // Global variables for resource paths
 char *executable_path = NULL;
@@ -70,6 +70,9 @@ SDL_Event e;
 int last_frame_time = 0;
 bool console_visible = false;
 void ye_process_frame(){
+    // bool to track resize events
+    bool resized = false;
+
     // update time delta
     YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks64();
@@ -79,39 +82,64 @@ void ye_process_frame(){
     while (SDL_PollEvent(&e)) {
         ui_handle_input(&e);
 
-        // check for any reserved engine buttons (console, etc)
-        if(e.type == SDL_KEYDOWN){
-            switch(e.key.keysym.sym){
-                case SDLK_BACKQUOTE:
-                    if(console_visible){
-                        console_visible = false;
-                        remove_ui_component("console");
+        // if resize event, set resized to true
+        // if(e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED){
+        //     resized = true;
+        // }
+
+        // switch is prob faster here
+        switch(e.type){
+            // check for any reserved engine buttons (console, etc)
+            case SDL_KEYDOWN:
+                // if freecam is on (rare) TODO: allow changing of freecam scale
+                if(YE_STATE.editor.freecam_enabled){
+                    switch(e.key.keysym.sym){     
+                        case SDLK_LEFT:
+                            YE_STATE.engine.target_camera->transform->x -= 100.0;
+                            break;
+                        case SDLK_RIGHT:
+                            YE_STATE.engine.target_camera->transform->x += 100.0;
+                            break;
+                        case SDLK_UP:
+                            YE_STATE.engine.target_camera->transform->y -= 100.0;
+                            break;
+                        case SDLK_DOWN:
+                            YE_STATE.engine.target_camera->transform->y += 100.0;
+                            break;
                     }
-                    else{
-                        console_visible = true;
-                        ui_register_component("console",ye_paint_console);
-                    }
-                    break;
-                default:
-                    break;
-            }
-            // if freecam is on (rare) TODO: allow changing of freecam scale
-            if(YE_STATE.editor.freecam_enabled){
-                switch(e.key.keysym.sym){     
-                    case SDLK_LEFT:
-                        YE_STATE.engine.target_camera->transform->x -= 100.0;
+                }
+
+                switch(e.key.keysym.sym){
+
+                    // console toggle //
+
+                    case SDLK_BACKQUOTE:
+                        if(console_visible){
+                            console_visible = false;
+                            remove_ui_component("console");
+                        }
+                        else{
+                            console_visible = true;
+                            ui_register_component("console",ye_paint_console);
+                        }
                         break;
-                    case SDLK_RIGHT:
-                        YE_STATE.engine.target_camera->transform->x += 100.0;
-                        break;
-                    case SDLK_UP:
-                        YE_STATE.engine.target_camera->transform->y -= 100.0;
-                        break;
-                    case SDLK_DOWN:
-                        YE_STATE.engine.target_camera->transform->y += 100.0;
+                    //default:
+                    //    break;
+                }
+                break; // breaks out of keydown
+
+            // window events //
+            case SDL_WINDOWEVENT:
+                switch(e.window.event){
+                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        resized = true;
                         break;
                 }
-            }
+                break;
+
+            //default:
+            //    break;
         }
 
         // send event to callback specified by game (if needed)
@@ -128,6 +156,21 @@ void ye_process_frame(){
         ye_system_physics(); // TODO: decouple from framerate
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
+
+    // if we resized, update all the meta that we need so we can render a new clean frame
+    if(resized){
+        int width, height;
+        SDL_GetWindowSize(YE_STATE.runtime.window, &width, &height);
+        
+        // log the new size
+        ye_logf(info, "Window resized to %d, %d.\n", width, height);
+
+        // update the engine state
+        YE_STATE.engine.screen_width = width;
+        YE_STATE.engine.screen_height = height;
+
+        // editor camera update handled in editor_input.c
+    }
 
     // render frame
     ye_render_all();

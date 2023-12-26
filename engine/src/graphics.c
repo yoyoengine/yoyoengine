@@ -190,13 +190,15 @@ void ye_render_all() {
 
     /*
         If we are in editor mode paint to a viewport
+
+        This viewport is for the scene preview
     */
     if(YE_STATE.editor.editor_mode){
         SDL_Rect viewport;
         viewport.x = 0;
         viewport.y = 35;
         viewport.w = YE_STATE.engine.screen_width / 1.5;
-        viewport.h = 35 + YE_STATE.engine.screen_height / 1.5; // TODO: stuff like this could be optimized, no floating point calcs every frame
+        viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
         SDL_RenderSetViewport(pRenderer, &viewport);
     }
 

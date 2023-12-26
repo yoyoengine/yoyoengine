@@ -170,6 +170,18 @@ void editor_input_misc(SDL_Event event){
     if(event.type == SDL_MOUSEMOTION){
         editor_update_mouse_world_pos(event.motion.x, event.motion.y);
     }
+
+    // window events //
+    if(event.type == SDL_WINDOWEVENT){
+        if(event.window.event == SDL_WINDOWEVENT_RESIZED){
+            screenWidth = event.window.data1;
+            screenHeight = event.window.data2;
+
+            // if we have resized and we are in the editor, we need to update the editor camera
+            editor_camera->camera->view_field.w = screenWidth / camera_zoom;
+            editor_camera->camera->view_field.h = screenHeight / camera_zoom;
+        }
+    }
 }
 
 /*
@@ -188,8 +200,15 @@ void editor_input_shortcuts(SDL_Event event){
             }
             break;
         case SDLK_r:
+            // CTRL + SHIFT + R ->= reload the current scene
+            if (event.key.keysym.mod & KMOD_SHIFT)
+            {
+                ye_logf(debug,"Editor Reloading Scene.\n");
+                ye_reload_scene();
+                editor_re_attach_ecs();
+            }
             // CTRL + R ->= build and run the project
-            if (event.key.keysym.mod & KMOD_CTRL)
+            else if (event.key.keysym.mod & KMOD_CTRL)
             {
                 editor_build_and_run();
             }

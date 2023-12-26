@@ -67,6 +67,11 @@ void ui_end_input_checks();
 void ui_paint_debug_overlay();
 
 /**
+ * @brief Paints a overlay containing info on the active camera.
+ */
+void ui_paint_cam_info();
+
+/**
  * @brief Renders all registered windows in UI system onto the SDL frame buffer.
  */
 void ui_render();
