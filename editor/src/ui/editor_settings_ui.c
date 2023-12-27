@@ -282,6 +282,18 @@ void ye_editor_paint_project(struct nk_context *ctx){
     if (nk_begin(ctx, "Project", nk_rect(0, 40 + screenHeight/1.5, screenWidth/1.5 / 2, screenHeight - (screenHeight/1.5) - 40),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             // TODO: build buttons with icons
+            // nk_layout_row_dynamic(ctx, 25, 1);
+
+            // create new texture from engine resource build_hammer.png
+
+            // SDL_Surface *hammer_surface = IMG_Load(ye_get_engine_resource_static("build_hammer.png"));
+            // SDL_Texture *hammer_texture = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, hammer_surface);
+
+            // nk_button_image(ctx, 
+            //     nk_image_ptr(hammer_surface)
+            // );
+
+
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Build Options:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
             nk_layout_row_dynamic(ctx, 25, 2);

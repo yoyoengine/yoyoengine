@@ -245,3 +245,20 @@ to be honest, I am only partially the way there with the work im doing on the wi
 you should really remove the console logic from logging
 
 when you do that you should overhaul it to be better and also interface with instead of toggle you can "set" a value to a input number or boolean
+
+## nuklear shit
+
+add horizontal tab thing to select which comp on entity, that way you can add new or delete existing
+
+combine multiple colors node editor
+or use something for node editor
+
+seperators and tab stuff more for readability
+
+## to fix hide mouse on drags
+
+literally just patch the hiding mouse behavior out of nuklear you have access to source
+
+## refacotr
+
+editor_ui.c is a bloated mess - i moved a little bit of it just now but its not great. if you ever have to touch it again (you will) then refactor it

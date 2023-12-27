@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
 
     // register all editor ui components
     ui_register_component("heiarchy", ye_editor_paint_hiearchy);
-    ui_register_component("entity", ye_editor_paint_entity);
+    ui_register_component("entity", ye_editor_paint_inspector);
     ui_register_component("options", ye_editor_paint_options);
     ui_register_component("project", ye_editor_paint_project);
     ui_register_component("editor_menu_bar", ye_editor_paint_menu);

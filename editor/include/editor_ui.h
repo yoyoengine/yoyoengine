@@ -25,7 +25,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx);
     The entity preview will be a snapshot of the entity when selected, it will stash current state, and allow editing of the entity until
     dev clicks "save" or "cancel"
 */
-void ye_editor_paint_entity(struct nk_context *ctx);
+void ye_editor_paint_inspector(struct nk_context *ctx);
 
 /*
     TODO:

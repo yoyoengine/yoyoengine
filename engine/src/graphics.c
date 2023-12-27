@@ -201,17 +201,18 @@ void ye_render_all() {
         viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
         SDL_RenderSetViewport(pRenderer, &viewport);
     }
-    
-    /*
-        If we need to set a custom viewport to maintain ratio, do so here
-
-        stretch res determines the value of need boxing on resize events and init
-    */
-    if(YE_STATE.engine.need_boxing){
-        SDL_RenderSetViewport(pRenderer, &YE_STATE.engine.letterbox);
-    }
     else{
-        SDL_RenderSetViewport(pRenderer, NULL);
+        /*
+            If we need to set a custom viewport to maintain ratio, do so here
+
+            stretch res determines the value of need boxing on resize events and init
+        */
+        if(YE_STATE.engine.need_boxing){
+            SDL_RenderSetViewport(pRenderer, &YE_STATE.engine.letterbox);
+        }
+        else{
+            SDL_RenderSetViewport(pRenderer, NULL);
+        }
     }
 
     /*
