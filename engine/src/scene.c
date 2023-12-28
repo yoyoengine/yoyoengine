@@ -170,7 +170,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_renderer_component(e,z,text,ye_font(font),ye_color(color));
+            ye_temp_add_text_renderer_component(e,z,text,font,color);
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
@@ -207,7 +207,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_outlined_renderer_component(e,z,_text,ye_font(_font),ye_color(_color),ye_color(outline_color),outline_size);
+            ye_temp_add_text_outlined_renderer_component(e,z,_text,_font,_color,outline_color,outline_size);
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:

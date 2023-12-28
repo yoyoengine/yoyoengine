@@ -151,24 +151,102 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                         nk_label(ctx, "Image Renderer", NK_TEXT_CENTERED);
                         nk_layout_row_dynamic(ctx, 25, 2);
                         nk_label(ctx, "Image src:", NK_TEXT_LEFT);
-                        nk_label(ctx, "TODO:", NK_TEXT_LEFT);
-                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->renderer->renderer_impl.image->src, strlen(ent->renderer->renderer_impl.image->src), nk_filter_default);
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_src_buffer[1024];
+                        strncpy(temp_src_buffer, ent->renderer->renderer_impl.image->src, sizeof(temp_src_buffer));
+                        temp_src_buffer[sizeof(temp_src_buffer) - 1] = '\0';  // Ensure null-termination
+
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_src_buffer, sizeof(temp_src_buffer), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_src_buffer, ent->renderer->renderer_impl.image->src) != 0) {
+                            free(ent->renderer->renderer_impl.image->src);
+                            ent->renderer->renderer_impl.image->src = strdup(temp_src_buffer);
+                            // recomputes the image texture
+                            ye_update_renderer_component(ent);
+                        }
+
                         break;
                     case YE_RENDERER_TYPE_TEXT:
                         nk_layout_row_dynamic(ctx, 25, 1);
                         nk_label(ctx, "Text Renderer", NK_TEXT_CENTERED);
-                        nk_layout_row_dynamic(ctx, 25, 2);
-                        nk_label(ctx, "Text:", NK_TEXT_LEFT);
-                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->renderer->renderer_impl.text->text, strlen(ent->renderer->renderer_impl.text->text), nk_filter_default);
 
                         nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Text:", NK_TEXT_LEFT);
+
+                        /*
+                            Ok, this is pretty fucking stupid
+
+                            In order to actually edit fields like this, we need a temp editable larger field
+                            and can subsequently update the original if this is changed.
+                            Im assuming this is absolutely awful for performance but it only happens in the
+                            editor, so who fucking cares
+
+                            The real problem with this that makes it a FIXME TODO is the size cap of the field lengths.
+                            This also means that any buffers created in the editor will perma have a 1024 length?
+                            actually maybe not, they are encoded into json and read as shortened in the runtime.
+                        */
+
+                        // text //
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_buffer[1024];
+                        strncpy(temp_buffer, ent->renderer->renderer_impl.text->text, sizeof(temp_buffer));
+                        temp_buffer[sizeof(temp_buffer) - 1] = '\0';  // Ensure null-termination
+
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer, sizeof(temp_buffer), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_buffer, ent->renderer->renderer_impl.text->text) != 0) {
+                            free(ent->renderer->renderer_impl.text->text);
+                            ent->renderer->renderer_impl.text->text = strdup(temp_buffer);
+                            // recomputes the text texture
+                            ye_update_renderer_component(ent);
+                        }
+
+                        // color //
+                        nk_layout_row_dynamic(ctx, 25, 2);
                         nk_label(ctx, "Color (name):", NK_TEXT_LEFT);
-                        // nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->renderer->renderer_impl.text->text, strlen(ent->renderer->renderer_impl.text->text), nk_filter_default);
-                        
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_buffer_color[1024];
+                        strncpy(temp_buffer_color, ent->renderer->renderer_impl.text->color_name, sizeof(temp_buffer_color));
+                        temp_buffer_color[sizeof(temp_buffer_color) - 1] = '\0';  // Ensure null-termination
+
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer_color, sizeof(temp_buffer_color), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_buffer_color, ent->renderer->renderer_impl.text->color_name) != 0) {
+                            free(ent->renderer->renderer_impl.text->color_name);
+                            ent->renderer->renderer_impl.text->color_name = strdup(temp_buffer_color);
+                            // recomputes the text texture
+                            ye_update_renderer_component(ent);
+                        }
+
+                        // font //
                         nk_layout_row_dynamic(ctx, 25, 2);
                         nk_label(ctx, "Font (name):", NK_TEXT_LEFT);
-                        // nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, ent->renderer->renderer_impl.text->text, strlen(ent->renderer->renderer_impl.text->text), nk_filter_default);
-                        
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_buffer_font[1024];
+                        strncpy(temp_buffer_font, ent->renderer->renderer_impl.text->font_name, sizeof(temp_buffer_font));
+                        temp_buffer_font[sizeof(temp_buffer_font) - 1] = '\0';  // Ensure null-termination
+
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer_font, sizeof(temp_buffer_font), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_buffer_font, ent->renderer->renderer_impl.text->font_name) != 0) {
+                            free(ent->renderer->renderer_impl.text->font_name);
+                            ent->renderer->renderer_impl.text->font_name = strdup(temp_buffer_font);
+                            // recomputes the text texture
+                            ye_update_renderer_component(ent);
+                        }
+
                         break;
                     /*
                         Todo: rest of the renderer types

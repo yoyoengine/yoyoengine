@@ -18,6 +18,43 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+void ye_update_renderer_component(struct ye_entity *entity){
+    /*The purpose of this function is to be invoked when we know we have changed some internal variables of the renderer, and need to recompute the outputted texture*/
+    switch(entity->renderer->type){
+        case YE_RENDERER_TYPE_IMAGE:
+            entity->renderer->texture = ye_image(
+                ye_get_resource_static(entity->renderer->renderer_impl.image->src)
+            );
+            break;
+        case YE_RENDERER_TYPE_TEXT:
+            // destroy old text texture (not managed in cache)
+            SDL_DestroyTexture(entity->renderer->texture);
+
+            // fetch new colors and fonts from cache
+            entity->renderer->renderer_impl.text->font = ye_font(entity->renderer->renderer_impl.text->font_name);
+            entity->renderer->renderer_impl.text->color = ye_color(entity->renderer->renderer_impl.text->color_name);
+
+            // create new text texture
+            entity->renderer->texture = createTextTexture(entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
+            break;
+        case YE_RENDERER_TYPE_TEXT_OUTLINED:
+            // destroy old text texture (not managed in cache)
+            SDL_DestroyTexture(entity->renderer->texture);
+
+            // fetch new colors and fonts from cache
+            entity->renderer->renderer_impl.text_outlined->font = ye_font(entity->renderer->renderer_impl.text_outlined->font_name);
+            entity->renderer->renderer_impl.text_outlined->color = ye_color(entity->renderer->renderer_impl.text_outlined->color_name);
+            entity->renderer->renderer_impl.text_outlined->outline_color = ye_color(entity->renderer->renderer_impl.text_outlined->outline_color_name);
+
+            // create new text texture
+            entity->renderer->texture = createTextTextureWithOutline(entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->font, entity->renderer->renderer_impl.text_outlined->color, entity->renderer->renderer_impl.text_outlined->outline_color);
+            break;
+        default: // animation // TODO TODO
+            ye_logf(error,"not implemented yet\n");
+            break;
+    }
+}
+
 void ye_add_renderer_component(
     struct ye_entity *entity, 
     enum ye_component_renderer_type type, 
@@ -77,17 +114,21 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const
     entity->renderer->texture = ye_image(src);
 }
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, TTF_Font *font, SDL_Color *color){
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, const char *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
-    text_renderer->font = font;
-    text_renderer->color = color;
+
+    text_renderer->font = ye_font(font);
+    text_renderer->font_name = strdup(font);
+
+    text_renderer->color = ye_color(color);
+    text_renderer->color_name = strdup(color);
 
     // create the renderer top level
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT, z, text_renderer);
 
     // create the text texture
-    entity->renderer->texture = createTextTexture(text, font, color);
+    entity->renderer->texture = createTextTexture(text, text_renderer->font, text_renderer->color);
 
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
@@ -95,19 +136,26 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, TTF_Font *font, SDL_Color *color, SDL_Color *outline_color, int outline_size){
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, const char *color, const char *outline_color, int outline_size){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
-    text_renderer->font = font;
-    text_renderer->color = color;
-    text_renderer->outline_color = outline_color;
+
+    text_renderer->font = ye_font(font);
+    text_renderer->font_name = strdup(font);
+
+    text_renderer->color = ye_color(color);
+    text_renderer->color_name = strdup(color);
+
+    text_renderer->outline_color = ye_color(outline_color);
+    text_renderer->outline_color_name = strdup(outline_color);
+
     text_renderer->outline_size = outline_size;
 
     // create the renderer top level
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT_OUTLINED, z, text_renderer);
 
     // create the text texture
-    entity->renderer->texture = createTextTextureWithOutline(text,outline_size,font,color,outline_color);
+    entity->renderer->texture = createTextTextureWithOutline(text,outline_size,text_renderer->font,text_renderer->color,text_renderer->outline_color);
 
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
@@ -157,6 +205,21 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
         free(entity->renderer->renderer_impl.text->text);
         free(entity->renderer->renderer_impl.text);
+        free(entity->renderer->renderer_impl.text->font_name);
+        free(entity->renderer->renderer_impl.text->color_name);
+
+        // text textures are not stored in cache, manually remove them
+        SDL_DestroyTexture(entity->renderer->texture);
+    }
+    else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT_OUTLINED){
+        free(entity->renderer->renderer_impl.text_outlined->text);
+        free(entity->renderer->renderer_impl.text_outlined);
+        free(entity->renderer->renderer_impl.text_outlined->font_name);
+        free(entity->renderer->renderer_impl.text_outlined->color_name);
+        free(entity->renderer->renderer_impl.text_outlined->outline_color_name);
+
+        // text textures are not stored in cache, manually remove them
+        SDL_DestroyTexture(entity->renderer->texture);
     }
     else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
         // cache will handle freeing the frames as needed

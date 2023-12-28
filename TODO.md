@@ -271,3 +271,56 @@ viewport seems to overlap title bar for bottom two editor panels
 
 I would rlly like to have zoom center on camera center or mouse but idk the math for that
 for panning I would like the pan to keep the mouse pointer on the world pos it started on
+
+## cache size counter
+
+i like the idea of this
+also lua context size
+also a console command to list cached textures by origin of type and name
+
+## problems
+
+in the editor we are spamming new text textures by creating one every time we type, and this is bloating the cache (i think)
+
+TEXT IS UNIQUE IN ITS OWN RIGHT WHERE IT DOESNT NECCESSARIALLY NEED A CACHE FOR ITSELF, SO WE NEED TO BE MANAGING ITS MEMORY ISOLATED
+
+
+so I think the idea of the cache is alright, scenes are not massive so its ok to store literally anything that will ever be used in it. The thing is we dont get to intelligently destroy cache items becuase we have no idea how many things are actually using them. if you ever revisit the cache system you need to implement something like refcounting, which shouldnt be too bad since we have knowledge of the preprocessed scene file but can also add to the count in runtime if we get a cache hit
+
+enable terminal wrapping and resizing, why not?
+
+the way this refactor is going you will have to register custom fonts programatically unless you use editor and colors alos
+
+deltatime cooldown on editor inputs before updating them
+
+TODO left;
+cooldown so no spamming cache reload
+same thing with images src
+
+think about how to dynamically compute size?
+
+dynamic font resiuzing is possibl3!
+https://wiki.libsdl.org/SDL2_ttf/TTF_SetFontSize
+
+improve the console its lowkey ass. should be genuinely dynamic and auto select bottom input on open, and remember its last positions
+
+maybe build and run should save first
+
+finish rest of renderers
+
+## other QOL
+
+like unity, if we are dragging a nuklear input please wrap the mouse around to the window border so we dont have to let go to redo
+
+## engine features modules
+
+discord RPC built into engine could be cool.
+need some kind of module system to include optional dependancies.
+
+## existing known bugs
+
+for some reason in fullscreen and borderless, the camera is not displaying the full field like it does in windowed.
+
+on x11 (wayland not tested or windows) sometimes fullscreen mode will literally disable your fucking monitor
+
+apparently flipping is not serialized

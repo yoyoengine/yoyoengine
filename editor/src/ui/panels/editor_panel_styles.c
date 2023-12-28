@@ -427,6 +427,12 @@ void editor_panel_styles(struct nk_context *ctx)
             // release the json data
             json_decref(style_data);
             style_data = NULL;
+
+            // to reflect these new changes, we need to reload the styles
+            ye_clear_font_cache();
+            ye_clear_color_cache();
+
+            ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
         }
     }
     nk_end(ctx);

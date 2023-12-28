@@ -371,7 +371,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
 
                     // this should get the point across
                     struct ye_entity * warning = ye_create_entity_named("warning");
-                    ye_temp_add_text_renderer_component(warning, 0, "Destroyed Scene. Please create or open a different one.", YE_STATE.engine.pEngineFont, YE_STATE.engine.pEngineFontColor);
+                    ye_temp_add_text_renderer_component(warning, 0, "Destroyed Scene. Please create or open a different one.", "default", "red");
                 }
                 nk_popup_end(ctx);
             }

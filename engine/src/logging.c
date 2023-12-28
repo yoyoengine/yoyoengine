@@ -203,7 +203,7 @@ bool color_code = true;
 void ye_paint_console(struct nk_context *ctx){
     // Create the GUI layout
     if (nk_begin(ctx, "Console", nk_rect(300, 200, 1000, 633),
-        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE)) {
+        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE)) {
         
         nk_layout_row_dynamic(ctx, 30, 3);
         nk_checkbox_label(ctx, "Color by log level", (nk_bool*)&color_code);
