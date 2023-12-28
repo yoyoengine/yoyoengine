@@ -290,7 +290,12 @@ void ye_paint_console(struct nk_context *ctx){
                     ye_logf(debug,"Available commands: entlist, toggle paintbounds, toggle freecam, reload scene\n");
                 }
                 else if(strcmp(userInput,"reload scene")==0){
-                    ye_reload_scene();
+                    if(YE_STATE.editor.editor_mode){
+                        ye_logf(error,"Cannot reload scene through console in editor mode. Check Help>Shortcuts for editor reload binding.\n");
+                    }
+                    else{
+                        ye_reload_scene();
+                    }
                 }
                 // check if the first word (there can be words after seperated by spaces) is "toggle"
                 else if(strncmp(userInput,"toggle",6)==0){

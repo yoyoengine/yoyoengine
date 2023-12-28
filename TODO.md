@@ -262,3 +262,12 @@ literally just patch the hiding mouse behavior out of nuklear you have access to
 ## refacotr
 
 editor_ui.c is a bloated mess - i moved a little bit of it just now but its not great. if you ever have to touch it again (you will) then refactor it
+
+## misc 202304309505943
+
+viewport seems to overlap title bar for bottom two editor panels
+
+## panning zoom improvements
+
+I would rlly like to have zoom center on camera center or mouse but idk the math for that
+for panning I would like the pan to keep the mouse pointer on the world pos it started on
