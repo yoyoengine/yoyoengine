@@ -25,6 +25,34 @@
 #include "editor_serialize.h"
 #include "editor_panels.h"
 
+/*
+    Takes in the bounds we are going to paint into, and returns
+    the pt (int) that the font needs loaded in to maximize its quality
+
+    Both formulas are from chatgpt
+*/
+int _auto_calculate_font_size(struct ye_rectf bounds){
+    // print out recieved bounds
+    //ye_logf(debug, "Recieved bounds: x: %f, y: %f, w: %f, h: %f\n", bounds.x, bounds.y, bounds.w, bounds.h);
+
+    const int areaInPixels = bounds.w * bounds.h;
+
+    // Assuming a standard DPI value of 96, adjust as needed
+    const float dpi = 96.0;
+    
+    // Formula for calculating the font size based on area
+    float fontSize = sqrt((float)areaInPixels / (72.0 * dpi));
+    
+    // Convert the calculated font size to points
+    int fontSizeInPoints = (int)(fontSize * 72.0);
+    
+    int calculated = ye_clamp(fontSizeInPoints,1,500);
+
+    ye_logf(debug, "Calculated auto font size: %d\n", calculated);
+
+    return calculated;
+}
+
 void _paint_transform(struct nk_context *ctx, struct ye_entity *ent){
     if(ent->transform != NULL){
         if(nk_tree_push(ctx, NK_TREE_TAB, "Transform", NK_MAXIMIZED)){
@@ -248,7 +276,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                         }
 
                         // font size //
-                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_layout_row_dynamic(ctx, 25, 3);
                         nk_label(ctx, "Font Size:", NK_TEXT_LEFT);
                         int res = nk_propertyi(ctx, "#pt", 1, ent->renderer->renderer_impl.text->font_size, 500, 1, 5);
                         if(res != ent->renderer->renderer_impl.text->font_size){
@@ -256,6 +284,14 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
                         }
+
+                        // auto font size //
+                        if(nk_button_label(ctx, "Auto Compute")){
+                            ent->renderer->renderer_impl.text->font_size = _auto_calculate_font_size(ent->renderer->computed_pos);
+                            // recomputes the text texture
+                            ye_update_renderer_component(ent);
+                        }
+
                         break;
                     /*
                         Todo: rest of the renderer types

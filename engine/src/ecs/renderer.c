@@ -328,6 +328,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center);
                 SDL_Rect entity_rect = ye_convert_rectf_rect(texture_rect);
 
+                // update computed bounds field //
+                current->entity->renderer->computed_pos = texture_rect;
+                //////////////////////////////////
+
                 // entity rect is now a reflection of the actual calculated rect
 
                 // occlusion check
