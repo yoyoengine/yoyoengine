@@ -133,10 +133,10 @@ struct ye_texture_node {
  * @brief A node for a cached font.
  */
 struct ye_font_node {
-    TTF_Font *font; /**< The cached font. */
-    char *name; /**< The name of the font. */
-    int size; /**< The size of the font. */
-    UT_hash_handle hh; /**< The hash handle. */
+    TTF_Font *font;     /**< The cached font. */
+    char *name;         /**< The name of the font. */
+    int size;           /**< The current size of the font. */
+    UT_hash_handle hh;  /**< The hash handle. */
 };
 
 /**
@@ -173,7 +173,7 @@ SDL_Texture * ye_image(const char *path);
  * @param name The name of the font.
  * @return The cached font.
  */
-TTF_Font * ye_font(const char *name);
+TTF_Font * ye_font(const char *name, int size);
 
 /**
  * @brief Caches a single color, returning a fallback default color if not found.
@@ -205,7 +205,7 @@ SDL_Texture * ye_cache_texture(const char *path);
  * @param path The path to the font.
  * @return The cached font.
  */
-TTF_Font * ye_cache_font(const char *name, int size, const char *path);
+TTF_Font * ye_cache_font(const char *name/*, int size*/, const char *path);
 
 /**
  * @brief Cache a SDL_Color.

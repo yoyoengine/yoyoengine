@@ -61,7 +61,7 @@ SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
  * @param fontSize The size of the font.
  * @return The loaded TTF_Font.
  */
-TTF_Font *ye_load_font(const char *pFontPath, int fontSize);
+TTF_Font *ye_load_font(const char *pFontPath/*, int fontSize*/);
 
 /**
  * @brief Creates a SDL_Texture from an image file.

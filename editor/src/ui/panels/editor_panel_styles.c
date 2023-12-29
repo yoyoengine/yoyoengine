@@ -100,17 +100,19 @@ void editor_panel_styles_decode(){
             ye_logf(error,"Font %s does not have a path.\n",font_name);
             continue;
         }
+        /*
         if(!ye_json_has_key(font,"size")){
             ye_logf(error,"Font %s does not have a size.\n",font_name);
             continue;
         }
+        */
         const char *font_path;    ye_json_string(font,"path",&font_path);
-        int font_size;      ye_json_int(font,"size",&font_size);
+        // int font_size;      ye_json_int(font,"size",&font_size);
 
         struct style_font_node *new_node = malloc(sizeof(struct style_font_node));
         strcpy(new_node->font.name, font_name);
         strcpy(new_node->font.path, font_path);
-        new_node->font.size = font_size;
+        // new_node->font.size = font_size;
         new_node->next = font_head;
         font_head = new_node;
     }
@@ -170,7 +172,7 @@ void editor_panel_styles_encode(){
     while(current_font != NULL){
         json_t *font = json_object();
         json_object_set_new(font,"path",json_string(current_font->font.path));
-        json_object_set_new(font,"size",json_integer(current_font->font.size));
+        // json_object_set_new(font,"size",json_integer(current_font->font.size)); no more font sizes!
 
         // check if this key already exists in the json and message that it will be replaced if so
         if(ye_json_has_key(fonts,current_font->font.name)){
@@ -282,18 +284,18 @@ void editor_panel_styles(struct nk_context *ctx)
 
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_tree_push(ctx, NK_TREE_TAB, "Fonts", NK_MAXIMIZED)){
-            nk_layout_row_dynamic(ctx, 25, 4);
+            nk_layout_row_dynamic(ctx, 25, 3);
             nk_label(ctx, "name", NK_TEXT_LEFT);
             nk_label(ctx, "path", NK_TEXT_LEFT);
-            nk_label(ctx, "size", NK_TEXT_LEFT);
+            // nk_label(ctx, "size", NK_TEXT_LEFT); no more font sizes!
             nk_label(ctx, "delete", NK_TEXT_LEFT);
 
             struct style_font_node *current_font = font_head;
             while(current_font != NULL){
-                nk_layout_row_dynamic(ctx, 25, 4);
+                nk_layout_row_dynamic(ctx, 25, 3);
                 nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.name, 32, nk_filter_default);
                 nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.path, 256, nk_filter_default);
-                nk_property_int(ctx, "Size:", 0, &current_font->font.size, 100, 1, 1);
+                // nk_property_int(ctx, "Size:", 0, &current_font->font.size, 100, 1, 1); no more font sizes!
                 
                 // push some pretty styles for red button!! (thank you nuklear forum!) :D
                 nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(35,35,35))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
@@ -324,13 +326,15 @@ void editor_panel_styles(struct nk_context *ctx)
                 struct style_font_node *new_node = malloc(sizeof(struct style_font_node));
                 strcpy(new_node->font.name, "NEW FONT");
                 strcpy(new_node->font.path, "NEW FONT");
-                new_node->font.size = 12;
+                new_node->font.size = 12; // no more font sizes, what should happen to this?
                 new_node->next = font_head;
                 font_head = new_node;
             }
 
             nk_tree_pop(ctx);
         }
+
+        nk_layout_row_dynamic(ctx, 25, 1); // spacer
 
         if(nk_tree_push(ctx, NK_TREE_TAB, "Colors", NK_MAXIMIZED)){
             nk_layout_row_dynamic(ctx, 25, 2);
@@ -433,6 +437,15 @@ void editor_panel_styles(struct nk_context *ctx)
             ye_clear_color_cache();
 
             ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
+
+            // recompute any text renderer textures because we might have changed their definitions for colors and fonts!
+            struct ye_entity_node *current_entity = renderer_list_head;
+            while(current_entity != NULL){
+                if(current_entity->entity->renderer->type == YE_RENDERER_TYPE_TEXT || current_entity->entity->renderer->type == YE_RENDERER_TYPE_TEXT_OUTLINED){
+                    ye_update_renderer_component(current_entity->entity);
+                }
+                current_entity = current_entity->next;
+            }
         }
     }
     nk_end(ctx);

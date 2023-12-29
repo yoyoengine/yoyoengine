@@ -170,7 +170,14 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_renderer_component(e,z,text,font,color);
+            // get the font_size field
+            int font_size;
+            if(!ye_json_int(impl,"font_size",&font_size)) {
+                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the font_size field. It has been loaded at 16pt\n", entity_name);
+                font_size = 16;
+            }
+
+            ye_temp_add_text_renderer_component(e,z,text,font,font_size,color);
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
@@ -184,6 +191,13 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
             if(!ye_json_string(impl,"font",&_font)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the font field\n", entity_name);
                 return;
+            }
+
+            // get the font_size field
+            int outlined_font_size;
+            if(!ye_json_int(impl,"font_size",&outlined_font_size)) {
+                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the font_size field. It has been loaded at 16pt\n", entity_name);
+                outlined_font_size = 16;
             }
 
             // get the color field
@@ -207,7 +221,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_outlined_renderer_component(e,z,_text,_font,_color,outline_color,outline_size);
+            ye_temp_add_text_outlined_renderer_component(e,z,_text,_font,outlined_font_size,_color,outline_color,outline_size);
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:

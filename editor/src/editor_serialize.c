@@ -129,19 +129,12 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
         case YE_RENDERER_TYPE_TEXT:
             // set the text
             json_object_set_new(impl, "text", json_string(entity->renderer->renderer_impl.text->text));
-            /*
-                SAME THING BUT WITH FONTS TOO:
-
-                TODO: actually interesting problem... when we lookup a color, we lose its name when assigning to text.
             
-                Potential solutions:
-                - store the color name in the impl field
-                - write a reverse color lookup in cache function
+            json_object_set_new(impl, "color", json_string(entity->renderer->renderer_impl.text->color_name));
+            json_object_set_new(impl, "font", json_string(entity->renderer->renderer_impl.text->font_name));
 
-                Im leaning towards the second, but for now lets just not give a shit :3
-            */
-            json_object_set_new(impl, "color", json_string("TODO! :3"));
-            json_object_set_new(impl, "font", json_string("TODO! :3"));
+            // set the font size
+            json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text->font_size));
 
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
@@ -154,9 +147,13 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             /*
                 We run into the same font and color issue here as above- :3
             */
-            json_object_set_new(impl, "color", json_string("TODO! :3"));
-            json_object_set_new(impl, "font", json_string("TODO! :3"));
-            json_object_set_new(impl, "outline color", json_string("TODO! :3"));
+            json_object_set_new(impl, "color", json_string(entity->renderer->renderer_impl.text_outlined->color_name));
+            json_object_set_new(impl, "font", json_string(entity->renderer->renderer_impl.text_outlined->font_name));
+
+            // set the font size
+            json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text->font_size));
+
+            json_object_set_new(impl, "outline color", json_string(entity->renderer->renderer_impl.text_outlined->outline_color_name));
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:

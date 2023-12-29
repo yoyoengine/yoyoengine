@@ -145,13 +145,16 @@ void ye_pre_cache_styles(const char *styles_path){
                 ye_logf(error,"Font %s does not have a path.\n",font_name);
                 continue;
             }
+            /*
             if(!ye_json_has_key(font,"size")){
                 ye_logf(error,"Font %s does not have a size.\n",font_name);
                 continue;
             }
+            no more font sizes!
+            */
             const char *font_path;    ye_json_string(font,"path",&font_path);
-            int font_size;      ye_json_int(font,"size",&font_size);
-            ye_cache_font(font_name,font_size,ye_get_resource_static(font_path));
+            // int font_size;      ye_json_int(font,"size",&font_size); no more font sizes!
+            ye_cache_font(font_name,/*font_size,*/ye_get_resource_static(font_path));
         }
     }
 
@@ -271,12 +274,20 @@ SDL_Texture * ye_image(const char *path){
     return ye_cache_texture(path);
 }
 
-TTF_Font * ye_font(const char *name){
+TTF_Font * ye_font(const char *name, int size){
     // check cache for font named by name and size
     struct ye_font_node *node;
     for(node = cached_fonts_head; node != NULL; node = node->hh.next) {
         if(strcmp(node->name, name) == 0) {
             // ye_logf(debug,"CACHE HIT: %s\n",name);
+
+            // we found it, so resize if necessary
+            if(node->size != size){
+                // its good to resize here even if its larger, because huge fonts take much longer to render
+                TTF_SetFontSize(node->font,size);
+                node->size = size;
+            }
+
             return node->font;
         }
     }
@@ -317,15 +328,15 @@ SDL_Texture * ye_cache_texture(const char *path){
     return texture;
 }
 
-TTF_Font * ye_cache_font(const char *name, int size, const char *path){
-    TTF_Font *font = ye_load_font(path, size);
+TTF_Font * ye_cache_font(const char *name, /*int size,*/ const char *path){
+    TTF_Font *font = ye_load_font(path/*, size*/);
 
     // cache the font
     struct ye_font_node *new_node = malloc(sizeof(struct ye_font_node));
     new_node->font = font;
     new_node->name = malloc(strlen(name) + 1);
     strcpy(new_node->name, name);
-    new_node->size = size;
+    new_node->size = 1; // we load the fonts at size 1 for now
     HASH_ADD_KEYPTR(hh, cached_fonts_head, new_node->name, strlen(new_node->name), new_node);
     // ye_logf(debug,"Cached font: %s\n",name);
     return font;

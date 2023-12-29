@@ -188,6 +188,12 @@ float ye_delta_time(){
 void set_setting_string(char* key, char** value, json_t* settings) {
     const char * json_value;
     if (ye_json_string(settings, key, &json_value)) {
+        /*
+            The existing value already exists as a default, so we need to free it
+        */
+        free(*value);
+
+        // set the value to the new one
         *value = strdup(json_value);
     }
 }
@@ -235,7 +241,7 @@ void ye_init_engine() {
     YE_STATE.engine.screen_height = 1080;
     YE_STATE.engine.window_mode = 0;
     YE_STATE.engine.volume = 64;
-    YE_STATE.engine.window_title = "Yoyo Engine Window";
+    YE_STATE.engine.window_title = strdup("Yoyo Engine Window");
 
     // set default paths, if we have an override we can change them later
     YE_STATE.engine.engine_resources_path = strdup(engine_default_path);
@@ -292,7 +298,9 @@ void ye_init_engine() {
     ye_init_cache();
 
     // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
-    YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"), 64);
+    YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"));
+    // since we are bypassing the cache to do this, we need to customly resize this
+    TTF_SetFontSize(YE_STATE.engine.pEngineFont, 128); // high enough to be readable where-ever (I think)
 
     // allocate memory for and create a pointer to our engineFontColor struct for use in graphics.c
     // this is also returned as a color if a user specified one cannot be loaded

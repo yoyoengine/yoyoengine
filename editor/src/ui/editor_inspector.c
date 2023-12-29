@@ -247,6 +247,15 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ye_update_renderer_component(ent);
                         }
 
+                        // font size //
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Font Size:", NK_TEXT_LEFT);
+                        int res = nk_propertyi(ctx, "#pt", 1, ent->renderer->renderer_impl.text->font_size, 500, 1, 5);
+                        if(res != ent->renderer->renderer_impl.text->font_size){
+                            ent->renderer->renderer_impl.text->font_size = res;
+                            // recomputes the text texture
+                            ye_update_renderer_component(ent);
+                        }
                         break;
                     /*
                         Todo: rest of the renderer types

@@ -40,17 +40,19 @@ SDL_Texture *missing_texture = NULL;
 
 char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
 
-TTF_Font * ye_load_font(const char *pFontPath, int fontSize) {
-    if(fontSize > 500){
-        ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
-        return YE_STATE.engine.pEngineFont;
-    }
+TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
+    /*
+        if(fontSize > 500){
+            ye_logf(error, "ERROR: FONT SIZE TOO LARGE\n");
+            return YE_STATE.engine.pEngineFont;
+        }
+    */
     const char *fontpath = pFontPath;
     if(access(fontpath, F_OK) == -1){
         ye_logf(error, "Could not access file '%s'.\n", fontpath);
         return YE_STATE.engine.pEngineFont;
     }
-    TTF_Font *pFont = TTF_OpenFont(fontpath, fontSize);
+    TTF_Font *pFont = TTF_OpenFont(fontpath, /*fontSize*/ 1); // lets just open this at size 1 since it will be reloaded later, this should take minimal time
     if (pFont == NULL) {
         ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
         return YE_STATE.engine.pEngineFont;

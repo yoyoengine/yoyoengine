@@ -141,9 +141,9 @@ int main(int argc, char **argv) {
     /*
         Open the editor settings and get "preferences":"theme"
     */
-    json_t *editor_settings = ye_json_read(editor_settings_path);
+    json_t *EDITOR_SETTINGS = ye_json_read(editor_settings_path);
     json_t *theme;
-    if (!ye_json_object(editor_settings, "preferences", &theme))
+    if (!ye_json_object(EDITOR_SETTINGS, "preferences", &theme))
     {
         ye_logf(error, "editor settings file is missing preferences object. Please provide a preferences object with a theme string.");
         return 1;
@@ -169,6 +169,9 @@ int main(int argc, char **argv) {
     // if else do nothing, this will result in default style
 
     set_style(YE_STATE.engine.ctx, THEME_AMOLED);
+
+    // close the editor settings file
+    json_decref(EDITOR_SETTINGS);
 
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
     if (path != NULL)
@@ -217,7 +220,7 @@ int main(int argc, char **argv) {
         // TODO: future me create a text entity easily in the center of the scene alerting this fact
         struct ye_entity *text = ye_create_entity_named("warning text");
         ye_add_transform_component(text, 0, 0);
-        ye_temp_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", "warning");
+        ye_temp_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", 128, "warning");
         text->renderer->rect = (struct ye_rectf){0, 0, 1920, 500};
     }
     else

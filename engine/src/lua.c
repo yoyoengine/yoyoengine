@@ -74,11 +74,11 @@ int lua_bridge_call(lua_State* L){
 }
 
 void lua_init(){
-    L = luaL_newstate();
-    luaL_openlibs(L);
-    lua_register(L, "lua_bridge_call", lua_bridge_call);
+    // L = luaL_newstate();
+    // luaL_openlibs(L);
+    // lua_register(L, "lua_bridge_call", lua_bridge_call);
 }
 
 void lua_shutdown(){
-    lua_close(L);
+    // lua_close(L);
 }

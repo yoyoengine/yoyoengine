@@ -31,7 +31,7 @@ void ye_update_renderer_component(struct ye_entity *entity){
             SDL_DestroyTexture(entity->renderer->texture);
 
             // fetch new colors and fonts from cache
-            entity->renderer->renderer_impl.text->font = ye_font(entity->renderer->renderer_impl.text->font_name);
+            entity->renderer->renderer_impl.text->font = ye_font(entity->renderer->renderer_impl.text->font_name, entity->renderer->renderer_impl.text->font_size);
             entity->renderer->renderer_impl.text->color = ye_color(entity->renderer->renderer_impl.text->color_name);
 
             // create new text texture
@@ -42,7 +42,7 @@ void ye_update_renderer_component(struct ye_entity *entity){
             SDL_DestroyTexture(entity->renderer->texture);
 
             // fetch new colors and fonts from cache
-            entity->renderer->renderer_impl.text_outlined->font = ye_font(entity->renderer->renderer_impl.text_outlined->font_name);
+            entity->renderer->renderer_impl.text_outlined->font = ye_font(entity->renderer->renderer_impl.text_outlined->font_name, entity->renderer->renderer_impl.text_outlined->font_size);
             entity->renderer->renderer_impl.text_outlined->color = ye_color(entity->renderer->renderer_impl.text_outlined->color_name);
             entity->renderer->renderer_impl.text_outlined->outline_color = ye_color(entity->renderer->renderer_impl.text_outlined->outline_color_name);
 
@@ -99,27 +99,28 @@ void ye_add_renderer_component(
 void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const char *src){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
     // copy src to image->src
-    image->src = malloc(sizeof(char) * strlen(src));
+    image->src = malloc(sizeof(char) * (strlen(src) + 1));
     strcpy(image->src, src);
 
     // create the renderer top level
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, z, image);
 
+    // create the image texture
+    entity->renderer->texture = ye_image(src);
+
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
     entity->renderer->rect.w = size.w;
     entity->renderer->rect.h = size.h;
-
-    // create the image texture
-    entity->renderer->texture = ye_image(src);
 }
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, const char *color){
+void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
 
-    text_renderer->font = ye_font(font);
+    text_renderer->font = ye_font(font, font_size);
     text_renderer->font_name = strdup(font);
+    text_renderer->font_size = font_size;
 
     text_renderer->color = ye_color(color);
     text_renderer->color_name = strdup(color);
@@ -136,12 +137,13 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, const char *color, const char *outline_color, int outline_size){
+void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
 
-    text_renderer->font = ye_font(font);
+    text_renderer->font = ye_font(font, font_size);
     text_renderer->font_name = strdup(font);
+    text_renderer->font_size = font_size;
 
     text_renderer->color = ye_color(color);
     text_renderer->color_name = strdup(color);
@@ -204,19 +206,21 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     }
     else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
         free(entity->renderer->renderer_impl.text->text);
-        free(entity->renderer->renderer_impl.text);
+        // free the strings we strdup'd before the impl itself (duh)
         free(entity->renderer->renderer_impl.text->font_name);
         free(entity->renderer->renderer_impl.text->color_name);
+        free(entity->renderer->renderer_impl.text);
 
         // text textures are not stored in cache, manually remove them
         SDL_DestroyTexture(entity->renderer->texture);
     }
     else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT_OUTLINED){
         free(entity->renderer->renderer_impl.text_outlined->text);
-        free(entity->renderer->renderer_impl.text_outlined);
+        // free the strings we strdup'd before the impl itself (duh)
         free(entity->renderer->renderer_impl.text_outlined->font_name);
         free(entity->renderer->renderer_impl.text_outlined->color_name);
         free(entity->renderer->renderer_impl.text_outlined->outline_color_name);
+        free(entity->renderer->renderer_impl.text_outlined);
 
         // text textures are not stored in cache, manually remove them
         SDL_DestroyTexture(entity->renderer->texture);
