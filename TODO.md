@@ -324,3 +324,18 @@ for some reason in fullscreen and borderless, the camera is not displaying the f
 on x11 (wayland not tested or windows) sometimes fullscreen mode will literally disable your fucking monitor
 
 apparently flipping is not serialized
+
+## rambling part ten billion
+
+- maintain heiarchy order when saving
+- memory leak when reload spamming over time
+- right click popup menu to duplicate delete rename etc on entity buttons in list
+- drop downs listing fonts and colors from the cache instead of typing in
+
+## emscripten build target
+
+really only main loop needs changed, but you need to build all your deps as emscripten
+https://emscripten.org/docs/compiling/Building-Projects.html?highlight=sdl2
+
+
+build and run should save first

@@ -377,10 +377,6 @@ void ye_init_engine() {
 
         // TODO: version numbers back please (awaiting text renderer)
 
-        // some stinky cheese (i couldnt troubleshoot why boxing was weird on splash only)
-        bool temp_stretch_res_pref = YE_STATE.engine.stretch_resolution;
-        YE_STATE.engine.stretch_resolution = true;
-
         // get current ticks
         int ticks = SDL_GetTicks();
 
@@ -389,9 +385,6 @@ void ye_init_engine() {
             // process frame
             ye_process_frame();
         }
-
-        YE_STATE.engine.stretch_resolution = temp_stretch_res_pref; // reset the stretch flag
-        ye_recompute_boxing();
 
         // we need to delete everything in the ECS and reset the camera
         ye_destroy_entity(splash_cam);
