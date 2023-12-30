@@ -104,8 +104,8 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
     json_object_set_new(renderer, "type", json_integer(entity->renderer->type));
 
     // set the flip booleans
-    json_object_set_new(renderer, "flip x", json_boolean(entity->renderer->flipped_x));
-    json_object_set_new(renderer, "flip y", json_boolean(entity->renderer->flipped_y));
+    json_object_set_new(renderer, "flipped_x", json_boolean(entity->renderer->flipped_x));
+    json_object_set_new(renderer, "flipped_y", json_boolean(entity->renderer->flipped_y));
 
     // set the z layer
     json_object_set_new(renderer, "z", json_integer(entity->renderer->z));
