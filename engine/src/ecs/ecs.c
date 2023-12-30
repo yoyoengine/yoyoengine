@@ -114,8 +114,8 @@ struct ye_entity_node *camera_list_head;
 struct ye_entity_node *physics_list_head;
 struct ye_entity_node *tag_list_head;
 struct ye_entity_node *collider_list_head;
+struct ye_entity_node *lua_script_list_head;
 
-// struct ye_entity_node *script_list_head;
 // struct ye_entity_node *interactible_list_head;
 
 struct ye_entity_node * ye_get_entity_list_head(){
@@ -136,7 +136,7 @@ struct ye_entity * ye_create_entity(){
     entity->transform = NULL;
     entity->renderer = NULL;
     entity->camera = NULL;
-    entity->script = NULL;
+    entity->lua_script = NULL;
     entity->interactible = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
@@ -164,7 +164,7 @@ struct ye_entity * ye_create_entity_named(const char *name){
     entity->transform = NULL;
     entity->renderer = NULL;
     entity->camera = NULL;
-    entity->script = NULL;
+    entity->lua_script = NULL;
     entity->interactible = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
@@ -188,6 +188,9 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     strcpy(entity->name, new_name);
 }
 
+/*
+    TODO: JUST FYI THIS FUNCTION TOTALLY DOES NOT WORK AT ALL RIGHT NOW
+*/
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
     struct ye_entity *new_entity = ye_create_entity_named(strcat(strcat(entity->name, " "), "copy"));
@@ -261,7 +264,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->camera != NULL) ye_remove_camera_component(entity);
     if(entity->physics != NULL) ye_remove_physics_component(entity);
     if(entity->tag != NULL) ye_remove_tag_component(entity);
-    // if(entity->script != NULL) ye_remove_script_component(entity);
+    if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
     if(entity->collider != NULL) ye_remove_collider_component(entity);
     // free the entity name
@@ -335,6 +338,7 @@ void ye_init_ecs(){
     physics_list_head = ye_entity_list_create();
     tag_list_head = ye_entity_list_create();
     collider_list_head = ye_entity_list_create();
+    // lua_script_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
 
@@ -371,6 +375,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&physics_list_head);
     ye_entity_list_destroy(&tag_list_head);
     ye_entity_list_destroy(&collider_list_head);
+    ye_entity_list_destroy(&lua_script_list_head);
 
     // take care of cleaning up any entity pointers that exist in global state
     YE_STATE.engine.target_camera = NULL;
@@ -393,7 +398,7 @@ void ye_print_entities(){
             current->entity->renderer != NULL, 
             current->entity->camera != NULL,
             current->entity->interactible != NULL,
-            current->entity->script != NULL,
+            current->entity->lua_script != NULL,
             current->entity->physics != NULL,
             current->entity->collider != NULL,
             current->entity->tag != NULL

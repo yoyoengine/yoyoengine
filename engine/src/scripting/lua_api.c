@@ -1,0 +1,84 @@
+/*
+    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    Copyright (C) 2023  Ryan Zmuda
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include <yoyoengine/yoyoengine.h>
+
+/*
+    Bridge for lua talking to engine functions, its important that this
+    is an int so lua can capture results onto its stack once this returns
+
+    arg1: string of the function to call
+    argX: variable based on what the function is
+*/
+// int lua_bridge_call(lua_State* L){
+//     // get the function name
+//     const char* func = lua_tostring(L, 1);
+
+//     // begin checks for functions
+//     if(strcmp(func, "square") == 0){
+//         // call the function
+//         int x = lua_tointeger(L, 2);
+//         int result = square(x);
+//         // printf("result: %d\n", result);
+//         // push the result to the lua stack
+//         lua_pushinteger(L, result);
+//         // printf("pushed result to lua stack\n");
+//         return 1;
+//     }
+//     // TODO: extend lua interface API to actual engine functions
+//     // this will require some thoughts on where the game loop lives... 
+//     // how do we let lua hook into the state, does engine handle game loop
+//     // and repeated rendering, and lua can modify its model at runtime?
+
+//     return 0; // no valid function was supplied
+// }
+
+/*
+    Function that allows lua to log using the engine logger
+*/
+void lua_log(lua_State* L){
+    // get the function name
+    const char* level = lua_tostring(L, 1);
+    const char* message = lua_tostring(L, 2);
+    // strcat(message, "\n");
+
+    // begin checks for functions
+    if(strcmp(level, "debug") == 0){
+        _ye_lua_logf(debug, message);
+    }
+    if(strcmp(level, "info") == 0){
+        _ye_lua_logf(info, message);
+    }
+    if(strcmp(level, "warn") == 0){
+        _ye_lua_logf(warning, message);
+    }
+    if(strcmp(level, "error") == 0){
+        _ye_lua_logf(error, message);
+    }
+}
+
+/*
+    Right now im just going to use this as a testbed for lua scripting API
+*/
+void ye_register_lua_scripting_api(lua_State *state){
+    //lua_register(state, "log", lua_log);
+
+
+    // register this lua log function
+    lua_register(state, "ye_log", lua_log);
+}

@@ -175,6 +175,9 @@ void ye_process_frame(){
         ye_recompute_boxing();
     }
 
+    // run all scripting before the frame is rendered
+    ye_system_lua_scripting();
+
     // render frame
     ye_render_all();
 
@@ -394,9 +397,6 @@ void ye_init_engine() {
         ye_destroy_entity(splash_gear);
     }
 
-    lua_init(); // initialize lua
-    ye_logf(info, "Initialized Lua.\n");
-
     // debug output
     ye_logf(info, "Engine Fully Initialized.\n");
 
@@ -419,10 +419,6 @@ void ye_init_engine() {
 
 void ye_shutdown_engine(){
     ye_logf(info, "Shutting down engine...\n");
-
-    // shutdown lua
-    lua_shutdown();
-    ye_logf(info, "Shut down lua.\n");
 
     // free the engine font color
     free(YE_STATE.engine.pEngineFontColor);

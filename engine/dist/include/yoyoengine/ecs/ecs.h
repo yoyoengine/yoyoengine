@@ -42,6 +42,7 @@ extern struct ye_entity_node *camera_list_head;
 extern struct ye_entity_node *physics_list_head;
 extern struct ye_entity_node *tag_list_head;
 extern struct ye_entity_node *collider_list_head;
+extern struct ye_entity_node *lua_script_list_head;
 
 /**
  * @brief Linked list structure for storing entities
@@ -100,7 +101,7 @@ struct ye_entity {
 
     struct ye_component_transform *transform;       // transform component
     struct ye_component_renderer *renderer;         // renderer component
-    struct ye_component_script *script;             // script component
+    struct ye_component_lua_script *lua_script;     // lua script component
     struct ye_component_interactible *interactible; // interactible component
     struct ye_component_camera *camera;             // camera component
     struct ye_component_physics *physics;           // physics component
@@ -114,15 +115,6 @@ struct ye_entity {
 struct ye_vec2f {
     float x;
     float y;
-};
-
-/**
- * @brief Script component structure. Holds information on a script that is attached to an entity. This script will have its main loop run once per frame.
- */
-struct ye_component_script {
-    bool active;    // controls whether system will act upon this component
-
-    char *script_path;
 };
 
 /**
@@ -165,7 +157,7 @@ struct ye_entity * ye_create_entity_named(const char *name);
 void ye_rename_entity(struct ye_entity *entity, char *name);
 
 /**
- * @brief Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
+ * @brief !!!DO NOT USE THIS RIGHT NOW. IT IS COMPLETELY BROKEN!!! Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
  * 
  * @param entity The entity to duplicate
  * @return struct ye_entity* 
@@ -222,4 +214,5 @@ void ye_shutdown_ecs();
  * @brief Print all entities
  */
 void ye_print_entities();
+
 #endif

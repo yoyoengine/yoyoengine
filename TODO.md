@@ -319,11 +319,11 @@ need some kind of module system to include optional dependancies.
 
 ## existing known bugs
 
-for some reason in fullscreen and borderless, the camera is not displaying the full field like it does in windowed.
+when renaming src input image dissapears without missing texture
 
-on x11 (wayland not tested or windows) sometimes fullscreen mode will literally disable your fucking monitor
+god i hate the lines scaling thing
 
-apparently flipping is not serialized
+on x11 (wayland not tested or windows) sometimes fullscreen mode will literally disable your fucking monitor - maybe this stopped with last fix?
 
 ## rambling part ten billion
 
@@ -337,5 +337,22 @@ apparently flipping is not serialized
 really only main loop needs changed, but you need to build all your deps as emscripten
 https://emscripten.org/docs/compiling/Building-Projects.html?highlight=sdl2
 
-
 build and run should save first
+
+## ecs
+
+null checks for assigning and removing and blah blah fix all the ecs it doesnt have enough sanity checks - this is neccessary for the lua scripting system
+
+## macro debugging
+
+for all the stuff we only use debugging consider settings macros for it so its left out otherwise. also can cmake set macros? we could do that for platform dependance
+
+## logging
+
+debug file doesnt seem to write to in builds
+
+rename logging symbols everywhere to be YE_LL_LEVEL
+
+## lua scripting
+
+read through references, you are doing bad practice for a lot of things like the naming convention

@@ -51,7 +51,7 @@ void ye_remove_physics_component(struct ye_entity *entity){
     ye_entity_list_remove(&physics_list_head, entity);
 
     // log that we removed a physics and to what ID
-    ye_logf(debug, "Removed physics component from entity %d\n", entity->id);
+    // ye_logf(debug, "Removed physics component from entity %d\n", entity->id);
 }
 
 bool ye_rectf_collision(struct ye_rectf rect1, struct ye_rectf rect2){

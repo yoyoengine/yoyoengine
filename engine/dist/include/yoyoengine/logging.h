@@ -61,6 +61,15 @@ void ye_log_shutdown();
 void ye_logf(enum logLevel level, const char *format, ...);
 
 /**
+ * @brief THIS IS FOR INTERNAL USE ONLY. Logs a message normally but with a lua tag in front of the output.
+ * 
+ * @param level The level of the message
+ * @param format The content of the message (similar to printf)
+ * @param ... The arguments for the format string
+ */
+void _ye_lua_logf(enum logLevel level, const char *format, ...);
+
+/**
  * @brief UI function to paint a visual console
  * 
  * @param ctx The Nuklear context

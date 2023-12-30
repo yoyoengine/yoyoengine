@@ -16,13 +16,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LUA_H
-#define LUA_H
+#ifndef LUA_API_H
+#define LUA_API_H
 
-void runscript(char *name);
+#include <yoyoengine/yoyoengine.h>
 
-void lua_init();
+/**
+ * @brief Takes in a lua state and registers the engine API with it.
+ * 
+ * @param state 
+ */
+void ye_register_lua_scripting_api(lua_State *state);
 
-void lua_shutdown();
+/*
+    Callbacks (lua_api_callbacks.c)
+*/
+bool ye_run_lua_on_mount(struct ye_component_lua_script *script);
+bool ye_run_lua_on_unmount(struct ye_component_lua_script *script);
 
 #endif

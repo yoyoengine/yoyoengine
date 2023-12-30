@@ -426,7 +426,7 @@ bool comp_exists(int i, struct ye_entity *ent){
             return ent->tag != NULL;
             break;
         case 6:
-            return ent->script != NULL;
+            return ent->lua_script != NULL;
             break;
         default:
             return false;

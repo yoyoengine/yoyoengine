@@ -428,6 +428,8 @@ void editor_panel_styles(struct nk_context *ctx)
             // free the LL memory
             editor_panel_styles_freelists();
 
+            // TODO: in the future instead of freeing lets use the lists as a record for combo dropdowns to select without typing in inspector
+
             // release the json data
             json_decref(style_data);
             style_data = NULL;

@@ -46,11 +46,12 @@
 #include "ecs/transform.h"
 #include "ecs/collider.h"
 #include "ecs/tag.h"
+#include "ecs/lua_script.h"
 #include "utils.h"
 #include "timer.h"
 #include "audio.h"
 #include "logging.h"
-#include "lua.h"
+#include "lua_api.h"
 #include "scene.h"
 
 #endif // YE_ENGINE_MAIN_H

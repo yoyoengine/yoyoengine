@@ -139,6 +139,65 @@ void ye_logf(enum logLevel level, const char *format, ...){
     ye_add_to_log_buffer(level, text);
 }
 
+void _ye_lua_logf(enum logLevel level, const char *format, ...){
+    // prepare our formatted string
+    va_list args;
+    va_start(args, format);
+
+    char text[1024]; // Adjust the buffer size as needed
+    vsnprintf(text, sizeof(text), format, args);
+
+    va_end(args);
+    
+    if(level == warning){
+        YE_STATE.runtime.warning_count++;
+    }
+    if(level == error){
+        YE_STATE.runtime.error_count++;
+    }
+
+    // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
+    if(YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
+        return;
+    }
+    // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
+    if(logFile == 0x0){
+        ye_add_to_log_buffer(level, text);
+        // if we are in debug mode put it in stdout as well
+        if(YE_STATE.engine.debug_mode){
+            printf("%s",text);
+        }
+        return;
+    }
+
+    switch (level) {
+        case debug:
+            fprintf(logFile, "[%s] [LUA] [DEBUG]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sLUA%s] [%sDEBUG%s]: %s", RESET, ye_get_timestamp(), BLUE, RESET, MAGENTA, RESET, text);
+            break;
+        case info:
+            fprintf(logFile, "[%s] [LUA] [INFO]:  %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sLUA%s] [%sINFO%s]:  %s", RESET, ye_get_timestamp(), BLUE, RESET, GREEN, RESET, text);
+            break;
+        case warning:
+            fprintf(logFile, "[%s] [LUA] [WARNING]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sLUA%s] [%sWARNING%s]: %s", RESET, ye_get_timestamp(), BLUE, RESET, YELLOW, RESET, text);
+            break;
+        case error:
+            fprintf(logFile, "[%s] [LUA] [ERROR]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [%sLUA%s] [%sERROR%s]: %s", RESET, ye_get_timestamp(), BLUE, RESET, RED, RESET, text);
+            break;
+        default:
+            fprintf(logFile, "[%s] [LUA] [ERROR]: %s", ye_get_timestamp(), "Invalid log level\n");
+            printf("%s[%s] [%sLUA%s] [%sERROR%s]: %s", RESET, ye_get_timestamp(), BLUE, RESET, RED, RESET, "Invalid log level\n");
+            break;
+    }
+    YE_STATE.runtime.log_line_count++;
+
+    // Add to the log buffer
+    ye_add_to_log_buffer(level, text);
+}
+
 void ye_log_newline(enum logLevel level){
     // if logging is disabled, or the log level is below the threshold, return
     if(YE_STATE.engine.log_level > level){
