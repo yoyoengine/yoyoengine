@@ -109,6 +109,61 @@ Some features that aren't planned but I would like to implement eventually:
 - [ ] Mac support
 - [ ] VR support?
 
+## Tricks (Plugin/Module System)
+
+Plugins are called "tricks". They live in subdirectories of the project folder `/tricks` and have a directory structure like this:
+
+```txt
+example/
+├── include
+│   └── example_header.h
+├── lib
+│   └── linux
+│       └── libexamplelinkedlib.so
+├── src
+│   └── main.c
+└── trick.yoyo
+```
+
+`trick.yoyo` contains the metadata for the trick, which is required to load it. It is a json file with the following structure:
+
+```json
+{
+    "name":"example_trick",
+    "description":"example trick",
+    "author":"Ryan Zmuda",
+    "version":"1.0"
+}
+```
+
+any .c files in src will be compiled together, and by naming certain functions to match the engine callbcks you can interface with the exposed trick event system.
+
+```c
+#include <yoyoengine/yoyoengine.h>
+
+void yoyo_trick_on_load(){
+    /*
+        runs when the trick is first mounted, which happens after all other init
+    */
+}
+
+void yoyo_trick_on_unload(){
+    /*
+        runs when the trick is about to be unloaded, which is one of the
+        first things to happen on engine shutdown
+    */
+}
+
+void yoyo_trick_on_update(){
+    /*
+        runs once every ye_process_frame call, before the lua script
+        callbacks and before rendering
+    */
+}
+```
+
+I dont feel like typing much more now but this is the basic idea of tricks.
+
 ## Credit
 
 - The listed dependencies and Jojo's Bizarre Adventure for the bootup screen sound effect.

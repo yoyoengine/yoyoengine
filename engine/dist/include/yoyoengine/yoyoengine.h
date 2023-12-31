@@ -53,5 +53,6 @@
 #include "logging.h"
 #include "lua_api.h"
 #include "scene.h"
+#include "tricks.h"
 
 #endif // YE_ENGINE_MAIN_H

@@ -175,6 +175,9 @@ void ye_process_frame(){
         ye_recompute_boxing();
     }
 
+    // run all trick update callbacks
+    ye_run_trick_updates();
+
     // run all scripting before the frame is rendered
     ye_system_lua_scripting();
 
@@ -338,6 +341,9 @@ void ye_init_engine() {
     // the engine to be at initially
     ye_set_volume(-1, YE_STATE.engine.volume);
 
+    // initialize and load tricks (modules/plugins)
+    ye_init_tricks();
+
     // set our last frame time now because we might play the intro
     last_frame_time = SDL_GetTicks64();
 
@@ -419,6 +425,9 @@ void ye_init_engine() {
 
 void ye_shutdown_engine(){
     ye_logf(info, "Shutting down engine...\n");
+
+    // shut tricks down
+    ye_shutdown_tricks();
 
     // free the engine font color
     free(YE_STATE.engine.pEngineFontColor);

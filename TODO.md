@@ -356,3 +356,15 @@ rename logging symbols everywhere to be YE_LL_LEVEL
 ## lua scripting
 
 read through references, you are doing bad practice for a lot of things like the naming convention
+
+whereever left off with lua scripting its pretty unhappy over some memory stuff, like the virtual address table handle lookups
+
+## doing the plugin system
+
+how could we persist certain scripts or entities outside of refreshing when loading scenes? seperate list?
+
+to call a lua function defined in a trick from lua scripts in engine it doesnt technically need to be registered yet because we can invoke it through a C helper function by name across lua states. but if we wanted to we could add a custom trick register lua callback
+
+maybe in the future include src url in trick.yoyo which can auto update if you ask it to
+
+something something inclues let other tricks build off of other tricks like modding sdks

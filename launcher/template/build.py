@@ -81,6 +81,120 @@ toolchain_file = open("./build/toolchain-win.cmake", "w")
 toolchain_file.write("set(CMAKE_SYSTEM_NAME Windows)\nset(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)\nset(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)\nset(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)\nset(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)")
 toolchain_file.close()
 
+#
+# WE ARE GOING TO BUILD ALL TRICKS INTO build/platform/tricks
+# optional: later on we can also construct a tricks.yoyo file to compact info on each one
+
+# create the tricks folder
+os.mkdir("./build/" + build_platform + "/tricks")
+
+# create a tricks.yoyo file in that folder
+tricks_file = open("./build/" + build_platform + "/tricks/tricks.yoyo", "w")
+
+# write {"tricks":[]} to set it up
+tricks_file.write("{\"tricks\":[")
+
+# loop through each folder in ./tricks
+for trick in os.listdir("./tricks"):
+    # look at its trick.yoyo file and get the name of the trick
+    trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
+    trick_data = json.load(trick_file)
+    trick_file.close()
+
+    trick_name = trick_data["name"]
+    trick_description = trick_data["description"]
+    trick_author = trick_data["author"]
+    trick_version = trick_data["version"]
+
+    print("----------------------------------")
+    print("Building trick \"" + trick_name + "\"...")
+    print("Author: " + trick_author)
+    print("Version: " + trick_version)
+    print(trick_description)
+    print("----------------------------------")
+
+    # delete the trick's build folder if it exists
+    if os.path.exists("./tricks/" + trick + "/build"):
+        shutil.rmtree("./tricks/" + trick + "/build")
+
+    # create a build folder in the trick folder
+    os.mkdir("./tricks/" + trick + "/build")
+
+    # copy the trick's include/ and lib/ folders into the build folder
+    shutil.copytree("./tricks/" + trick + "/include", "./tricks/" + trick + "/build/include", dirs_exist_ok=True)
+    shutil.copytree("./tricks/" + trick + "/lib", "./tricks/" + trick + "/build/lib", dirs_exist_ok=True)
+
+    # create a CMakeLists.txt file in that folder
+    cmake_file = open("./tricks/" + trick + "/build/CMakeLists.txt", "w")
+
+    # write to that file the CMakeLists.txt template
+    cmake_file.write("cmake_minimum_required(VERSION 3.22.1)\n")
+
+    cmake_file.write("project(" + trick_name + ")\n")
+
+    cmake_file.write("set(CMAKE_C_FLAGS \"${CMAKE_C_FLAGS} "+build_cflags+"\")\n")
+
+    cmake_file.write("file(GLOB SOURCES \""+current_dir+"/tricks/"+trick+"/src/*.c\")\n")
+
+    cmake_file.write("include_directories("+current_dir+"/tricks/"+trick+"/build/include)\n")
+    build_dir = current_dir + "/build/" + build_platform
+    cmake_file.write("include_directories("+build_dir+"/include)\n")
+
+    cmake_file.write("set(EXECUTIBLE_NAME " + trick_name + ")\n")
+
+    cmake_file.write("add_library(${EXECUTIBLE_NAME} SHARED ${SOURCES})\n")
+
+    # run cmake
+    extension = ""
+    if(build_platform == "linux"):
+        extension = ".so"
+    elif(build_platform == "windows"):
+        extension = ".dll"
+
+    cmake_file.write("file(GLOB LIB_FILES "+current_dir+"/tricks/"+trick+"/build/lib/"+build_platform+"/*"+extension+")\n")
+
+    cmake_file.write("target_link_directories(${EXECUTIBLE_NAME} PRIVATE "+current_dir+"/tricks/"+trick+"/build/lib)\n")
+
+    cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES})\n")
+
+    cmake_file.close()
+
+    # run cmake
+    if(build_platform == "linux"):
+        subprocess.run(["cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
+    elif(build_platform == "windows"):
+        subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=../../toolchain-win.cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
+
+    # run make
+    subprocess.run(["make", "-C", "./tricks/" + trick + "/build/" + build_platform])
+
+    # copy the trick's .so or .dll file into ./build/tricks
+    shutil.copyfile("./tricks/" + trick + "/build/" + build_platform + "/lib" + trick_name + extension, "./build/" + build_platform + "/tricks/lib" + trick_name + extension)
+
+    # copy the trick's include/ to ./build/<platform>/include
+    shutil.copytree("./tricks/" + trick + "/build/include", "./build/" + build_platform + "/include", dirs_exist_ok=True)
+
+    # copy the trick's lib/ to ./build/<platform>/lib
+    shutil.copytree("./tricks/" + trick + "/build/lib/"+build_platform, "./build/" + build_platform + "/lib", dirs_exist_ok=True)
+
+    # figure out the tricks file name with extension and lib prefix included
+    trick_filename = "lib" + trick_name + extension
+
+    # populate the tricks.yoyo file with the trick's info, the structure is "tricks":[{trick1}, {trick2}, ...]
+    tricks_file.write("{\"name\":\"" + trick_name + "\",\"description\":\"" + trick_description + "\",\"author\":\"" + trick_author + "\",\"version\":\"" + trick_version + "\",\"filename\":\"" + trick_filename + "\"},")
+
+# remove the last comma from the tricks.yoyo file
+tricks_file.seek(tricks_file.tell() - 1, os.SEEK_SET)
+tricks_file.truncate()
+
+# close the tricks.yoyo file
+tricks_file.write("]}")
+tricks_file.close()
+
+#
+# Resume building game
+#
+
 # create a CMakeLists.txt file in that folder
 cmake_file = open("./build/CMakeLists.txt", "w")
 

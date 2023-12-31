@@ -24,7 +24,6 @@ set(ENGINE_BUILD_DIR "/home/ryan/repos/yoyoengine/engine/build/linux")
 include_directories(include ${ENGINE_BUILD_DIR}/include)  # Add the engine's include directory here
 
 # Create a Linux executable
-# Create a Linux executable
 if(UNIX)
     # Define the output executable name
     set(EXECUTABLE_NAME yoyoeditor)

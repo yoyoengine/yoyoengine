@@ -13,6 +13,7 @@
 │   ├── scenes
 │   │   └── entry.yoyo
 │   └── styles.yoyo
+├── tricks
 └── settings.yoyo
 ```
 
@@ -27,6 +28,10 @@ This folder is used to store custom C scipts and headers, as well as libraries.
 ### resources
 
 This is the folder that any asset or file you want to use in the game must be placed in. The `scenes` folder is where you place your game's scenes, and the `styles.yoyo` file describes declared fonts and colors for the game.
+
+### tricks
+
+A trick is just a plugin. This directory holds a bunch of folders defining tricks. Each trick has a `trick.yoyo` that defines data. I will write more documentation on this later
 
 ### settings.yoyo
 
