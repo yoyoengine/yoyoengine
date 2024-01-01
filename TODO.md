@@ -394,3 +394,7 @@ delete button push styles macro or function
 add to meta last edited and then track so if user adds new item we auto refresh next launch instead of foccing them to click refresh
 
 You need to majorly refactor this plugin manager. this is some of the worst code ive written in a long time. I need to stop programmign when I cant think straight.
+
+## TODO NEXT TIME:
+
+literally the first thing on your list should be refactoring `editor_panel_tricks.c`, holy mother of bad code

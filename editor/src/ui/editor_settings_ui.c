@@ -501,6 +501,18 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     unlock_viewport();
                 }
             }
+            if(nk_button_label(ctx, "Manage/Install Tricks")){
+                /*
+                    Open a popout editor for managing tricks
+                */
+                if(!ui_component_exists("trick panel")){
+                    ui_register_component("trick panel", editor_panel_tricks);
+                    lock_viewport();
+                }// else {
+                //     remove_ui_component("trick panel");
+                //     unlock_viewport();
+                // } this would not clean up memory, so just force closing through the panel for now
+            }
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
