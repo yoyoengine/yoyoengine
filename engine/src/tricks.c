@@ -99,6 +99,7 @@ void ye_init_tricks(){
         ye_logf(info, "Version: %s\n", version);
         ye_logf(info, "Author: %s\n", author);
         ye_logf(info, "Description: %s\n", description);
+        ye_logf(info, "Library name: %s\n", filepath);
 
         // add the trick to the LL
         struct ye_trick_node * new_node = malloc(sizeof(struct ye_trick_node));

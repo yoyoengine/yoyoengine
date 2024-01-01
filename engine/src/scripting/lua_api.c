@@ -51,7 +51,7 @@
 /*
     Function that allows lua to log using the engine logger
 */
-void lua_log(lua_State* L){
+int lua_log(lua_State* L){
     // get the function name
     const char* level = lua_tostring(L, 1);
     const char* message = lua_tostring(L, 2);
@@ -70,6 +70,8 @@ void lua_log(lua_State* L){
     if(strcmp(level, "error") == 0){
         _ye_lua_logf(error, message);
     }
+
+    return 0;
 }
 
 /*

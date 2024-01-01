@@ -55,6 +55,14 @@ build_platform = build["platform"]
 build_cflags = build["cflags"]
 build_engine_path = build["engine_build_path"] + "/" + build_platform
 
+shpath = build["engine_build_path"] + "/../"
+
+# temp - call build_linux.sh or build_windows.sh depending on platform
+if(build_platform == "linux"):
+    subprocess.run([shpath+"build_linux.sh"], cwd=shpath)
+else:
+    subprocess.run([shpath+"build_windows.sh"], cwd=shpath)
+
 # Check if the engine build path exists
 if not os.path.exists(build_engine_path):
     print("Error: Engine build path \"" + build_engine_path + "\" does not exist.")
@@ -159,11 +167,14 @@ for trick in os.listdir("./tricks"):
 
     cmake_file.close()
 
+    # print the current working directory of python for debug purposes
+    print("Current working directory: " + os.getcwd())
+
     # run cmake
     if(build_platform == "linux"):
         subprocess.run(["cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
     elif(build_platform == "windows"):
-        subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=../../toolchain-win.cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
+        subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE="+current_dir+"/build/toolchain-win.cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
 
     # run make
     subprocess.run(["make", "-C", "./tricks/" + trick + "/build/" + build_platform])
@@ -175,7 +186,13 @@ for trick in os.listdir("./tricks"):
     shutil.copytree("./tricks/" + trick + "/build/include", "./build/" + build_platform + "/include", dirs_exist_ok=True)
 
     # copy the trick's lib/ to ./build/<platform>/lib
-    shutil.copytree("./tricks/" + trick + "/build/lib/"+build_platform, "./build/" + build_platform + "/lib", dirs_exist_ok=True)
+    try:
+        if os.path.exists("./tricks/" + trick + "/build/lib/"+build_platform) and os.listdir("./tricks/" + trick + "/build/lib/"+build_platform):
+            shutil.copytree("./tricks/" + trick + "/build/lib/"+build_platform, "./build/" + build_platform + "/lib", dirs_exist_ok=True)
+        else:
+            print("No supplemental libraries found in ./tricks/" + trick + "/build/lib/"+build_platform)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
     # figure out the tricks file name with extension and lib prefix included
     trick_filename = "lib" + trick_name + extension
@@ -289,4 +306,12 @@ if len(sys.argv) > 1:
         print("\n----------------------------------")
         print("Running game...")
         print("----------------------------------")
-        subprocess.Popen(["./build/" + build_platform + "/" + game_name])
+        if(build_platform == "linux"):
+            subprocess.Popen(["./build/" + build_platform + "/" + game_name])
+        elif(build_platform == "windows"):
+
+            # if this script is being run on linux, open this with wine
+            if sys.platform == "linux":
+                subprocess.Popen(["wine", "./build/" + build_platform + "/" + game_name + ".exe"])
+            else:
+                subprocess.Popen([current_dir+"/build/" + build_platform + "/" + game_name + ".exe"])

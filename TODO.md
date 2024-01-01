@@ -384,3 +384,13 @@ progress bar would be cool, or a new console window with the build output
 ## lua
 
 memory issues so bad it page faults on windows and on linux it sometimes fails to munmapchunk but gracefully exits anyways
+
+## editor
+
+delete button push styles macro or function
+
+## tricks plugin manager
+
+add to meta last edited and then track so if user adds new item we auto refresh next launch instead of foccing them to click refresh
+
+You need to majorly refactor this plugin manager. this is some of the worst code ive written in a long time. I need to stop programmign when I cant think straight.
