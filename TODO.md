@@ -368,3 +368,19 @@ to call a lua function defined in a trick from lua scripts in engine it doesnt t
 maybe in the future include src url in trick.yoyo which can auto update if you ask it to
 
 something something inclues let other tricks build off of other tricks like modding sdks
+
+## plugin gui
+
+plugin panel in editor that lets you enable or disable plugins, shows their meta, add plugin from local file, install plugin from url (git)
+
+## building
+
+editor should not crutch on a build path existing, use its own
+
+other:
+
+progress bar would be cool, or a new console window with the build output
+
+## lua
+
+memory issues so bad it page faults on windows and on linux it sometimes fails to munmapchunk but gracefully exits anyways
