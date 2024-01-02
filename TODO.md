@@ -222,8 +222,8 @@ im going to commit what I have now, but for the clamping resizing I am basically
 alt approach, maybe we dont need to clamp at all but we can just keep constant size like 500px for side panels, (does not let us work at lower res) if we do that probably include a float scaling factor to allow user to customize size of ui scaling
 
 ## build and other icons
-I can also just straight up write in the nuklear.h my own icon definitions (hard)
 
+I can also just straight up write in the nuklear.h my own icon definitions (hard)
 
 sdl renderer backend how are images formatted and stored?? holy fuck how can i upload an image to nuklear
 what format is nuklear expecting??
@@ -300,7 +300,7 @@ same thing with images src
 think about how to dynamically compute size?
 
 dynamic font resiuzing is possibl3!
-https://wiki.libsdl.org/SDL2_ttf/TTF_SetFontSize
+<https://wiki.libsdl.org/SDL2_ttf/TTF_SetFontSize>
 
 improve the console its lowkey ass. should be genuinely dynamic and auto select bottom input on open, and remember its last positions
 
@@ -335,7 +335,7 @@ on x11 (wayland not tested or windows) sometimes fullscreen mode will literally 
 ## emscripten build target
 
 really only main loop needs changed, but you need to build all your deps as emscripten
-https://emscripten.org/docs/compiling/Building-Projects.html?highlight=sdl2
+<https://emscripten.org/docs/compiling/Building-Projects.html?highlight=sdl2>
 
 build and run should save first
 
@@ -398,3 +398,14 @@ You need to majorly refactor this plugin manager. this is some of the worst code
 ## TODO NEXT TIME:
 
 literally the first thing on your list should be refactoring `editor_panel_tricks.c`, holy mother of bad code
+
+## try to port over to better build system
+
+list of all dependencies that need rebuilt:
+
+- SDL2
+  - do the mixer and other stuff get included?
+- nuklear/uthash not applicable
+- lua
+- jansson
+- all those mixed like libfreetype libmpg libpng

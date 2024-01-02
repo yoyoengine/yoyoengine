@@ -104,6 +104,10 @@ tricks_file.write("{\"tricks\":[")
 
 # loop through each folder in ./tricks
 for trick in os.listdir("./tricks"):
+    # if this is not a directory, skip it
+    if not os.path.isdir("./tricks/" + trick):
+        continue
+
     # look at its trick.yoyo file and get the name of the trick
     trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
     trick_data = json.load(trick_file)
