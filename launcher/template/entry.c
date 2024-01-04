@@ -25,6 +25,7 @@
 */
 
 #include <yoyoengine/yoyoengine.h>
+#include "yoyo_c_api.h"
 
 // if windows include windows.h
 #ifdef _WIN32
@@ -39,28 +40,38 @@
 int main(int argc, char** argv){
     #ifdef YOYO_PRE_INIT
         // run the pre init function
+        yoyo_pre_init();
+    #endif
+    
+    // intialize the engine (engine will look at ./settings.yoyo for configuration)
+    ye_init_engine();
+
+    #ifdef YOYO_POST_INIT
+        // run the post init function
+        yoyo_post_init();
     #endif
 
     // assign function pointers for custom scripted behavior
     #ifdef YOYO_PRE_FRAME
+        YE_STATE.engine.callbacks.pre_frame = yoyo_pre_frame;
+    #else
+        YE_STATE.engine.callbacks.pre_frame = NULL;
     #endif
 
     #ifdef YOYO_POST_FRAME
+        YE_STATE.engine.callbacks.post_frame = yoyo_post_frame;
+    #else
+        YE_STATE.engine.callbacks.post_frame = NULL;
     #endif
     // ...etc. colliders and other triggers in future
-    
-    // intialize the engine (engine will look at ./settings.yoyo for configuration)
-    ye_init_engine();
     printf("Game initialized successfully\n");
 
-    #ifdef YOYO_POST_INIT
-        // run the post init function
-    #endif
 
     // create a game loop and persist it
 
     #ifdef YOYO_PRE_SHUTDOWN
         // run the pre shutdown function
+        yoyo_pre_shutdown();
     #endif
 
     // shutdown engine
@@ -68,6 +79,7 @@ int main(int argc, char** argv){
 
     #ifdef YOYO_POST_SHUTDOWN
         // run the post shutdown function
+        yoyo_post_shutdown();
     #endif
 
     printf("Game exited successfully\n");

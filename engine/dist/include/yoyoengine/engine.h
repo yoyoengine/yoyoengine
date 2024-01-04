@@ -79,6 +79,14 @@ char *ye_get_resource_static(const char *sub_path);
 char* ye_get_engine_resource_static(const char *sub_path);
 
 /**
+ * @brief This struct holds references to callbacks declared and assigned through C scripting.
+ */
+struct ye_engine_callbacks {
+    void (*pre_frame)();
+    void (*post_frame)();
+};
+
+/**
  * @brief The struct that defines the configuration of the engine core specifically.
 */
 struct ye_engine_config {
@@ -158,6 +166,12 @@ struct ye_engine_config {
 
     // the nuklear context
     struct nk_context *ctx; // TODO: should maybe be moved to runtime but idgaf rn
+
+    /*
+        The callbacks struct that holds all the callbacks
+        that can be assigned through C scripting
+    */
+    struct ye_engine_callbacks callbacks;
 };
 
 /**

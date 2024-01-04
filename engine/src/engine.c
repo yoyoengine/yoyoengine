@@ -77,6 +77,11 @@ void ye_process_frame(){
     YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks64();
 
+    // C pre frame callback
+    if(YE_STATE.engine.callbacks.pre_frame != NULL){
+        YE_STATE.engine.callbacks.pre_frame();
+    }
+
     int input_time = SDL_GetTicks64();
     ui_begin_input_checks();
     while (SDL_PollEvent(&e)) {
@@ -185,6 +190,11 @@ void ye_process_frame(){
     ye_render_all();
 
     YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
+
+    // C post frame callback
+    if(YE_STATE.engine.callbacks.post_frame != NULL){
+        YE_STATE.engine.callbacks.post_frame();
+    }
 }
 
 float ye_delta_time(){

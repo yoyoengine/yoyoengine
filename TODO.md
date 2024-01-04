@@ -284,7 +284,6 @@ in the editor we are spamming new text textures by creating one every time we ty
 
 TEXT IS UNIQUE IN ITS OWN RIGHT WHERE IT DOESNT NECCESSARIALLY NEED A CACHE FOR ITSELF, SO WE NEED TO BE MANAGING ITS MEMORY ISOLATED
 
-
 so I think the idea of the cache is alright, scenes are not massive so its ok to store literally anything that will ever be used in it. The thing is we dont get to intelligently destroy cache items becuase we have no idea how many things are actually using them. if you ever revisit the cache system you need to implement something like refcounting, which shouldnt be too bad since we have knowledge of the preprocessed scene file but can also add to the count in runtime if we get a cache hit
 
 enable terminal wrapping and resizing, why not?
@@ -395,7 +394,7 @@ add to meta last edited and then track so if user adds new item we auto refresh 
 
 You need to majorly refactor this plugin manager. this is some of the worst code ive written in a long time. I need to stop programmign when I cant think straight.
 
-## TODO NEXT TIME:
+## TODO NEXT TIME
 
 literally the first thing on your list should be refactoring `editor_panel_tricks.c`, holy mother of bad code
 
@@ -409,3 +408,35 @@ list of all dependencies that need rebuilt:
 - lua
 - jansson
 - all those mixed like libfreetype libmpg libpng
+
+## cmake build api shit
+
+cmake does not like to expose macros defined in source files to other source files, it has to be in headers. I wish I could just allow #define USE_PRE_LOOP to work but it seems like the user will have to go into a header file somewhere to define it no matter what if we really want it to work
+
+```c
+/*
+    This file should have automatically been placed in your custom/include
+    directory. This file contains all the C api definitions for the basic
+    scripting callbacks and default game behavior.
+
+    The intended use of this api is to make it easy to define custom C behavior,
+    for example: if you wanted to load some custom data before the game initializes
+    you could do the following in a new file like custom/src/mybehavior.c:
+    ```c
+    // include the api
+    #include "yoyo_c_api.h"
+    
+    // tell the compiler you are using this function (the engine will recognize this)
+    #define YOYO_PRE_INIT
+
+    // implement the function as defined by its signature in the header
+    void yoyo_pre_init(){
+        // any behavior you want!!
+    }
+    ```
+*/
+```
+
+## fix page faults in lua
+
+lets just store as booleans whethere signatures exist and invoke them by name. no reason to extract their references in the tables out. we are just farming page faults for no reason

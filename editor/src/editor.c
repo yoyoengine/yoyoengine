@@ -179,6 +179,9 @@ int main(int argc, char **argv) {
     else
         ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
 
+    /*
+        TODO: refactor me to use game input handler defualt macro
+    */
     YE_STATE.engine.handle_input = editor_handle_input;
 
     // update screenWidth and screenHeight
