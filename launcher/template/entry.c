@@ -32,15 +32,36 @@
     #include <windows.h>
 #endif
 
+bool YG_RUNNING; // initialize extern declared in yoyo_c_api.h
+
 /*
-    MAIN ENTRY POINT: TODO WORK FOR WINDOWS
+    This input handler gets bound if there is no user defined one
+*/
+#ifndef YOYO_HANDLE_INPUT
+void _example_input_handler(SDL_Event event){
+    if(event.type == SDL_QUIT){
+        YG_RUNNING = false;
+    }
+}
+#endif
+
+/*
+    MAIN ENTRY POINT
 
     THIS CONTAINS THE GAME LOOP
 */
 int main(int argc, char** argv){
+    YG_RUNNING = true;
+    
     #ifdef YOYO_PRE_INIT
         // run the pre init function
         yoyo_pre_init();
+    #endif
+
+    #ifdef YOYO_HANDLE_INPUT
+        YE_STATE.engine.callbacks.input_handler = yoyo_handle_input;
+    #else
+        YE_STATE.engine.callbacks.input_handler = _example_input_handler;
     #endif
     
     // intialize the engine (engine will look at ./settings.yoyo for configuration)
@@ -66,8 +87,10 @@ int main(int argc, char** argv){
     // ...etc. colliders and other triggers in future
     printf("Game initialized successfully\n");
 
-
     // create a game loop and persist it
+    while(YG_RUNNING){
+        ye_process_frame();
+    }
 
     #ifdef YOYO_PRE_SHUTDOWN
         // run the pre shutdown function

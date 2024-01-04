@@ -148,8 +148,8 @@ void ye_process_frame(){
         }
 
         // send event to callback specified by game (if needed)
-        if(YE_STATE.engine.handle_input != NULL){
-            YE_STATE.engine.handle_input(e);
+        if(YE_STATE.engine.callbacks.input_handler != NULL){
+            YE_STATE.engine.callbacks.input_handler(e);
         }
     }
     ui_end_input_checks();

@@ -82,6 +82,7 @@ char* ye_get_engine_resource_static(const char *sub_path);
  * @brief This struct holds references to callbacks declared and assigned through C scripting.
  */
 struct ye_engine_callbacks {
+    void (*input_handler)(SDL_Event event);
     void (*pre_frame)();
     void (*post_frame)();
 };
@@ -135,13 +136,6 @@ struct ye_engine_config {
     char *engine_resources_path;
     char *game_resources_path;
     char *log_file_path;
-
-    /*
-        Void pointer to the game's registered input handler.
-        After the engine processes input events, it will send them to
-        the game.
-    */
-    void (*handle_input)(SDL_Event event);
 
     /*
         Controls which camera the scene is rendered from the perspective of.

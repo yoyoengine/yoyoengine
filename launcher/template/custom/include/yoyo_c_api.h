@@ -16,6 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <yoyoengine/yoyoengine.h>
+
+// controls whether the game is running. Set this to false at any point and everything will quit.
+extern bool YG_RUNNING;
+
 /*
     +---------------------------------------------------+
     |             IMPORTANT INFORMATION:                |
@@ -39,6 +44,15 @@
     or for any other purpose you want. The engine has been initialized so you can access YE_STATE
 */
 // #define YOYO_POST_INIT
+
+/*
+    Runs once per frame assuming the engine has detected an input event. The engine is using SDL for inputs, so this
+    will pass the SDL_Event struct to your function. You can use this to implement custom input handling.
+
+    Make sure you implement this as:
+    void yoyo_handle_input(SDL_Event event);
+*/
+// #define YOYO_HANDLE_INPUT
 
 /*
     Runs once per frame before the engine has done anything, but after the deltatime has been reset for the new frame.
@@ -95,6 +109,10 @@
 
 #ifdef YOYO_POST_INIT
     void yoyo_post_init();
+#endif
+
+#ifdef YOYO_HANDLE_INPUT
+    void yoyo_handle_input(SDL_Event event);
 #endif
 
 #ifdef YOYO_PRE_FRAME
