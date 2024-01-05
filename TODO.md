@@ -440,3 +440,11 @@ cmake does not like to expose macros defined in source files to other source fil
 ## fix page faults in lua
 
 lets just store as booleans whethere signatures exist and invoke them by name. no reason to extract their references in the tables out. we are just farming page faults for no reason
+
+## default tricks
+
+there should be a popup in the launcher that lets you choose some default tricks to use, downloading them via submodule and adding them to the project
+
+## windows build error libpng
+
+Im not sure what this is, I think its that it doesnt actually say that it links and requires the other libs in the windows dissasembler

@@ -37,24 +37,26 @@ bool _run_script(lua_State *state, char *path){
     return true;
 }
 
-void _extract_signature(struct ye_component_lua_script *script, const char *funcName, int *funcRef) {
+void _extract_signature(struct ye_component_lua_script *script, const char *funcName, bool *hasRef) {
     lua_State *L = script->state;
 
     lua_getglobal(L, funcName);
     if (lua_isfunction(L, -1)) {
-        *funcRef = luaL_ref(L, LUA_REGISTRYINDEX); // Store the Lua function reference
+        // ye_logf(debug,"Found function %s in script\n", funcName);
+        *hasRef = true;
     } else {
-        *funcRef = LUA_NOREF; // Function not found, assign LUA_NOREF
+        // ye_logf(debug,"Did not find function %s in script\n", funcName);
+        *hasRef = false;
     }
     lua_pop(L, 1); // Pop the function or nil value from the stack
 }
-
 
 bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
     ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
     // allocate and assign the component
     entity->lua_script = malloc(sizeof(struct ye_component_lua_script));
+    entity->lua_script->active = true;
     
     /*
         Initialize state and load libs
@@ -63,6 +65,12 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
     luaL_openlibs(entity->lua_script->state);
     // TODO: we also need to individually register each api function here
     ye_register_lua_scripting_api(entity->lua_script->state);
+
+    // validate state and print errors
+    if(entity->lua_script->state == NULL){
+        ye_logf(error,"Failed to initialize lua state\n");
+        return false;
+    }
 
     /*
         Load our script into the lua state, which will inherently run it
@@ -77,18 +85,15 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
         Look through the file and interpret what functions exist in this script
         ex: on_mount, on_update, on_trigger_enter, etc and assign struct fields
     */
-    _extract_signature(entity->lua_script, "on_mount", &(entity->lua_script->on_mount));
-    _extract_signature(entity->lua_script, "on_update", &(entity->lua_script->on_update));
-    _extract_signature(entity->lua_script, "on_unmount", &(entity->lua_script->on_unmount));
+    _extract_signature(entity->lua_script, "on_mount", &(entity->lua_script->has_on_mount));
+    _extract_signature(entity->lua_script, "on_update", &(entity->lua_script->has_on_update));
+    _extract_signature(entity->lua_script, "on_unmount", &(entity->lua_script->has_on_unmount));
 
     /*
         call the lua scripts on_mount function in its state
     */
-    if(!ye_run_lua_on_mount(entity->lua_script)){
-        lua_close(entity->lua_script->state);
-        ye_logf(error,"Failed running the on mount function of a script, its context was destroyed but it still exists as a component.\n");
-        entity->lua_script->active = false;
-        return false;
+    if(entity->lua_script->has_on_mount){
+        ye_run_lua_on_mount(entity->lua_script);
     }
 
     // add to the lua_script list
@@ -105,14 +110,24 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
         return;
     }
 
+    if(entity->lua_script->state == NULL){
+        ye_logf(warning,"Attempted to remove lua script from entity that does not have a state\n");
+        return;
+    }
+
     // run the unmount function
     ye_run_lua_on_unmount(entity->lua_script);
 
     // shut down the state
     lua_close(entity->lua_script->state);
+    entity->lua_script->state = NULL;
 
     // free the allocated memory
     free(entity->lua_script);
+    entity->lua_script = NULL;
+
+    // remove from the lua_script list
+    ye_entity_list_remove(&lua_script_list_head, entity);
 }
 
 void ye_system_lua_scripting(){

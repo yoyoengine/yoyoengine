@@ -31,7 +31,7 @@ void ye_register_lua_scripting_api(lua_State *state);
 /*
     Callbacks (lua_api_callbacks.c)
 */
-bool ye_run_lua_on_mount(struct ye_component_lua_script *script);
-bool ye_run_lua_on_unmount(struct ye_component_lua_script *script);
+void ye_run_lua_on_mount(struct ye_component_lua_script *script);
+void ye_run_lua_on_unmount(struct ye_component_lua_script *script);
 
 #endif

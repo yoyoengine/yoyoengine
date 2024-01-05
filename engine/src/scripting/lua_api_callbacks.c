@@ -44,14 +44,59 @@ bool ye_run_lua_callback(struct ye_component_lua_script *script, int callback_re
     }
 }
 
-bool ye_run_lua_on_mount(struct ye_component_lua_script *script) {
-    return ye_run_lua_callback(script, script->on_mount, "on_mount");
+#define LUA_END_ARGS -2
+
+int callLuaFunction(lua_State* L, const char* functionName, ...) {
+    va_list args;
+    int nargs = 0;
+
+    lua_getglobal(L, functionName); // Get the function by name
+
+    // Push arguments onto the Lua stack
+    va_start(args, functionName);
+    while (va_arg(args, int) != LUA_END_ARGS) {
+        nargs++;
+        switch (va_arg(args, int)) {
+            case LUA_TSTRING:
+                lua_pushstring(L, va_arg(args, const char*));
+                break;
+            case LUA_TNUMBER:
+                lua_pushnumber(L, va_arg(args, double));
+                break;
+            // Handle other types as needed
+        }
+    }
+    va_end(args);
+
+    // Make the function call with nargs arguments
+    if (lua_pcall(L, nargs, 0, 0) != LUA_OK) {
+        fprintf(stderr, "Error calling function: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1); // Pop the error message
+        return -1;
+    }
+
+    return 0;
 }
 
-bool ye_run_lua_on_unmount(struct ye_component_lua_script *script) {
-    return ye_run_lua_callback(script, script->on_unmount, "on_unmount");
+void ye_run_lua_on_mount(struct ye_component_lua_script *script) {
+    if(script->has_on_mount) {
+        callLuaFunction(script->state, "on_mount", LUA_END_ARGS);
+    }
 }
 
-bool ye_run_lua_on_update(struct ye_component_lua_script *script) {
-    return ye_run_lua_callback(script, script->on_update, "on_update");
+void ye_run_lua_on_unmount(struct ye_component_lua_script *script) {
+    if(script == NULL) {
+        printf("script is null\n");
+        return;
+    }
+    
+    if(script->has_on_unmount) {
+        callLuaFunction(script->state, "on_unmount", LUA_END_ARGS);
+    }
+}
+
+void ye_run_lua_on_update(struct ye_component_lua_script *script) {
+    if(script->has_on_update) {
+        callLuaFunction(script->state, "on_update", LUA_END_ARGS);
+    }
 }

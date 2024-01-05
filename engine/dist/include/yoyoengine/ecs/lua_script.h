@@ -40,14 +40,12 @@ struct ye_component_lua_script {
     lua_State *state;               // the lua state for this script
 
     /*
-        Once the script is loaded, we extract any table references we need
-
-        if these are == LUA_NOREF they dont exist
+        Once the script is boostrapped, we parse references so we know
+        not to look for invalid references.
     */
-
-    int on_mount;         // int storing lua reference in table to on_mount function
-    int on_unmount;         // int storing lua reference in table to on_mount function
-    int on_update;        // int storing lua reference in table to on_update function
+    bool has_on_mount;
+    bool has_on_unmount;
+    bool has_on_update;
     // ... etc
 };
 
