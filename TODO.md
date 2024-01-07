@@ -448,3 +448,42 @@ there should be a popup in the launcher that lets you choose some default tricks
 ## windows build error libpng
 
 Im not sure what this is, I think its that it doesnt actually say that it links and requires the other libs in the windows dissasembler
+
+## cmake makes me want to end my life
+
+progress so far with fetch content:
+
+```cmake
+cmake_minimum_required(VERSION 3.22.1)
+project(yoyoengine)
+
+file(GLOB SOURCES src/*.c CMAKE_CONFIGURE_DEPENDS)
+
+add_executable(yoyoengine ${SOURCES})
+
+include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
+
+###############
+#   jansson   #
+###############
+
+set(BUILD_SHARED 1 CACHE INTERNAL "")
+set(JANSSON_BUILD_DOCS OFF CACHE INTERNAL "")
+FetchContent_Declare(
+    jansson
+    GIT_REPOSITORY https://github.com/akheron/jansson.git
+    GIT_TAG        v2.14
+    GIT_PROGRESS TRUE
+    # CMAKE_ARGS     -DBUILD_SHARED=1 -DJANSSON_BUILD_DOCS=OFF  # Build jansson as a shared library
+)
+
+FetchContent_MakeAvailable(jansson)
+
+target_include_directories(yoyoengine PRIVATE ${jansson_SOURCE_DIR}/include)
+
+... truncated ...
+
+
+target_link_libraries(yoyoengine PRIVATE jansson SDL2 SDL2_image SDL2_mixer lua_static)
+```
