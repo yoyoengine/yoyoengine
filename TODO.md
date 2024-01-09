@@ -491,3 +491,13 @@ target_link_libraries(yoyoengine PRIVATE jansson SDL2 SDL2_image SDL2_mixer lua_
 ## new build system
 
 go through and make sure you turn off unnecesary build targets like all the test and possibly SDL features that you arent using in the engine
+
+## something
+
+editor path is hard coded into settings now, rework this system
+
+## new build sys again
+
+honestly editor should add subdirectory and build its own copy of engine, as should each game. the actual engine repo is just a template for setting up the engine build inside of each individual project who can then go on to use the output
+
+leaving off at engine, its weird because we have to include headers differently depending. lets make a target pre build that includes all the headers which have been moved to a created build place. then we can just include that directory in the engine and editor and get consistant behavior

@@ -35,9 +35,10 @@ target_include_directories(yoyoengine PRIVATE ${jansson_BINARY_DIR}/include)
 ###############
 
 set(SDL2_DISABLE_INSTALL OFF CACHE BOOL "Disable installation of SDL2") # i forget why this is necessary but im assuming it wont work without
-set(SDL_STATIC OFF CACHE BOOL "Build a static library")
-set(SDL_SHARED ON CACHE BOOL "Build a shared library")
+set(SDL_STATIC ON CACHE BOOL "Build a static library")
+set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 set(SDL_TEST OFF CACHE BOOL "Build the test programs")
+set(SDL_STATIC_PIC ON CACHE BOOL "Build static libraries with PIC (Position Independent Code)")
 FetchContent_Declare(
     SDL2
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -52,6 +53,9 @@ target_include_directories(yoyoengine PRIVATE ${SDL2_SOURCE_DIR}/include)
 #  SD2L_ttf   #
 ###############
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
+# set(SDL2TTF_BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
+set(SDL2TTF_SAMPLES OFF CACHE BOOL "Build the SDL2_ttf sample program(s)")
 # let it know it needs to get its vendored deps
 set(SDL2TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
 FetchContent_Declare(
@@ -120,7 +124,7 @@ target_include_directories(yoyoengine PRIVATE ${lua_SOURCE_DIR}/include)
 #   linking   #
 ###############
 
-target_link_libraries(yoyoengine PRIVATE jansson SDL2 SDL2_ttf SDL2_image SDL2_mixer lua_static)
+target_link_libraries(yoyoengine PRIVATE jansson SDL2-static SDL2_ttf SDL2_image SDL2_mixer lua_static)
 
 # create an output dir based on platform
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
@@ -139,11 +143,12 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
 add_custom_command(
     TARGET yoyoengine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2> ${LIBRARY_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_ttf> ${LIBRARY_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_image> ${LIBRARY_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_mixer> ${LIBRARY_OUTPUT_PATH}
-    COMMENT "Copying libraries to platform-specific directory"
+    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2-static> ${LIBRARY_OUTPUT_PATH}
+    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_ttf> ${LIBRARY_OUTPUT_PATH}
+    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_image> ${LIBRARY_OUTPUT_PATH}
+    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_mixer> ${LIBRARY_OUTPUT_PATH}
+    # COMMENT "Copying libraries to platform-specific directory"
+    COMMENT "Creating platform-specific bin directory"
 )
 
 ###############
