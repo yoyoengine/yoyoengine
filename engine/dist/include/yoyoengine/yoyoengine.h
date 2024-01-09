@@ -34,7 +34,7 @@
 #include "engine.h"
 #include "json.h"
 #include "graphics.h"
-#include "uthash.h"
+#include "uthash/uthash.h"
 #include "cache.h"
 #include "ui.h"
 #include "ecs/ecs.h"

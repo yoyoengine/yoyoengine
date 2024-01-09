@@ -237,11 +237,16 @@ cmake_file.write("set(EXECUTIBLE_NAME " + game_name + ")\n")
 
 cmake_file.write("add_executable(${EXECUTIBLE_NAME} ${SOURCES} ${CUSTOM_SOURCES})\n")
 
-cmake_file.write("file(GLOB LIB_FILES "+build_dir+"/lib/*.so)\n")
+if build_platform == "windows":
+    cmake_file.write("file(GLOB LIB_FILES "+build_dir+"/lib/*.dll)\n")
+elif build_platform == "linux":
+    cmake_file.write("file(GLOB LIB_FILES "+build_dir+"/lib/*.so)\n")
+else:
+    print("Unsupported build platform")
 
 cmake_file.write("target_link_directories(${EXECUTIBLE_NAME} PRIVATE "+build_dir+"/lib)\n")
 
-cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES} SDL2_mixer SDL2_ttf SDL2_image lua jansson yoyoengine)\n")
+cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES} SDL2_mixer SDL2_ttf SDL2_image lua jansson yoyoengine png16 zlib1)\n")
 
 cmake_file.close()
 
@@ -277,6 +282,8 @@ if(build_platform == "windows"):
     shutil.copyfile("./build/" + build_platform + "/lib/libfreetype-6.dll", "./build/" + build_platform + "/libfreetype-6.dll")
     shutil.copyfile("./build/" + build_platform + "/lib/libmpg123-0.dll", "./build/" + build_platform + "/libmpg123-0.dll")
     shutil.copyfile("./build/" + build_platform + "/lib/libpng16-16.dll", "./build/" + build_platform + "/libpng16-16.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/libjpeg-9.dll", "./build/" + build_platform + "/libjpeg-9.dll")
+    shutil.copyfile("./build/" + build_platform + "/lib/zlib1.dll", "./build/" + build_platform + "/zlib1.dll")
     shutil.rmtree("./build/" + build_platform + "/lib")
     print("Copied dlls to build folder.")
 

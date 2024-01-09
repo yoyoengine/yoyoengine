@@ -487,3 +487,7 @@ target_include_directories(yoyoengine PRIVATE ${jansson_SOURCE_DIR}/include)
 
 target_link_libraries(yoyoengine PRIVATE jansson SDL2 SDL2_image SDL2_mixer lua_static)
 ```
+
+## new build system
+
+go through and make sure you turn off unnecesary build targets like all the test and possibly SDL features that you arent using in the engine

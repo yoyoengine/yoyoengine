@@ -1,30 +1,30 @@
 #!/bin/bash
 
-# Check if the script was called with the "--preserve" argument
-if [ "$1" == "--preserve" ]; then
-    # Preserve the existing build directory
-    echo "Preserving existing build directory..."
-else
-    # Delete the build directory if it exists
-    if [ -d "./build" ]; then
-        echo "Deleting existing build directory..."
-        rm -r "./build"
-    fi
-    # Create a new build directory
-    echo "Creating a new build directory..."
-    mkdir "./build"
-fi
+# Create a new build directory
+mkdir "./build"
+mkdir "./build/linux"
 
 # Navigate into the build directory
-cd "./build"
+cd "./build/linux"
 
 # Run cmake to configure the project
 echo "Running cmake..."
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug ../..
+if [ $? -eq 0 ]
+then
+    echo "cmake configuration succeeded."
+else
+    echo "cmake configuration failed."
+    exit 1
+fi
 
 # Run make to build the project
-echo "Running make to build the project..."
+echo "Running make..."
 make
-
-# Completion message
-echo "Build completed. You can find the built files in the 'build' directory."
+if [ $? -eq 0 ]
+then
+    echo "make build succeeded."
+else
+    echo "make build failed."
+    exit 1
+fi
