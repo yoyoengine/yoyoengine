@@ -5,6 +5,5 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-./../engine/build_linux.sh
 ./build_linux.sh
-./build/linux/yoyoeditor "$1"
+./build/bin/Linux/yoyoeditor "$1"

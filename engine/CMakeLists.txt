@@ -14,6 +14,9 @@ target_include_directories(yoyoengine PRIVATE dist/include/)
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
+# dont build tests
+set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
+
 ###############
 #   jansson   #
 ###############
@@ -158,8 +161,7 @@ add_custom_command(
 set(INCLUDE_FOLDER ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/include)
 file(MAKE_DIRECTORY ${INCLUDE_FOLDER})
 
-add_custom_command(
-    TARGET yoyoengine POST_BUILD
+add_custom_target(CopyHeaders
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/jansson
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${jansson_BINARY_DIR}/include ${INCLUDE_FOLDER}/jansson
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/SDL2
@@ -171,7 +173,7 @@ add_custom_command(
 
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/yoyoengine
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/yoyoengine ${INCLUDE_FOLDER}/yoyoengine
-    
+
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/Nuklear
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/Nuklear ${INCLUDE_FOLDER}/Nuklear
 
@@ -183,6 +185,14 @@ add_custom_command(
 
     COMMENT "Copying header files files to platform-specific directory"
 )
+
+# make sure we copy the headers AFTER SDL copies its own headers in its weird little freaky way
+add_dependencies(CopyHeaders sdl_headers_copy)
+add_dependencies(yoyoengine CopyHeaders)
+
+# we need to include this. This is because when we build the engine we know of all these headers, but from their FetchContent location,
+# which causes issues because OUR header files for the engine are written to include from our GENERATED include folder, not the fetchcontent
+target_include_directories(yoyoengine PRIVATE ${INCLUDE_FOLDER})
 
 ###############
 #  resources  #

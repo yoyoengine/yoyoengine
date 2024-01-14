@@ -5,13 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/engine/dist/include",
-                "${workspaceFolder}/engine/dist/include/yoyoengine"
-                // "${workspaceFolder}/engine/build/_deps/jansson-build/include",
-                // "${workspaceFolder}/engine/build/_deps/lua-src/lua-5.4.5/include",
-                // "${workspaceFolder}/engine/build/_deps/sdl2_image-src/include",
-                // "${workspaceFolder}/engine/build/_deps/sdl2_mixer-src/include",
-                // "${workspaceFolder}/engine/build/_deps/sdl2_ttf-src",
-                // "${workspaceFolder}/engine/build/_deps/sdl2-build/include"
+                "${workspaceFolder}/engine/dist/include/yoyoengine",
+                "${workspaceFolder}/editor/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
         Set the editor settings path
     */
     char* basePath = SDL_GetBasePath();
-    snprintf(editor_settings_path, sizeof(editor_settings_path), "%s../../editor.yoyo", basePath);
+    snprintf(editor_settings_path, sizeof(editor_settings_path), "%s./editor.yoyo", basePath);
     free(basePath);
 
     /*
