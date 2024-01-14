@@ -100,10 +100,17 @@ void ye_pre_cache_scene(json_t *scene){
                 if(!ye_json_string(impl,"image format",&extension)){
                     continue;
                 }
-                for(int i = 0; i<frame_count; ++i){
+                // we only load the first frame in editor mode to save overhead loading
+                if(YE_STATE.editor.editor_mode) {
                     char filename[256];  // Assuming a maximum filename length of 255 characters
-                    snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, extension); // TODO: dumb optimization but could cut out all except frame num insertion here
+                    snprintf(filename, sizeof(filename), "%s/0.%s", path, extension);
                     ye_image(ye_get_resource_static(filename));
+                } else {
+                    for(int i = 0; i<frame_count; ++i){
+                        char filename[256];  // Assuming a maximum filename length of 255 characters
+                        snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, extension);
+                        ye_image(ye_get_resource_static(filename));
+                    }
                 }
                 break;
             default:

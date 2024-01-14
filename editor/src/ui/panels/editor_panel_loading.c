@@ -16,27 +16,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/*
-    One mega header to combine all the src/panels/.c files
-
-    This will make it easier to handle without adding new headers
-    for each panel, beacuse they really are just one public function per panel
-    with maybe some private helpers.
-*/
-#ifndef YE_EDITOR_PANELS_H
-#define YE_EDITOR_PANELS_H
-
 #include <yoyoengine/yoyoengine.h>
 
-void editor_panel_keybinds(struct nk_context *ctx);
+#include "editor.h"
+#include "editor_panels.h"
 
-void editor_panel_credits(struct nk_context *ctx);
+// global buffer that contains the status of the editor loading
+char editor_loading_buffer[100];
 
-void editor_panel_styles(struct nk_context *ctx);
-
-void editor_panel_tricks(struct nk_context *ctx);
-
-extern char editor_loading_buffer[100];
-void editor_panel_loading(struct nk_context *ctx);
-
-#endif
+void editor_panel_loading(struct nk_context *ctx){
+    if(nk_begin(ctx, "Yoyo Editor", nk_rect((screenWidth / 2) - 150, (screenHeight / 2) - 50, 300, 100), NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label(ctx, editor_loading_buffer, NK_TEXT_CENTERED);
+        nk_end(ctx);
+    }
+}

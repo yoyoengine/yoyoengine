@@ -37,6 +37,7 @@
 #include <yoyoengine/yoyoengine.h>
 #include "editor_ui.h"
 #include "editor_settings_ui.h"
+#include "editor_panels.h"
 #include "editor.h"
 #include "editor_input.h"
 #include <SDL2/SDL.h>
@@ -103,6 +104,33 @@ void editor_re_attach_ecs(){
 }
 
 /*
+    Really minimal stripped rendering function that will
+    load just one frame into the window of only ui
+
+    TODO:
+    opportunity to make a cool background screen for this loading
+*/
+void yoyo_loading_refresh(char * status)
+{
+    // update status
+    snprintf(editor_loading_buffer, sizeof(editor_loading_buffer), "%s", status);
+
+    // clear the screen
+    SDL_RenderClear(YE_STATE.runtime.renderer);
+
+    SDL_RenderSetViewport(YE_STATE.runtime.renderer, NULL);
+    SDL_RenderSetScale(YE_STATE.runtime.renderer, 1.0f, 1.0f);
+
+    // paint just the loading
+    editor_panel_loading(YE_STATE.engine.ctx);
+    nk_sdl_render(NK_ANTI_ALIASING_ON);
+
+    SDL_RenderPresent(YE_STATE.runtime.renderer);
+
+    SDL_UpdateWindowSurface(YE_STATE.runtime.window);
+}
+
+/*
     main function
     accepts one string argument of the path to the project folder
 */
@@ -119,6 +147,13 @@ int main(int argc, char **argv) {
 
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
+
+    // get an initial screen size
+    struct ScreenSize ss = ye_get_screen_size();
+    screenWidth = ss.width; screenHeight = ss.height;
+
+    // refresh the screen
+    yoyo_loading_refresh("Initializing editor window...");
 
     /*
         Do some custom sdl setup for the editor specifically
@@ -137,6 +172,8 @@ int main(int argc, char **argv) {
     char* basePath = SDL_GetBasePath();
     snprintf(editor_settings_path, sizeof(editor_settings_path), "%s./editor.yoyo", basePath);
     free(basePath);
+
+    yoyo_loading_refresh("Reading editor settings...");
 
     /*
         Open the editor settings and get "preferences":"theme"
@@ -173,6 +210,8 @@ int main(int argc, char **argv) {
     // close the editor settings file
     json_decref(EDITOR_SETTINGS);
 
+    yoyo_loading_refresh("Constructing editor...");
+
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
     if (path != NULL)
         ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
@@ -186,7 +225,6 @@ int main(int argc, char **argv) {
     struct ScreenSize screenSize = ye_get_screen_size();
     screenWidth = screenSize.width;
     screenHeight = screenSize.height;
-    // printf("screen size: %d, %d\n", screenWidth, screenHeight);
 
     // create our editor camera and register it with the engine
     editor_camera = ye_create_entity_named("editor_camera");
@@ -205,6 +243,8 @@ int main(int argc, char **argv) {
     ye_add_transform_component(origin, -50, -50);
     ye_temp_add_image_renderer_component(origin, 0, ye_get_engine_resource_static("originwhite.png"));
     origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
+
+    yoyo_loading_refresh("Loading entry scene...");
 
     // load the scene out of the project settings::entry_scene
     SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
