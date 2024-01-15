@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(yoyoengine)
 
-file(GLOB SOURCES src/*.c src/ecs/*.c src/scripting/*.c CMAKE_CONFIGURE_DEPENDS)
+file(GLOB_RECURSE SOURCES src/*.c CMAKE_CONFIGURE_DEPENDS)
 
 add_library(yoyoengine SHARED ${SOURCES})
 

@@ -10,7 +10,7 @@ include_directories(include ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/include
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g")
 
 # Define the source files for your project
-file(GLOB SOURCES "src/*.c" "src/ui/*.c" "src/ui/panels/*.c")
+file(GLOB_RECURSE SOURCES "src/*.c" CMAKE_CONFIGURE_DEPENDS)
 
 # Check if the system is UNIX
 if(UNIX)
