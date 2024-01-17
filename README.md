@@ -209,7 +209,28 @@ void yoyo_trick_on_update(){
 }
 ```
 
-I dont feel like typing much more now but this is the basic idea of tricks.
+The engine at build time will make a few assumptions about your trick:
+
+- It has a valid `trick.yoyo` in its root
+- It has a valid `CMakeLists.txt` in its root
+- It's `CMakeLists.txt` is setup in a way to build a shared library into `YOYO_TRICK_BUILD_DIR`
+- Any headers that you want to be accessable to the runtime are in an `include/` directory in the root of the trick
+
+I've deliberately left it up to the developer to create their own build script, as it gives much more control over dependancy management and build settings in general.
+
+Because of this, it is also up to the developer to make sure they are outputting the trick in the directory that the engine will be looking for during project build time, which is `YOYO_TRICK_BUILD_DIR`.
+
+You can ensure you are building into the correct directory by adding the following to your `CMakeLists.txt`:
+
+```cmake
+set_target_properties(example PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${YOYO_TRICK_BUILD_DIR}) # linux
+set_target_properties(example PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${YOYO_TRICK_BUILD_DIR}) # windows
+```
+
+You need ***BOTH*** of these properties to account for windows AND linux builds.
+
+> [!WARNING]  
+> Because tricks load after initialization and are unloaded shortly before shutdown, **it is imperative that their exposed functionality is not attempted to be invoked outside the duration of its lifecycle**. This is not enforced by the engine, and will result in undefined behavior if violated.
 
 ## Credit
 

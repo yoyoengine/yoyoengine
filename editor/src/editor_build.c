@@ -27,6 +27,6 @@ void editor_build(){
 
 void editor_build_and_run(){
     char command[256];
-    snprintf(command, sizeof(command), "python3 \"%s\" run", ye_get_resource_static("../build.py"));
+    snprintf(command, sizeof(command), "python3 \"%s\" --run", ye_get_resource_static("../build.py"));
     system(command);
 }

@@ -54,6 +54,7 @@ bool project_stretch_resolution; // true or false
 */
 char build_additional_cflags[128];
 char build_platform[32];
+int original_build_platform_int; // tracks the target platform when opening settings, to compare with after closing if we need to set the "delete_cache" build.yoyo bool
 int build_platform_int;
 char build_engine_build_path[256];
 
@@ -260,6 +261,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
                 json_object_set_new(BUILD_FILE, "platform", json_string(build_platform_int == 0 ? "linux" : "windows"));
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
+                json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
                 ye_json_write(ye_get_resource_static("../build.yoyo"),BUILD_FILE);
 
                 /*
@@ -460,6 +462,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                                 build_platform_int = 0;
                             }
                         }
+                        original_build_platform_int = build_platform_int;
                         strncpy(build_platform, (char*)tmp_build_platform, (size_t)sizeof(build_platform) - 1);
                         build_platform[(size_t)sizeof(build_platform) - 1] = '\0'; // null terminate just in case TODO: write helper?
 

@@ -27,6 +27,16 @@ def parse_args():
     args = sys.argv[1:]
     return '--run' in args, '--clean' in args
 
+# cleans a directory, excluding a single file or directory
+def clean_directory(path, exclude):
+    for file in os.listdir(path):
+        if file != exclude:
+            file_path = os.path.join(path, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)  # remove the file
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # remove dir and all contains
+
 class YoyoEngineBuildSystem:
     def __init__(self, script_version="v2.0.0"):
         self.script_version = script_version
@@ -58,13 +68,36 @@ class YoyoEngineBuildSystem:
             print("[YOYO BUILD] Please set the engine build path in build.yoyo to the path of the engine build folder you want to use.")
             sys.exit()
         
+        # if this flag is set, we have changed target platforms from what we are already configured for. We need to delete everything BUT out/_deps
+        if(self.build_settings['delete_cache'] == True):
+            print("[YOYO BUILD] Deleting cache...")
+            # delete everything (files and folders recursively) in the build folder except build/out
+            clean_directory("./build", "out")
+
+            # delete everything (files and folders recursively) in the build/out folder except build/out/_deps
+            clean_directory("./build/out", "_deps")
+
+            # reset the flag
+            self.build_settings['delete_cache'] = False
+            # update the build.yoyo file
+            with open("build.yoyo", "w") as file:
+                json.dump(self.build_settings, file, indent=4)
+                print("[YOYO BUILD] Cache deleted and flag reset.")
+
+        # ONLY if we HAVENT cleaned cache in this last step, we need to check if we got the cli arg to totally clean
         # if we recieved arg --clean OR there is no /build/out dir existant, we need to fresh configure and build
-        if self.clean_flag or not os.path.exists("./build/out"):
-            
+        # TODO: this is probably redundant since last step keeps the deps and reconfigures
+        elif self.clean_flag or not os.path.exists("./build/out"):
             # Create a build/out folder
             if os.path.exists("./build/out"):
                 shutil.rmtree("./build/out")
             os.makedirs("./build/out")
+
+        # set self.binary_dir depending on the platform so we dont have to do this in a bunch of separate places
+        if self.game_platform == "linux":
+            self.binary_dir = "bin/Linux"
+        elif self.game_platform == "windows":
+            self.binary_dir = "bin/Windows"
     
     def configure(self):
         # write our CMakeLists.txt file and run cmake .. to configure
@@ -111,7 +144,59 @@ class YoyoEngineBuildSystem:
 
         file(COPY "../resources" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
         file(COPY "../settings.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+
+        # Building Tricks:
+
+        file(COPY "{self.script_location}/tricks.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+
+        set(YOYO_TRICK_BUILD_DIR ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/tricks)
+        file(MAKE_DIRECTORY ${{YOYO_TRICK_BUILD_DIR}})
+        
         """)
+
+        """
+        Handle tricks:
+
+        1. loop through each trick in the tricks folder, and add_subdirectory its path
+        2. add the tricks details to the generated tricks.yoyo file
+        """
+
+        # open (create) the tricks.yoyo file in self.binary_dir
+        tricks_file = open(f"{self.script_location}/tricks.yoyo", "w")
+
+        tricks_data = {"WARNING":"THIS FILE IS AUTO-GENERATED! DO NOT TAMPER!","tricks": []}
+
+        # Lets start by looping through each trick in the tricks folder, and invoking add_subdirectory to its path
+        for trick in os.listdir("./tricks"):
+            # if this is not a directory, skip it
+            if not os.path.isdir("./tricks/" + trick):
+                continue
+
+            # write the add_subdirectory command
+            cmake_file.write(f"add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
+
+            # look at its trick.yoyo file and get the name of the trick
+            trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
+            trick_data = json.load(trick_file)
+            trick_file.close()
+
+            trick_name = trick_data["name"]
+            trick_description = trick_data["description"]
+            trick_author = trick_data["author"]
+            trick_version = trick_data["version"]
+
+            # Add the trick data to the tricks_data dictionary
+            tricks_data["tricks"].append({
+                "name": trick_name,
+                "description": trick_description,
+                "author": trick_author,
+                "version": trick_version
+            })
+
+        # Write the tricks_data to the tricks_file in JSON format
+        json.dump(tricks_data, tricks_file, indent=4)
+
+        tricks_file.close()
 
         cmake_file.close()
 
@@ -123,19 +208,22 @@ class YoyoEngineBuildSystem:
         # run cmake
         print("----------------------------------")
         print("Running cmake...")
-        print("----------------------------------")
 
         # chdir into the build folder
         os.chdir("./build/out")
 
         # run cmake
         if(self.game_platform == "linux"):
+            print("[YOYO BUILD] Running cmake FOR LINUX")
             subprocess.run(["cmake", ".."])
         elif(self.game_platform == "windows"):
+            print("[YOYO BUILD] Running cmake FOR WINDOWS")
             subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=./toolchain-win.cmake", ".."])
         else:
             print("Error: Unknown platform \"" + self.game_platform + "\"")
             sys.exit()
+
+        print("----------------------------------")
     
     def build(self):
         print("----------------------------------")
@@ -151,7 +239,7 @@ class YoyoEngineBuildSystem:
             shutil.rmtree("./bin/Windows/lib")
             print("[YOYO BUILD] Copied dlls to build folder.")
 
-        #  build cleanup, remove the include folder in the output
+        # build cleanup, remove the include folder in the output
         if(os.path.exists("./bin/Linux/include")):
             shutil.rmtree("./bin/Linux/include")
         if(os.path.exists("./bin/Windows/include")):
@@ -192,130 +280,3 @@ if __name__ == "__main__":
     print("----------------------------------")
     print("\033[92m" + "Build Successful!" + "\033[0m")
     print("----------------------------------")
-
-#####################
-# TODO: PORT TRICKS #
-#####################
-    
-# #
-# # WE ARE GOING TO BUILD ALL TRICKS INTO build/platform/tricks
-# # optional: later on we can also construct a tricks.yoyo file to compact info on each one
-
-# # create the tricks folder
-# os.mkdir("./build/" + build_platform + "/tricks")
-
-# # create a tricks.yoyo file in that folder
-# tricks_file = open("./build/" + build_platform + "/tricks/tricks.yoyo", "w")
-
-# # write {"tricks":[]} to set it up
-# tricks_file.write("{\"tricks\":[")
-
-# # loop through each folder in ./tricks
-# for trick in os.listdir("./tricks"):
-#     # if this is not a directory, skip it
-#     if not os.path.isdir("./tricks/" + trick):
-#         continue
-
-#     # look at its trick.yoyo file and get the name of the trick
-#     trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
-#     trick_data = json.load(trick_file)
-#     trick_file.close()
-
-#     trick_name = trick_data["name"]
-#     trick_description = trick_data["description"]
-#     trick_author = trick_data["author"]
-#     trick_version = trick_data["version"]
-
-#     print("----------------------------------")
-#     print("Building trick \"" + trick_name + "\"...")
-#     print("Author: " + trick_author)
-#     print("Version: " + trick_version)
-#     print(trick_description)
-#     print("----------------------------------")
-
-#     # delete the trick's build folder if it exists
-#     if os.path.exists("./tricks/" + trick + "/build"):
-#         shutil.rmtree("./tricks/" + trick + "/build")
-
-#     # create a build folder in the trick folder
-#     os.mkdir("./tricks/" + trick + "/build")
-
-#     # copy the trick's include/ and lib/ folders into the build folder
-#     shutil.copytree("./tricks/" + trick + "/include", "./tricks/" + trick + "/build/include", dirs_exist_ok=True)
-#     shutil.copytree("./tricks/" + trick + "/lib", "./tricks/" + trick + "/build/lib", dirs_exist_ok=True)
-
-#     # create a CMakeLists.txt file in that folder
-#     cmake_file = open("./tricks/" + trick + "/build/CMakeLists.txt", "w")
-
-#     # write to that file the CMakeLists.txt template
-#     cmake_file.write("cmake_minimum_required(VERSION 3.22.1)\n")
-
-#     cmake_file.write("project(" + trick_name + ")\n")
-
-#     cmake_file.write("set(CMAKE_C_FLAGS \"${CMAKE_C_FLAGS} "+build_cflags+"\")\n")
-
-#     cmake_file.write("file(GLOB SOURCES \""+current_dir+"/tricks/"+trick+"/src/*.c\")\n")
-
-#     cmake_file.write("include_directories("+current_dir+"/tricks/"+trick+"/build/include)\n")
-#     build_dir = current_dir + "/build/" + build_platform
-#     cmake_file.write("include_directories("+build_dir+"/include)\n")
-
-#     cmake_file.write("set(EXECUTIBLE_NAME " + trick_name + ")\n")
-
-#     cmake_file.write("add_library(${EXECUTIBLE_NAME} SHARED ${SOURCES})\n")
-
-#     # run cmake
-#     extension = ""
-#     if(build_platform == "linux"):
-#         extension = ".so"
-#     elif(build_platform == "windows"):
-#         extension = ".dll"
-
-#     cmake_file.write("file(GLOB LIB_FILES "+current_dir+"/tricks/"+trick+"/build/lib/"+build_platform+"/*"+extension+")\n")
-
-#     cmake_file.write("target_link_directories(${EXECUTIBLE_NAME} PRIVATE "+current_dir+"/tricks/"+trick+"/build/lib)\n")
-
-#     cmake_file.write("target_link_libraries(${EXECUTIBLE_NAME} PRIVATE ${LIB_FILES})\n")
-
-#     cmake_file.close()
-
-#     # print the current working directory of python for debug purposes
-#     print("Current working directory: " + os.getcwd())
-
-#     # run cmake
-#     if(build_platform == "linux"):
-#         subprocess.run(["cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
-#     elif(build_platform == "windows"):
-#         subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE="+current_dir+"/build/toolchain-win.cmake", "-S", "./tricks/" + trick + "/build", "-B", "./tricks/" + trick + "/build/" + build_platform])
-
-#     # run make
-#     subprocess.run(["make", "-C", "./tricks/" + trick + "/build/" + build_platform])
-
-#     # copy the trick's .so or .dll file into ./build/tricks
-#     shutil.copyfile("./tricks/" + trick + "/build/" + build_platform + "/lib" + trick_name + extension, "./build/" + build_platform + "/tricks/lib" + trick_name + extension)
-
-#     # copy the trick's include/ to ./build/<platform>/include
-#     shutil.copytree("./tricks/" + trick + "/build/include", "./build/" + build_platform + "/include", dirs_exist_ok=True)
-
-#     # copy the trick's lib/ to ./build/<platform>/lib
-#     try:
-#         if os.path.exists("./tricks/" + trick + "/build/lib/"+build_platform) and os.listdir("./tricks/" + trick + "/build/lib/"+build_platform):
-#             shutil.copytree("./tricks/" + trick + "/build/lib/"+build_platform, "./build/" + build_platform + "/lib", dirs_exist_ok=True)
-#         else:
-#             print("No supplemental libraries found in ./tricks/" + trick + "/build/lib/"+build_platform)
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
-
-#     # figure out the tricks file name with extension and lib prefix included
-#     trick_filename = "lib" + trick_name + extension
-
-#     # populate the tricks.yoyo file with the trick's info, the structure is "tricks":[{trick1}, {trick2}, ...]
-#     tricks_file.write("{\"name\":\"" + trick_name + "\",\"description\":\"" + trick_description + "\",\"author\":\"" + trick_author + "\",\"version\":\"" + trick_version + "\",\"filename\":\"" + trick_filename + "\"},")
-
-# # remove the last comma from the tricks.yoyo file
-# tricks_file.seek(tricks_file.tell() - 1, os.SEEK_SET)
-# tricks_file.truncate()
-
-# # close the tricks.yoyo file
-# tricks_file.write("]}")
-# tricks_file.close()

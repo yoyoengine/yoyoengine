@@ -168,6 +168,7 @@ add_custom_target(CopyHeaders
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_BINARY_DIR}/include/SDL2 ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_image_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_mixer_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
+    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_SOURCE_DIR}/SDL_ttf.h ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/lua
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${lua_SOURCE_DIR}/lua-5.4.5/include ${INCLUDE_FOLDER}/lua
 
