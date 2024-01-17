@@ -478,6 +478,8 @@ TODO TOMORROW: add the ability for the build system to incldue directtory on tar
 
 ALSO TODO TOMORROW: editor build will freeze totally during the build. why?
 
+TODO: fuck, i forgot to allow the game to link its own custom libraries. Force this to be through plugins?
+
 ## editor improvements
 
 the editor should be a lot better about being project agnostic, so at any time we can open a new project, or maybe not. unity doesnt do that.
