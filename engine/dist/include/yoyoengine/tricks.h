@@ -32,22 +32,31 @@
 
 extern struct ye_trick_node * ye_tricks_head;
 
+struct ye_trick_node{
+    // metadata
+    char * name;
+    char * author;
+    char * description;
+    char * version;
+
+    // regularly invoked callbacks
+    void (*on_load)();
+    void (*on_unload)();
+    void (*on_update)();
+    void (*lua_bind)(lua_State *);
+
+    // LL
+    struct ye_trick_node_v2 * next;
+};
+
 /**
- * @brief Allows a trick to externally register its callbacks after it has been loaded from dllload.
+ * @brief Register a trick with the engine.
  * 
- * @param name The name of the trick
- * @param on_load The function to call when the trick is loaded
- * @param on_unload The function to call when the trick is unloaded
- * @param on_update The function to call when the trick is updated
+ * @param trick Data on the trick to register
+ * 
+ * Should be invoked in yoyo_trick_init to make the engine aware of loaded tricks as well as any callbacks they desire to subscribe to.
  */
-void ye_trick_register_self(const char * name, void (*on_load)(), void (*on_unload)(), void (*on_update)());
-
-/**
- * @brief Will look through resources/../tricks/ASTERISK.so and load them.
- */
-void ye_init_tricks();
-
-// void ye_load_trick(const char * trick_name);
+void ye_register_trick(struct ye_trick_node trick);
 
 /**
  * @brief Will unload all loaded tricks and cleanup.
@@ -58,5 +67,12 @@ void ye_shutdown_tricks();
  * @brief Iterates over all loaded tricks and runs their updates
  */
 void ye_run_trick_updates();
+
+/**
+ * @brief Registers any lua bindings tricks wish to expose
+ * 
+ * @param state The lua state to register the bindings to
+ */
+void ye_register_trick_lua_bindings(lua_State *state);
 
 #endif

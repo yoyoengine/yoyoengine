@@ -25,7 +25,7 @@ import json
 # returns whether we specified some cli args
 def parse_args():
     args = sys.argv[1:]
-    return '--run' in args, '--clean' in args
+    return '--run' in args, '--clean' in args, '--delete-cache' in args
 
 # cleans a directory, excluding a single file or directory
 def clean_directory(path, exclude):
@@ -42,7 +42,7 @@ class YoyoEngineBuildSystem:
         self.script_version = script_version
 
         # get cli args
-        self.run_flag, self.clean_flag = parse_args()
+        self.run_flag, self.clean_flag, self.delete_cache = parse_args()
         
         # chdir to where the script is located (to access things relatively)
         self.script_location = os.path.dirname(os.path.abspath(__file__))
@@ -69,7 +69,7 @@ class YoyoEngineBuildSystem:
             sys.exit()
         
         # if this flag is set, we have changed target platforms from what we are already configured for. We need to delete everything BUT out/_deps
-        if(self.build_settings['delete_cache'] == True):
+        if(self.build_settings['delete_cache'] == True or self.delete_cache == True):
             print("[YOYO BUILD] Deleting cache...")
             # delete everything (files and folders recursively) in the build folder except build/out
             clean_directory("./build", "out")
@@ -133,26 +133,15 @@ class YoyoEngineBuildSystem:
         file(GLOB CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
 
         add_executable({self.game_name} ${{SOURCES}} ${{CUSTOM_SOURCES}})
+        """)
 
-        include_directories({self.script_location}/custom/include)
-
-        target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)
-
-        target_link_libraries({self.game_name} PRIVATE yoyoengine)
-
-        set_target_properties({self.game_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
-
-        file(COPY "../resources" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
-        file(COPY "../settings.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
-
-        # Building Tricks:
-
-        file(COPY "{self.script_location}/tricks.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+        # for some reason, we need to add our tricks right here so it does not conflict with the build order
+        cmake_file.write(f"""\n        # BUILD TRICKS:
 
         set(YOYO_TRICK_BUILD_DIR ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/tricks)
         file(MAKE_DIRECTORY ${{YOYO_TRICK_BUILD_DIR}})
-        
-        """)
+
+        file(COPY "{self.script_location}/tricks.yoyo" DESTINATION ${{YOYO_TRICK_BUILD_DIR}})\n\n""")
 
         """
         Handle tricks:
@@ -173,7 +162,13 @@ class YoyoEngineBuildSystem:
                 continue
 
             # write the add_subdirectory command
-            cmake_file.write(f"add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
+            cmake_file.write(f"        add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
+            # include a default path in that trick
+            cmake_file.write(f"        target_include_directories({self.game_name} PRIVATE {self.script_location}/tricks/{trick}/include)\n")
+            # make sure this happens after the game is built
+            cmake_file.write(f"        add_dependencies({trick} yoyoengine)\n")
+            # link the trick to the game
+            cmake_file.write(f"        target_link_libraries({self.game_name} PRIVATE {trick})\n")
 
             # look at its trick.yoyo file and get the name of the trick
             trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
@@ -197,6 +192,21 @@ class YoyoEngineBuildSystem:
         json.dump(tricks_data, tricks_file, indent=4)
 
         tricks_file.close()
+
+        cmake_file.write(f"""\n        # DONE BUILDING TRICKS\n""")
+
+        cmake_file.write(f"""
+        include_directories({self.script_location}/custom/include)
+
+        target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)
+
+        target_link_libraries({self.game_name} PRIVATE yoyoengine)
+
+        set_target_properties({self.game_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+
+        file(COPY "../resources" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+        file(COPY "../settings.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+        """)
 
         cmake_file.close()
 

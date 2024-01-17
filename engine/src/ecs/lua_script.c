@@ -65,6 +65,8 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
     luaL_openlibs(entity->lua_script->state);
     // TODO: we also need to individually register each api function here
     ye_register_lua_scripting_api(entity->lua_script->state);
+    // allow any C tricks to register lua bindings
+    ye_register_trick_lua_bindings(entity->lua_script->state);
 
     // validate state and print errors
     if(entity->lua_script->state == NULL){

@@ -182,15 +182,15 @@ Keep in mind that you can also use lua scripting to more directly and easily int
 
 ## Tricks (Plugin/Module System)
 
+> [!WARNING]  
+> The structure and metadata requirements for tricks are still very subject to change.
+
 Plugins are called "tricks". They live in subdirectories of the project folder `/tricks` and have a directory structure like this:
 
 ```txt
 example/
 ├── include
-│   └── example_header.h
 ├── lib
-│   └── linux
-│       └── libexamplelinkedlib.so
 ├── src
 │   └── main.c
 └── trick.yoyo
@@ -207,10 +207,19 @@ example/
 }
 ```
 
-any .c files in src will be compiled together, and by naming certain functions to match the engine callbcks you can interface with the exposed trick event system.
+The developer of each trick is responsible for implementing a `CMakeLists.txt` build file, which incorporates the output target directories discussed in a few paragraphs.
+
+In order to setup a trick to be loaded, you should `#include <yoyoengine/yoyo_trick_boilerplate.h>` in your source, and implement the `yoyo_trick_init` function.
+
+It is reccomended (required if you wish for the engine to automatically callback into your trick) to call `ye_register_trick` with a `struct ye_trick_node` that contains any metadata and callbacks you wish for the engine to be aware of.
+
+You can also leverage the power of `ye_register_trick_lua_bindings(lua_State *state)` to push to EVERY lua state that is created by the engine any functions you wish. This is useful for exposing your own lua api to user scripts.
+
+A minimal example of a complete trick can be seen below:
 
 ```c
 #include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/yoyo_trick_boilerplate.h>
 
 void yoyo_trick_on_load(){
     /*
@@ -230,6 +239,30 @@ void yoyo_trick_on_update(){
         runs once every ye_process_frame call, before the lua script
         callbacks and before rendering
     */
+}
+
+/* Example function that we will expose to lua */
+void test_lua_bind(lua_State *L){
+    ye_logf(warning, "TEST LUA BIND\n");
+}
+
+/* Callback to register our test function */
+void yoyo_trick_lua_bind(lua_State *L){
+    lua_register(L, "example_test", test_lua_bind);
+}
+
+/* The only required signature in this file, entry point to our trick */
+void yoyo_trick_init(){
+    ye_register_trick((struct ye_trick_node){
+        .name = "example",
+        .author = "Ryan Zmuda",
+        .description = "example trick",
+        .version = "1.0.0",
+        .on_load = yoyo_trick_on_load,
+        .on_unload = yoyo_trick_on_unload,
+        .on_update = yoyo_trick_on_update,
+        .lua_bind = yoyo_trick_lua_bind
+    });
 }
 ```
 

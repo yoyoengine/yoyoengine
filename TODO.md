@@ -472,10 +472,6 @@ add for tricks, just make them use a cmakelists.txt and they can fetch content t
 
 ## misc tricks thoughts
 
-tricks do not need to recieve delta time or any args from engine, they should be able to access them through the global static structs or other getters
-
-TODO TOMORROW: add the ability for the build system to incldue directtory on target each TRICKS include/ folder. Also test this to make sure it works
-
 ALSO TODO TOMORROW: editor build will freeze totally during the build. why?
 
 TODO: fuck, i forgot to allow the game to link its own custom libraries. Force this to be through plugins?
@@ -483,3 +479,19 @@ TODO: fuck, i forgot to allow the game to link its own custom libraries. Force t
 ## editor improvements
 
 the editor should be a lot better about being project agnostic, so at any time we can open a new project, or maybe not. unity doesnt do that.
+
+## tricks thoughts ten billion
+
+maybe there is an issue with tricks callbacks running during startup? probably not
+
+## todo tomorrow
+
+games need to be able to link their own custom libaries, this might go hand in hand with the new trick stuff (tricks also need to be able to link their own deps).
+
+this possibly takes the form of you exposing some cmake paths for tricks to manually do whatever with.
+
+alt thought: tricks could technically be containers for libraries or dependancies, you would just need to port those deps to be inside a trick...
+
+maybe you just construct a vendor folder and link anything in there with the game, while adding a new target before building the game to link against whatever deps..
+
+this seems to lead to custom cmakelists.txt for the user to edit no matter what, not sure there is a way to do this all automatically
