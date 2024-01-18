@@ -46,7 +46,7 @@ struct ye_trick_node{
     void (*lua_bind)(lua_State *);
 
     // LL
-    struct ye_trick_node_v2 * next;
+    struct ye_trick_node * next;
 };
 
 /**
