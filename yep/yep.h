@@ -54,6 +54,11 @@ enum YEP_DATATYPE {
     YEP_DATATYPE_LUA_BYTECODE,  // lua bytecode (DO NOT COMPRESS)
 };
 
+enum YEP_COMPRESSION {
+    YEP_COMPRESSION_NONE,   // no compression
+    YEP_COMPRESSION_ZLIB,   // zlib compression
+};
+
 /*
     In regards to file handling, lets just keep the most recent file we have opened open,
     that way we can just close whatever we have open at the end, and if we need to swap files during

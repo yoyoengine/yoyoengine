@@ -12,3 +12,6 @@ set(SOURCES
 
 add_executable(yeptest ${SOURCES})
 # target_link_libraries(${EXECUTABLE_NAME} PRIVATE yoyoengine m)
+# link against zlib
+find_package(ZLIB)
+target_link_libraries(yeptest ZLIB::ZLIB)

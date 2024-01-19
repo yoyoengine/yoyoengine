@@ -18,6 +18,8 @@
 
 #include "yep.h"
 
+#include <zlib.h>   // zlib compression
+
 // holds the reference to the currently open yep file
 char* yep_file_path = NULL;
 FILE *yep_file = NULL;
@@ -150,6 +152,32 @@ void *yep_extract_data(char *file, char *handle){
 
     // null terminate the data
     data[size] = '\0';
+
+    printf("DATA VALUE LITERAL: %s\n", data);
+
+    // // if the data is compressed, decompres it
+    // if(compression_type == YEP_COMPRESSION_ZLIB){
+    //     char *decompressed_data;
+    //     size_t decompressed_size;
+    //     if(decompress_data(data, size, &decompressed_data, &decompressed_size) != 0){
+    //         printf("!!!Error decompressing data!!!\n");
+    //         fprintf(stderr, "inflateInit error: %s\n", zError(-1));
+    //         exit(1);
+    //     }
+
+    //     printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, decompressed_size);
+    //     printf("    Compression ratio: %f\n", (float)decompressed_size / (float)size);
+    //     printf("    Compression percentage: %f%%\n", ((float)decompressed_size / (float)size) * 100.0f);
+    //     printf("    Compression savings: %d bytes\n", size - decompressed_size);
+    //     printf("    DATA: %s\n", decompressed_data);
+
+    //     // free the original data
+    //     free(data);
+
+    //     // set the data to the decompressed data
+    //     data = decompressed_data;
+    //     size = decompressed_size;
+    // }
 
     // return the data
     return (void*)data; // TODO: decode our data and return it in heap
@@ -287,6 +315,199 @@ void _ye_walk_directory(char *root_path, char *directory_path){
     closedir(dir);
 }
 
+/*
+    ========================= COMPRESSION IMPLEMENTATION =========================
+*/
+
+// int compress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
+//     z_stream stream;
+//     memset(&stream, 0, sizeof(stream));
+
+//     if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK) {
+//         return -1;
+//     }
+
+//     // Set input data
+//     stream.next_in = (Bytef*)input;
+//     stream.avail_in = input_size;
+
+//     // Allocate initial output buffer
+//     *output_size = input_size + input_size / 10 + 12; // Adding some extra space for safety
+//     *output = (char*)malloc(*output_size);
+
+//     // Set output buffer
+//     stream.next_out = (Bytef*)*output;
+//     stream.avail_out = *output_size;
+
+//     // Compress the data
+//     if (deflate(&stream, Z_FINISH) != Z_STREAM_END) {
+//         free(*output);
+//         deflateEnd(&stream);
+//         return -1;
+//     }
+
+//     // Clean up
+//     deflateEnd(&stream);
+//     *output_size = stream.total_out;
+
+//     return 0;
+// }
+
+// int decompress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
+//     z_stream stream;
+//     memset(&stream, 0, sizeof(stream));
+
+//     if (inflateInit(&stream) != Z_OK) {
+//         return -1;
+//     }
+
+//     // Set input data
+//     stream.next_in = (Bytef*)input;
+//     stream.avail_in = input_size;
+
+//     // Allocate initial output buffer
+//     *output_size = input_size * 2; // Assuming decompressed size won't exceed twice the compressed size
+//     *output = (char*)malloc(*output_size);
+
+//     // Set output buffer
+//     stream.next_out = (Bytef*)*output;
+//     stream.avail_out = *output_size;
+
+//     // Decompress the data
+//     if (inflate(&stream, Z_FINISH) != Z_STREAM_END) {
+//         free(*output);
+//         inflateEnd(&stream);
+//         return -1;
+//     }
+
+//     // Clean up
+//     inflateEnd(&stream);
+//     *output_size = stream.total_out;
+
+//     return 0;
+// }
+
+/*
+    ==============================================================================
+*/
+
+/*
+    Returns the size of a file in bytes
+*/
+uint32_t get_file_size(FILE *file) {
+    fseek(file, 0L, SEEK_END);
+    uint32_t size = ftell(file);
+    fseek(file, 0L, SEEK_SET);
+    return size;
+}
+
+/*
+    Reads a full file into memory and returns a pointer to it
+
+    Assumes the file is open and seeked to the beginning
+*/
+char* read_file_data(FILE *file, uint32_t size) {
+    char *data = malloc(size);
+    fread(data, sizeof(char), size, file);
+    return data;
+}
+
+/*
+    Writes data to a pack file at a given offset
+*/
+void write_data_to_pack(FILE *pack_file, uint32_t offset, char *data, uint32_t size) {
+    fseek(pack_file, offset, SEEK_SET);
+    fwrite(data, sizeof(char), size, pack_file);
+}
+
+/*
+    Updates a pack file header with details of data just written
+*/
+void update_header(FILE *pack_file, int entry_index, uint32_t offset, uint32_t size, uint8_t compression_type, uint8_t data_type) {
+    int header_start = 3;
+    
+    // get where this specific header starts, and move to its offset field (name is already set)
+    int header_offset = header_start + (entry_index * 74) + 64;
+    fseek(pack_file, header_offset, SEEK_SET);
+
+    // write the data offset and data size
+    fwrite(&offset, sizeof(uint32_t), 1, pack_file);
+    fwrite(&size, sizeof(uint32_t), 1, pack_file);
+
+    // write the compression type and data type
+    fwrite(&compression_type, sizeof(uint8_t), 1, pack_file);
+    fwrite(&data_type, sizeof(uint8_t), 1, pack_file);
+}
+
+void write_pack_file(FILE *pack_file) {
+    // holds the start of the header for our current entry
+    uint32_t data_start = 3 + (yep_pack_list.entry_count * 74);
+
+    // holds the end of the data pack
+    uint32_t data_end = data_start;
+
+    // holds the current entry
+    int current_entry = 0;
+
+    struct yep_header_node *itr = yep_pack_list.head;
+    while(itr != NULL){
+
+        FILE *file_to_write = fopen(itr->fullpath, "rb");
+        if (file_to_write == NULL) {
+            perror("Error opening file");
+            exit(1);
+        }
+
+        uint32_t data_size = get_file_size(file_to_write);
+        char *data = read_file_data(file_to_write, data_size);
+        fclose(file_to_write);
+
+        // somewhere here is where we would perform our compression or
+        // manipulation of the data depending on its format
+        uint8_t compression_type = (uint8_t)YEP_COMPRESSION_NONE;
+        uint8_t data_type = (uint8_t)YEP_DATATYPE_MISC;
+
+        // if(data_size > 256){
+        //     compression_type = (uint8_t)YEP_COMPRESSION_ZLIB;
+        // }
+
+        // // compress this data with zlib
+        // if(compression_type == YEP_COMPRESSION_ZLIB){
+        //     char *compressed_data;
+        //     size_t compressed_size;
+        //     compress_data(data, data_size, &compressed_data, &compressed_size);
+
+        //     printf("Compressed %s from %d bytes to %d bytes\n", itr->fullpath, data_size, compressed_size);
+        //     printf("    Compression ratio: %f\n", (float)compressed_size / (float)data_size);
+        //     printf("    Compression percentage: %f%%\n", ((float)compressed_size / (float)data_size) * 100.0f);
+        //     printf("    Compression savings: %d bytes\n", data_size - compressed_size);
+        //     printf("    DATA: %s\n", compressed_data);
+
+        //     // free the original data
+        //     free(data);
+
+        //     // set the data to the compressed data
+        //     data = compressed_data;
+        //     data_size = compressed_size;
+        // }
+
+        // write the actual data from our data file to the pack file
+        write_data_to_pack(pack_file, data_end, data, data_size);
+
+        // update the pack file header with the location and information about the data we wrote
+        update_header(pack_file, current_entry, data_end, data_size, compression_type, data_type);
+
+        // shift the end pointer of the data pack file
+        data_end += data_size;
+
+        // incr
+        itr = itr->next;
+        current_entry++;
+    }
+
+    fclose(pack_file);
+}
+
 bool yep_pack_directory(char *directory_path, char *output_name){
     printf("Packing directory %s...\n", directory_path);
 
@@ -352,68 +573,8 @@ bool yep_pack_directory(char *directory_path, char *output_name){
         itr = itr->next;
     }
 
-    // now we know the size of our header section, and can start writing the actual data
-    // entry data starts at 3 (file meta) + entry_count * 74 (64 bytes for name, 4 bytes for offset, 4 bytes for size, 1 byte for compression type, 1 byte for data type)
-    uint32_t data_start = 3 + (entry_count * 74);
-    uint32_t data_end = data_start;
-    int header_start = 3;
-    int current_entry = 1;
-
-    // in order, lets seek to header_start, open each file and determine what we want to do with it, and write it
-    itr = yep_pack_list.head;
-    while(itr != NULL){
-        // open the file
-        FILE *file_to_write = fopen(itr->fullpath, "rb");
-        if (file_to_write == NULL) {
-            perror("Error opening file");
-            exit(1);
-            return false;
-        }
-
-        // get the size of the file
-        fseek(file_to_write, 0L, SEEK_END);
-        uint32_t data_size = ftell(file_to_write);
-        fseek(file_to_write, 0L, SEEK_SET);
-
-        printf("%s is %d bytes\n", itr->fullpath, data_size);
-
-        // get the data out of the file
-        char *data = malloc(data_size);
-        fread(data, sizeof(char), data_size, file_to_write);
-
-        // close the file
-        fclose(file_to_write);
-
-        // navigate to the start of where we can write new data
-        fseek(file, data_end, SEEK_SET);
-
-        // write that data to the pack file
-        printf("Writing at offset %d\n", data_end);
-        fwrite(data, sizeof(char), data_size, file);
-
-        // update header with the offset and size
-        fseek(file, header_start + ((current_entry-1) * 74) + 64, SEEK_SET); // seek to beginning of this entrys header
-        // ^^^ we have already set the name (the first 64 bytes), we need to seek 64 bytes forward to where the offset is
-
-        // write the offset value
-        printf("Telling header offset was %d\n", data_end);
-        fwrite(&data_end, sizeof(uint32_t), 1, file);
-
-        // write the size value
-        fwrite(&data_size, sizeof(uint32_t), 1, file);
-
-        // increment the data end
-        data_end += data_size;
-
-        // increment the iterator
-        itr = itr->next;
-
-        // increment the current entry
-        current_entry++;
-    }
-
-    // close the file
-    fclose(file);
+    // write the data
+    write_pack_file(file);
 
     return true;
 }
