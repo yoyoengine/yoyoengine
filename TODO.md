@@ -505,3 +505,9 @@ would be really hype to identify if we downloaded a trick from github and click 
 we want to be able to run it without console opening
 
 we want to link an icon to the exe
+
+## yep files
+
+in the future we could hash the integer handles to get a unique id which would decrease file size slightly
+
+a .yepignore would be nice to know which files we deliberately dont want to pack
