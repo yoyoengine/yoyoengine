@@ -133,7 +133,14 @@ class YoyoEngineBuildSystem:
         file(GLOB CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
 
         add_executable({self.game_name} ${{SOURCES}} ${{CUSTOM_SOURCES}})
+
+        # lets the tricks know where to link against any deps that the game has
+        set(YOYO_GAME_LINK_DIR ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)
+
+        target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/tricks)
         """)
+        # target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)
+        # target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib/..)
 
         # for some reason, we need to add our tricks right here so it does not conflict with the build order
         cmake_file.write(f"""\n        # BUILD TRICKS:
@@ -161,6 +168,8 @@ class YoyoEngineBuildSystem:
             if not os.path.isdir("./tricks/" + trick):
                 continue
 
+            # write the name
+            cmake_file.write(f"        # {trick}\n")
             # write the add_subdirectory command
             cmake_file.write(f"        add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
             # include a default path in that trick
@@ -168,7 +177,7 @@ class YoyoEngineBuildSystem:
             # make sure this happens after the game is built
             cmake_file.write(f"        add_dependencies({trick} yoyoengine)\n")
             # link the trick to the game
-            cmake_file.write(f"        target_link_libraries({self.game_name} PRIVATE {trick})\n")
+            cmake_file.write(f"        target_link_libraries({self.game_name} PRIVATE {trick})\n\n")
 
             # look at its trick.yoyo file and get the name of the trick
             trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
@@ -197,8 +206,6 @@ class YoyoEngineBuildSystem:
 
         cmake_file.write(f"""
         include_directories({self.script_location}/custom/include)
-
-        target_link_directories({self.game_name} PRIVATE ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)
 
         target_link_libraries({self.game_name} PRIVATE yoyoengine)
 
@@ -247,6 +254,10 @@ class YoyoEngineBuildSystem:
         if(self.game_platform == "windows"):
             shutil.copytree("./bin/Windows/lib/", "./bin/Windows/", dirs_exist_ok=True)
             shutil.rmtree("./bin/Windows/lib")
+            shutil.copytree("./bin/Windows/tricks/", "./bin/Windows/", dirs_exist_ok=True)
+            shutil.rmtree("./bin/Windows/tricks")
+            os.remove("./bin/Windows/tricks.yoyo")
+            os.remove("./bin/Windows/libyoyoengine.dll.a")
             print("[YOYO BUILD] Copied dlls to build folder.")
 
         # build cleanup, remove the include folder in the output
@@ -254,6 +265,7 @@ class YoyoEngineBuildSystem:
             shutil.rmtree("./bin/Linux/include")
         if(os.path.exists("./bin/Windows/include")):
             shutil.rmtree("./bin/Windows/include")
+        print("[YOYO BUILD] Removed include folder from build folder.")
 
     def run(self):
         # if we recieved arg --run, run the game

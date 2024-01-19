@@ -2,18 +2,23 @@
     "configurations": [
         {
             "name": "Linux",
+            "compilerPathInCppPropertiesJson": "/usr/bin/gcc",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/engine/dist/include",
-                "${workspaceFolder}/engine/dist/include/yoyoengine",
-                "${workspaceFolder}/editor/include"
+                "/home/ryan/repos/yoyoengine/**",
+                "${workspaceFolder}/examples/test/tricks/yoyo-rpc/include"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.makefile-tools"
+            "mergeConfigurations": false,
+            "compilerPath": "/usr/bin/gcc",
+            "browse": {
+                "path": [
+                    "/home/ryan/repos/yoyoengine"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

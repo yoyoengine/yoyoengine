@@ -495,3 +495,13 @@ alt thought: tricks could technically be containers for libraries or dependancie
 maybe you just construct a vendor folder and link anything in there with the game, while adding a new target before building the game to link against whatever deps..
 
 this seems to lead to custom cmakelists.txt for the user to edit no matter what, not sure there is a way to do this all automatically
+
+## trick auto updates
+
+would be really hype to identify if we downloaded a trick from github and click check for update
+
+## windows builds
+
+we want to be able to run it without console opening
+
+we want to link an icon to the exe
