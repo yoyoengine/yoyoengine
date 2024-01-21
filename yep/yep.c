@@ -76,7 +76,7 @@ void _yep_close_file(){
 /*
     Takes in references to where to output the data if found, and returns true if found, false if not found
 */
-bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size, uint8_t *compression_type, uint8_t *data_type){
+bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size, uint8_t *compression_type, uint32_t *uncompressed_size, uint8_t *data_type){
     // go to the beginning of the header section (3 byte) offset from beginning
     fseek(yep_file, 3, SEEK_SET);
 
@@ -100,6 +100,9 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
 
         // 1 byte - compression type
         fread(compression_type, sizeof(uint8_t), 1, yep_file);
+
+        // 4 bytes - uncompressed size
+        fread(uncompressed_size, sizeof(uint32_t), 1, yep_file);
 
         // 1 byte - data type
         fread(data_type, sizeof(uint8_t), 1, yep_file);
@@ -127,10 +130,11 @@ void *yep_extract_data(char *file, char *handle){
     uint32_t offset;
     uint32_t size;
     uint8_t compression_type;
+    uint32_t uncompressed_size;
     uint8_t data_type;
 
     // try to get our header
-    if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &data_type)){
+    if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)){
         printf("Error: could not find resource %s in file %s\n", handle, file);
         return NULL;
     }
@@ -140,6 +144,7 @@ void *yep_extract_data(char *file, char *handle){
     printf("    Name: %s\n", name);
     printf("    Offset: %d\n", offset);
     printf("    Size: %d\n", size);
+    printf("    Uncompressed size: %d\n", uncompressed_size);
     printf("    Compression type: %d\n", compression_type);
     printf("    Data type: %d\n", data_type);
 
@@ -151,33 +156,33 @@ void *yep_extract_data(char *file, char *handle){
     fread(data, sizeof(char), size, yep_file);
 
     // null terminate the data
-    data[size] = '\0';
+    if(compression_type == YEP_COMPRESSION_NONE)
+        data[size] = '\0';
 
     printf("DATA VALUE LITERAL: %s\n", data);
 
-    // // if the data is compressed, decompres it
-    // if(compression_type == YEP_COMPRESSION_ZLIB){
-    //     char *decompressed_data;
-    //     size_t decompressed_size;
-    //     if(decompress_data(data, size, &decompressed_data, &decompressed_size) != 0){
-    //         printf("!!!Error decompressing data!!!\n");
-    //         fprintf(stderr, "inflateInit error: %s\n", zError(-1));
-    //         exit(1);
-    //     }
+    // if the data is compressed, decompress it
+    if(compression_type == YEP_COMPRESSION_ZLIB){
+        char *decompressed_data;
+        if(decompress_data(data, size, &decompressed_data, uncompressed_size) != 0){
+            printf("!!!Error decompressing data!!!\n");
+            fprintf(stderr, "inflateInit error: %s\n", zError(-1));
+            exit(1);
+        }
 
-    //     printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, decompressed_size);
-    //     printf("    Compression ratio: %f\n", (float)decompressed_size / (float)size);
-    //     printf("    Compression percentage: %f%%\n", ((float)decompressed_size / (float)size) * 100.0f);
-    //     printf("    Compression savings: %d bytes\n", size - decompressed_size);
-    //     printf("    DATA: %s\n", decompressed_data);
+        printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, uncompressed_size);
+        printf("    Compression ratio: %f\n", (float)uncompressed_size / (float)size);
+        printf("    Compression percentage: %f%%\n", ((float)uncompressed_size / (float)size) * 100.0f);
+        printf("    Compression savings: %d bytes\n", uncompressed_size - size);
+        printf("    DATA: %s\n", decompressed_data);
 
-    //     // free the original data
-    //     free(data);
+        // free the original data
+        free(data);
 
-    //     // set the data to the decompressed data
-    //     data = decompressed_data;
-    //     size = decompressed_size;
-    // }
+        // set the data to the decompressed data
+        data = decompressed_data;
+        size = uncompressed_size;
+    }
 
     // return the data
     return (void*)data; // TODO: decode our data and return it in heap
@@ -319,73 +324,81 @@ void _ye_walk_directory(char *root_path, char *directory_path){
     ========================= COMPRESSION IMPLEMENTATION =========================
 */
 
-// int compress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
-//     z_stream stream;
-//     memset(&stream, 0, sizeof(stream));
+int compress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
+    z_stream stream;
+    memset(&stream, 0, sizeof(stream));
 
-//     if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK) {
-//         return -1;
-//     }
+    if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK) { // TODO: could add support for the other compression levels
+        return -1;
+    }
 
-//     // Set input data
-//     stream.next_in = (Bytef*)input;
-//     stream.avail_in = input_size;
+    // Set input data
+    stream.next_in = (Bytef*)input;
+    stream.avail_in = input_size;
 
-//     // Allocate initial output buffer
-//     *output_size = input_size + input_size / 10 + 12; // Adding some extra space for safety
-//     *output = (char*)malloc(*output_size);
+    // Allocate initial output buffer
+    *output_size = input_size + input_size / 10 + 12; // Adding some extra space for safety
+    *output = (char*)malloc(*output_size);
 
-//     // Set output buffer
-//     stream.next_out = (Bytef*)*output;
-//     stream.avail_out = *output_size;
+    // Set output buffer
+    stream.next_out = (Bytef*)*output;
+    stream.avail_out = *output_size;
 
-//     // Compress the data
-//     if (deflate(&stream, Z_FINISH) != Z_STREAM_END) {
-//         free(*output);
-//         deflateEnd(&stream);
-//         return -1;
-//     }
+    // Compress the data
+    if (deflate(&stream, Z_FINISH) != Z_STREAM_END) {
+        free(*output);
+        deflateEnd(&stream);
+        return -1;
+    }
 
-//     // Clean up
-//     deflateEnd(&stream);
-//     *output_size = stream.total_out;
+    // Clean up
+    deflateEnd(&stream);
+    *output_size = stream.total_out;
 
-//     return 0;
-// }
+    return 0;
+}
 
-// int decompress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
-//     z_stream stream;
-//     memset(&stream, 0, sizeof(stream));
+int decompress_data(const char* input, size_t input_size, char** output, size_t output_size) {
+    z_stream stream;
+    memset(&stream, 0, sizeof(stream));
 
-//     if (inflateInit(&stream) != Z_OK) {
-//         return -1;
-//     }
+    int inflate_result = inflateInit(&stream);
+    if (inflate_result != Z_OK) {
+        fprintf(stderr, "inflateInit error: %s\n", zError(inflate_result));
+        return -1;
+    }
 
-//     // Set input data
-//     stream.next_in = (Bytef*)input;
-//     stream.avail_in = input_size;
+    // Set input data
+    stream.next_in = (Bytef*)input;
+    stream.avail_in = input_size;
 
-//     // Allocate initial output buffer
-//     *output_size = input_size * 2; // Assuming decompressed size won't exceed twice the compressed size
-//     *output = (char*)malloc(*output_size);
+    // Allocate initial output buffer
+    *output = (char*)malloc(output_size);
 
-//     // Set output buffer
-//     stream.next_out = (Bytef*)*output;
-//     stream.avail_out = *output_size;
+    // Set output buffer
+    stream.next_out = (Bytef*)*output;
+    stream.avail_out = output_size;
 
-//     // Decompress the data
-//     if (inflate(&stream, Z_FINISH) != Z_STREAM_END) {
-//         free(*output);
-//         inflateEnd(&stream);
-//         return -1;
-//     }
+    // Decompress the data
+    int res = inflate(&stream, Z_FINISH) != Z_STREAM_END;
+    if (res) {
+        free(*output);
+        inflateEnd(&stream);
+        printf("Error decompressing data\n");
+        fprintf(stderr, "inflateInit error: %s\n", zError(res));
+        return -1;
+    }
 
-//     // Clean up
-//     inflateEnd(&stream);
-//     *output_size = stream.total_out;
+    // Clean up
+    inflateEnd(&stream);
 
-//     return 0;
-// }
+    if(output_size != stream.total_out){
+        printf("Error: decompressed size does not match expected size\n");
+        return -1;
+    }
+
+    return 0;
+}
 
 /*
     ==============================================================================
@@ -423,25 +436,26 @@ void write_data_to_pack(FILE *pack_file, uint32_t offset, char *data, uint32_t s
 /*
     Updates a pack file header with details of data just written
 */
-void update_header(FILE *pack_file, int entry_index, uint32_t offset, uint32_t size, uint8_t compression_type, uint8_t data_type) {
+void update_header(FILE *pack_file, int entry_index, uint32_t offset, uint32_t size, uint8_t compression_type, uint32_t uncompressed_size, uint8_t data_type) {
     int header_start = 3;
     
     // get where this specific header starts, and move to its offset field (name is already set)
-    int header_offset = header_start + (entry_index * 74) + 64;
+    int header_offset = header_start + (entry_index * YEP_HEADER_SIZE_BYTES) + 64;
     fseek(pack_file, header_offset, SEEK_SET);
 
     // write the data offset and data size
     fwrite(&offset, sizeof(uint32_t), 1, pack_file);
     fwrite(&size, sizeof(uint32_t), 1, pack_file);
 
-    // write the compression type and data type
+    // write the compression type, uncompressed size and data type
     fwrite(&compression_type, sizeof(uint8_t), 1, pack_file);
+    fwrite(&uncompressed_size, sizeof(uint32_t), 1, pack_file);
     fwrite(&data_type, sizeof(uint8_t), 1, pack_file);
 }
 
 void write_pack_file(FILE *pack_file) {
     // holds the start of the header for our current entry
-    uint32_t data_start = 3 + (yep_pack_list.entry_count * 74);
+    uint32_t data_start = 3 + (yep_pack_list.entry_count * YEP_HEADER_SIZE_BYTES);
 
     // holds the end of the data pack
     uint32_t data_end = data_start;
@@ -459,6 +473,7 @@ void write_pack_file(FILE *pack_file) {
         }
 
         uint32_t data_size = get_file_size(file_to_write);
+        uint32_t uncompressed_size = data_size;
         char *data = read_file_data(file_to_write, data_size);
         fclose(file_to_write);
 
@@ -467,35 +482,38 @@ void write_pack_file(FILE *pack_file) {
         uint8_t compression_type = (uint8_t)YEP_COMPRESSION_NONE;
         uint8_t data_type = (uint8_t)YEP_DATATYPE_MISC;
 
-        // if(data_size > 256){
-        //     compression_type = (uint8_t)YEP_COMPRESSION_ZLIB;
-        // }
+        if(
+            data_size > 256
+            // here is where we can && exclusion conditions, like bytecode
+        ){
+            compression_type = (uint8_t)YEP_COMPRESSION_ZLIB;
+        }
 
-        // // compress this data with zlib
-        // if(compression_type == YEP_COMPRESSION_ZLIB){
-        //     char *compressed_data;
-        //     size_t compressed_size;
-        //     compress_data(data, data_size, &compressed_data, &compressed_size);
+        // compress this data with zlib
+        if(compression_type == YEP_COMPRESSION_ZLIB){
+            char *compressed_data;
+            size_t compressed_size;
+            compress_data(data, data_size, &compressed_data, &compressed_size);
 
-        //     printf("Compressed %s from %d bytes to %d bytes\n", itr->fullpath, data_size, compressed_size);
-        //     printf("    Compression ratio: %f\n", (float)compressed_size / (float)data_size);
-        //     printf("    Compression percentage: %f%%\n", ((float)compressed_size / (float)data_size) * 100.0f);
-        //     printf("    Compression savings: %d bytes\n", data_size - compressed_size);
-        //     printf("    DATA: %s\n", compressed_data);
+            printf("Compressed %s from %d bytes to %d bytes\n", itr->fullpath, data_size, compressed_size);
+            printf("    Compression ratio: %f\n", (float)compressed_size / (float)data_size);
+            printf("    Compression percentage: %f%%\n", ((float)compressed_size / (float)data_size) * 100.0f);
+            printf("    Compression savings: %d bytes\n", data_size - compressed_size);
+            printf("    DATA: %s\n", compressed_data);
 
-        //     // free the original data
-        //     free(data);
+            // free the original data
+            free(data);
 
-        //     // set the data to the compressed data
-        //     data = compressed_data;
-        //     data_size = compressed_size;
-        // }
+            // set the data to the compressed data
+            data = compressed_data;
+            data_size = compressed_size;
+        }
 
         // write the actual data from our data file to the pack file
         write_data_to_pack(pack_file, data_end, data, data_size);
 
         // update the pack file header with the location and information about the data we wrote
-        update_header(pack_file, current_entry, data_end, data_size, compression_type, data_type);
+        update_header(pack_file, current_entry, data_end, data_size, compression_type, uncompressed_size, data_type);
 
         // shift the end pointer of the data pack file
         data_end += data_size;
@@ -563,6 +581,10 @@ bool yep_pack_directory(char *directory_path, char *output_name){
         // 1 byte - compression type
         uint8_t compression_type = 0;
         fwrite(&compression_type, sizeof(uint8_t), 1, file);
+
+        // 4 bytes - uncompressed size
+        uint32_t uncompressed_size = 0;
+        fwrite(&uncompressed_size, sizeof(uint32_t), 1, file);
 
         // 1 byte - data type
         uint8_t data_type = 0;

@@ -37,12 +37,15 @@
     // 4 bytes - offset of the resource
     // 4 bytes - size of the resource
     // 1 byte - compression type
+    // 4 bytes - uncompressed size
     // 1 byte - data type
     // repeat for entry count
     // data begins
 */
 
 #define YEP_CURRENT_FORMAT_VERSION 1
+
+#define YEP_HEADER_SIZE_BYTES 78
 
 // #define YEP_VERSION_NUMBER_SIZE 1   // uint8_t
 // #define YEP_ENTRY_COUNT_SIZE 2      // uint16_t
