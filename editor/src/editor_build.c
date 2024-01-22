@@ -19,6 +19,13 @@
 #include <yoyoengine/yoyoengine.h>
 
 void editor_build(){
+    // pack the /engine_resources into a .yep file
+    yep_pack_directory(ye_get_engine_resource_static(""), ye_get_resource_static("../engine.yep"));
+
+    // pack the /resources into a .yep file
+    yep_pack_directory(ye_get_resource_static(""), ye_get_resource_static("../resources.yep"));
+
+    // call the build script
     char command[256];
     snprintf(command, sizeof(command), "python3 \"%s\"", ye_get_resource_static("../build.py"));
     printf("command: %s\n", command);
@@ -26,6 +33,13 @@ void editor_build(){
 }
 
 void editor_build_and_run(){
+    // pack the /engine_resources into a .yep file
+    yep_pack_directory(ye_get_engine_resource_static(""), ye_get_resource_static("../engine.yep"));
+
+    // pack the /resources into a .yep file
+    yep_pack_directory(ye_get_resource_static(""), ye_get_resource_static("../resources.yep"));
+
+    // call the build script
     char command[256];
     snprintf(command, sizeof(command), "python3 \"%s\" --run", ye_get_resource_static("../build.py"));
     system(command);

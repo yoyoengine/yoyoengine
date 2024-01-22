@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef YEP_H
+#define YEP_H
+
 #include <stdio.h>      // files
 #include <stdint.h>     // int types
 #include <stdbool.h>    // bool type
@@ -24,7 +27,10 @@
 
 #include <dirent.h>         // directory functions
 #include <sys/stat.h>       // - stat
-#include <linux/limits.h>   // - PATH_MAX
+
+#ifdef __linux__
+    #include <linux/limits.h>   // - PATH_MAX
+#endif
 
 /*
     Details on the file format:
@@ -37,7 +43,7 @@
     // 4 bytes - offset of the resource
     // 4 bytes - size of the resource
     // 1 byte - compression type
-    // 4 bytes - uncompressed size
+    // 4 bytes - uncompressed size (equal to size if uncompressed)
     // 1 byte - data type
     // repeat for entry count
     // data begins
@@ -77,6 +83,8 @@ enum YEP_COMPRESSION {
  */
 void * yep_extract_data(char *file, char *handle);
 
+#ifdef __linux__
+
 /**
  * @brief Packs a given directory into a .yep, based on its dir name
  * 
@@ -86,6 +94,8 @@ void * yep_extract_data(char *file, char *handle);
  * @return false Failure
  */
 bool yep_pack_directory(char *directory_path, char *output_name);
+
+#endif
 
 // extract data will call private functions
 // _yep_open_file(char *file); which will open the file into the yep global file pointer
@@ -120,3 +130,5 @@ struct yep_pack_list {
 
     struct yep_header_node *head;
 };
+
+#endif // YEP_H

@@ -31,8 +31,9 @@
     #include <yoyoengine/yoyoengine.h> assuming they have
     defined the header and lib paths correctly.
 */
-#include "engine.h"
-#include "json.h"
+#include "engine.h"         // init and core
+#include "yep.h"            // custom binary format parser/packer
+#include "json.h"           // jansson wrapper
 #include "graphics.h"
 #include "uthash/uthash.h"
 #include "cache.h"
@@ -50,9 +51,9 @@
 #include "utils.h"
 #include "timer.h"
 #include "audio.h"
-#include "logging.h"
-#include "lua_api.h"
-#include "scene.h"
-#include "tricks.h"
+#include "logging.h"        // logging
+#include "lua_api.h"        // scripting api
+#include "scene.h"          // scene manager
+#include "tricks.h"         // plugin system
 
 #endif // YE_ENGINE_MAIN_H

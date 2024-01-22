@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "yep.h"
+#include <yoyoengine/yep.h>
 
 #include <zlib.h>   // zlib compression
 
@@ -253,72 +253,6 @@ void yep_shutdown(){
     printf("Shutting down yep subsystem...\n");
 }
 
-/*
-    Recursively walk the target pack directory and create a LL of files to be packed
-*/
-void _ye_walk_directory(char *root_path, char *directory_path){
-    printf("Walking directory %s...\n", directory_path);
-
-    DIR *dir;
-    struct dirent *entry;
-    struct stat file_stat;
-
-    if ((dir = opendir(directory_path)) == NULL) {
-        perror("opendir");
-        return;
-    }
-
-    while ((entry = readdir(dir)) != NULL) {
-        char full_path[PATH_MAX];
-        snprintf(full_path, sizeof(full_path), "%s/%s", directory_path, entry->d_name);
-
-        if (stat(full_path, &file_stat) == -1) {
-            perror("stat");
-            continue;
-        }
-
-        if (S_ISREG(file_stat.st_mode)) {
-            // Calculate the relative path
-            char *relative_path = full_path + strlen(root_path) + 1; // this literally offsets the char * to the beginning by the original input
-            // ^^^ the +1 here is to get rid of the / in front of the path
-
-            // if the relative path plus its null terminator is greater than 64 bytes, we reject packing this and alert the user
-            if(strlen(relative_path) + 1 > 64){
-                printf("Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
-                continue;
-            }
-
-            printf("%s\n", relative_path);
-
-            // add a yep header node with the relative path
-            struct yep_header_node *node = malloc(sizeof(struct yep_header_node));
-
-            // set the name field to zeros so I dont lose my mind reading hex output
-            memset(node->name, 0, 64);
-
-            // set the full path
-            node->fullpath = strdup(full_path);
-
-            // set the name
-            sprintf(node->name, "%s", relative_path);
-            node->name[strlen(relative_path)] = '\0'; // ensure null termination
-
-            // add the node to the LL
-            node->next = yep_pack_list.head;
-            yep_pack_list.head = node;
-
-            // increment the entry count
-            yep_pack_list.entry_count++;
-        }
-        else if (S_ISDIR(file_stat.st_mode)) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                _ye_walk_directory(root_path, full_path);
-            }
-        }
-    }
-
-    closedir(dir);
-}
 
 /*
     ========================= COMPRESSION IMPLEMENTATION =========================
@@ -403,6 +337,79 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
 /*
     ==============================================================================
 */
+
+/*
+    Isolate the platform specific packing functionality that is only needed
+    when building games (which should be done on linux if youre a real developer)
+*/
+#ifdef __linux__
+
+/*
+    Recursively walk the target pack directory and create a LL of files to be packed
+*/
+void _ye_walk_directory(char *root_path, char *directory_path){
+    printf("Walking directory %s...\n", directory_path);
+
+    DIR *dir;
+    struct dirent *entry;
+    struct stat file_stat;
+
+    if ((dir = opendir(directory_path)) == NULL) {
+        perror("opendir");
+        return;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        char full_path[PATH_MAX];
+        snprintf(full_path, sizeof(full_path), "%s/%s", directory_path, entry->d_name);
+
+        if (stat(full_path, &file_stat) == -1) {
+            perror("stat");
+            continue;
+        }
+
+        if (S_ISREG(file_stat.st_mode)) {
+            // Calculate the relative path
+            char *relative_path = full_path + strlen(root_path) + 1; // this literally offsets the char * to the beginning by the original input
+            // ^^^ the +1 here is to get rid of the / in front of the path
+
+            // if the relative path plus its null terminator is greater than 64 bytes, we reject packing this and alert the user
+            if(strlen(relative_path) + 1 > 64){
+                printf("Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
+                continue;
+            }
+
+            printf("%s\n", relative_path);
+
+            // add a yep header node with the relative path
+            struct yep_header_node *node = malloc(sizeof(struct yep_header_node));
+
+            // set the name field to zeros so I dont lose my mind reading hex output
+            memset(node->name, 0, 64);
+
+            // set the full path
+            node->fullpath = strdup(full_path);
+
+            // set the name
+            sprintf(node->name, "%s", relative_path);
+            node->name[strlen(relative_path)] = '\0'; // ensure null termination
+
+            // add the node to the LL
+            node->next = yep_pack_list.head;
+            yep_pack_list.head = node;
+
+            // increment the entry count
+            yep_pack_list.entry_count++;
+        }
+        else if (S_ISDIR(file_stat.st_mode)) {
+            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+                _ye_walk_directory(root_path, full_path);
+            }
+        }
+    }
+
+    closedir(dir);
+}
 
 /*
     Returns the size of a file in bytes
@@ -600,3 +607,12 @@ bool yep_pack_directory(char *directory_path, char *output_name){
 
     return true;
 }
+
+#endif
+
+/*
+    YEP TODO:
+    - native animation functionality (this will cutout a lot of headers)
+    - actually hook an API so engine can get certain types
+    - encode the RGBA and PCM data rather than the file binary
+*/

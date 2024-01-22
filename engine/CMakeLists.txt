@@ -53,6 +53,32 @@ FetchContent_MakeAvailable(SDL2)
 target_include_directories(yoyoengine PRIVATE ${SDL2_SOURCE_DIR}/include)
 
 ###############
+#    zlib     #
+###############
+
+set(ZLIB_USE_STATIC_LIBS ON CACHE BOOL "Use static libraries for zlib")
+set(ZLIB_USE_SHARED_LIBS OFF CACHE BOOL "Use shared libraries for zlib")
+
+FetchContent_Declare(
+    zlib
+    GIT_REPOSITORY https://github.com/madler/zlib.git
+    GIT_TAG        v1.3
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(zlib)
+target_include_directories(yoyoengine PRIVATE ${zlib_SOURCE_DIR})
+
+# needed for zlib static
+set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+# we need to override some SDL_ttf vars to use our own impl of zlib for its freetype gzip
+set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
+list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
+set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
+set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
+
+###############
 #  SD2L_ttf   #
 ###############
 
@@ -61,6 +87,11 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 set(SDL2TTF_SAMPLES OFF CACHE BOOL "Build the SDL2_ttf sample program(s)")
 # let it know it needs to get its vendored deps
 set(SDL2TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
+
+# force requiring zlib and override anything else that might try to change that
+set(FT_REQUIRE_ZLIB TRUE CACHE INTERNAL "" FORCE)
+set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
+
 FetchContent_Declare(
     SDL2_ttf
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf
@@ -74,6 +105,22 @@ target_include_directories(yoyoengine PRIVATE ${SDL2_ttf_SOURCE_DIR}) # include 
 #  SDL_image  #
 ###############
 
+set(SDL2IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
+
+set(PNG_SHARED OFF CACHE BOOL "Build a shared version of the library")
+
+set(PNG_BUILD_ZLIB ON CACHE BOOL "Build zlib")
+
+# only allow bmp, gif, png, jpg
+set(SDL2IMAGE_XV OFF CACHE BOOL "Enable Xv support")
+set(SDL2IMAGE_XPM OFF CACHE BOOL "Enable XPM support")
+set(SDL2IMAGE_XCF OFF CACHE BOOL "Enable XCF support")
+set(SDL2IMAGE_TGA OFF CACHE BOOL "Enable TGA support")
+set(SDL2IMAGE_QOI OFF CACHE BOOL "Enable QOI support")
+set(SDL2IMAGE_PNM OFF CACHE BOOL "Enable PNM support")
+set(SDL2IMAGE_PCX OFF CACHE BOOL "Enable PCX support")
+set(SDL2IMAGE_LBM OFF CACHE BOOL "Enable LBM support")
+
 FetchContent_Declare(
     SDL2_image
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
@@ -82,6 +129,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2_image)
 target_include_directories(yoyoengine PRIVATE ${SDL2_image_SOURCE_DIR}/include)
+
+# include the zlib that SDL_image uses - this is for a stray header we are missing
+target_include_directories(yoyoengine PRIVATE ${SDL2_image_SOURCE_DIR}/external/zlib)
 
 ###############
 #  SDL_mixer  #
@@ -127,7 +177,7 @@ target_include_directories(yoyoengine PRIVATE ${lua_SOURCE_DIR}/include)
 #   linking   #
 ###############
 
-target_link_libraries(yoyoengine PRIVATE jansson SDL2-static SDL2_ttf SDL2_image SDL2_mixer lua_static)
+target_link_libraries(yoyoengine PRIVATE jansson zlibstatic SDL2-static SDL2_ttf SDL2_image SDL2_mixer lua_static)
 
 # create an output dir based on platform
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
@@ -164,13 +214,18 @@ file(MAKE_DIRECTORY ${INCLUDE_FOLDER})
 add_custom_target(CopyHeaders
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/jansson
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${jansson_BINARY_DIR}/include ${INCLUDE_FOLDER}/jansson
+    
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_BINARY_DIR}/include/SDL2 ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_image_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_mixer_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
     COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_SOURCE_DIR}/SDL_ttf.h ${INCLUDE_FOLDER}/SDL2
+    
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/lua
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${lua_SOURCE_DIR}/lua-5.4.5/include ${INCLUDE_FOLDER}/lua
+    
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/zlib
+    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_SOURCE_DIR}/external/zlib/zlib.h ${INCLUDE_FOLDER}/zlib
 
     COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/yoyoengine
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/yoyoengine ${INCLUDE_FOLDER}/yoyoengine
