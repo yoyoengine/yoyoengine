@@ -511,3 +511,91 @@ we want to link an icon to the exe
 in the future we could hash the integer handles to get a unique id which would decrease file size slightly
 
 a .yepignore would be nice to know which files we deliberately dont want to pack
+
+### todo when you read this (i actually left some fun stuff this time)
+
+- start case switching what file type we are looking at in the packer
+- load images (can only be bmp jpeg jpg png) into RGBA arrays (research this with SDL)
+- same with PCM and audio (mp3 and wav i think only)
+- research online doing this with ttf files? I dont think we can do atlas because its rebuilt a lot (unless we build an atlas for every single size game uses at runtime which we couldnt ever know because of dynamic scripting)
+- draft api for engine reading this data out of the yep file
+- force the build system to not copy resources directories but the yep instead
+- hook up every location where we load resources to instead load from the yep file
+- refactor get resource function to just be like a get path
+  - this involves removing references to this that dip into /resources/.. to get somewhere (despair)
+
+## backup of old image loading system
+
+```c
+SDL_Surface *image = IMG_Load(itr->fullpath);
+            if(!image){
+                ye_logf(error,"Error loading image %s\n", itr->fullpath);
+                exit(1);
+            }
+
+            // print out the format of the image from the surface
+            SDL_PixelFormat *format = image->format;
+            
+            // init some vars that are specific to the format we work with
+            uint8_t bytes_per_pixel;
+
+            // switch on the format type to handle different formats
+            switch(format->format){
+                case SDL_PIXELFORMAT_RGB24:
+                    ye_logf(debug,"Image format: RGB24\n");
+                    data_type = (uint8_t)YEP_DATATYPE_IMAGE_RGB24;
+                    bytes_per_pixel = 3;
+                    break;
+                case SDL_PIXELFORMAT_ABGR8888:
+                    ye_logf(debug,"Image format: ARGB8888\n");
+                    data_type = (uint8_t)YEP_DATATYPE_IMAGE_ABGR888;
+                    bytes_per_pixel = 4;
+                    break;
+                default:
+                    ye_logf(debug,"Image format: UNKNOWN\n");
+                    exit(1);
+                    break;
+            }
+
+            printf("Image format: %s\n", SDL_GetPixelFormatName(format->format));
+
+            // check if this requires locking (VERY UNLIKELY)
+            if(SDL_MUSTLOCK(image)){
+                SDL_LockSurface(image);
+                printf("Locked surface\n");
+            }
+
+            // alloc the data and copy into it
+            int malloc_data_size = sizeof(uint16_t) + sizeof(uint16_t) + (image->w * image->h * bytes_per_pixel);
+            data = (char*)malloc(malloc_data_size);
+
+            // check for if width exceeds the max value
+            if(image->w > UINT16_MAX || image->h > UINT16_MAX){
+                ye_logf(error,"Error: image %s width exceeds max value of %d\n", itr->fullpath, UINT16_MAX);
+                exit(1);
+            }
+
+            uint16_t width = image->w;
+            uint16_t height = image->h;
+            memcpy(data, &width, sizeof(uint16_t));
+            memcpy(data + sizeof(uint16_t), &height, sizeof(uint16_t));
+
+            // need to dereference the void pointer for pixels
+            uint32_t* pixels = (uint32_t*)image->pixels;
+
+            memcpy(
+                data + sizeof(uint16_t) + sizeof(uint16_t), // offset from the w,h meta
+                pixels,                                     // pixel data
+                image->w * image->h * bytes_per_pixel       // size
+            );
+            
+            printf("Image %s is %d x %d\n", itr->fullpath, image->w, image->h);
+
+            // set vars
+            data_size = sizeof(uint16_t) + sizeof(uint16_t) + (image->w * image->h * bytes_per_pixel);
+            uncompressed_size = data_size;
+            compression_type = (uint8_t)YEP_COMPRESSION_NONE;
+
+            // cleanup
+            SDL_FreeSurface(image);
+```

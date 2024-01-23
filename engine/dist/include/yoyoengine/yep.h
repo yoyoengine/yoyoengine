@@ -32,6 +32,8 @@
     #include <linux/limits.h>   // - PATH_MAX
 #endif
 
+#include <yoyoengine/yoyoengine.h>
+
 /*
     Details on the file format:
 
@@ -81,7 +83,7 @@ enum YEP_COMPRESSION {
  * @param handle The name of the resource to search for
  * @return void* The data of the resource allocated into the heap (NULL if not found) 
  */
-void * yep_extract_data(char *file, char *handle);
+struct yep_data_info yep_extract_data(char *file, char *handle);
 
 #ifdef __linux__
 
@@ -130,5 +132,16 @@ struct yep_pack_list {
 
     struct yep_header_node *head;
 };
+
+/*
+    ENGINE API
+*/
+
+struct yep_data_info {
+    void *data;
+    size_t size;
+};
+
+SDL_Surface * yep_resource_image(char *handle);
 
 #endif // YEP_H

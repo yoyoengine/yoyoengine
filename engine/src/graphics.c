@@ -372,7 +372,8 @@ void ye_init_graphics(){
     }
     ye_logf(info, "TTF initialized.\n");
 
-    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
+    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
         ye_logf(error, "IMG_Init error: %s", IMG_GetError());
         // print the img error
         printf("IMG_Init error: %s", IMG_GetError());

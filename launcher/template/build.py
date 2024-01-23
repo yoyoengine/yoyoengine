@@ -267,6 +267,10 @@ class YoyoEngineBuildSystem:
             shutil.rmtree("./bin/Windows/include")
         print("[YOYO BUILD] Removed include folder from build folder.")
 
+        # move engine.yep and resources.yep into the output folder
+        shutil.copyfile(f"{self.script_location}/engine.yep", f"{self.binary_dir}/engine.yep")
+        shutil.copyfile(f"{self.script_location}/resources.yep", f"{self.binary_dir}/resources.yep")
+
     def run(self):
         # if we recieved arg --run, run the game
         if self.run_flag:

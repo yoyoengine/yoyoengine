@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <SDL2/SDL_image.h>
+
 #include <yoyoengine/yoyoengine.h>
 #include <yoyoengine/yep.h>
 
@@ -146,10 +148,10 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
     return false;
 }
 
-void *yep_extract_data(char *file, char *handle){
+struct yep_data_info yep_extract_data(char *file, char *handle){
     if(!_yep_open_file(file)){
         ye_logf(error,"Error opening file %s\n", file);
-        return NULL;
+        exit(1);
     }
 
     // printf("File: %s\n", yep_file_path);
@@ -167,7 +169,7 @@ void *yep_extract_data(char *file, char *handle){
     // try to get our header
     if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)){
         ye_logf(error,"Error: could not find resource %s in file %s\n", handle, file);
-        return NULL;
+        exit(1);
     }
 
     // assuming we didnt fail, we have the header data
@@ -197,7 +199,7 @@ void *yep_extract_data(char *file, char *handle){
         char *decompressed_data;
         if(decompress_data(data, size, &decompressed_data, uncompressed_size) != 0){
             ye_logf(error,"!!!Error decompressing data!!!\n");
-            return NULL;
+            exit(1);
         }
 
         // printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, uncompressed_size);
@@ -214,8 +216,13 @@ void *yep_extract_data(char *file, char *handle){
         size = uncompressed_size;
     }
 
+    // create return data
+    struct yep_data_info info;
+    info.data = data;
+    info.size = size;
+
     // return the data
-    return (void*)data; // TODO: decode our data and return it in heap
+    return info;
 }
 
 void yep_initialize(){
@@ -509,6 +516,9 @@ void write_pack_file(FILE *pack_file) {
         // update the pack file header with the location and information about the data we wrote
         update_header(pack_file, current_entry, data_end, data_size, compression_type, uncompressed_size, data_type);
 
+        // free the data
+        free(data);
+
         // shift the end pointer of the data pack file
         data_end += data_size;
 
@@ -622,3 +632,29 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     - actually hook an API so engine can get certain types
     - encode the RGBA and PCM data rather than the file binary
 */
+
+/*
+    ENGINE API
+*/
+
+SDL_Surface * yep_resource_image(char *handle){
+    // get the data
+    struct yep_data_info data = yep_extract_data(ye_get_resource_static("../resources.yep"), handle);
+    if(data.data == NULL){
+        ye_logf(error,"Error: could not get image data for %s\n", handle);
+        return NULL;
+    }
+
+    // create the surface
+    SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem(data.data, data.size), 1);
+    if(surface == NULL){
+        ye_logf(error,"Error: could not create surface for %s\n", handle);
+        return NULL;
+    }
+
+    // free the data
+    free(data.data);
+
+    // return the surface
+    return surface;
+}
