@@ -1,3 +1,30 @@
+# This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+# Copyright (C) 2024  Ryan Zmuda
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+######################################################################################
+#                                      PREAMBLE                                      #
+######################################################################################
+# You would never believe how much time I've spent on this file. I hate cmake more   #
+# then I think I've ever hated anything in my entire life. It was supposed to be an  #
+# easy, simple, and elegant to build and link things together. It was supposed to be.#
+# This file might as well be held together by 1 ply toilet paper. If you are even    #
+# attempting to read this, or god forbid, are me in the future come back to wrestle  #
+# yet again with this god forsaken file, I am so extremely sorry. Good luck.         #
+######################################################################################
+
 ###############
 #    setup    #
 ###############
@@ -71,6 +98,26 @@ target_include_directories(yoyoengine PRIVATE ${zlib_SOURCE_DIR})
 # needed for zlib static
 set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+# Export zlib targets for SDL_ttf install
+install(TARGETS zlibstatic
+        EXPORT zlib-targets
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include
+)
+
+# Export zlib includes for SDL_ttf install
+install(DIRECTORY ${zlib_SOURCE_DIR}/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h*"
+)
+
+# Export zlib config for SDL_ttf install
+install(EXPORT zlib-targets
+        FILE zlib-targets.cmake
+        NAMESPACE zlib::
+        DESTINATION lib/cmake/zlib
+)
+
 # we need to override some SDL_ttf vars to use our own impl of zlib for its freetype gzip
 set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
@@ -91,6 +138,8 @@ set(SDL2TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and Har
 # force requiring zlib and override anything else that might try to change that
 set(FT_REQUIRE_ZLIB TRUE CACHE INTERNAL "" FORCE)
 set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
+
+# set(SDL2TTF_INSTALL OFF CACHE BOOL "Generate installation target")
 
 FetchContent_Declare(
     SDL2_ttf

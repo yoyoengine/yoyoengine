@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <yoyoengine/yoyoengine.h>
 #include <yoyoengine/yep.h>
 
 #include <zlib.h>   // zlib compression
@@ -27,6 +28,36 @@ uint16_t file_entry_count = 0;
 uint16_t file_version_number = 0;
 
 struct yep_pack_list yep_pack_list;
+
+// utility function via chatgpt - moveme //
+
+void displayProgressBar(int current, int max) {
+    // Calculate the percentage completion
+    float progress = (float)current / max;
+    
+    // Determine the length of the progress bar
+    int barLength = 50;
+    int progressLength = (int)(progress * barLength);
+    
+    // Clear the current line
+    printf("\r");
+
+    // Display the progress bar
+    printf("[");
+    for (int i = 0; i < barLength; ++i) {
+        if (i < progressLength) {
+            printf("=");
+        } else {
+            printf(" ");
+        }
+    }
+    printf("] %.2f%% (%d/%d)", progress * 100, current, max);
+    
+    // Flush the output to ensure it's immediately displayed
+    fflush(stdout);
+}
+
+///////////////////////////////////////////
 
 bool _yep_open_file(char *file){
     // if we already have this file open, don't open it again
@@ -53,7 +84,7 @@ bool _yep_open_file(char *file){
     fread(&file_entry_count, sizeof(uint16_t), 1, yep_file);
 
     if(file_version_number != YEP_CURRENT_FORMAT_VERSION){
-        printf("Error: file version number (%d) does not match current version number (%d)\n", file_version_number, YEP_CURRENT_FORMAT_VERSION);
+        ye_logf(error,"Error: file version number (%d) does not match current version number (%d)\n", file_version_number, YEP_CURRENT_FORMAT_VERSION);
         return false;
     }
 
@@ -85,12 +116,12 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
         keep ourselves aligned with the headers list
     */
     for(size_t i = 0; i < file_entry_count; i++){
-        printf("Searching for %s\n", handle);
+        // printf("Searching for %s\n", handle);
 
         // 64 bytes - name of the resource
         fread(name, sizeof(char), 64, yep_file);
 
-        printf("Comparing against %s\n", name);
+        // printf("Comparing against %s\n", name);
 
         // 4 bytes - offset of the resource
         fread(offset, sizeof(uint32_t), 1, yep_file);
@@ -117,13 +148,13 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
 
 void *yep_extract_data(char *file, char *handle){
     if(!_yep_open_file(file)){
-        printf("Error opening file %s\n", file);
+        ye_logf(error,"Error opening file %s\n", file);
         return NULL;
     }
 
-    printf("File: %s\n", yep_file_path);
-    printf("    Version number: %d\n", file_version_number);
-    printf("    Entry count: %d\n", file_entry_count);
+    // printf("File: %s\n", yep_file_path);
+    // printf("    Version number: %d\n", file_version_number);
+    // printf("    Entry count: %d\n", file_entry_count);
 
     // setup the data we will seek out of the yep file
     char name[64];
@@ -135,18 +166,18 @@ void *yep_extract_data(char *file, char *handle){
 
     // try to get our header
     if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)){
-        printf("Error: could not find resource %s in file %s\n", handle, file);
+        ye_logf(error,"Error: could not find resource %s in file %s\n", handle, file);
         return NULL;
     }
 
     // assuming we didnt fail, we have the header data
-    printf("Resource:\n");
-    printf("    Name: %s\n", name);
-    printf("    Offset: %d\n", offset);
-    printf("    Size: %d\n", size);
-    printf("    Uncompressed size: %d\n", uncompressed_size);
-    printf("    Compression type: %d\n", compression_type);
-    printf("    Data type: %d\n", data_type);
+    // printf("Resource:\n");
+    // printf("    Name: %s\n", name);
+    // printf("    Offset: %d\n", offset);
+    // printf("    Size: %d\n", size);
+    // printf("    Uncompressed size: %d\n", uncompressed_size);
+    // printf("    Compression type: %d\n", compression_type);
+    // printf("    Data type: %d\n", data_type);
 
     // seek to the offset
     fseek(yep_file, offset, SEEK_SET);
@@ -159,22 +190,21 @@ void *yep_extract_data(char *file, char *handle){
     if(compression_type == YEP_COMPRESSION_NONE)
         data[size] = '\0';
 
-    printf("DATA VALUE LITERAL: %s\n", data);
+    // printf("DATA VALUE LITERAL: %s\n", data);
 
     // if the data is compressed, decompress it
     if(compression_type == YEP_COMPRESSION_ZLIB){
         char *decompressed_data;
         if(decompress_data(data, size, &decompressed_data, uncompressed_size) != 0){
-            printf("!!!Error decompressing data!!!\n");
-            fprintf(stderr, "inflateInit error: %s\n", zError(-1));
-            exit(1);
+            ye_logf(error,"!!!Error decompressing data!!!\n");
+            return NULL;
         }
 
-        printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, uncompressed_size);
-        printf("    Compression ratio: %f\n", (float)uncompressed_size / (float)size);
-        printf("    Compression percentage: %f%%\n", ((float)uncompressed_size / (float)size) * 100.0f);
-        printf("    Compression savings: %d bytes\n", uncompressed_size - size);
-        printf("    DATA: %s\n", decompressed_data);
+        // printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, uncompressed_size);
+        // printf("    Compression ratio: %f\n", (float)uncompressed_size / (float)size);
+        // printf("    Compression percentage: %f%%\n", ((float)uncompressed_size / (float)size) * 100.0f);
+        // printf("    Compression savings: %d bytes\n", uncompressed_size - size);
+        // printf("    DATA: %s\n", decompressed_data);
 
         // free the original data
         free(data);
@@ -188,52 +218,8 @@ void *yep_extract_data(char *file, char *handle){
     return (void*)data; // TODO: decode our data and return it in heap
 }
 
-void yep_create_test_file(size_t entries){
-    FILE *file = fopen("test.yep", "wb");
-    if (file == NULL) {
-        perror("Error opening file");
-        return;
-    }
-
-    // write the version number (byte 0-1)
-    uint8_t version_number = YEP_CURRENT_FORMAT_VERSION;
-    fwrite(&version_number, sizeof(uint8_t), 1, file);
-
-    // write the entry count (byte 2-3)
-    uint16_t entry_count = (uint16_t)entries;
-    fwrite(&entry_count, sizeof(uint16_t), 1, file);
-
-    // write a bunch of dummy entries
-    for(size_t i = 0; i < entries; i++){
-        // 64 bytes - name of the resource
-        char name[64] = "test";
-        fwrite(name, sizeof(char), 64, file);
-
-        // 4 bytes - offset of the resource
-        uint32_t offset = 0;
-        fwrite(&offset, sizeof(uint32_t), 1, file);
-
-        // 4 bytes - size of the resource
-        uint32_t size = 0;
-        fwrite(&size, sizeof(uint32_t), 1, file);
-
-        // 1 byte - compression type
-        uint8_t compression_type = 1;
-        fwrite(&compression_type, sizeof(uint8_t), 1, file);
-
-        // 1 byte - data type
-        uint8_t data_type = 1;
-        fwrite(&data_type, sizeof(uint8_t), 1, file);
-
-        // increment the entry count
-        entry_count++;
-    }
-
-    fclose(file);
-}
-
 void yep_initialize(){
-    printf("Initializing yep subsystem...\n");
+    ye_logf(info,"Initializing yep subsystem...\n");
     yep_pack_list.entry_count = 0;
 }
 
@@ -250,7 +236,7 @@ void yep_shutdown(){
         }
     }
 
-    printf("Shutting down yep subsystem...\n");
+    ye_logf(info,"Shutting down yep subsystem...\n");
 }
 
 
@@ -298,7 +284,7 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
 
     int inflate_result = inflateInit(&stream);
     if (inflate_result != Z_OK) {
-        fprintf(stderr, "inflateInit error: %s\n", zError(inflate_result));
+        ye_logf(error, "inflateInit error: %s\n", zError(inflate_result));
         return -1;
     }
 
@@ -318,8 +304,7 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
     if (res) {
         free(*output);
         inflateEnd(&stream);
-        printf("Error decompressing data\n");
-        fprintf(stderr, "inflateInit error: %s\n", zError(res));
+        ye_logf(error,"Error decompressing data: %s\n",zError(res));
         return -1;
     }
 
@@ -327,7 +312,7 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
     inflateEnd(&stream);
 
     if(output_size != stream.total_out){
-        printf("Error: decompressed size does not match expected size\n");
+        ye_logf(error,"Error: decompressed size does not match expected size\n");
         return -1;
     }
 
@@ -348,14 +333,14 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
     Recursively walk the target pack directory and create a LL of files to be packed
 */
 void _ye_walk_directory(char *root_path, char *directory_path){
-    printf("Walking directory %s...\n", directory_path);
+    // printf("Walking directory %s...\n", directory_path);
 
     DIR *dir;
     struct dirent *entry;
     struct stat file_stat;
 
     if ((dir = opendir(directory_path)) == NULL) {
-        perror("opendir");
+        ye_logf(error,"Could not open directory %s\n", directory_path);
         return;
     }
 
@@ -364,7 +349,7 @@ void _ye_walk_directory(char *root_path, char *directory_path){
         snprintf(full_path, sizeof(full_path), "%s/%s", directory_path, entry->d_name);
 
         if (stat(full_path, &file_stat) == -1) {
-            perror("stat");
+            ye_logf(error,"Could not stat %s\n", full_path);
             continue;
         }
 
@@ -375,11 +360,11 @@ void _ye_walk_directory(char *root_path, char *directory_path){
 
             // if the relative path plus its null terminator is greater than 64 bytes, we reject packing this and alert the user
             if(strlen(relative_path) + 1 > 64){
-                printf("Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
+                ye_logf(error,"Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
                 continue;
             }
 
-            printf("%s\n", relative_path);
+            // printf("%s\n", relative_path);
 
             // add a yep header node with the relative path
             struct yep_header_node *node = malloc(sizeof(struct yep_header_node));
@@ -470,12 +455,14 @@ void write_pack_file(FILE *pack_file) {
     // holds the current entry
     int current_entry = 0;
 
+    printf("\n"); // start the progress bar on a new line
+
     struct yep_header_node *itr = yep_pack_list.head;
     while(itr != NULL){
 
         FILE *file_to_write = fopen(itr->fullpath, "rb");
         if (file_to_write == NULL) {
-            perror("Error opening file");
+            ye_logf(error,"Error opening file to pack yep: %s\n", itr->fullpath);
             exit(1);
         }
 
@@ -502,11 +489,11 @@ void write_pack_file(FILE *pack_file) {
             size_t compressed_size;
             compress_data(data, data_size, &compressed_data, &compressed_size);
 
-            printf("Compressed %s from %d bytes to %d bytes\n", itr->fullpath, data_size, compressed_size);
-            printf("    Compression ratio: %f\n", (float)compressed_size / (float)data_size);
-            printf("    Compression percentage: %f%%\n", ((float)compressed_size / (float)data_size) * 100.0f);
-            printf("    Compression savings: %d bytes\n", data_size - compressed_size);
-            printf("    DATA: %s\n", compressed_data);
+            // printf("Compressed %s from %d bytes to %d bytes\n", itr->fullpath, data_size, compressed_size);
+            // printf("    Compression ratio: %f\n", (float)compressed_size / (float)data_size);
+            // printf("    Compression percentage: %f%%\n", ((float)compressed_size / (float)data_size) * 100.0f);
+            // printf("    Compression savings: %d bytes\n", data_size - compressed_size);
+            // printf("    DATA: %s\n", compressed_data);
 
             // free the original data
             free(data);
@@ -528,28 +515,41 @@ void write_pack_file(FILE *pack_file) {
         // incr
         itr = itr->next;
         current_entry++;
-    }
 
+        displayProgressBar(current_entry, yep_pack_list.entry_count);
+    }
+    printf("\n\n"); // let next log start on new line
     fclose(pack_file);
+
+    // clean up global pack list and variables
+    struct yep_header_node *itr2 = yep_pack_list.head;
+    while(itr2 != NULL){
+        struct yep_header_node *next = itr2->next;
+        free(itr2->fullpath);
+        free(itr2);
+        itr2 = next;
+    }
+    yep_pack_list.head = NULL;
+    yep_pack_list.entry_count = 0;
 }
 
 bool yep_pack_directory(char *directory_path, char *output_name){
-    printf("Packing directory %s...\n", directory_path);
+    ye_logf(debug,"Packing directory %s...\n", directory_path);
 
     // call walk directory (first arg is root, second is current - this is for recursive relative path knowledge)
     _ye_walk_directory(directory_path,directory_path);
 
-    printf("Built pack list...\n");
+    ye_logf(debug,"Built pack list...\n");
 
     // print out all the LL nodes
-    struct yep_header_node *itr = yep_pack_list.head;
-    while(itr != NULL){
-        printf("    %s\n", itr->name);
-        printf("    %s\n", itr->fullpath);
-        itr = itr->next;
-    }
+    // struct yep_header_node *itr = yep_pack_list.head;
+    // while(itr != NULL){
+        // printf("    %s\n", itr->name);
+        // printf("    %s\n", itr->fullpath);
+        // itr = itr->next;
+    // }
 
-    printf("%d entries\n", yep_pack_list.entry_count);
+    ye_logf(debug,"Detected %d entries\n", yep_pack_list.entry_count);
 
     /*
         Now, we know exactly the size of our entry list, so we can write the headers for each
@@ -559,7 +559,7 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     // open the output file
     FILE *file = fopen(output_name, "wb");
     if (file == NULL) {
-        perror("Error opening file");
+        ye_logf(error,"Error opening file %s\n", output_name);
         return false;
     }
 
@@ -571,8 +571,10 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     uint16_t entry_count = yep_pack_list.entry_count;
     fwrite(&entry_count, sizeof(uint16_t), 1, file);
 
+    ye_logf(debug,"Writing headers...\n");
+
     // write the headers
-    itr = yep_pack_list.head;
+    struct yep_header_node *itr = yep_pack_list.head;
     while(itr != NULL){
         // 64 bytes - name of the resource
         fwrite(itr->name, sizeof(char), 64, file);
@@ -597,13 +599,17 @@ bool yep_pack_directory(char *directory_path, char *output_name){
         uint8_t data_type = 0;
         fwrite(&data_type, sizeof(uint8_t), 1, file);
 
-        printf("Wrote header for %s\n", itr->name);
+        // printf("Wrote header for %s\n", itr->name);
 
         itr = itr->next;
     }
 
+    ye_logf(debug,"Writing data...\n");
+
     // write the data
     write_pack_file(file);
+
+    ye_logf(debug,"Done!\n");
 
     return true;
 }

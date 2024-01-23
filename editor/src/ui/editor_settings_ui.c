@@ -516,9 +516,11 @@ void ye_editor_paint_project(struct nk_context *ctx){
                 //     unlock_viewport();
                 // } this would not clean up memory, so just force closing through the panel for now
             }
+            if(nk_button_label(ctx, "Build Resource Packs")){
+                editor_build_packs();
+            }
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
+            nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023-2024", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
         nk_end(ctx);
     }
 }

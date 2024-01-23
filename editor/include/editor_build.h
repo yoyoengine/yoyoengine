@@ -19,6 +19,8 @@
 #ifndef YE_EDITOR_BUILD_H
 #define YE_EDITOR_BUILD_H
 
+void editor_build_packs();
+
 void editor_build();
 
 void editor_build_and_run();

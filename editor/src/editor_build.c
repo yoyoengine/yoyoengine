@@ -18,12 +18,44 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-void editor_build(){
+void editor_build_packs(){
+    // engine resources base dir
+    char *_engine_resources = ye_get_engine_resource_static("");
+    char *engine_resources = malloc(strlen(_engine_resources) + 1);
+    strcpy(engine_resources, _engine_resources);
+
+    // resources base dir
+    char *_resources = ye_get_resource_static("");
+    char *resources = malloc(strlen(_resources) + 1);
+    strcpy(resources, _resources);
+
+    // engine.yep path
+    char *_engine_yep = ye_get_resource_static("../engine.yep");
+    char *engine_yep = malloc(strlen(_engine_yep) + 1);
+    strcpy(engine_yep, _engine_yep);
+
+    // resources.yep path
+    char *_resources_yep = ye_get_resource_static("../resources.yep");
+    char *resources_yep = malloc(strlen(_resources_yep) + 1);
+    strcpy(resources_yep, _resources_yep);
+
     // pack the /engine_resources into a .yep file
-    yep_pack_directory(ye_get_engine_resource_static(""), ye_get_resource_static("../engine.yep"));
+    yep_pack_directory(engine_resources, engine_yep);
 
     // pack the /resources into a .yep file
-    yep_pack_directory(ye_get_resource_static(""), ye_get_resource_static("../resources.yep"));
+    yep_pack_directory(resources, resources_yep);
+
+    // free the memory
+    free(engine_resources);
+    free(resources);
+    free(engine_yep);
+    free(resources_yep);
+
+}
+
+void editor_build(){
+
+    editor_build_packs();    
 
     // call the build script
     char command[256];
@@ -33,11 +65,8 @@ void editor_build(){
 }
 
 void editor_build_and_run(){
-    // pack the /engine_resources into a .yep file
-    yep_pack_directory(ye_get_engine_resource_static(""), ye_get_resource_static("../engine.yep"));
 
-    // pack the /resources into a .yep file
-    yep_pack_directory(ye_get_resource_static(""), ye_get_resource_static("../resources.yep"));
+    editor_build_packs();
 
     // call the build script
     char command[256];
