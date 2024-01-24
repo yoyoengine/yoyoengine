@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(YoyoEditor)
 
+# set YOYO_CMAKE_COPY_ENGINE_RESOURCES to true/on since editor needs the engine resources loose folder
+set(YOYO_CMAKE_COPY_ENGINE_RESOURCES true CACHE BOOL "Copy the engine resources to the editor build directory")
+
 # Include the engine project and directories for headers
 add_subdirectory(../engine engine_build)
 include_directories(include ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/include)
