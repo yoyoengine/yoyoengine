@@ -50,6 +50,12 @@ struct ye_trick_node{
 };
 
 /**
+ * @brief Initializes the trick system
+ * @note Currently does nothing
+ */
+void ye_init_tricks();
+
+/**
  * @brief Register a trick with the engine.
  * 
  * @param trick Data on the trick to register

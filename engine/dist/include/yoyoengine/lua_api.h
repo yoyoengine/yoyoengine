@@ -33,5 +33,6 @@ void ye_register_lua_scripting_api(lua_State *state);
 */
 void ye_run_lua_on_mount(struct ye_component_lua_script *script);
 void ye_run_lua_on_unmount(struct ye_component_lua_script *script);
+void ye_run_lua_on_update(struct ye_component_lua_script *script);
 
 #endif

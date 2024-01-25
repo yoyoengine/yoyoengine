@@ -43,6 +43,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <Nuklear/style.h>
+#include <Nuklear/nuklear_sdl_renderer.h>
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR

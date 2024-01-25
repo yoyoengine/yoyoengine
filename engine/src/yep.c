@@ -31,6 +31,89 @@ uint16_t file_version_number = 0;
 
 struct yep_pack_list yep_pack_list;
 
+/*
+    ========================= COMPRESSION IMPLEMENTATION =========================
+*/
+
+int compress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
+    z_stream stream;
+    memset(&stream, 0, sizeof(stream));
+
+    if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK) { // TODO: could add support for the other compression levels
+        return -1;
+    }
+
+    // Set input data
+    stream.next_in = (Bytef*)input;
+    stream.avail_in = input_size;
+
+    // Allocate initial output buffer
+    *output_size = input_size + input_size / 10 + 12; // Adding some extra space for safety
+    *output = (char*)malloc(*output_size);
+
+    // Set output buffer
+    stream.next_out = (Bytef*)*output;
+    stream.avail_out = *output_size;
+
+    // Compress the data
+    if (deflate(&stream, Z_FINISH) != Z_STREAM_END) {
+        free(*output);
+        deflateEnd(&stream);
+        return -1;
+    }
+
+    // Clean up
+    deflateEnd(&stream);
+    *output_size = stream.total_out;
+
+    return 0;
+}
+
+int decompress_data(const char* input, size_t input_size, char** output, size_t output_size) {
+    z_stream stream;
+    memset(&stream, 0, sizeof(stream));
+
+    int inflate_result = inflateInit(&stream);
+    if (inflate_result != Z_OK) {
+        ye_logf(error, "inflateInit error: %s\n", zError(inflate_result));
+        return -1;
+    }
+
+    // Set input data
+    stream.next_in = (Bytef*)input;
+    stream.avail_in = input_size;
+
+    // Allocate initial output buffer
+    *output = (char*)malloc(output_size);
+
+    // Set output buffer
+    stream.next_out = (Bytef*)*output;
+    stream.avail_out = output_size;
+
+    // Decompress the data
+    int res = inflate(&stream, Z_FINISH) != Z_STREAM_END;
+    if (res) {
+        free(*output);
+        inflateEnd(&stream);
+        ye_logf(error,"Error decompressing data: %s\n",zError(res));
+        return -1;
+    }
+
+    // Clean up
+    inflateEnd(&stream);
+
+    if(output_size != stream.total_out){
+        ye_logf(error,"Error: decompressed size does not match expected size\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+/*
+    ==============================================================================
+*/
+
 // utility function via chatgpt - moveme //
 
 void displayProgressBar(int current, int max) {
@@ -246,89 +329,6 @@ void yep_shutdown(){
     ye_logf(info,"Shutting down yep subsystem...\n");
 }
 
-
-/*
-    ========================= COMPRESSION IMPLEMENTATION =========================
-*/
-
-int compress_data(const char* input, size_t input_size, char** output, size_t* output_size) {
-    z_stream stream;
-    memset(&stream, 0, sizeof(stream));
-
-    if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK) { // TODO: could add support for the other compression levels
-        return -1;
-    }
-
-    // Set input data
-    stream.next_in = (Bytef*)input;
-    stream.avail_in = input_size;
-
-    // Allocate initial output buffer
-    *output_size = input_size + input_size / 10 + 12; // Adding some extra space for safety
-    *output = (char*)malloc(*output_size);
-
-    // Set output buffer
-    stream.next_out = (Bytef*)*output;
-    stream.avail_out = *output_size;
-
-    // Compress the data
-    if (deflate(&stream, Z_FINISH) != Z_STREAM_END) {
-        free(*output);
-        deflateEnd(&stream);
-        return -1;
-    }
-
-    // Clean up
-    deflateEnd(&stream);
-    *output_size = stream.total_out;
-
-    return 0;
-}
-
-int decompress_data(const char* input, size_t input_size, char** output, size_t output_size) {
-    z_stream stream;
-    memset(&stream, 0, sizeof(stream));
-
-    int inflate_result = inflateInit(&stream);
-    if (inflate_result != Z_OK) {
-        ye_logf(error, "inflateInit error: %s\n", zError(inflate_result));
-        return -1;
-    }
-
-    // Set input data
-    stream.next_in = (Bytef*)input;
-    stream.avail_in = input_size;
-
-    // Allocate initial output buffer
-    *output = (char*)malloc(output_size);
-
-    // Set output buffer
-    stream.next_out = (Bytef*)*output;
-    stream.avail_out = output_size;
-
-    // Decompress the data
-    int res = inflate(&stream, Z_FINISH) != Z_STREAM_END;
-    if (res) {
-        free(*output);
-        inflateEnd(&stream);
-        ye_logf(error,"Error decompressing data: %s\n",zError(res));
-        return -1;
-    }
-
-    // Clean up
-    inflateEnd(&stream);
-
-    if(output_size != stream.total_out){
-        ye_logf(error,"Error: decompressed size does not match expected size\n");
-        return -1;
-    }
-
-    return 0;
-}
-
-/*
-    ==============================================================================
-*/
 
 /*
     Isolate the platform specific packing functionality that is only needed
