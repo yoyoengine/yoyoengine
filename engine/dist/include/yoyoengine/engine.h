@@ -56,27 +56,32 @@ struct ScreenSize {
 };
 
 /**
- * @brief Returns a string of the full path (os specific) to the resource you have referenced.
+ * @brief !!!THIS IS NOT FOR USE AT RUNTIME!!! Returns a string of the full path (os specific) to the engine resource you have referenced.
  * 
- * The path you provide must be relative to the resources folder.
- * Ex: ("images/yoyo.png") will yeild something like /home/user/gamelocation/resources/images/yoyo.png on linux.
- * 
- * Importantly, this is just a pointer to a buffer, and as such will change its value after the next invokation.
- * 
- * @param sub_path The path (relative to the resources folder) of the resource you wish to access.
- * @return char* The absolute path to the resource.
- */
-char *ye_get_resource_static(const char *sub_path);
-
-/**
- * @brief Returns a string of the full path (os specific) to the engine resource you have referenced.
- * 
- * Behaves the same as @ref ye_get_resource_static, but is meant for accessing engine resources.
+ * Behaves the same as @ref ye_path_resource, but is meant for accessing engine resources.
  * 
  * @param sub_path The relative path (or just name with extension) of the engine resource you wish to access.
  * @return char* The absolute path to the engine resource.
  */
 char* ye_get_engine_resource_static(const char *sub_path);
+
+/**
+ * @brief Returns a pointer to a string in engine memory that contains the absolute path relative to the executable of the item you have specified.
+ * 
+ * @param path The path relative to the executable you want to path to
+ * @return char* A reference to the built string
+ * 
+ * NOTE: this only persists until the next call to this function. You must make your own copies if you need it to stick around
+ */
+char * ye_path(char * path);
+
+/**
+ * @brief THIS IS NOT FOR USE WITH RUNTIME RESOURCES. This is for editor resources only.
+ * 
+ * @param path The path relative to the project resources folder
+ * @return char* The constructed path
+ */
+char * ye_path_resources(char * path);
 
 /**
  * @brief This struct holds references to callbacks declared and assigned through C scripting.
@@ -288,7 +293,7 @@ float ye_delta_time();
  * 
  * @param path The (absolute) path to the new resources folder.
  */
-void ye_update_resources(char *path);
+void ye_update_base_path(char *path);
 
 /*
     entry point to the engine, initializes all subsystems

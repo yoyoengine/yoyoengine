@@ -63,7 +63,7 @@ char build_engine_build_path[256];
 */
 void editor_reload_build_file(){
     json_decref(BUILD_FILE);
-    BUILD_FILE = ye_json_read(ye_get_resource_static("../build.yoyo"));
+    BUILD_FILE = ye_json_read(ye_path("build.yoyo"));
 }
 
 void ye_editor_paint_project_settings(struct nk_context *ctx){
@@ -255,14 +255,14 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(SETTINGS, "stretch_viewport", project_stretch_viewport ? json_true() : json_false());
                 json_object_set_new(SETTINGS, "stretch_resolution", project_stretch_resolution ? json_true() : json_false());
                 // save the settings file
-                ye_json_write(ye_get_resource_static("../settings.yoyo"),SETTINGS);
+                ye_json_write(ye_path("settings.yoyo"),SETTINGS);
                 
                 // update build keys, then save
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
                 json_object_set_new(BUILD_FILE, "platform", json_string(build_platform_int == 0 ? "linux" : "windows"));
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
                 json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
-                ye_json_write(ye_get_resource_static("../build.yoyo"),BUILD_FILE);
+                ye_json_write(ye_path("build.yoyo"),BUILD_FILE);
 
                 /*
                     This should be done in a modular way, engine should be rebuilt smartly also, we will want button for it later in dev when engine changes all the time
@@ -434,7 +434,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     /*
                         Open our build file
                     */
-                    BUILD_FILE = ye_json_read(ye_get_resource_static("../build.yoyo"));
+                    BUILD_FILE = ye_json_read(ye_path("build.yoyo"));
                     if(BUILD_FILE){
                         /*
                             Additional C Flags

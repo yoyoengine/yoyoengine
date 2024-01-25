@@ -40,18 +40,9 @@ struct ye_engine_state YE_STATE; // TODO: should null out pointers and stuff? ma
 // Global variables for resource paths
 char *executable_path = NULL;
 
-char* ye_get_resource_static(const char *sub_path) {
-    static char resource_buffer[256];  // Adjust the buffer size as per your requirement
 
-    if (YE_STATE.engine.game_resources_path == NULL) {
-        ye_logf(error, "Resource paths not set!\n");
-        return NULL;
-    }
 
-    snprintf(resource_buffer, sizeof(resource_buffer), "%s/%s", YE_STATE.engine.game_resources_path, sub_path);
-    return resource_buffer;
-}
-
+// TODO: temp leaving because editor knows where its copy of engine resources is through this
 char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
@@ -63,6 +54,40 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     snprintf(engine_reserved_buffer, sizeof(engine_reserved_buffer), "%s/%s", YE_STATE.engine.engine_resources_path, sub_path);
     return engine_reserved_buffer;
 }
+
+/*
+    New refreshed path accessor functions:
+
+    ye_path_relative(char*) takes in a path relative to the game executable and returns the full path
+*/
+
+char * ye_path(char * path){
+    static char path_relative_buffer[512];
+
+    // this is set at engine init so discourage calling before then
+    if (executable_path == NULL) {
+        ye_logf(error, "Executable path not set!\n");
+        return NULL;
+    }
+
+    snprintf(path_relative_buffer, sizeof(path_relative_buffer), "%s/%s", executable_path, path);
+    return path_relative_buffer;
+}
+
+char * ye_path_resources(char * path){
+    static char path_relative_buffer_resources[512];
+    
+    // this is set at engine init so discourage calling before then
+    if (executable_path == NULL) {
+        ye_logf(error, "Executable path not set!\n");
+        return NULL;
+    }
+    
+    snprintf(path_relative_buffer_resources, sizeof(path_relative_buffer_resources), "%s/resources/%s", executable_path, path);
+    return path_relative_buffer_resources;
+}
+
+/* ============== end new paths ============== */
 
 // event polled for per frame
 SDL_Event e;
@@ -235,10 +260,10 @@ void set_setting_float(char* key, float* value, json_t* settings) {
     }
 }
 
-void ye_update_resources(char *path){
+void ye_update_base_path(char *path){
     // update the engine state
-    free(YE_STATE.engine.game_resources_path);
-    YE_STATE.engine.game_resources_path = strdup(path);
+    free(executable_path);
+    executable_path = strdup(path);
 }
 
 void ye_init_engine() {
@@ -263,12 +288,12 @@ void ye_init_engine() {
     YE_STATE.engine.engine_resources_path = strdup(engine_default_path);
     YE_STATE.engine.game_resources_path = strdup(game_default_path);
     YE_STATE.engine.log_file_path = strdup(log_default_path);
-    YE_STATE.engine.icon_path = strdup(ye_get_engine_resource_static("enginelogo.png"));
+    YE_STATE.engine.icon_path = strdup("enginelogo.png"); // we by default take the engine logo out of the engine resources pack
 
     YE_STATE.engine.log_level = 4;
 
     // check if ./settings.yoyo exists (if not, use defaults)
-    json_t *SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+    json_t *SETTINGS = ye_json_read(ye_path("settings.yoyo"));
     if (SETTINGS == NULL) {
         ye_logf(warning, "No settings.yoyo file found, using defaults.\n");
     }
@@ -314,7 +339,12 @@ void ye_init_engine() {
     ye_init_cache();
 
     // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
-    YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"));
+    if(YE_STATE.editor.editor_mode){
+        YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"));
+    }
+    else{
+        YE_STATE.engine.pEngineFont = yep_engine_resource_font("RobotoMono-Light.ttf");
+    }
     // since we are bypassing the cache to do this, we need to customly resize this
     TTF_SetFontSize(YE_STATE.engine.pEngineFont, 128); // high enough to be readable where-ever (I think)
 
@@ -366,7 +396,9 @@ void ye_init_engine() {
         ye_logf(info,"Skipping Intro.\n");
     }
     else{
-        ye_play_sound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
+        // TODO: FIXME - this wont work yet because we need to load from file at runtime
+        if(!YE_STATE.editor.editor_mode)
+            ye_play_sound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
@@ -377,19 +409,25 @@ void ye_init_engine() {
         // background for splash
         struct ye_entity * splash_bg = ye_create_entity();
         ye_add_transform_component(splash_bg, 0,0);
-        ye_temp_add_image_renderer_component(splash_bg, 1, ye_get_engine_resource_static("splash_bg.png"));
+        SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_bg.png"));
+        ye_cache_texture_manual(splash_bg_tex, "splash_bg.png");
+        ye_add_image_renderer_component_preloaded(splash_bg, 1, splash_bg_tex);
         splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
 
         // foreground logo for splash
         struct ye_entity * splash_y = ye_create_entity();
         ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
-        ye_temp_add_image_renderer_component(splash_y, 1, ye_get_engine_resource_static("splash_y.png"));
+        SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_y.png"));
+        ye_cache_texture_manual(splash_y_tex, "splash_y.png");
+        ye_add_image_renderer_component_preloaded(splash_y, 1, splash_y_tex);
         splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
 
         // gear spinning below logo
         struct ye_entity * splash_gear = ye_create_entity();
         ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
-        ye_temp_add_image_renderer_component(splash_gear, 1, ye_get_engine_resource_static("splash_gear.png"));
+        SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_gear.png"));
+        ye_cache_texture_manual(splash_gear_tex, "splash_gear.png");
+        ye_add_image_renderer_component_preloaded(splash_gear, 1, splash_gear_tex);
         splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
         ye_add_physics_component(splash_gear,0,0);
         splash_gear->physics->rotational_velocity = 90;
@@ -421,7 +459,7 @@ void ye_init_engine() {
         const char * entry_scene;
         if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
             ye_logf(info, "Detected entry: %s.\n", entry_scene);
-            ye_load_scene(ye_get_resource_static(entry_scene));
+            ye_load_scene(entry_scene);
         }
         else{
             ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
@@ -439,13 +477,6 @@ void ye_shutdown_engine(){
     // shut tricks down
     ye_shutdown_tricks();
 
-    // free the engine font color
-    free(YE_STATE.engine.pEngineFontColor);
-    YE_STATE.engine.pEngineFontColor = NULL;
-
-    // free the engine font
-    TTF_CloseFont(YE_STATE.engine.pEngineFont);
-
     // shutdown ECS
     ye_shutdown_ecs();
 
@@ -454,6 +485,13 @@ void ye_shutdown_engine(){
 
     // shutdown cache
     ye_shutdown_cache();
+
+    // free the engine font color
+    free(YE_STATE.engine.pEngineFontColor);
+    YE_STATE.engine.pEngineFontColor = NULL;
+
+    // free the engine font
+    TTF_CloseFont(YE_STATE.engine.pEngineFont);
 
     // shutdown graphics
     ye_shutdown_graphics();

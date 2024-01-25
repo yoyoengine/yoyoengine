@@ -25,17 +25,17 @@ void editor_build_packs(){
     strcpy(engine_resources, _engine_resources);
 
     // resources base dir
-    char *_resources = ye_get_resource_static("");
+    char *_resources = ye_path("resources/");
     char *resources = malloc(strlen(_resources) + 1);
     strcpy(resources, _resources);
 
     // engine.yep path
-    char *_engine_yep = ye_get_resource_static("../engine.yep");
+    char *_engine_yep = ye_path("engine.yep");
     char *engine_yep = malloc(strlen(_engine_yep) + 1);
     strcpy(engine_yep, _engine_yep);
 
     // resources.yep path
-    char *_resources_yep = ye_get_resource_static("../resources.yep");
+    char *_resources_yep = ye_path("resources.yep");
     char *resources_yep = malloc(strlen(_resources_yep) + 1);
     strcpy(resources_yep, _resources_yep);
 
@@ -59,7 +59,7 @@ void editor_build(){
 
     // call the build script
     char command[256];
-    snprintf(command, sizeof(command), "python3 \"%s\"", ye_get_resource_static("../build.py"));
+    snprintf(command, sizeof(command), "python3 \"%s\"", ye_path("build.py"));
     printf("command: %s\n", command);
     system(command);
 }
@@ -70,6 +70,6 @@ void editor_build_and_run(){
 
     // call the build script
     char command[256];
-    snprintf(command, sizeof(command), "python3 \"%s\" --run", ye_get_resource_static("../build.py"));
+    snprintf(command, sizeof(command), "python3 \"%s\" --run", ye_path("build.py"));
     system(command);
 }

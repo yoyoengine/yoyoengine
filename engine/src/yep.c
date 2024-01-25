@@ -17,6 +17,9 @@
 */
 
 #include <SDL2/SDL_image.h>
+#include <SDL_mixer.h>
+
+#include <jansson/jansson.h> // jansson
 
 #include <yoyoengine/yoyoengine.h>
 #include <yoyoengine/yep.h>
@@ -152,7 +155,7 @@ bool _yep_open_file(char *file){
 
     yep_file = fopen(file, "rb");
     if (yep_file == NULL) {
-        perror("Error opening file");
+        ye_logf(error,"Error opening yep file\n");
         return false;
     }
 
@@ -233,7 +236,7 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
 
 struct yep_data_info yep_extract_data(char *file, char *handle){
     if(!_yep_open_file(file)){
-        ye_logf(error,"Error opening file %s\n", file);
+        ye_logf(error,"Error opening yep file %s\n", file);
         exit(1);
     }
 
@@ -469,7 +472,7 @@ void write_pack_file(FILE *pack_file) {
 
         FILE *file_to_write = fopen(itr->fullpath, "rb");
         if (file_to_write == NULL) {
-            ye_logf(error,"Error opening file to pack yep: %s\n", itr->fullpath);
+            ye_logf(error,"Error opening yep file to pack yep: %s\n", itr->fullpath);
             exit(1);
         }
 
@@ -569,7 +572,7 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     // open the output file
     FILE *file = fopen(output_name, "wb");
     if (file == NULL) {
-        ye_logf(error,"Error opening file %s\n", output_name);
+        ye_logf(error,"Error opening yep file %s\n", output_name);
         return false;
     }
 
@@ -637,13 +640,25 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     ENGINE API
 */
 
-SDL_Surface * yep_resource_image(char *handle){
-    // get the data
-    struct yep_data_info data = yep_extract_data(ye_get_resource_static("../resources.yep"), handle);
+/*
+    Backend impl that takes in full details
+*/
+
+struct yep_data_info _yep_misc(char *handle, char *file){
+    // get and validate the data
+    struct yep_data_info data = yep_extract_data(file, handle);
     if(data.data == NULL){
-        ye_logf(error,"Error: could not get image data for %s\n", handle);
-        return NULL;
+        ye_logf(error,"Error: could not get misc data for %s\n", handle);
+        return data;
     }
+
+    // return the data
+    return data;
+}
+
+SDL_Surface * _yep_image(char *handle, char *path){
+    // load the data
+    struct yep_data_info data = _yep_misc(handle, path);
 
     // create the surface
     SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem(data.data, data.size), 1);
@@ -657,4 +672,161 @@ SDL_Surface * yep_resource_image(char *handle){
 
     // return the surface
     return surface;
+}
+
+json_t * _yep_json(char *handle, char *path){
+    // load the data
+    struct yep_data_info data = _yep_misc(handle, path);
+
+    // create the json
+    json_t *json = json_loadb(data.data, data.size, 0, NULL);
+    if(json == NULL){
+        ye_logf(error,"Error: could not create json for %s\n", handle);
+        return NULL;
+    }
+
+    // free the data
+    free(data.data); // PAST RYAN TO FUTURE RYAN: YOU MIGHT NOT HAVE TO FREE THIS BECAUSE
+    // SDL TAKES OWNERSHIP I THINK, YOU NEED TO LOOK IT UP
+
+    // return the json
+    return json;
+}
+
+Mix_Chunk * _yep_audio(char *handle, char *path){
+    // load the data
+    struct yep_data_info data = _yep_misc(handle, path);
+
+    // create the chunk
+    Mix_Chunk *chunk = Mix_LoadWAV_RW(SDL_RWFromMem(data.data, data.size), 1);
+    if(chunk == NULL){
+        ye_logf(error,"Error: could not create chunk for %s\n", handle);
+        return NULL;
+    }
+
+    // free the data
+    free(data.data);
+
+    // return the chunk
+    return chunk;
+}
+
+TTF_Font * _yep_font(char *handle, char *path){
+    // load the data
+    struct yep_data_info data = _yep_misc(handle, path);
+
+    // create the font
+    TTF_Font *font = TTF_OpenFontRW(SDL_RWFromMem(data.data, data.size), 1, 1);
+    if(font == NULL){
+        ye_logf(error,"Error: could not create font for %s\n", handle);
+        return YE_STATE.engine.pEngineFont;
+    }
+
+    // free the data
+    // free(data.data);
+    // DO NOT free the data because SDL_RWFromMem takes ownership of the data
+    // at least I think... you should valgrind it because it wont work if you free here
+
+    // return the font
+    return font;
+}
+
+/*
+    Accessor functions that abstract the file they come from
+*/
+
+SDL_Surface * yep_resource_image(char *handle){
+    return _yep_image(handle, "resources.yep");
+}
+
+json_t * yep_resource_json(char *handle){
+    return _yep_json(handle, "resources.yep");
+}
+
+Mix_Chunk * yep_resource_audio(char *handle){
+    return _yep_audio(handle, "resources.yep");
+}
+
+TTF_Font * yep_resource_font(char * handle){
+    return _yep_font(handle, "resources.yep");
+}
+
+struct yep_data_info yep_resource_misc(char *handle){
+    return _yep_misc(handle, "resources.yep");
+}
+
+/*
+    Just for ease of use (who cares about LOC) lets provide some accessors for engine resources
+*/
+
+SDL_Surface * yep_engine_resource_image(char *handle){
+    /*
+        If in editor mode, we need to load from loose file
+    */
+    if(YE_STATE.editor.editor_mode){
+        SDL_Surface *surface = IMG_Load(ye_get_engine_resource_static(handle));
+        if(surface == NULL){
+            ye_logf(error,"Error: could not create surface for %s\n", handle);
+            return NULL;
+        }
+        return surface;
+    }
+    else{
+        return _yep_image(handle, ye_path("engine.yep"));
+    }
+}
+
+json_t * yep_engine_resource_json(char *handle){
+    /*
+        If in editor mode, we need to load from loose file
+    */
+    if(YE_STATE.editor.editor_mode){
+        json_t *json = json_load_file(ye_get_engine_resource_static(handle), 0, NULL);
+        if(json == NULL){
+            ye_logf(error,"Error: could not create json for %s\n", handle);
+            return NULL;
+        }
+        return json;
+    }
+    else{
+        return _yep_json(handle, ye_path("engine.yep"));
+    }
+}
+
+Mix_Chunk * yep_engine_resource_audio(char *handle){
+    /*
+        If in editor mode, we need to load from loose file
+    */
+    if(YE_STATE.editor.editor_mode){
+        Mix_Chunk *chunk = Mix_LoadWAV(ye_get_engine_resource_static(handle));
+        if(chunk == NULL){
+            ye_logf(error,"Error: could not create chunk for %s\n", handle);
+            return NULL;
+        }
+        return chunk;
+    }
+    else{
+        return _yep_audio(handle, ye_path("engine.yep"));
+    }
+}
+
+TTF_Font * yep_engine_resource_font(char * handle){
+    /*
+        If in editor mode, we need to load from loose file
+    */
+    if(YE_STATE.editor.editor_mode){
+        TTF_Font *font = TTF_OpenFont(ye_get_engine_resource_static(handle), 20);
+        if(font == NULL){
+            ye_logf(error,"Error: could not create font for %s\n", handle);
+            return NULL;
+        }
+        return font;
+    }
+    else{
+        return _yep_font(handle, ye_path("engine.yep"));
+    }
+}
+
+struct yep_data_info yep_engine_resource_misc(char *handle){
+    return _yep_misc(handle, ye_path("engine.yep"));
 }

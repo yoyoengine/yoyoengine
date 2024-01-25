@@ -50,6 +50,7 @@ This section is temporary and will be used to denote any important facts I need 
 - THE LAUNCHER AND EDITOR TOOLCHAIN HAS ONLY BEEN TESTED ON LINUX. OPEN AN ISSUE IF YOU NEED WINDOWS SUPPORT.
 - NOTE: make this section limitations and have a seperate notices
 - DO NOT USE SPACES IN FILE NAMES, this will break a lot of the file operations especially in the editor, core might be fine though.
+- Because of the nature of the editor, it only runs on linux and also accesses data through the loose file directories rather than the pack files which are accessed at runtime
 
 ### editor
 

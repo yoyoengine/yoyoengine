@@ -145,11 +145,11 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            // hack to preserve original not full path to src for serialization.. TODO: FIXME this will cause an issue in like 3 months i bet
-            ye_temp_add_image_renderer_component(e,z,ye_get_resource_static(src));
-            free(e->renderer->renderer_impl.image->src); // free the old src
-            e->renderer->renderer_impl.image->src = malloc(strlen(src)+1); // malloc new src
-            strcpy(e->renderer->renderer_impl.image->src,src); // copy over the new src
+            /*
+                we no longer need to hack around saving relative not full path:
+                now that we have binary format for all resources its src is just a handle
+            */
+            ye_add_image_renderer_component(e,z,src);
             break;
         case YE_RENDERER_TYPE_TEXT:
             // get the text field
@@ -513,8 +513,18 @@ void ye_load_scene(const char *scene_path){
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();
 
+    /*
+        If we are in editor mode, this scene file will be loaded from the loose resources dir, if runtime it will be packed
+    */
+    json_t *SCENE = NULL; 
+    if(YE_STATE.editor.editor_mode){
+        SCENE = ye_json_read(ye_path_resources(scene_path));
+    }
+    else{
+        SCENE = yep_resource_json(scene_path);
+    }
+
     // try to open the scene file
-    json_t * SCENE = ye_json_read(scene_path);
     if(SCENE == NULL){
         ye_logf(error,"Failed to load scene %s\n", scene_path);
         json_decref(SCENE);
@@ -558,7 +568,7 @@ void ye_load_scene(const char *scene_path){
     // cache each styles file in array
     for(int i = 0; i < json_array_size(styles); i++){
         const char *path; ye_json_arr_string(styles, i, &path);
-        ye_pre_cache_styles(ye_get_resource_static(path));
+        ye_pre_cache_styles(path);
     }
 
     // pre cache all of a scenes assets (TODO: thread this?)

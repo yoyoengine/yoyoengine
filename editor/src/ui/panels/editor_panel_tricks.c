@@ -36,7 +36,7 @@
 json_t *tricks_meta = NULL;
 
 /*
-    This is difficult to explain. Basically, we have ye_get_resource_static("../tricks") is the
+    This is difficult to explain. Basically, ye_path("tricks") is the
     path to a folder which contains n number of subdirectories, each of which contains a trick.yoyo file.
 
     Our goal is to traverse all n subdirectories and concatenate the contents of each trick.yoyo file into an array
@@ -96,12 +96,12 @@ void _load_tricks_meta(char *path, char *parent_folder){
 
 void _re_cache_tricks_meta(){
     // remove the tricks.yoyo file
-    remove(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+    remove(ye_path("tricks/tricks_editor_cache.yoyo"));
     ye_logf(debug, "Removed cached tricks_editor_cache.yoyo file\n");
 
     // cache for later
-    ye_json_write(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"), tricks_meta);
-    ye_logf(debug,"Created tricks meta: '%s'\n", ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+    ye_json_write(ye_path("tricks/tricks_editor_cache.yoyo"), tricks_meta);
+    ye_logf(debug,"Created tricks meta: '%s'\n", ye_path("tricks/tricks_editor_cache.yoyo"));
 }
 
 void load_tricks_meta(const char *path){
@@ -115,11 +115,11 @@ void load_tricks_meta(const char *path){
         tricks_meta = json_object();
         // add a "tricks" key with empty array
         json_object_set_new(tricks_meta, "tricks", json_array());
-        _load_tricks_meta(ye_get_resource_static("../tricks"),"tricks_defualt_name");
+        _load_tricks_meta(ye_path("tricks"),"tricks_defualt_name");
 
         // cache for later
-        ye_json_write(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"), tricks_meta);
-        ye_logf(debug,"Created tricks meta: '%s'\n", ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+        ye_json_write(ye_path("tricks/tricks_editor_cache.yoyo"), tricks_meta);
+        ye_logf(debug,"Created tricks meta: '%s'\n", ye_path("tricks/tricks_editor_cache.yoyo"));
     }
 }
 
@@ -159,7 +159,7 @@ void editor_panel_tricks(struct nk_context *ctx){
                     snprintf(command, sizeof(command), "git clone %s", url);
 
                     // Change to the destination directory and execute git clone
-                    if (chdir(ye_get_resource_static("../tricks")) != 0) {
+                    if (chdir(ye_path("tricks")) != 0) {
                         ye_logf(error, "Failed to change directory.\n");
                         // Handle error if needed
                         return; // Exit or handle appropriately
@@ -185,9 +185,9 @@ void editor_panel_tricks(struct nk_context *ctx){
                     json_decref(tricks_meta);
                     tricks_meta = NULL;
 
-                    remove(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+                    remove(ye_path("tricks/tricks_editor_cache.yoyo"));
 
-                    load_tricks_meta(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+                    load_tricks_meta(ye_path("tricks/tricks_editor_cache.yoyo"));
                     _re_cache_tricks_meta();
 
 
@@ -199,7 +199,7 @@ void editor_panel_tricks(struct nk_context *ctx){
         }
 
         if(tricks_meta == NULL){
-            load_tricks_meta(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+            load_tricks_meta(ye_path("tricks/tricks_editor_cache.yoyo"));
         }
 
         nk_layout_row_dynamic(ctx, 20, 1);
@@ -210,12 +210,12 @@ void editor_panel_tricks(struct nk_context *ctx){
             tricks_meta = NULL;
 
             // remove the tricks.yoyo file
-            remove(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+            remove(ye_path("tricks/tricks_editor_cache.yoyo"));
             ye_logf(debug, "Removed cached tricks_editor_cache.yoyo file\n");
         }
         if(nk_button_label(ctx, "open tricks folder")){
             char command[256];
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_get_resource_static("../tricks/")); // NOTCROSSPLATFORM
+            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_path("tricks/")); // NOTCROSSPLATFORM
 
             // Execute the command.
             system(command);
@@ -274,7 +274,7 @@ void editor_panel_tricks(struct nk_context *ctx){
 
                 // delete it
                 char command[512];
-                snprintf(command, sizeof(command), "rm -rf \"%s\"%s", ye_get_resource_static("../tricks/"),f); // NOTCROSSPLATFORM
+                snprintf(command, sizeof(command), "rm -rf \"%s\"%s", ye_path("tricks/"),f); // NOTCROSSPLATFORM
                 
                 // Execute the command.
                 int res = system(command);
@@ -286,9 +286,9 @@ void editor_panel_tricks(struct nk_context *ctx){
                 json_decref(tricks_meta);
                 tricks_meta = NULL;
 
-                remove(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+                remove(ye_path("tricks/tricks_editor_cache.yoyo"));
 
-                load_tricks_meta(ye_get_resource_static("../tricks/tricks_editor_cache.yoyo"));
+                load_tricks_meta(ye_path("tricks/tricks_editor_cache.yoyo"));
                 _re_cache_tricks_meta();
             }
         }

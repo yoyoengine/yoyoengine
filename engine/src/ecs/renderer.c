@@ -23,7 +23,7 @@ void ye_update_renderer_component(struct ye_entity *entity){
     switch(entity->renderer->type){
         case YE_RENDERER_TYPE_IMAGE:
             entity->renderer->texture = ye_image(
-                ye_get_resource_static(entity->renderer->renderer_impl.image->src)
+                entity->renderer->renderer_impl.image->src
             );
             break;
         case YE_RENDERER_TYPE_TEXT:
@@ -96,7 +96,7 @@ void ye_add_renderer_component(
     // ye_logf(debug, "Added renderer to entity %d\n", entity->id);
 }
 
-void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const char *src){
+void ye_add_image_renderer_component(struct ye_entity *entity, int z, const char *src){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
     // copy src to image->src
     image->src = malloc(sizeof(char) * (strlen(src) + 1));
@@ -107,6 +107,22 @@ void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z, const
 
     // create the image texture
     entity->renderer->texture = ye_image(src);
+
+    // update rect based off generated image
+    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
+    entity->renderer->rect.w = size.w;
+    entity->renderer->rect.h = size.h;
+}
+
+void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, SDL_Texture *texture){
+    struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
+    image->src = NULL;
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_IMAGE, z, image);
+
+    // set the texture
+    entity->renderer->texture = texture;
 
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
@@ -184,12 +200,12 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, c
     */ 
     if(YE_STATE.editor.editor_mode) {
         char filename[256];  // Assuming a maximum filename length of 255 characters
-        snprintf(filename, sizeof(filename), "%s/0.%s", ye_get_resource_static(path), format);
+        snprintf(filename, sizeof(filename), "%s/0.%s", ye_path_resources(path), format);
         animation->frames[0] = ye_image(filename);
     } else {
         for (size_t i = 0; i < (size_t)count; ++i) {
             char filename[256];  // Assuming a maximum filename length of 255 characters
-            snprintf(filename, sizeof(filename), "%s/%d.%s", ye_get_resource_static(path), (int)i, format);
+            snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, format);
             animation->frames[i] = ye_image(filename);
         }
     }

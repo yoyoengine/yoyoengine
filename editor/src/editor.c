@@ -89,7 +89,7 @@ bool ye_point_in_rect(int x, int y, SDL_Rect rect)
 void editor_reload_settings(){
     if (SETTINGS)
         json_decref(SETTINGS);
-    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+    SETTINGS = ye_json_read(ye_path("settings.yoyo"));
 }
 
 void editor_load_scene(char * path){
@@ -143,6 +143,7 @@ int main(int argc, char **argv) {
 
     // get our path from the command line
     char *path = argv[1];
+    // printf("PATH WAS: %s\n", path);
     ye_logf(info, "Editor recieved path: %s\n",path);
     project_path = path;
 
@@ -215,7 +216,7 @@ int main(int argc, char **argv) {
 
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
     if (path != NULL)
-        ye_update_resources(path); // GOD THIS IS SUCH A HEADACHE
+        ye_update_base_path(path); // GOD THIS IS SUCH A HEADACHE
     else
         ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
 
@@ -242,13 +243,16 @@ int main(int argc, char **argv) {
 
     origin = ye_create_entity_named("origin");
     ye_add_transform_component(origin, -50, -50);
-    ye_temp_add_image_renderer_component(origin, 0, ye_get_engine_resource_static("originwhite.png"));
+
+    SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
+    ye_cache_texture_manual(orgn_tex, "originwhite.png");
+    ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
     origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
 
     yoyo_loading_refresh("Loading entry scene...");
 
     // load the scene out of the project settings::entry_scene
-    SETTINGS = ye_json_read(ye_get_resource_static("../settings.yoyo"));
+    SETTINGS = ye_json_read(ye_path("settings.yoyo"));
     // ye_json_log(SETTINGS);
 
     SDL_Color red = {255, 0, 0, 255};
@@ -267,7 +271,7 @@ int main(int argc, char **argv) {
     }
     else
     {
-        ye_load_scene(ye_get_resource_static(entry_scene));
+        ye_load_scene(entry_scene);
     }
 
     entity_list_head = ye_get_entity_list_head();

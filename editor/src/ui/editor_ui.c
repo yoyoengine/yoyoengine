@@ -325,14 +325,14 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     snprintf(new_scene_path, sizeof(new_scene_path), "scenes/%s.yoyo", new_scene_name);
 
                     // check if this scene already exists
-                    if(access(ye_get_resource_static(new_scene_path), F_OK) != -1){
+                    if(access(ye_path_resources(new_scene_path), F_OK) != -1){
                         // file exists
                         ye_logf(error, "Scene already exists.\n");
                     }
                     else{
-                        ye_json_write(ye_get_resource_static(new_scene_path), new_scene);
+                        ye_json_write(new_scene_path, new_scene);
                         new_scene_popup_open = false;
-                        editor_load_scene(ye_get_resource_static(new_scene_path));
+                        editor_load_scene(new_scene_path);
                     }
                     
                     // cleanup
@@ -398,7 +398,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     open_scene_popup_open = false;
                     unlock_viewport();
 
-                    editor_load_scene(ye_get_resource_static(open_scene_name));
+                    editor_load_scene(ye_path_resources(open_scene_name));
                 }
                 nk_popup_end(ctx);
             }

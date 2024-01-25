@@ -32,7 +32,11 @@
     #include <linux/limits.h>   // - PATH_MAX
 #endif
 
+#include <jansson/jansson.h> // jansson
+
 #include <yoyoengine/yoyoengine.h>
+
+#include <SDL2/SDL_mixer.h>
 
 /*
     Details on the file format:
@@ -134,7 +138,9 @@ struct yep_pack_list {
 };
 
 /*
-    ENGINE API
+    =========================
+    |       ENGINE API      |
+    =========================
 */
 
 struct yep_data_info {
@@ -142,6 +148,68 @@ struct yep_data_info {
     size_t size;
 };
 
+/**
+ * @brief Load an image stored inside of resources.yep
+ * 
+ * @param handle The key storing the image in the file
+ * @return SDL_Surface* The loaded image (NULL if not found)
+ * 
+ * !!! YOU MUST FREE THE SURFACE YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ */
 SDL_Surface * yep_resource_image(char *handle);
+
+/**
+ * @brief Load a json file stored inside of resources.yep
+ * 
+ * @param handle The key storing the json file in the file
+ * @return json_t* The loaded json file (NULL if not found)
+ * 
+ * !!! You must json_decref the json_t when you are done with it. !!!
+ */
+json_t * yep_resource_json(char *handle);
+
+/**
+ * @brief Load a audio file stored inside of resources.yep
+ * 
+ * @param handle The key storing the audio file in the file
+ * @return Mix_Chunk* The loaded audio file (NULL if not found)
+ * 
+ * !!! YOU MUST FREE THE CHUNK YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ */
+Mix_Chunk * yep_resource_audio(char *handle);
+
+/**
+ * @brief Load a font file stored inside of resources.yep
+ * 
+ * @param handle The key storing the font file in the file
+ * @return TTF_Font* The loaded font file (NULL if not found)
+ * 
+ * !!! YOU MUST FREE THE FONT YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ */
+TTF_Font * yep_resource_font(char *handle);
+
+/**
+ * @brief Load a misc file stored inside of resources.yep
+ * 
+ * @param handle The key storing the misc file in the file
+ * @return struct yep_data_info The loaded misc file (NULL if not found)
+ * 
+ * !!! YOU MUST FREE THE DATA YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ */
+struct yep_data_info yep_resource_misc(char *handle);
+
+/*
+    Engine api as well
+*/
+
+SDL_Surface * yep_engine_resource_image(char *handle);
+
+json_t * yep_engine_resource_json(char *handle);
+
+Mix_Chunk * yep_engine_resource_audio(char *handle);
+
+TTF_Font * yep_engine_resource_font(char * handle);
+
+struct yep_data_info yep_engine_resource_misc(char *handle);
 
 #endif // YEP_H

@@ -142,12 +142,21 @@ void ye_update_renderer_component(struct ye_entity *entity);
 void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, int z, void *data);
 
 /**
- * @brief Temporarily adds an image renderer component to an entity.
+ * @brief  Adds an image renderer component to an entity.
  * @param entity The entity to add the image renderer component to.
  * @param z The z-index of the image renderer component.
  * @param src The source of the image.
  */
-void ye_temp_add_image_renderer_component(struct ye_entity *entity, int z,const char *src);
+void ye_add_image_renderer_component(struct ye_entity *entity, int z,const char *src);
+
+/**
+ * @brief Adds an image renderer component to an entity.
+ * @param entity The entity to add the image renderer component to.
+ * @param z The z-index of the image renderer component.
+ * @param texture The texture to use for the image.
+ * @note This function is used for preloaded textures.
+ */
+void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, SDL_Texture *texture);
 
 /**
  * @brief Temporarily adds a text renderer component to an entity.

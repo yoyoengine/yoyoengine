@@ -192,6 +192,16 @@ SDL_Color * ye_color(const char *name);
  */
 
 /**
+ * @brief Manually cache an already loaded texture with a provided key
+ * 
+ * @param texture Texture to cache
+ * @param key A UNIQUE key to cache the texture under
+ * 
+ * @note this is useful to make sure engine takes care of cleaning up a texture automatically
+ */
+void ye_cache_texture_manual(SDL_Texture *texture, const char *key);
+
+/**
  * @brief Create a texture from path.
  * @param path The path to the texture.
  * @return The cached texture.

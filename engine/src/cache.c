@@ -85,7 +85,7 @@ void ye_pre_cache_scene(json_t *scene){
                 if(!ye_json_string(impl,"src",&src)){
                     continue;
                 }
-                ye_image(ye_get_resource_static(src));
+                ye_image(src);
                 break;
             case YE_RENDERER_TYPE_ANIMATION:
                 // cache all images in animation path/framenum.extension
@@ -104,12 +104,12 @@ void ye_pre_cache_scene(json_t *scene){
                 if(YE_STATE.editor.editor_mode) {
                     char filename[256];  // Assuming a maximum filename length of 255 characters
                     snprintf(filename, sizeof(filename), "%s/0.%s", path, extension);
-                    ye_image(ye_get_resource_static(filename));
+                    ye_image(filename);
                 } else {
                     for(int i = 0; i<frame_count; ++i){
                         char filename[256];  // Assuming a maximum filename length of 255 characters
                         snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, extension);
-                        ye_image(ye_get_resource_static(filename));
+                        ye_image(filename);
                     }
                 }
                 break;
@@ -125,8 +125,18 @@ void ye_pre_cache_styles(const char *styles_path){
         return;
     }
 
+    /*
+        If we are in editor mode this file exists in local dir, else its packed
+    */
+    json_t *STYLES = NULL;
     // read fonts and colors from styles and cache them
-    json_t *STYLES = ye_json_read(styles_path);
+    if(YE_STATE.editor.editor_mode){
+        STYLES = ye_json_read(ye_path_resources(styles_path));
+    }
+    else{
+        STYLES = yep_resource_json(styles_path);
+    }
+
     // ye_json_log(STYLES);
     if(STYLES == NULL){
         ye_logf(error,"Failed to read styles file: %s\n",styles_path);
@@ -161,7 +171,7 @@ void ye_pre_cache_styles(const char *styles_path){
             */
             const char *font_path;    ye_json_string(font,"path",&font_path);
             // int font_size;      ye_json_int(font,"size",&font_size); no more font sizes!
-            ye_cache_font(font_name,/*font_size,*/ye_get_resource_static(font_path));
+            ye_cache_font(font_name,/*font_size,*/font_path); // path is really the handle (which is the realtive path from resources/)
         }
     }
 
@@ -231,8 +241,10 @@ void ye_clear_font_cache(){
         HASH_DEL(cached_fonts_head, font_node);
         
         // make sure we dont clear the engine font if we had a failure loading this font from disk
-        if(font_node->font != NULL && font_node->font != YE_STATE.engine.pEngineFont)
+        if(font_node->font != NULL && font_node->font != YE_STATE.engine.pEngineFont){
+            // printf("Closing font: %s\n",font_node->name);
             TTF_CloseFont(font_node->font);
+        }
         
         free(font_node->name);
         free(font_node);
@@ -322,21 +334,55 @@ SDL_Color * ye_color(const char *name){
     This is used by the primary API but can also be used directly by the developer.
 */
 
-SDL_Texture * ye_cache_texture(const char *path){
-    SDL_Texture *texture = ye_create_image_texture(path);
-
+void ye_cache_texture_manual(SDL_Texture *texture, const char *key){
     // cache the texture
     struct ye_texture_node *new_node = malloc(sizeof(struct ye_texture_node));
     new_node->texture = texture;
-    new_node->path = malloc(strlen(path) + 1);
-    strcpy(new_node->path, path);
+    new_node->path = malloc(strlen(key) + 1);
+    strcpy(new_node->path, key);
     HASH_ADD_KEYPTR(hh, cached_textures_head, new_node->path, strlen(new_node->path), new_node);
+}
+
+SDL_Texture * ye_cache_texture(const char *path){
+    SDL_Texture *texture;
+    SDL_Surface *sur = NULL;
+
+    // try to get the surface from resources.yep if we arent in editor mode
+    if(!YE_STATE.editor.editor_mode)
+        sur = yep_resource_image(path);
+
+    // if we didnt find it, load it from disk, else create texture from it
+    if(sur == NULL){
+        texture = ye_create_image_texture(ye_path_resources(path));
+    }
+    else{
+        texture = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, sur);
+        SDL_FreeSurface(sur);
+    }
+
+    // cache the texture
+    ye_cache_texture_manual(texture, path);
+
+    // struct ye_texture_node *new_node = malloc(sizeof(struct ye_texture_node));
+    // new_node->texture = texture;
+    // new_node->path = malloc(strlen(path) + 1);
+    // strcpy(new_node->path, path);
+    // HASH_ADD_KEYPTR(hh, cached_textures_head, new_node->path, strlen(new_node->path), new_node);
     // ye_logf(debug,"Cached texture: %s\n",path);
     return texture;
 }
 
 TTF_Font * ye_cache_font(const char *name, /*int size,*/ const char *path){
-    TTF_Font *font = ye_load_font(path/*, size*/);
+    TTF_Font *font = NULL;
+
+    // try to get the font from resources.yep if we arent in editor mode
+    if(!YE_STATE.editor.editor_mode)
+        font = yep_resource_font(path);
+
+    // if we didnt find it, load it from disk
+    if(font == NULL){
+        font = ye_load_font(ye_path_resources(path)/*, size*/);
+    }
 
     // cache the font
     struct ye_font_node *new_node = malloc(sizeof(struct ye_font_node));

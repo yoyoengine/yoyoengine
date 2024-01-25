@@ -354,8 +354,18 @@ void ye_init_graphics(){
         exit(1);
     }
 
-    // load our missing texture into memory
-    SDL_Surface *missing_surface = IMG_Load(ye_get_engine_resource_static("missing.png"));
+    /*
+        load our missing texture into memory
+
+        If we are the edtior, it exists as a loose file
+    */
+    SDL_Surface *missing_surface = NULL;
+    if(YE_STATE.editor.editor_mode){
+        missing_surface = IMG_Load(ye_get_engine_resource_static("missing.png"));
+    }
+    else{
+        missing_surface = yep_engine_resource_image("missing.png");
+    }
     missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
     SDL_FreeSurface(missing_surface);
 
@@ -381,8 +391,19 @@ void ye_init_graphics(){
     }
     ye_logf(info, "IMG initialized.\n");
 
-    // load icon to surface
-    SDL_Surface *pIconSurface = IMG_Load(YE_STATE.engine.icon_path);
+    /*
+        load icon to surface
+    
+        if we are editor, make sure to do it from loose file
+    */
+    SDL_Surface *pIconSurface = NULL;
+    if(YE_STATE.editor.editor_mode){
+        pIconSurface = IMG_Load(ye_get_engine_resource_static(YE_STATE.engine.icon_path));
+    }
+    else{
+        pIconSurface = yep_engine_resource_image(YE_STATE.engine.icon_path);
+    }
+
     if (pIconSurface == NULL) {
         ye_logf(error, "IMG_Load error: %s", IMG_GetError());
         exit(1);

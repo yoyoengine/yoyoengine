@@ -199,7 +199,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);
     if(entity->renderer != NULL){
         if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
-            ye_temp_add_image_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.image->src);
+            ye_add_image_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.image->src);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
             ye_temp_add_text_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font_name, entity->renderer->renderer_impl.text->font_size, entity->renderer->renderer_impl.text->color_name);
@@ -354,7 +354,11 @@ void ye_purge_ecs(){
 
         struct ye_entity * origin = ye_create_entity_named("origin");
         ye_add_transform_component(origin, -50, -50);
-        ye_temp_add_image_renderer_component(origin, 0, ye_get_engine_resource_static("originwhite.png"));
+
+        // load the origin texture
+        SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
+        ye_cache_texture_manual(orgn_tex, "originwhite.png");
+        ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
         origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
     }
     ye_logf(info, "Re-created editor entities.\n");

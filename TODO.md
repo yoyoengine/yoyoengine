@@ -599,3 +599,70 @@ SDL_Surface *image = IMG_Load(itr->fullpath);
             // cleanup
             SDL_FreeSurface(image);
 ```
+
+## new systems that need done
+
+### audio rewrite
+
+- spatial audio with emitters and listener
+- one track for music that is streamed in
+
+### animation / tilesheet
+
+- animations need batched into one single file, we modulate the src rect to get frames
+- similarly, a tilemap system is needed to easily create levels
+- we need to be able to easily slice and access parts of tilemaps and texture atlases
+- could be a simple solution to create an importer for altases created outside like in aseprite or other software and read them that way rather than pack myself
+
+## what if we exposed a really easy to use save data system?
+
+- could just be a small wrapper on top of the existing json functionality
+- this should come after 1.0, maybe even as an extension
+
+## new platforms
+
+- emscripten doable with a toolchain file
+- macos support seems to work out of box, need toolchain for osxcross
+
+## misc x9999
+
+- icon rework kinda goes hand in hand with engine resource stuff because by default rn we are using an icon in egnine resources
+
+## key to uploading sdl images to nuklear?
+
+```c
+NK_INTERN void
+nk_sdl_device_upload_atlas(const void *image, int width, int height)
+{
+    struct nk_sdl_device *dev = &sdl.ogl;
+
+    SDL_Texture *g_SDLFontTexture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, height);
+    if (g_SDLFontTexture == NULL) {
+        SDL_Log("error creating texture");
+        return;
+    }
+    SDL_UpdateTexture(g_SDLFontTexture, NULL, image, 4 * width);
+    SDL_SetTextureBlendMode(g_SDLFontTexture, SDL_BLENDMODE_BLEND);
+    dev->font_tex = g_SDLFontTexture;
+}
+```
+
+## youre gonna hate me for this
+
+we should probably actually have compiler macros and shit to compile out the engine being in editor mode now that its add subdired
+this wouldnt be too bad because its more just cutting out lines that we dont use and conditionally specifying paths and means of access, we can still leave the actual editor functionality in terms of visual debugging effects in the editor struct but turn it into like debugging field or something
+
+## editor gdb
+
+additional arg for gdb or something so that we instantly print out logs isntead of them not showing up
+
+## windows icon
+
+its pretty easy to setup icons but should do it in a platform agnostic way, cant always pack into file because might need loose, cmake takes an arg
+
+## disabled things
+
+engine startup noise is disabled until audio rework - actually all audio is
+
+for some reason only the game launched by the editor will fail to find the yep files. otherwise its fine when launched from its own build script
+^^ i would fix this now (sorry for leaving future me to do it) but this is such a mega commit that I think youll forgive me

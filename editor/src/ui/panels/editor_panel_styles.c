@@ -205,7 +205,7 @@ void editor_panel_styles_encode(){
         current_color = current_color->next;
     }
 
-    ye_json_write(ye_get_resource_static("styles.yoyo"),style_data);
+    ye_json_write(ye_path_resources("styles.yoyo"),style_data);
 }
 
 
@@ -225,7 +225,7 @@ void editor_panel_styles(struct nk_context *ctx)
     if (nk_begin(ctx, "Styles", nk_rect(screenWidth / 2 - 500, screenHeight / 2 - 400, 1000, 800), 
     NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE)) {
         if(style_data == NULL){
-            style_data = json_load_file(ye_get_resource_static("styles.yoyo"), 0, NULL);
+            style_data = json_load_file(ye_path_resources("styles.yoyo"), 0, NULL);
             if(style_data == NULL){
                 nk_layout_row_dynamic(ctx, 25, 1);
                 // ye_logf(error, "Failed to load styles.yoyo."); cant error because run every frame, maybe come up with generic solution for this
@@ -267,18 +267,18 @@ void editor_panel_styles(struct nk_context *ctx)
                 json_decref(style_data);
                 style_data = NULL;
                 editor_panel_styles_freelists();
-                style_data = json_load_file(ye_get_resource_static("styles.yoyo"), 0, NULL);
+                style_data = json_load_file(ye_path_resources("styles.yoyo"), 0, NULL);
                 editor_panel_styles_decode();
             }
         }
 
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Open in text editor")){
-            ye_logf(debug, "Opening: %s", ye_get_resource_static("styles.yoyo"));
+            ye_logf(debug, "Opening: %s", ye_path_resources("styles.yoyo"));
 
             // open the resource
             char command[256];
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_get_resource_static("styles.yoyo"));
+            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_path_resources("styles.yoyo"));
             system(command);  // NOTCROSSPLATFORM
         }
 
@@ -438,7 +438,7 @@ void editor_panel_styles(struct nk_context *ctx)
             ye_clear_font_cache();
             ye_clear_color_cache();
 
-            ye_pre_cache_styles(ye_get_resource_static("styles.yoyo"));
+            ye_pre_cache_styles(ye_path_resources("styles.yoyo"));
 
             // recompute any text renderer textures because we might have changed their definitions for colors and fonts!
             struct ye_entity_node *current_entity = renderer_list_head;

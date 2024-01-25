@@ -241,8 +241,20 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     /* set up the font atlas and add desired font; note that font sizes are
         * multiplied by font_scale to produce better results at higher DPIs */
     nk_sdl_font_stash_begin(&atlas);
-    // font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("Orbitron-Regular.ttf"), 20 * font_scale, &config);
-    font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+    
+    /*
+        If in editor mode, we load from engine resource file. If at runtime load from the packed engine resource yep
+    */
+    if(YE_STATE.editor.editor_mode){
+        font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+    }
+    else{
+        // get font binary data from engine resources
+        struct yep_data_info font_data = yep_engine_resource_misc("RobotoMono-Regular.ttf");
+        font = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 20 * font_scale, &config);
+        free(font_data.data); // GUESSING: nuklear seems to make its own copy of atlas when supplied this buffer so we are ok to free it
+    }
+    
     nk_sdl_font_stash_end();
 
     /* this hack makes the font appear to be scaled down to the desired
