@@ -196,7 +196,7 @@ void editor_input_shortcuts(SDL_Event event){
             // CTRL + S ->= save the scene
             if (event.key.keysym.mod & KMOD_CTRL)
             {
-                editor_write_scene_to_disk(YE_STATE.runtime.scene_file_path);
+                editor_write_scene_to_disk(ye_path_resources(YE_STATE.runtime.scene_file_path));
             }
             break;
         case SDLK_r:

@@ -80,9 +80,9 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
         return;
     }
 
-    // validate the w,h ints in view feild
-    int w,h;
-    if(!ye_json_int(view_field,"w",&w) || !ye_json_int(view_field,"h",&h)) {
+    // validate the x,y,w,h ints in view feild
+    int cx,cy,cw,ch;
+    if(!ye_json_int(view_field,"x",&cx) || !ye_json_int(view_field,"y",&cy) || !ye_json_int(view_field,"w",&cw) || !ye_json_int(view_field,"h",&ch)) {
         ye_logf(warning,"Entity %s has a camera component with invalid view field\n", entity_name);
         return;
     }
@@ -94,7 +94,8 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
     }
 
     // add the camera component
-    ye_add_camera_component(e,z,(SDL_Rect){0,0,w,h});
+    printf("adding camera component values %d %d %d %d\n", cx,cy,cw,ch);
+    ye_add_camera_component(e,z,(SDL_Rect){cx,cy,cw,ch});
 
     // update active state
     if(ye_json_has_key(camera,"active")){

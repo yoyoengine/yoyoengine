@@ -60,6 +60,8 @@ void serialize_entity_camera(struct ye_entity *entity, json_t *entity_json){
 
     // set the view field object
     json_t *view_field = json_object();
+    json_object_set_new(view_field, "x", json_integer(entity->camera->view_field.x));
+    json_object_set_new(view_field, "y", json_integer(entity->camera->view_field.y));
     json_object_set_new(view_field, "w", json_integer(entity->camera->view_field.w));
     json_object_set_new(view_field, "h", json_integer(entity->camera->view_field.h));
 
@@ -263,7 +265,7 @@ void serialize_entity_tag(struct ye_entity *entity, json_t *entity_json){
 void editor_write_scene_to_disk(const char *path){
     ye_logf(info,"Writing scene to disk at %s\n", path);
     // load the scene file into a json_t
-    json_t *scene = ye_json_read(YE_STATE.runtime.scene_file_path);
+    json_t *scene = ye_json_read(ye_path_resources(YE_STATE.runtime.scene_file_path));
 
     // create a json_t array listing all entities in the scene
     json_t *entities = json_array();
@@ -330,5 +332,5 @@ void editor_write_scene_to_disk(const char *path){
     // ye_json_log(scene); //TODO: figure out how we update the name version styles and prefabs
 
     // write the scene file
-    ye_json_write(YE_STATE.runtime.scene_file_path, scene);                      
+    ye_json_write(ye_path_resources(YE_STATE.runtime.scene_file_path), scene);                      
 }

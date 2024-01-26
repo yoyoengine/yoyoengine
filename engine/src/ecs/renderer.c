@@ -292,16 +292,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
     YE_STATE.runtime.painted_entity_count = 0;
 
-    // Get the camera's position in world coordinates
-    SDL_Rect camera_rect = (SDL_Rect){
-        YE_STATE.engine.target_camera->transform->x,
-        YE_STATE.engine.target_camera->transform->y
-    };
-    
-    SDL_Rect view_field = YE_STATE.engine.target_camera->camera->view_field;
-    camera_rect.w = view_field.w;
-    camera_rect.h = view_field.h;
-    // update camera rect to contain the view field w,h
+    /*
+        Get the cameras position in world coordinates
+    */
+    SDL_Rect camera_rect = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
 
     // Traverse tracked entities with renderer components
     struct ye_entity_node *current = renderer_list_head;
@@ -469,8 +463,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         SDL_Rect scene_camera_rect = ye_get_position_rect(YE_STATE.editor.scene_default_camera,YE_COMPONENT_CAMERA);
         scene_camera_rect.x = scene_camera_rect.x - camera_rect.x;
         scene_camera_rect.y = scene_camera_rect.y - camera_rect.y;
-        scene_camera_rect.w = YE_STATE.editor.scene_default_camera->camera->view_field.w;
-        scene_camera_rect.h = YE_STATE.editor.scene_default_camera->camera->view_field.h;
+        scene_camera_rect.w = scene_camera_rect.w;
+        scene_camera_rect.h = scene_camera_rect.h;
         SDL_RenderDrawRect(renderer, &scene_camera_rect);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }

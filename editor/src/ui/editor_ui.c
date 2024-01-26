@@ -422,7 +422,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         if (nk_menu_begin_label(ctx, "File", NK_TEXT_LEFT, nk_vec2(120, 200))) {
             nk_layout_row_dynamic(ctx, 25, 1);
             if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {    
-                editor_write_scene_to_disk(YE_STATE.runtime.scene_file_path);
+                editor_write_scene_to_disk(ye_path_resources(YE_STATE.runtime.scene_file_path));
             }
             nk_menu_end(ctx);
 
