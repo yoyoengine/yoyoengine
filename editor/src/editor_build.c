@@ -50,8 +50,9 @@ void editor_build_packs(){
     free(resources);
     free(engine_yep);
     free(resources_yep);
-
 }
+
+// -u is for unbuffered output btw
 
 void editor_build(){
 
@@ -59,7 +60,7 @@ void editor_build(){
 
     // call the build script
     char command[256];
-    snprintf(command, sizeof(command), "python3 \"%s\"", ye_path("build.py"));
+    snprintf(command, sizeof(command), "python3 -u \"%s\"", ye_path("build.py"));
     printf("command: %s\n", command);
     system(command);
 }
@@ -70,6 +71,6 @@ void editor_build_and_run(){
 
     // call the build script
     char command[256];
-    snprintf(command, sizeof(command), "python3 \"%s\" --run", ye_path("build.py"));
+    snprintf(command, sizeof(command), "python3 -u \"%s\" --run", ye_path("build.py"));
     system(command);
 }

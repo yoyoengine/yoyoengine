@@ -666,3 +666,37 @@ engine startup noise is disabled until audio rework - actually all audio is
 
 for some reason only the game launched by the editor will fail to find the yep files. otherwise its fine when launched from its own build script
 ^^ i would fix this now (sorry for leaving future me to do it) but this is such a mega commit that I think youll forgive me
+
+## build improvements
+
+different build/release modes
+
+## editor improvements x2
+
+the layout and panels could be cleaned up
+
+would be nice to have overlays and preferences (paintbounds) sync to settings
+
+custom borderless layout like UE5
+
+stretch viewport gone
+
+condense options
+
+actually be able to drag and resize things
+
+run the game without building (should be possible)
+
+(way mega stretch) lua editor inside the editor
+
+save confirmations and popups are really important
+
+build currently blocks while executing:
+
+```c
+/*
+    Investigation into fixing blocking builds:
+    - pthreads
+    - pipes to communicate with build script
+*/
+```

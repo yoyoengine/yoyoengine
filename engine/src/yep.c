@@ -736,23 +736,23 @@ TTF_Font * _yep_font(char *handle, char *path){
 */
 
 SDL_Surface * yep_resource_image(char *handle){
-    return _yep_image(handle, "resources.yep");
+    return _yep_image(handle, ye_path("resources.yep"));
 }
 
 json_t * yep_resource_json(char *handle){
-    return _yep_json(handle, "resources.yep");
+    return _yep_json(handle, ye_path("resources.yep"));
 }
 
 Mix_Chunk * yep_resource_audio(char *handle){
-    return _yep_audio(handle, "resources.yep");
+    return _yep_audio(handle, ye_path("resources.yep"));
 }
 
 TTF_Font * yep_resource_font(char * handle){
-    return _yep_font(handle, "resources.yep");
+    return _yep_font(handle, ye_path("resources.yep"));
 }
 
 struct yep_data_info yep_resource_misc(char *handle){
-    return _yep_misc(handle, "resources.yep");
+    return _yep_misc(handle, ye_path("resources.yep"));
 }
 
 /*

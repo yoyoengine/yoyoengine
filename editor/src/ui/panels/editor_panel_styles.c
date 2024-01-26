@@ -438,7 +438,7 @@ void editor_panel_styles(struct nk_context *ctx)
             ye_clear_font_cache();
             ye_clear_color_cache();
 
-            ye_pre_cache_styles(ye_path_resources("styles.yoyo"));
+            ye_pre_cache_styles("styles.yoyo");
 
             // recompute any text renderer textures because we might have changed their definitions for colors and fonts!
             struct ye_entity_node *current_entity = renderer_list_head;

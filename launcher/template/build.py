@@ -96,8 +96,10 @@ class YoyoEngineBuildSystem:
         # set self.binary_dir depending on the platform so we dont have to do this in a bunch of separate places
         if self.game_platform == "linux":
             self.binary_dir = "bin/Linux"
+            self.cmake_platform_name = "Linux"
         elif self.game_platform == "windows":
             self.binary_dir = "bin/Windows"
+            self.cmake_platform_name = "Windows"
     
     def configure(self):
         # write our CMakeLists.txt file and run cmake .. to configure
@@ -262,11 +264,13 @@ class YoyoEngineBuildSystem:
             print("[YOYO BUILD] Copied dlls to build folder.")
 
         # build cleanup, remove the include folder in the output
-        if(os.path.exists("./bin/Linux/include")):
-            shutil.rmtree("./bin/Linux/include")
-        if(os.path.exists("./bin/Windows/include")):
-            shutil.rmtree("./bin/Windows/include")
+        if(os.path.exists(f"./bin/{self.cmake_platform_name}/include")):
+            shutil.rmtree(f"./bin/{self.cmake_platform_name}/include")
         print("[YOYO BUILD] Removed include folder from build folder.")
+
+        # if there were zero tricks, remove the tricks folder
+        if(len(os.listdir(f"./bin/{self.cmake_platform_name}/tricks")) == 1): # tricks.yoyo is always there
+            shutil.rmtree(f"./bin/{self.cmake_platform_name}/tricks")
 
         # move engine.yep and resources.yep into the output folder
         shutil.copyfile(f"{self.script_location}/engine.yep", f"{self.binary_dir}/engine.yep")
