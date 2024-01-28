@@ -405,6 +405,83 @@ void _paint_tag(struct nk_context *ctx, struct ye_entity *ent){
     }
 }
 
+void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
+    if(ent->audiosource != NULL){
+        if(nk_tree_push(ctx, NK_TREE_TAB, "Audio Source", NK_MAXIMIZED)){
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->audiosource->active);
+
+            static bool _audiosource_disabled = false;
+            if(!ent->audiosource->active){
+                _audiosource_disabled = true;
+                nk_widget_disable_begin(ctx);
+            }
+            else{
+                _audiosource_disabled = false;
+            }
+
+            nk_label(ctx, "Spatial Simulation:", NK_TEXT_LEFT);
+            nk_checkbox_label(ctx, "Simulated", (nk_bool*)&ent->audiosource->simulated);
+            
+            // if simulation is off, gray out these fields
+            if(!ent->audiosource->simulated)
+                nk_widget_disable_begin(ctx);
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_checkbox_label(ctx, "Relative", (nk_bool*)&ent->audiosource->relative);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_property_float(ctx, "#x", -1000000, &ent->audiosource->range.x, 1000000, 1, 5);
+            nk_property_float(ctx, "#y", -1000000, &ent->audiosource->range.y, 1000000, 1, 5);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            // save size before
+            float size = ent->audiosource->range.w;
+            nk_property_float(ctx, "#size", 0, &ent->audiosource->range.w, 1000000, 1, 5);
+            ent->audiosource->range.h = ent->audiosource->range.w;
+
+            // if the size changed, move the x and y to keep the center the same
+            if(size != ent->audiosource->range.w){
+                ent->audiosource->range.x -= (ent->audiosource->range.w - size) / 2;
+                ent->audiosource->range.y -= (ent->audiosource->range.w - size) / 2;
+            }
+
+            if(!ent->audiosource->simulated && !_audiosource_disabled)
+                nk_widget_disable_end(ctx);
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_checkbox_label(ctx, "Play on Awake", (nk_bool*)&ent->audiosource->play_on_awake);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_property_int(ctx, "#Loops", -1, &ent->audiosource->loops, 100, 1, 5);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_property_float(ctx, "#Volume", 0, &ent->audiosource->volume, 1, 0.01, 0.05);
+            
+            // Allocate a temporary buffer that is large enough for user input
+            char temp_buffer_handle[1024];
+            strncpy(temp_buffer_handle, ent->audiosource->handle, sizeof(temp_buffer_handle));
+            temp_buffer_handle[sizeof(temp_buffer_handle) - 1] = '\0';  // Ensure null-termination
+
+            // Allow the user to edit the text in the temporary buffer
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer_handle, sizeof(temp_buffer_handle), nk_filter_default);
+
+            // If the text has been changed, replace the old text with the new one
+            if (strcmp(temp_buffer_handle, ent->audiosource->handle) != 0) {
+                free(ent->audiosource->handle);
+                ent->audiosource->handle = strdup(temp_buffer_handle);
+                printf("Changed handle to %s\n", ent->audiosource->handle);
+            }
+
+            if(_audiosource_disabled)
+                nk_widget_disable_end(ctx);
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if(nk_button_label(ctx, "Remove Component")){
+                ye_remove_audiosource_component(ent);
+            }
+            
+            nk_tree_pop(ctx);
+        }
+    }
+}
+
 bool comp_exists(int i, struct ye_entity *ent){
     switch(i){
         case 0:
@@ -427,6 +504,9 @@ bool comp_exists(int i, struct ye_entity *ent){
             break;
         case 6:
             return ent->lua_script != NULL;
+            break;
+        case 7:
+            return ent->audiosource != NULL;
             break;
         default:
             return false;
@@ -467,12 +547,12 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                     Selector tile layout thing that shows all components in list
                 */
                 static int current_component_inspector_tab = 0;
-                const char *names[] = {"Transform", "Renderer", "Camera","Collider","Physics","Tag","Script"};
+                const char *names[] = {"Transform", "Renderer", "Camera","Collider","Physics","Tag","Script","Audio Source"};
                 static int num_components = sizeof(names) / sizeof(names[0]); // does this mean its only computed here once?
 
                 nk_style_push_vec2(ctx, &ctx->style.window.spacing, nk_vec2(0,0));
                 nk_style_push_float(ctx, &ctx->style.button.rounding, 0);
-                nk_layout_row_dynamic(ctx, 50, 7);
+                nk_layout_row_dynamic(ctx, 50, num_components/2);
                 for (int i = 0; i < num_components; ++i) {
                     // Check if the component is not null
                     if (comp_exists(i, ent)) {
@@ -480,7 +560,7 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                         ctx->style.button.text_normal = nk_rgb(0,255,0);
                     } else {
                         // Reset the text color
-                        ctx->style.button.text_normal = nk_rgb(255,255,255);
+                        ctx->style.button.text_normal = nk_rgb(255,255,255); // TODO: THIS SHOULD BE READ FROM STYLE TABLE NOT HARDCODED
                     }
 
                     if (current_component_inspector_tab == i) {
@@ -490,6 +570,9 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                         current_component_inspector_tab = nk_button_label(ctx, names[i]) ? i: current_component_inspector_tab;
                         ctx->style.button.normal = button_color;
                     } else current_component_inspector_tab = nk_button_label(ctx, names[i]) ? i: current_component_inspector_tab;
+
+                    // reset button text color
+                    ctx->style.button.text_normal = nk_rgb(255,255,255); // TODO: THIS SHOULD BE READ FROM STYLE TABLE NOT HARDCODED
                 }
                 nk_style_pop_float(ctx);
                 nk_style_pop_vec2(ctx);
@@ -515,6 +598,9 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                         _paint_tag(ctx,ent);
                         break;
                     case 6: // script //
+                        break;
+                    case 7: // audiosource //
+                        _paint_audiosource(ctx,ent);
                         break;
                 }
             }

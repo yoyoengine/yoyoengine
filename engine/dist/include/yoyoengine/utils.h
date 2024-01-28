@@ -106,6 +106,28 @@ enum ye_component_type {
 };
 
 /**
+ * @brief Returns the angle between two points.
+ * 
+ * @param x1 The x position of the first point.
+ * @param y1 The y position of the first point.
+ * @param x2 The x position of the second point.
+ * @param y2 The y position of the second point.
+ * @return float The angle between the two points.
+*/
+float ye_angle(float x1, float y1, float x2, float y2);
+
+/**
+ * @brief Returns the distance between two points.
+ * 
+ * @param x1 The x position of the first point.
+ * @param y1 The y position of the first point.
+ * @param x2 The x position of the second point.
+ * @param y2 The y position of the second point.
+ * @return float The distance between the two points.
+*/
+float ye_distance(float x1, float y1, float x2, float y2);
+
+/**
  * @brief Returns the position of a component on an entity.
  * 
  * Passing YE_COMPONENT_TRANSFORM will return the position of the entity transform, whereas passing
@@ -131,5 +153,15 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
  * @return SDL_Rect The position of the component.
  */
 SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type);
+
+/**
+ * @brief Draws a circle using SDL_RenderDrawPoint.
+ * 
+ * @param renderer The renderer to draw the circle on.
+ * @param center_x The x position of the center of the circle.
+ * @param center_y The y position of the center of the circle.
+ * @param radius The radius of the circle.
+ */
+void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius);
 
 #endif

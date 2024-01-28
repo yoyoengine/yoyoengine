@@ -700,3 +700,55 @@ build currently blocks while executing:
     - pipes to communicate with build script
 */
 ```
+
+## new mixer
+
+in terms of music tracks, we really only need one right now, but in the future we could expand the system to have a table of them for easy blending between different intensities and instruments
+
+there are fading and other channel effects that could be fun to wrap around (and pretty easy too)
+
+## qol editor
+
+little widget icons for stuff like audio listeners and emitters
+
+## misc 9123
+
+I dont think every component has its relativity serialized rn
+
+bumped nuklear ver for disabled feature, check what else has been added and if we want to use it. also implement the disabled on applicable places
+
+check your style impl because with disabled widgets the checkbox does not fade color
+
+maybe the issues with paintbounds is not casting to ints?
+
+if renderer is not on/disabled we cant preview colliders or audio range
+
+editor needs scene configureation/settings panel, add shortcut + menu bar + button in bottom maybe
+
+we really need to add support for creating components now
+
+prefabs would be nice but not sure how to best integrate that system
+
+move over to build numbers for major? or semver... semver is hard to keep up with and I want to create major builds more often than build numbers would serve...
+
+## mixer audio source
+
+it might be smart to use the height as the falloff start range, because unity does that and its also smart to be able to controll where it sounds full volume and where it starts to fall off (this should not affect the mix positioning which is still relevant even if we are not falling off yet)
+
+audio emitters are constantly playing, and just muted if outside range
+
+BUG
+
+- reload scene no work (will)
+
+- check memory leaks mix chunks
+
+## otha
+
+fading in and out scene loader transitions
+
+scene settings panel editor
+
+mixer start falloff range
+
+audio listener specification rather than default camera center

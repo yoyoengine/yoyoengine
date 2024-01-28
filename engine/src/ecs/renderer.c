@@ -419,6 +419,21 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }
 
+                    // audio range
+                    if(current->entity->audiosource != NULL && YE_STATE.editor.audiorange_visible){
+                        SDL_Rect audio_range_rect = ye_convert_rectf_rect(
+                            ye_get_position(current->entity,YE_COMPONENT_AUDIOSOURCE)
+                        );
+                        audio_range_rect.x = audio_range_rect.x - camera_rect.x;
+                        audio_range_rect.y = audio_range_rect.y - camera_rect.y;
+                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+                        // use ye_draw_circle to draw the audio range, the width is the radius
+                        ye_draw_circle(renderer, audio_range_rect.x + (audio_range_rect.w / 2), audio_range_rect.y + (audio_range_rect.h / 2), audio_range_rect.w / 2);
+
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                    }
+
                     if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
                         // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
                         SDL_Color color = {255, 255, 255, 255};

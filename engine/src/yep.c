@@ -711,6 +711,24 @@ Mix_Chunk * _yep_audio(char *handle, char *path){
     return chunk;
 }
 
+Mix_Music * _yep_music(char *handle, char *path){
+    // load the data
+    struct yep_data_info data = _yep_misc(handle, path);
+
+    // create the music
+    Mix_Music *music = Mix_LoadMUS_RW(SDL_RWFromMem(data.data, data.size), 1);
+    if(music == NULL){
+        ye_logf(error,"Error: could not create music for %s\n", handle);
+        return NULL;
+    }
+
+    // free the data
+    // free(data.data); CAUSES PAGE FAULT ON WINDOWS!!!
+
+    // return the music
+    return music;
+}
+
 TTF_Font * _yep_font(char *handle, char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
@@ -745,6 +763,10 @@ json_t * yep_resource_json(char *handle){
 
 Mix_Chunk * yep_resource_audio(char *handle){
     return _yep_audio(handle, ye_path("resources.yep"));
+}
+
+Mix_Music * yep_resource_music(char *handle){
+    return _yep_music(handle, ye_path("resources.yep"));
 }
 
 TTF_Font * yep_resource_font(char * handle){
@@ -807,6 +829,23 @@ Mix_Chunk * yep_engine_resource_audio(char *handle){
     }
     else{
         return _yep_audio(handle, ye_path("engine.yep"));
+    }
+}
+
+Mix_Music * yep_engine_resource_music(char *handle){
+    /*
+        If in editor mode, we need to load from loose file
+    */
+    if(YE_STATE.editor.editor_mode){
+        Mix_Music *music = Mix_LoadMUS(ye_get_engine_resource_static(handle));
+        if(music == NULL){
+            ye_logf(error,"Error: could not create music for %s\n", handle);
+            return NULL;
+        }
+        return music;
+    }
+    else{
+        return _yep_music(handle, ye_path("engine.yep"));
     }
 }
 

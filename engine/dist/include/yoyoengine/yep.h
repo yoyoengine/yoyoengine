@@ -179,6 +179,16 @@ json_t * yep_resource_json(char *handle);
 Mix_Chunk * yep_resource_audio(char *handle);
 
 /**
+ * @brief Load a music file stored inside of resources.yep
+ * 
+ * @param handle The key storing the music file in the file
+ * @return Mix_Music* The loaded music file (NULL if not found)
+ * 
+ * !!! YOU MUST FREE THE MUSIC YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ */
+Mix_Music * yep_resource_music(char *handle);
+
+/**
  * @brief Load a font file stored inside of resources.yep
  * 
  * @param handle The key storing the font file in the file
@@ -207,6 +217,8 @@ SDL_Surface * yep_engine_resource_image(char *handle);
 json_t * yep_engine_resource_json(char *handle);
 
 Mix_Chunk * yep_engine_resource_audio(char *handle);
+
+Mix_Music * yep_engine_resource_music(char *handle);
 
 TTF_Font * yep_engine_resource_font(char * handle);
 

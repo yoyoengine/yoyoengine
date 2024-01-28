@@ -27,29 +27,37 @@
 // counter for audio chunks
 extern int totalChunks;
 
-/**
- * @brief Initialize audio components for engine.
- */
-void ye_audio_init();
+struct ye_mixer_cache_item {
+    char *handle;           // the handle of the resource
+    Mix_Chunk *chunk;       // the chunk of the resource
+    UT_hash_handle hh;      // the hash handle
+};
+
+/*
+    MIXER CACHE
+*/
+
+void ye_init_mixer_cache();
+void ye_shutdown_mixer_cache();
+void ye_purge_mixer_cache();
+void _ye_mixer_engine_cache(char *handle);
 
 /**
- * @brief Play a sound by its filename path and specify number of loops.
- * @param pFilename The path to the audio file.
- * @param channel The audio channel to play the sound on.
- * @param loops The number of times to loop the sound. -1 for infinite looping.
+ * @brief Load an audio chunk by handle into the cache and return a pointer to it
+ * 
+ * @param handle 
+ * @return Mix_Chunk* 
  */
-void ye_play_sound(const char *pFilename, int channel, int loops);
+Mix_Chunk *ye_audio(char *handle);
 
-/**
- * @brief Set a specific (or all channels if passed -1) volume level 0-128.
- * @param channel The audio channel to set the volume for. -1 for all channels.
- * @param volume The volume level to set. Range is 0-128.
- */
-void ye_set_volume(int channel, int volume);
+/*
+    AUDIO SYSTEM
+*/
 
-/**
- * @brief Shut down all audio systems and free all memory associated.
- */
-void ye_audio_shutdown();
+void ye_init_audio();
+void ye_shutdown_audio();
+
+int ye_play_sound(char *handle, int loops, float volume_scale);
+void ye_play_music(char *handle, int loops, float volume_scale);
 
 #endif

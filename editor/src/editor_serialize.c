@@ -262,6 +262,43 @@ void serialize_entity_tag(struct ye_entity *entity, json_t *entity_json){
     json_object_set_new(entity_json, "tag", tag);
 }
 
+void serialize_entity_audiosource(struct ye_entity *entity, json_t *entity_json){
+    // create the audiosource object
+    json_t *audiosource = json_object();
+
+    // set the active state
+    json_object_set_new(audiosource, "active", json_boolean(entity->audiosource->active));
+
+    // set the simulated
+    json_object_set_new(audiosource, "simulated", json_boolean(entity->audiosource->simulated));
+
+    // set the (src) handle
+    json_object_set_new(audiosource, "src", json_string(entity->audiosource->handle));
+
+    // set the volume
+    json_object_set_new(audiosource, "volume", json_real(entity->audiosource->volume));
+
+    // set the range
+    json_t *range = json_object();
+    json_object_set_new(range, "x", json_integer(entity->audiosource->range.x));
+    json_object_set_new(range, "y", json_integer(entity->audiosource->range.y));
+    json_object_set_new(range, "w", json_integer(entity->audiosource->range.w));
+    json_object_set_new(range, "h", json_integer(entity->audiosource->range.h));
+    json_object_set_new(audiosource, "position", range);
+
+    // set the relative
+    json_object_set_new(audiosource, "relative", json_boolean(entity->audiosource->relative));
+
+    // set the play on awake
+    json_object_set_new(audiosource, "play on awake", json_boolean(entity->audiosource->play_on_awake));
+
+    // set the loops
+    json_object_set_new(audiosource, "loops", json_integer(entity->audiosource->loops));
+
+    // add the audiosource object to the entity json
+    json_object_set_new(entity_json, "audiosource", audiosource);
+}
+
 void editor_write_scene_to_disk(const char *path){
     ye_logf(info,"Writing scene to disk at %s\n", path);
     // load the scene file into a json_t
@@ -318,6 +355,10 @@ void editor_write_scene_to_disk(const char *path){
 
         if(entity->tag != NULL){
             serialize_entity_tag(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->audiosource != NULL){
+            serialize_entity_audiosource(entity, json_object_get(entity_json, "components"));
         }
 
         // add the entity to the entity json array

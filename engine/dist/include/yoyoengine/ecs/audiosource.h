@@ -18,7 +18,8 @@
 
 /**
  * @file audiosource.h
- * @brief NOT YET DOCUMENTED OR IMPLEMENTED
+ * @brief Contains audio emitter component code
+ * @note In the future, some sort of audio group isolation would be nice in order to easily scale the volume of different effects.
  */
 
 #ifndef YE_AUDIOSOURCE_H
@@ -26,47 +27,63 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-/*
-    This spatialized audio relies on:
-    - relative positioning options for components
-    which relies on:
-    - figuring out rect vs bounds
-
-    also:
-    - circular areas of effect (optional)?
-*/
-
-/*
-    For audio sources, we dont really care about some of the traditional priorities for a complete audio api, these are more about very basic
-    sounds playing in a scene. they have a position, a volume, and a file name source. Their channel is automatically assigned by the engine. Active means the component is even enabled,
-    there is a seperate bool for "playing" which can be used to unload the sound if it is not playing and we are outside of earshot
-*/
-
 struct ye_component_audiosource {
-    bool active;
-    bool playing;
-    char *filename;
-    int loops;
-    int volume;
+    bool active;            // whether or not the audio source is active
 
-    // struct ye_position pos; TODO
+    bool simulated;         // whether or not the audio source is simulated (if it is, it will be affected by the audio listener)
+
+    char *handle;           // the resource handle of the audio source
+    float volume;           // the volume of the audio source (scaled against the engine volume as a ceiling)
     
-    // reserved for engine tracking and manipulation:
+    // controls the position - the only thing you can set in this is width which updates height as well
+    struct ye_rectf range;  // the range of the audio source (used to calculate distance), the middle of this is considered the origin
+    bool relative;          // whether or not the audio source is relative to the transform
 
-    int channel;
+    bool play_on_awake;     // whether or not the audio source should play on awake
+    int loops;              // the number of times to loop the audio source
 
-    // honestly why not just load the sound here, we would have to do it anyway, possibly multiple times if we are registering and de registering
+    int channel;            // holds the channel the audio source is playing on (assigned by the engine)
+    bool playing;           // whether or not the audio source is playing (triggered by player but this value is tracked by the engine)
 };
 
-/*
-    Constructs the audio source component for the given entity. The filename is the path to the audio file, and loops is the number of times
-*/
-void ye_add_audiosource_component(struct ye_entity *entity, const char *pFilename, int loops);
+/**
+ * @brief Constructs an audiosource component onto a given entity.
+ * 
+ * @param entity The target entity
+ * @param handle The resource handle of the sound to play
+ * @param volume The volume (0-1) of the sound to play (this will be converted and scaled to the projects volume global cap)
+ * @param play_on_awake Whether or not the sound should play on awake
+ * @param loops The number of times to loop the sound (-1 for infinite looping)
+ * @param simulated Whether or not the sound should be simulated (affected by the audio listener)
+ */
+void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range);
 
+/**
+ * @brief Will play the audio source on the entity <loops> times until paused, destroyed, disabled, or finished playing <loops>
+ * 
+ * @param entity The target entity
+ */
 void ye_play_audiosource(struct ye_entity *entity);
 
+/**
+ * @brief Pauses the audio source on the entity
+ * 
+ * @param entity The target entity
+ * 
+ * @note This function will reset the audio source to its initial state (like loops) and will dereference the channel in the mixcache
+ */
 void ye_pause_audiosource(struct ye_entity *entity);
 
+/**
+ * @brief Removes the audiosource component from the entity
+ * 
+ * @param entity The target entity
+ */
 void ye_remove_audiosource_component(struct ye_entity *entity);
+
+/**
+ * @brief The system in charge of processing audiosource components
+ */
+void ye_system_audiosource();
 
 #endif

@@ -94,7 +94,6 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
     }
 
     // add the camera component
-    printf("adding camera component values %d %d %d %d\n", cx,cy,cw,ch);
     ye_add_camera_component(e,z,(SDL_Rect){cx,cy,cw,ch});
 
     // update active state
@@ -417,6 +416,61 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
     }
 }
 
+void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const char* entity_name){
+    // handle the simulated bool
+    bool simulated;
+    if(!ye_json_bool(audiosource,"simulated",&simulated)) {
+        ye_logf(warning,"Entity %s has an audiosource component, but it is missing the simulated field\n", entity_name);
+        simulated = false;
+    }
+    
+    // validate src (handle) field
+    const char *handle = NULL;
+    if(!ye_json_string(audiosource,"src",&handle)) {
+        ye_logf(warning,"Entity %s has an audiosource component, but it is missing the src field\n", entity_name);
+        return;
+    }
+
+    // position field
+    struct ye_rectf b = ye_retrieve_position(audiosource);
+
+    // play on awake bool
+    bool play_on_awake;
+    if(!ye_json_bool(audiosource,"play on awake",&play_on_awake)) {
+        ye_logf(warning,"Entity %s has an audiosource component, but it is missing the \"play on awake\" field\n", entity_name);
+        play_on_awake = false;
+    }
+
+    // volume float 0-1
+    float volume;
+    if(!ye_json_float(audiosource,"volume",&volume)) {
+        ye_logf(warning,"Entity %s has an audiosource component, but it is missing the volume field\n", entity_name);
+        volume = 1.0f;
+    }
+
+    // loops int
+    int loops;
+    if(!ye_json_int(audiosource,"loops",&loops)) {
+        ye_logf(warning,"Entity %s has an audiosource component, but it is missing the loops field\n", entity_name);
+        loops = 0;
+    }
+
+    // add the audiosource component
+    ye_add_audiosource_component(e,handle,volume,play_on_awake,loops,simulated,b);
+
+    // update active state
+    if(ye_json_has_key(audiosource,"active")){
+        bool active = true;    ye_json_bool(audiosource,"active",&active);
+        e->audiosource->active = active;
+    }
+
+    // update the relative field
+    if(ye_json_has_key(audiosource,"relative")){
+        bool relative = true;    ye_json_bool(audiosource,"relative",&relative);
+        e->audiosource->relative = relative;
+    }
+}
+
 /*
     ===================================================================
     ===================================================================
@@ -507,12 +561,26 @@ void ye_construct_scene(json_t *entities){
             }
             ye_construct_collider(e,collider,entity_name);
         }
+
+        // if we have an audiosource
+        if(ye_json_has_key(components,"audiosource")){
+            json_t *audiosource = NULL; ye_json_object(components,"audiosource",&audiosource);
+            if(audiosource == NULL){
+                ye_logf(warning,"Entity %s has a audiosource field, but it's invalid.\n", entity_name);
+                continue;
+            }
+            ye_construct_audiosource(e,audiosource,entity_name);
+        }
     }
 }
 
 void ye_load_scene(const char *scene_path){
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();
+
+    // shutdown and restart audio subsystem TODO: do some soft reset instead
+    ye_shutdown_audio();
+    ye_init_audio();
 
     /*
         If we are in editor mode, this scene file will be loaded from the loose resources dir, if runtime it will be packed
@@ -605,6 +673,30 @@ void ye_load_scene(const char *scene_path){
         }
         else{
             YE_STATE.editor.scene_default_camera = camera;
+        }
+    }
+
+    /*
+        since audio is on its own thread, lets start it now that everything else is done
+        The expected format of music in the scene file is this:
+        "music":{
+            "src": "music/2024.mp3",
+            "loop": true,
+            "volume": 1
+        },
+    */
+    if(!YE_STATE.editor.editor_mode){
+        json_t *music = NULL;
+        if(ye_json_object(scene,"music",&music)){
+            const char *src = NULL; ye_json_string(music,"src",&src);
+            bool loop = false; ye_json_bool(music,"loop",&loop);
+            float volume = 1; ye_json_float(music,"volume",&volume);
+
+            int loops = 0;
+            if(loop)
+                loops = -1;
+
+            ye_play_music(src,loop,volume);
         }
     }
 

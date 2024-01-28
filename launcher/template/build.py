@@ -268,8 +268,8 @@ class YoyoEngineBuildSystem:
             shutil.rmtree(f"./bin/{self.cmake_platform_name}/include")
         print("[YOYO BUILD] Removed include folder from build folder.")
 
-        # if there were zero tricks, remove the tricks folder
-        if(len(os.listdir(f"./bin/{self.cmake_platform_name}/tricks")) == 1): # tricks.yoyo is always there
+        # if there were zero tricks, remove the tricks folder (as long as we arent on windows because we have already removed this on windows)
+        if(self.game_platform != "windows" and len(os.listdir(f"./bin/{self.cmake_platform_name}/tricks")) == 1): # tricks.yoyo is always there
             shutil.rmtree(f"./bin/{self.cmake_platform_name}/tricks")
 
         # move engine.yep and resources.yep into the output folder

@@ -115,6 +115,7 @@ struct ye_entity_node *physics_list_head;
 struct ye_entity_node *tag_list_head;
 struct ye_entity_node *collider_list_head;
 struct ye_entity_node *lua_script_list_head;
+struct ye_entity_node *audiosource_list_head;
 
 // struct ye_entity_node *interactible_list_head;
 
@@ -141,6 +142,7 @@ struct ye_entity * ye_create_entity(){
     entity->physics = NULL;
     entity->collider = NULL;
     entity->tag = NULL;
+    entity->audiosource = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -169,6 +171,7 @@ struct ye_entity * ye_create_entity_named(const char *name){
     entity->physics = NULL;
     entity->collider = NULL;
     entity->tag = NULL;
+    entity->audiosource = NULL;
 
     // add the entity to the entity list
     ye_entity_list_add(&entity_list_head, entity);
@@ -267,6 +270,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
     if(entity->collider != NULL) ye_remove_collider_component(entity);
+    if(entity->audiosource != NULL) ye_remove_audiosource_component(entity);
     // free the entity name
     free(entity->name);
 
@@ -338,6 +342,7 @@ void ye_init_ecs(){
     physics_list_head = ye_entity_list_create();
     tag_list_head = ye_entity_list_create();
     collider_list_head = ye_entity_list_create();
+    audiosource_list_head = ye_entity_list_create();
     // lua_script_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
@@ -380,6 +385,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&tag_list_head);
     ye_entity_list_destroy(&collider_list_head);
     ye_entity_list_destroy(&lua_script_list_head);
+    ye_entity_list_destroy(&audiosource_list_head);
 
     // take care of cleaning up any entity pointers that exist in global state
     YE_STATE.engine.target_camera = NULL;
@@ -396,7 +402,7 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Int:%d Scr:%d Phy:%d Col:%d Tag:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Int:%d Scr:%d Phy:%d Col:%d Tag:%d Aud:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
@@ -405,7 +411,8 @@ void ye_print_entities(){
             current->entity->lua_script != NULL,
             current->entity->physics != NULL,
             current->entity->collider != NULL,
-            current->entity->tag != NULL
+            current->entity->tag != NULL,
+            current->entity->audiosource != NULL
         );
         ye_logf(debug, b);
         current = current->next;

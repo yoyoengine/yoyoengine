@@ -192,6 +192,7 @@ struct ye_editor_config {
     bool colliders_visible;
     bool display_names;
     bool freecam_enabled;
+    bool audiorange_visible;
     /*
         Only work with editor_mode enabled:
     */

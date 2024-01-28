@@ -214,6 +214,10 @@ void ye_process_frame(){
     // render frame
     ye_render_all();
 
+    // recompute audio spatialization
+    if(!YE_STATE.editor.editor_mode)
+        ye_system_audiosource();
+
     YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
 
     // C post frame callback
@@ -375,11 +379,9 @@ void ye_init_engine() {
     }
 
     // startup audio systems
-    ye_audio_init();
+    ye_init_audio();
 
-    // before we play our loud ass startup sound, lets check what volume the game wants
-    // the engine to be at initially
-    ye_set_volume(-1, YE_STATE.engine.volume);
+    // the audio initialization accesses YE_STATE.engine.volume to cap each channel by default
 
     // initialize and load tricks (modules/plugins)
     ye_init_tricks();
@@ -397,8 +399,11 @@ void ye_init_engine() {
     }
     else{
         // TODO: FIXME - this wont work yet because we need to load from file at runtime
-        if(!YE_STATE.editor.editor_mode)
-            ye_play_sound(ye_get_engine_resource_static("startup.mp3"),0,0); // play startup sound
+        if(!YE_STATE.editor.editor_mode){
+            // because play sound looks in resources pack, we need to pre cache the engine one
+            _ye_mixer_engine_cache("startup.mp3");
+            ye_play_sound("startup.mp3",0,1); // play startup sound
+        }
 
         // im not a particularly massive fan of using the unstable ECS just yet, but might as well
         struct ye_entity * splash_cam = ye_create_entity();
@@ -498,7 +503,7 @@ void ye_shutdown_engine(){
     ye_logf(info, "Shut down graphics.\n");
 
     // shutdown audio
-    ye_audio_shutdown();
+    ye_shutdown_audio();
     ye_logf(info, "Shut down audio.\n");
 
     // shutdown logging

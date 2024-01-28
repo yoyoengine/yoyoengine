@@ -43,6 +43,7 @@ extern struct ye_entity_node *physics_list_head;
 extern struct ye_entity_node *tag_list_head;
 extern struct ye_entity_node *collider_list_head;
 extern struct ye_entity_node *lua_script_list_head;
+extern struct ye_entity_node *audiosource_list_head;
 
 /**
  * @brief Linked list structure for storing entities
@@ -107,6 +108,7 @@ struct ye_entity {
     struct ye_component_physics *physics;           // physics component
     struct ye_component_collider *collider;         // collider component
     struct ye_component_tag *tag;                   // tag component
+    struct ye_component_audiosource *audiosource;   // audiosource component
 };
 
 /**

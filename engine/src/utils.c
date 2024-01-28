@@ -114,7 +114,19 @@ struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect){
     return newRect;
 }
 
-float ye_get_angle(float x1, float y1, float x2, float y2){
+/*
+    Helper method that takes in two points for floats and returns the distance between them
+*/
+float ye_distance(float x1, float y1, float x2, float y2){
+    float x = x2 - x1;
+    float y = y2 - y1;
+    return sqrtf(x * x + y * y);
+}
+
+/*
+    Helper method that takes in two points a src and a dest and returns the angle between them, with 0 being north and increasing clockwise
+*/
+float ye_angle(float x1, float y1, float x2, float y2){
     float angle = atan2(y2 - y1, x2 - x1) * 180 / M_PI;
     if(angle < 0){
         angle += 360;
@@ -184,6 +196,23 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
             }
             ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
             return pos;
+        case YE_COMPONENT_AUDIOSOURCE:
+            if(entity->audiosource != NULL){
+                // set x,y,w,h
+                pos = entity->audiosource->range;
+                pos.w = entity->audiosource->range.w;
+                pos.h = entity->audiosource->range.h;
+
+                // if relative adjust its position
+                if(entity->audiosource->relative && entity->transform != NULL){
+                    pos.x += entity->transform->x;
+                    pos.y += entity->transform->y;
+                }
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
         default:
             ye_logf(error, "Tried to get position for component on \"%s\" that does not have a position or size. returning (0,0,0,0)\n",entity->name);
             return pos;
@@ -194,4 +223,45 @@ SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type t
     struct ye_rectf pos = ye_get_position(entity, type);
     SDL_Rect rect = {pos.x, pos.y, pos.w, pos.h};
     return rect;
+}
+
+/*
+    credit: https://stackoverflow.com/questions/38334081/how-to-draw-circles-arcs-and-vector-graphics-in-sdl
+*/
+void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius)
+{
+    const int32_t diameter = (radius * 2);
+
+    int32_t x = (radius - 1);
+    int32_t y = 0;
+    int32_t tx = 1;
+    int32_t ty = 1;
+    int32_t error = (tx - diameter);
+
+    while (x >= y)
+    {
+        //  Each of the following renders an octant of the circle
+        SDL_RenderDrawPoint(renderer, center_x + x, center_y - y);
+        SDL_RenderDrawPoint(renderer, center_x + x, center_y + y);
+        SDL_RenderDrawPoint(renderer, center_x - x, center_y - y);
+        SDL_RenderDrawPoint(renderer, center_x - x, center_y + y);
+        SDL_RenderDrawPoint(renderer, center_x + y, center_y - x);
+        SDL_RenderDrawPoint(renderer, center_x + y, center_y + x);
+        SDL_RenderDrawPoint(renderer, center_x - y, center_y - x);
+        SDL_RenderDrawPoint(renderer, center_x - y, center_y + x);
+
+        if (error <= 0)
+        {
+            ++y;
+            error += ty;
+            ty += 2;
+        }
+
+        if (error > 0)
+        {
+            --x;
+            tx += 2;
+            error += (tx - diameter);
+        }
+    }
 }

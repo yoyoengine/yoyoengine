@@ -411,13 +411,13 @@ void ye_log_init(char * log_file_path){
     // open log file the first time in w mode to overwrite any existing log
     if(YE_STATE.engine.log_level < 4){
         ye_open_log();
-        ye_logf(info, "Logging initialized\n");
+        ye_logf(info, "Initialized logging.\n");
         YE_STATE.runtime.log_line_count=1; // reset our counter because not all outputs have actually been written to the log file yet
     }
 }
 
 void ye_log_shutdown(){
-    ye_logf(info, "Logging shutdown\n");
+    ye_logf(info, "Shut down logging.\n");
     YE_STATE.runtime.log_line_count++;
     ye_close_log();
 }
