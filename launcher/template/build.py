@@ -273,8 +273,8 @@ class YoyoEngineBuildSystem:
             shutil.rmtree(f"./bin/{self.cmake_platform_name}/tricks")
 
         # move engine.yep and resources.yep into the output folder
-        shutil.copyfile(f"{self.script_location}/engine.yep", f"{self.binary_dir}/engine.yep")
-        shutil.copyfile(f"{self.script_location}/resources.yep", f"{self.binary_dir}/resources.yep")
+        shutil.move(f"{self.script_location}/engine.yep", f"{self.binary_dir}/engine.yep")
+        shutil.move(f"{self.script_location}/resources.yep", f"{self.binary_dir}/resources.yep")
 
     def run(self):
         # if we recieved arg --run, run the game
