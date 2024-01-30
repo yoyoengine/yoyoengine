@@ -296,6 +296,37 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                     /*
                         Todo: rest of the renderer types
                     */
+                    case YE_RENDERER_TYPE_TILEMAP_TILE:
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_label(ctx, "Tile Renderer", NK_TEXT_CENTERED);
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Tilemap src:", NK_TEXT_LEFT);
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_tilemap_src_buffer[1024];
+                        strncpy(temp_tilemap_src_buffer, ent->renderer->renderer_impl.tile->handle, sizeof(temp_tilemap_src_buffer));
+                        temp_tilemap_src_buffer[sizeof(temp_tilemap_src_buffer) - 1] = '\0';  // Ensure null-termination
+
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_tilemap_src_buffer, sizeof(temp_tilemap_src_buffer), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_tilemap_src_buffer, ent->renderer->renderer_impl.tile->handle) != 0) {
+                            free(ent->renderer->renderer_impl.tile->handle);
+                            ent->renderer->renderer_impl.tile->handle = strdup(temp_tilemap_src_buffer);
+                            // recomputes the image texture
+                            ye_update_renderer_component(ent);
+                        }
+
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_label(ctx, "Tile details:", NK_TEXT_LEFT);
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_property_int(ctx, "#x", -1000000, &ent->renderer->renderer_impl.tile->src.x, 1000000, 1, 5);
+                        nk_property_int(ctx, "#y", -1000000, &ent->renderer->renderer_impl.tile->src.y, 1000000, 1, 5);
+                        nk_property_int(ctx, "#w", 0, &ent->renderer->renderer_impl.tile->src.w, 1000000, 1, 5);
+                        nk_property_int(ctx, "#h", 0, &ent->renderer->renderer_impl.tile->src.h, 1000000, 1, 5);
+                        break;
                     default:
                         nk_label(ctx, "!!!Corrupted - NO TYPE!!!", NK_TEXT_CENTERED);
                         break;

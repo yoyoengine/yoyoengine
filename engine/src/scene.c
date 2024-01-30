@@ -272,6 +272,18 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
             }
 
             break;
+        case YE_RENDERER_TYPE_TILEMAP_TILE:
+            // get the handle
+            if(!ye_json_string(impl,"handle",&src)) {
+                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the handle field\n", entity_name);
+                return;
+            }
+
+            // get the "position" which is really just the src rect
+            SDL_Rect src_rect = ye_convert_rectf_rect(ye_retrieve_position(impl));
+            
+            ye_add_tilemap_renderer_component(e,z,src,src_rect);
+            break;
         default:
             ye_logf(warning,"Entity %s has a renderer component, but it is missing the type field\n", entity_name);
             break;

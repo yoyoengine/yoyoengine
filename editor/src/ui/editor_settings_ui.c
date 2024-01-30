@@ -44,6 +44,7 @@ int project_screen_size_UNPROCESSED; // convert 0: 1920x1080, 1: 2560x1440
 int project_window_mode_UNPROCESSED; // 0-2 (windowed, fullscreen, borderless) -> 1, 0, SDL_WINDOW_FULLSCREEN_DESKTOP
 // we need to process the window mode, 3 should become SDL_WINDOW_FULLSCREEN_DESKTOP
 int project_framecap; // -1 for vsync, else 0-MAXINT
+int sdl_quality_hint; // 0-2 (nearest, linear, anisotropic)
 char _project_framecap_label[10];
 char project_window_title[256];
 bool project_stretch_viewport; // true or false
@@ -163,6 +164,17 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 project_framecap = atoi(_project_framecap_label);
             }
 
+            /*
+                Render quality hint
+            */
+            nk_layout_row_dynamic(ctx, 25, 2);
+            bounds = nk_widget_bounds(ctx);
+            nk_label(ctx, "Pixel Scaling", NK_TEXT_LEFT);
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "The quality of the pixel scaling. Choose \"nearest\" for pixel art.");
+            static const char *pixel_scaling[] = {"nearest", "linear", "anisotropic"};
+            nk_combobox(ctx, pixel_scaling, NK_LEN(pixel_scaling), &sdl_quality_hint, 25, nk_vec2(200,200));
+
             // lay out our booleans
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -254,6 +266,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(SETTINGS, "framecap", json_integer(project_framecap));
                 json_object_set_new(SETTINGS, "stretch_viewport", project_stretch_viewport ? json_true() : json_false());
                 json_object_set_new(SETTINGS, "stretch_resolution", project_stretch_resolution ? json_true() : json_false());
+                json_object_set_new(SETTINGS, "sdl_quality_hint", json_integer(sdl_quality_hint));
                 // save the settings file
                 ye_json_write(ye_path("settings.yoyo"),SETTINGS);
                 
@@ -429,6 +442,13 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     */
                     if(!ye_json_bool(SETTINGS, "stretch_resolution", &project_stretch_resolution)){
                         project_stretch_resolution = false;
+                    }
+
+                    /*
+                        sdl_quality_hint
+                    */
+                    if(!ye_json_int(SETTINGS, "sdl_quality_hint", &sdl_quality_hint)){
+                        sdl_quality_hint = 1;
                     }
 
                     /*

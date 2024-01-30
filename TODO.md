@@ -716,3 +716,14 @@ audio listener specification rather than default camera center
             }
 
 ```
+
+## tmaps
+
+### editor tmaps
+
+honestly, lets just keep this basic tilemap impl for now, and in the future that could be a reworkable thing.
+It involves more manual labor on the developer using the renderer but its really just typing in the pixels each time.
+
+To make a true tilemap akin to unity it requires us to represent a ton of tiles in one renderer on one entitity potentially, unless we are doing like an entity painter thing,
+
+It is technically possible to represent a grid logically in the editor, and make a brush tool to paint entities from presets, so maybe that could compound with this tilemap system

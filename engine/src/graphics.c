@@ -38,8 +38,6 @@ SDL_Texture *missing_texture = NULL;
 
 // TODO: move most of engine runtime state into struct engine_data engine_state
 
-char * render_scale_quality = "linear"; // also available: best (high def, high perf), nearest (sharp edges, pixel-y)
-
 TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
     /*
         if(fontSize > 500){
@@ -324,7 +322,20 @@ void ye_init_graphics(){
     ye_logf(info, "SDL initialized.\n");
 
     // Set the texture filtering hint
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, render_scale_quality);
+    switch(YE_STATE.engine.sdl_quality_hint){
+        case 0:
+            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+            break;
+        case 1:
+            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+            break;
+        case 2:
+            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+            break;
+        default:
+            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+            break;
+    }
 
     // test for window init, alarm if failed
     pWindow = SDL_CreateWindow(YE_STATE.engine.window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, YE_STATE.engine.screen_width, YE_STATE.engine.screen_height, SDL_WINDOW_SHOWN | YE_STATE.engine.window_mode | SDL_WINDOW_ALLOW_HIGHDPI);

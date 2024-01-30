@@ -36,7 +36,8 @@ enum ye_component_renderer_type {
     YE_RENDERER_TYPE_TEXT,
     YE_RENDERER_TYPE_TEXT_OUTLINED,
     YE_RENDERER_TYPE_IMAGE,
-    YE_RENDERER_TYPE_ANIMATION
+    YE_RENDERER_TYPE_ANIMATION,
+    YE_RENDERER_TYPE_TILEMAP_TILE
 };
 
 /**
@@ -45,7 +46,7 @@ enum ye_component_renderer_type {
 struct ye_component_renderer {
     bool active;    ///< controls whether system will act upon this component
 
-    SDL_Texture *texture;   ///< texture to render
+    SDL_Texture *texture;   ///< texture to render. For tilemaps this will be the full image even if only a portion is rendered
 
     enum ye_component_renderer_type type;   ///< denotes which renderer is needed for this entity
 
@@ -69,6 +70,7 @@ struct ye_component_renderer {
         struct ye_component_renderer_text_outlined *text_outlined;
         struct ye_component_renderer_image *image;
         struct ye_component_renderer_animation *animation;
+        struct ye_component_renderer_tilemap_tile *tile;
     } renderer_impl;
 };
 
@@ -123,6 +125,14 @@ struct ye_component_renderer_animation {
     SDL_Texture** frames;       ///< array of textures for each frame
 
     bool paused;
+};
+
+/**
+ * @brief A structure to represent a tilemap tile
+ */
+struct ye_component_renderer_tilemap_tile {
+    char *handle;   ///< handle to tilemap source image (from loose or pack)
+    SDL_Rect src;   ///< source rect of tile
 };
 
 /**
@@ -193,6 +203,16 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int 
  * @param loops The number of loops in the animation.
  */
 void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, const char *path, const char *format, size_t count, int frame_delay, int loops);
+
+/**
+ * @brief Adds a tilemap tile renderer component to an entity.
+ * 
+ * @param entity The entity to add the tilemap tile renderer component to.
+ * @param z The z-index of the tilemap tile renderer component.
+ * @param handle The handle to the tilemap source image (from loose or pack).
+ * @param src The source rect of the tile.
+ */
+void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, char * handle, SDL_Rect src);
 
 /**
  * @brief Removes a renderer component from an entity.

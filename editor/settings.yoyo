@@ -7,5 +7,6 @@
     "screen_width":1920,
     "screen_height":1080,
     "window_title":"Yoyo Engine Editor",
-    "framecap":-1
+    "framecap":-1,
+    "sdl_quality_hint":0
 }

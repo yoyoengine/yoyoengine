@@ -287,6 +287,7 @@ void ye_init_engine() {
     YE_STATE.engine.window_mode = 0;
     YE_STATE.engine.volume = 64;
     YE_STATE.engine.window_title = strdup("Yoyo Engine Window");
+    YE_STATE.engine.sdl_quality_hint = 1; // linear by default
 
     // set default paths, if we have an override we can change them later
     YE_STATE.engine.engine_resources_path = strdup(engine_default_path);
@@ -316,6 +317,7 @@ void ye_init_engine() {
         set_setting_int("screen_width", &YE_STATE.engine.screen_width, SETTINGS);
         set_setting_int("screen_height", &YE_STATE.engine.screen_height, SETTINGS);
         set_setting_int("framecap", &YE_STATE.engine.framecap, SETTINGS);
+        set_setting_int("sdl_quality_hint", &YE_STATE.engine.sdl_quality_hint, SETTINGS);
 
         set_setting_bool("debug_mode", &YE_STATE.engine.debug_mode, SETTINGS);
         set_setting_bool("skip_intro", &YE_STATE.engine.skipintro, SETTINGS);
@@ -513,6 +515,7 @@ void ye_shutdown_engine(){
     free(YE_STATE.engine.engine_resources_path);
     free(YE_STATE.engine.game_resources_path);
     free(YE_STATE.engine.icon_path);
+    // free(YE_STATE.engine.window_title); copilot added this but i havent checked if this is freed elsewhere
     SDL_free(base_path); // free base path after (used by logging)
     SDL_free(executable_path); // free base path after (used by logging)
 

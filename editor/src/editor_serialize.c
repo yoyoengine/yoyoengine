@@ -178,6 +178,15 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             json_object_set_new(impl, "paused", json_boolean(entity->renderer->renderer_impl.animation->paused));
 
             break;
+        case YE_RENDERER_TYPE_TILEMAP_TILE:
+            // set the tilemap path
+            json_object_set_new(impl, "handle", json_string(entity->renderer->renderer_impl.tile->handle));
+
+            // set the tilemap "position" in its source image
+            struct ye_rectf pos = ye_convert_rect_rectf(entity->renderer->renderer_impl.tile->src);
+            serialize_entity_position(&pos, impl);
+
+            break;
         default:
             ye_logf(warning, "ermmm... this shouldnt have happend!");
     }

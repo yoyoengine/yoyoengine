@@ -49,6 +49,11 @@ void ye_update_renderer_component(struct ye_entity *entity){
             // create new text texture
             entity->renderer->texture = createTextTextureWithOutline(entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->font, entity->renderer->renderer_impl.text_outlined->color, entity->renderer->renderer_impl.text_outlined->outline_color);
             break;
+        case YE_RENDERER_TYPE_TILEMAP_TILE:
+            entity->renderer->texture = ye_image(
+                entity->renderer->renderer_impl.tile->handle
+            );
+            break;
         default: // animation // TODO TODO
             ye_logf(error,"not implemented yet\n");
             break;
@@ -85,8 +90,17 @@ void ye_add_renderer_component(
     else if(type == YE_RENDERER_TYPE_TEXT){
         entity->renderer->renderer_impl.text = data;
     }
+    else if(type == YE_RENDERER_TYPE_TEXT_OUTLINED){
+        entity->renderer->renderer_impl.text_outlined = data;
+    }
     else if(type == YE_RENDERER_TYPE_ANIMATION){
         entity->renderer->renderer_impl.animation = data;
+    }
+    else if(type == YE_RENDERER_TYPE_TILEMAP_TILE){
+        entity->renderer->renderer_impl.tile = data;
+    }
+    else{
+        ye_logf(error, "Attempt add Invalid renderer type %d\n", type);
     }
 
     // add this entity to the renderer component list
@@ -224,40 +238,62 @@ void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, c
     animation->last_updated = SDL_GetTicks(); // set the last updated to now so we can start ticking it accurately
 }
 
+void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, char * handle, SDL_Rect src){
+    struct ye_component_renderer_tilemap_tile *tile = malloc(sizeof(struct ye_component_renderer_tilemap_tile));
+    tile->handle = strdup(handle);
+    tile->src = src;
+
+    // create the renderer top level
+    ye_add_renderer_component(entity, YE_RENDERER_TYPE_TILEMAP_TILE, z, tile);
+
+    // create the tile texture
+    entity->renderer->texture = ye_image(handle);
+
+    // update rect based off of src size
+    entity->renderer->rect.w = src.w;
+    entity->renderer->rect.h = src.h;
+}
+
 void ye_remove_renderer_component(struct ye_entity *entity){
     // free contents of renderer_impl
-    if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
-        free(entity->renderer->renderer_impl.image->src);
-        free(entity->renderer->renderer_impl.image);
-    }
-    else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
-        free(entity->renderer->renderer_impl.text->text);
-        // free the strings we strdup'd before the impl itself (duh)
-        free(entity->renderer->renderer_impl.text->font_name);
-        free(entity->renderer->renderer_impl.text->color_name);
-        free(entity->renderer->renderer_impl.text);
+    switch(entity->renderer->type){
+        case YE_RENDERER_TYPE_IMAGE:
+            free(entity->renderer->renderer_impl.image->src);
+            free(entity->renderer->renderer_impl.image);
+            break;
+        case YE_RENDERER_TYPE_TEXT:
+            free(entity->renderer->renderer_impl.text->text);
+            // free the strings we strdup'd before the impl itself (duh)
+            free(entity->renderer->renderer_impl.text->font_name);
+            free(entity->renderer->renderer_impl.text->color_name);
+            free(entity->renderer->renderer_impl.text);
 
-        // text textures are not stored in cache, manually remove them
-        SDL_DestroyTexture(entity->renderer->texture);
-    }
-    else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT_OUTLINED){
-        free(entity->renderer->renderer_impl.text_outlined->text);
-        // free the strings we strdup'd before the impl itself (duh)
-        free(entity->renderer->renderer_impl.text_outlined->font_name);
-        free(entity->renderer->renderer_impl.text_outlined->color_name);
-        free(entity->renderer->renderer_impl.text_outlined->outline_color_name);
-        free(entity->renderer->renderer_impl.text_outlined);
+            // text textures are not stored in cache, manually remove them
+            SDL_DestroyTexture(entity->renderer->texture);
+            break;
+        case YE_RENDERER_TYPE_TEXT_OUTLINED:
+            free(entity->renderer->renderer_impl.text_outlined->text);
+            // free the strings we strdup'd before the impl itself (duh)
+            free(entity->renderer->renderer_impl.text_outlined->font_name);
+            free(entity->renderer->renderer_impl.text_outlined->color_name);
+            free(entity->renderer->renderer_impl.text_outlined->outline_color_name);
+            free(entity->renderer->renderer_impl.text_outlined);
 
-        // text textures are not stored in cache, manually remove them
-        SDL_DestroyTexture(entity->renderer->texture);
-    }
-    else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-        // cache will handle freeing the frames as needed
+            // text textures are not stored in cache, manually remove them
+            SDL_DestroyTexture(entity->renderer->texture);
+            break;
+        case YE_RENDERER_TYPE_ANIMATION:
+            // cache will handle freeing the frames as needed
 
-        free(entity->renderer->renderer_impl.animation->animation_path);
-        free(entity->renderer->renderer_impl.animation->image_format);
-        free(entity->renderer->renderer_impl.animation->frames);
-        free(entity->renderer->renderer_impl.animation);
+            free(entity->renderer->renderer_impl.animation->animation_path);
+            free(entity->renderer->renderer_impl.animation->image_format);
+            free(entity->renderer->renderer_impl.animation->frames);
+            free(entity->renderer->renderer_impl.animation);
+            break;
+        case YE_RENDERER_TYPE_TILEMAP_TILE:
+            free(entity->renderer->renderer_impl.tile->handle);
+            free(entity->renderer->renderer_impl.tile);
+            break;
     }
 
     // cache will handle freeing the texture as needed
@@ -342,7 +378,6 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 // current->entity->transform->active &&
                 // ^ old system that relied on transform
             ) {
-                // TODO: call some get position method
                 struct ye_rectf temp_entity_rect = ye_get_position(current->entity,YE_COMPONENT_RENDERER);
                 struct ye_rectf texture_rect = ye_convert_rect_rectf(ye_get_real_texture_size_rect(current->entity->renderer->texture));
                 ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center);
@@ -377,6 +412,17 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     entity_rect.x = entity_rect.x - camera_rect.x;
                     entity_rect.y = entity_rect.y - camera_rect.y;
 
+                    /*
+                        If the renderer is a tilemap tile, we need to set the src rect to the tilemap tile src rect
+                        Else, just render the full source image
+
+                        NOTE: in the future, this will probably also point to the correct frame of an animation
+                    */
+                    SDL_Rect *ent_src_rect = NULL;
+                    if(current->entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE){
+                        ent_src_rect = &current->entity->renderer->renderer_impl.tile->src;
+                    }
+
                     // if transform is flipped or rotated render it differently
                     if(current->entity->renderer->flipped_x || current->entity->renderer->flipped_y){
                         SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -389,13 +435,13 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         else if(current->entity->renderer->flipped_y){
                             flip = SDL_FLIP_VERTICAL;
                         }
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->renderer->rotation, NULL, flip);
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, (int)current->entity->renderer->rotation, NULL, flip);
                     }
                     else if(current->entity->renderer->rotation != 0.0){
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, NULL, &entity_rect, (int)current->entity->renderer->rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, (int)current->entity->renderer->rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
                     }
                     else{
-                        SDL_RenderCopy(renderer, current->entity->renderer->texture, NULL, &entity_rect);
+                        SDL_RenderCopy(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect);
                     }
                     
                     YE_STATE.runtime.painted_entity_count++;

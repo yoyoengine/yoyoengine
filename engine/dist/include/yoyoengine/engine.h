@@ -109,6 +109,11 @@ struct ye_engine_config {
     char *icon_path;
     
     /*
+        Quality / Rendering Properties
+    */
+    int sdl_quality_hint; // 0 (_nearest_ pixel), 1 (_linear_ filtering), 2 (anisotropic filtering/_best_)
+
+    /*
         Some fields that handle pillarboxing and letterboxing
     */
     bool stretch_resolution;    // i dont even remember what stretch viewport does anymore... editor only? || this controls whether we even want to stretch
