@@ -205,11 +205,14 @@ void ye_process_frame(){
         ye_recompute_boxing();
     }
 
-    // run all trick update callbacks
-    ye_run_trick_updates();
-
-    // run all scripting before the frame is rendered
-    ye_system_lua_scripting();
+    // if we are in runtime, run callbacks
+    if(!YE_STATE.editor.editor_mode){
+        // run all trick update callbacks
+        ye_run_trick_updates();
+    
+        // run all scripting before the frame is rendered
+        ye_system_lua_scripting();
+    }
 
     // render frame
     ye_render_all();

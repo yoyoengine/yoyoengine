@@ -25,8 +25,19 @@
     Helper functions
 */
 
-bool _run_script(lua_State *state, char *path){
-    if (luaL_loadfile(state, path) || lua_pcall(state, 0, 0, 0)) {
+bool _run_script(lua_State *state, char *script){
+    // if (luaL_loadfile(state, path) || lua_pcall(state, 0, 0, 0)) {
+    //     /*
+    //         We have failed to load and run the script, log the error
+    //         and then disable this script component and cleanup.
+    //     */
+    //     ye_logf(error,"Error bootstrapping lua script: %s\n", lua_tostring(state, -1));
+    //     return false;
+    // }
+    // return true;
+
+    // run script from string
+    if (luaL_dostring(state, script) != LUA_OK) {
         /*
             We have failed to load and run the script, log the error
             and then disable this script component and cleanup.
@@ -51,7 +62,7 @@ void _extract_signature(struct ye_component_lua_script *script, const char *func
     lua_pop(L, 1); // Pop the function or nil value from the stack
 }
 
-bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
+bool ye_add_lua_script_component(struct ye_entity *entity, char *handle){
     ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
     // allocate and assign the component
@@ -71,15 +82,68 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
     // validate state and print errors
     if(entity->lua_script->state == NULL){
         ye_logf(error,"Failed to initialize lua state\n");
+        entity->lua_script->active = false;
+        free(entity->lua_script);
+        entity->lua_script = NULL;
         return false;
     }
 
     /*
+        Load the script data into a string
+    */
+    char *script_data = NULL;
+    if(YE_STATE.editor.editor_mode){
+        /*
+            Open ye_path_resources(handle) and read it into script_data
+        */
+        char *path = ye_path_resources(handle);
+        FILE *file = fopen(path, "r");
+        if(file == NULL){
+            ye_logf(error,"Failed to open script file %s\n", path);
+            entity->lua_script->active = false;
+            free(entity->lua_script);
+            entity->lua_script = NULL;
+            return false;
+        }
+        fseek(file, 0, SEEK_END);
+        long length = ftell(file);
+        fseek(file, 0, SEEK_SET);
+        script_data = malloc(length + 1);
+        fread(script_data, 1, length, file);
+        fclose(file);
+        script_data[length] = '\0';
+    }
+    else{
+        // read from yep
+        struct yep_data_info d = yep_resource_misc(handle);
+
+        if(d.data == NULL){
+            ye_logf(error,"Failed to open script file %s\n", handle);
+            entity->lua_script->active = false;
+            free(entity->lua_script);
+            entity->lua_script = NULL;
+            return false;
+        }
+
+        script_data = malloc(d.size + 1);
+        memcpy(script_data, d.data, d.size);
+        script_data[d.size] = '\0';
+
+        free(d.data);
+    }
+
+    // TEMP: print the script data
+    // ye_logf(debug,"Script data:\n%s\n", script_data);
+
+    /*
         Load our script into the lua state, which will inherently run it
     */
-    if(!_run_script(entity->lua_script->state, script_path)){
+    if(!_run_script(entity->lua_script->state, script_data)){
         lua_close(entity->lua_script->state);
         entity->lua_script->active = false;
+        entity->lua_script->state = NULL;
+        free(entity->lua_script);
+        entity->lua_script = NULL;
         return false;
     }
 
@@ -93,10 +157,15 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path){
 
     /*
         call the lua scripts on_mount function in its state
+
+        ALSO if we are not in editor, dont really want to run scripts in editor mode
     */
-    if(entity->lua_script->has_on_mount){
+    if(entity->lua_script->has_on_mount && !YE_STATE.editor.editor_mode){
         ye_run_lua_on_mount(entity->lua_script);
     }
+
+    // doing this at the end so i dont have to free for every error case
+    entity->lua_script->script_handle = strdup(handle);
 
     // add to the lua_script list
     ye_entity_list_add(&lua_script_list_head, entity);

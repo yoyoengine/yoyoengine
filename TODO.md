@@ -739,3 +739,39 @@ audio chunk count removed or reworked
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
 ```
+
+## slk fjlkgjh dfk gjhlk
+
+scene config panel add default camera name
+
+move camera in a not bad way
+
+debug log??? does it need to ship with build??? does it get generated on its own?? is it even working?? does it respect the log level???
+
+remove all warnings
+
+add actual release modes
+
+figure out build system - i mean like the actual versions you attatch to builds
+
+stop showing console on windows builds for release mode
+
+collider add
+
+trigger colliders
+
+saving order reverses entities
+
+actual click selection and drag selection and other sensible controls, cant really click to cycle objects in order
+
+## future enhancements
+
+- [ ] lua pre compile bytecode
+- [ ] editor plugins (lua) which run in editor
+- [ ] actual physics system with rigidbody simulation and solver
+- [ ] gray out fields in editor when N/A
+- [ ] fix the annoying renderer warp pixel bug, as well as the line scaling bug
+- [ ] random scrollbars for panels that dont need it (horizontal mainly)
+- [ ] asserts for all the things, better error handling (we dont want to be crash prone as I'm sure we are now)
+- [ ] big ass refactoring and cleanup, especially of editor code
+- [ ] dont rebuild clean object files

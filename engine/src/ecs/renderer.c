@@ -181,7 +181,7 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color){
+void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
 
@@ -204,7 +204,7 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size){
+void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
 

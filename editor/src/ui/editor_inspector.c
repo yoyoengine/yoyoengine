@@ -26,6 +26,13 @@
 #include "editor_panels.h"
 
 /*
+    Some variables used globally
+*/
+char proposed_script_path[1024] = "";
+char proposed_animation_meta_path[1024] = "";
+char proposed_tilemap_meta_path[1024] = "";
+
+/*
     Takes in the bounds we are going to paint into, and returns
     the pt (int) that the font needs loaded in to maximize its quality
 
@@ -63,11 +70,22 @@ void _paint_transform(struct nk_context *ctx, struct ye_entity *ent){
             nk_property_float(ctx, "#y", -1000000, &ent->transform->y, 1000000, 1, 5);
             
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_transform_component(ent);
             }
 
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No transform component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Transform Component")){
+            ye_add_transform_component(ent, 0, 0);
         }
     }
 }
@@ -357,11 +375,96 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
             }
 
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_renderer_component(ent);
             }
 
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No renderer component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+
+        /*
+            Lets have a combo for which type we would like to add
+        */
+        static int add_renderer_cb_selected_type = 0;
+        const char *add_renderer_cb_items[] = {"Text", "Text Outlined", "Image", "Animation", "Tilemap Tile"};
+
+        nk_layout_row_dynamic(ctx, 25, 2);
+        nk_label(ctx, "Add Renderer Type:", NK_TEXT_LEFT);
+        add_renderer_cb_selected_type = nk_combo(ctx, add_renderer_cb_items, 5, add_renderer_cb_selected_type, 25, nk_vec2(200,200));
+
+        /*
+            In the case of animations and tilemap tiles, lets ask some additional details
+            to construct a new renderer with prepopulated info
+        */
+        if(add_renderer_cb_selected_type == YE_RENDERER_TYPE_ANIMATION){
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_label(ctx, "Meta file:", NK_TEXT_LEFT);
+
+            // use proposed_animation_meta_path
+            // Allocate a temporary buffer that is large enough for user input
+            char temp_animation_src_buffer[1024];
+            strncpy(temp_animation_src_buffer, proposed_animation_meta_path, sizeof(temp_animation_src_buffer));
+            temp_animation_src_buffer[sizeof(temp_animation_src_buffer) - 1] = '\0';  // Ensure null-termination
+
+            // Allow the user to edit the text in the temporary buffer
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_animation_src_buffer, sizeof(temp_animation_src_buffer), nk_filter_default);
+
+            // If the text has been changed, replace the old text with the new one
+            if (strcmp(temp_animation_src_buffer, proposed_animation_meta_path) != 0) {
+                strncpy(proposed_animation_meta_path, temp_animation_src_buffer, sizeof(proposed_animation_meta_path));
+                proposed_animation_meta_path[sizeof(proposed_animation_meta_path) - 1] = '\0';  // Ensure null-termination
+            }
+
+        }
+        else if(add_renderer_cb_selected_type == YE_RENDERER_TYPE_TILEMAP_TILE){
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_label(ctx, "Tilemap src:", NK_TEXT_LEFT);
+
+            // use proposed_tilemap_meta_path
+            // Allocate a temporary buffer that is large enough for user input
+            char temp_tilemap_src_buffer[1024];
+            strncpy(temp_tilemap_src_buffer, proposed_tilemap_meta_path, sizeof(temp_tilemap_src_buffer));
+            temp_tilemap_src_buffer[sizeof(temp_tilemap_src_buffer) - 1] = '\0';  // Ensure null-termination
+
+            // Allow the user to edit the text in the temporary buffer
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_tilemap_src_buffer, sizeof(temp_tilemap_src_buffer), nk_filter_default);
+
+            // If the text has been changed, replace the old text with the new one
+            if (strcmp(temp_tilemap_src_buffer, proposed_tilemap_meta_path) != 0) {
+                strncpy(proposed_tilemap_meta_path, temp_tilemap_src_buffer, sizeof(proposed_tilemap_meta_path));
+                proposed_tilemap_meta_path[sizeof(proposed_tilemap_meta_path) - 1] = '\0';  // Ensure null-termination
+            }
+        }
+
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Renderer Component")){
+            switch(add_renderer_cb_selected_type){
+                case 0:
+                    ye_add_text_renderer_component(ent, 99, "Sample Text", "default", 12, "white");
+                    break;
+                case 1:
+                    ye_add_text_outlined_renderer_component(ent, 99, "Sample Text", "default", 12, "white", "red", 5);
+                    break;
+                case 2:
+                    ye_add_image_renderer_component(ent, 1, "fakeimage.png");
+                    break;
+                case 3:
+                    ye_add_animation_renderer_component(ent, 1, proposed_animation_meta_path);
+                    break;
+                case 4:
+                    ye_add_tilemap_renderer_component(ent, 1, proposed_tilemap_meta_path, (SDL_Rect){0,0,100,100});
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -381,11 +484,22 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
             nk_property_int(ctx, "#z", -1000000, &ent->camera->z, 1000000, 1, 5);
             
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_camera_component(ent);
             }
             
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No camera component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Camera Component")){
+            ye_add_camera_component(ent, 9999, (SDL_Rect){0,0,1920,1080});
         }
     }
 }
@@ -403,11 +517,22 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
             nk_property_float(ctx, "#h", -1000000, &ent->collider->rect.h, 1000000, 1, 5);
             
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_collider_component(ent);
             }
             
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No collider component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Collider Component")){
+            ye_add_static_collider_component(ent, (struct ye_rectf){0,0,0,0});
         }
     }
 }
@@ -427,11 +552,22 @@ void _paint_physics(struct nk_context *ctx, struct ye_entity *ent){
             nk_property_float(ctx, "#rv", -1000000, &ent->physics->rotational_velocity, 1000000, 1, 5);
             
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_physics_component(ent);
             }
             
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No physics component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Physics Component")){
+            ye_add_physics_component(ent, 0, 0);
         }
     }
 }
@@ -449,11 +585,72 @@ void _paint_tag(struct nk_context *ctx, struct ye_entity *ent){
             }
 
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_tag_component(ent);
             }
 
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No tag component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Tag Component")){
+            ye_add_tag_component(ent);
+        }
+    }
+}
+
+void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
+    if(ent->lua_script != NULL){
+        if(nk_tree_push(ctx, NK_TREE_TAB, "Script", NK_MAXIMIZED)){
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "Script:", NK_TEXT_LEFT);
+
+            // Allocate a temporary buffer that is large enough for user input
+            char temp_buffer[1024];
+            strncpy(temp_buffer, ent->lua_script->script_handle, sizeof(temp_buffer));
+            temp_buffer[sizeof(temp_buffer) - 1] = '\0';  // Ensure null-termination
+
+            // Allow the user to edit the text in the temporary buffer
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer, sizeof(temp_buffer), nk_filter_default);
+
+            // If the text has been changed, replace the old text with the new one
+            if (strcmp(temp_buffer, ent->lua_script->script_handle) != 0) {
+                free(ent->lua_script->script_handle);
+                ent->lua_script->script_handle = strdup(temp_buffer);
+                printf("Changed script to %s\n", ent->lua_script->script_handle);
+            }
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if(nk_button_label(ctx, "Remove Component")){
+                ye_remove_lua_script_component(ent);
+            }
+            
+            nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No script component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 2);
+
+        // proposed_script_path is used to hold the path that the user is typing in
+
+        nk_label(ctx, "Script Path:", NK_TEXT_LEFT);
+        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, proposed_script_path, sizeof(proposed_script_path), nk_filter_default);
+
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Script Component")){
+            ye_add_lua_script_component(ent, proposed_script_path); // TODO: lua system hasnt been updated for yep yet. we need to read from bytecode or just content
         }
     }
 }
@@ -513,6 +710,8 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             temp_buffer_handle[sizeof(temp_buffer_handle) - 1] = '\0';  // Ensure null-termination
 
             // Allow the user to edit the text in the temporary buffer
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_label(ctx, "audio handle:", NK_TEXT_LEFT);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer_handle, sizeof(temp_buffer_handle), nk_filter_default);
 
             // If the text has been changed, replace the old text with the new one
@@ -526,11 +725,22 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
                 nk_widget_disable_end(ctx);
 
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_audiosource_component(ent);
             }
             
             nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No audiosource component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Audiosource Component")){
+            ye_add_audiosource_component(ent, "", 0, true, -1, true, (struct ye_rectf){0,0,0,0});
         }
     }
 }
@@ -651,6 +861,7 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                         _paint_tag(ctx,ent);
                         break;
                     case 6: // script //
+                        _paint_script(ctx,ent);
                         break;
                     case 7: // audiosource //
                         _paint_audiosource(ctx,ent);

@@ -266,7 +266,7 @@ int main(int argc, char **argv) {
         // TODO: future me create a text entity easily in the center of the scene alerting this fact
         struct ye_entity *text = ye_create_entity_named("warning text");
         ye_add_transform_component(text, 0, 0);
-        ye_temp_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", 128, "warning");
+        ye_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", 128, "warning");
         text->renderer->rect = (struct ye_rectf){0, 0, 1920, 500};
     }
     else

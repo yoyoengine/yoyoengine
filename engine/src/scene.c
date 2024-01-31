@@ -177,7 +177,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 font_size = 16;
             }
 
-            ye_temp_add_text_renderer_component(e,z,text,font,font_size,color);
+            ye_add_text_renderer_component(e,z,text,font,font_size,color);
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
@@ -221,7 +221,7 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_temp_add_text_outlined_renderer_component(e,z,_text,_font,outlined_font_size,_color,outline_color,outline_size);
+            ye_add_text_outlined_renderer_component(e,z,_text,_font,outlined_font_size,_color,outline_color,outline_size);
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:
@@ -390,6 +390,24 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
     }
 }
 
+void ye_construct_script(struct ye_entity* e, json_t* script, const char* entity_name){
+    // validate script field
+    const char *script_path = NULL;
+    if(!ye_json_string(script,"handle",&script_path)) {
+        ye_logf(warning,"Entity %s has a script component, but it is missing the handle field\n", entity_name);
+        return;
+    }
+
+    // add the script component
+    ye_add_lua_script_component(e,script_path);
+
+    // update active state
+    if(ye_json_has_key(script,"active")){
+        bool active = true;    ye_json_bool(script,"active",&active);
+        e->lua_script->active = active;
+    }
+}
+
 void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const char* entity_name){
     // handle the simulated bool
     bool simulated;
@@ -534,6 +552,16 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_collider(e,collider,entity_name);
+        }
+
+        // script component
+        if(ye_json_has_key(components,"script")){
+            json_t *script = NULL; ye_json_object(components,"script",&script);
+            if(script == NULL){
+                ye_logf(warning,"Entity %s has a script field, but it's invalid.\n", entity_name);
+                continue;
+            }
+            ye_construct_script(e,script,entity_name);
         }
 
         // if we have an audiosource

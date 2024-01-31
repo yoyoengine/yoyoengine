@@ -179,7 +179,7 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
  * @param font_size The size of the font to use for rendering the text.
  * @param color The color to use for rendering the text.
  */
-void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color);
+void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color);
 
 /**
  * @brief Temporarily adds an outlined text renderer component to an entity.
@@ -192,7 +192,7 @@ void ye_temp_add_text_renderer_component(struct ye_entity *entity, int z, const 
  * @param outline_color The color to use for the outline of the text.
  * @param outline_size The size of the outline.
  */
-void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size);
+void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size);
 
 /**
  * @brief Temporarily adds an animation renderer component to an entity.

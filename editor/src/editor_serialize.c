@@ -256,6 +256,20 @@ void serialize_entity_tag(struct ye_entity *entity, json_t *entity_json){
     json_object_set_new(entity_json, "tag", tag);
 }
 
+void serialize_entity_script(struct ye_entity *entity, json_t *entity_json){
+    // create the script object
+    json_t *script = json_object();
+
+    // set the active state
+    json_object_set_new(script, "active", json_boolean(entity->lua_script->active));
+
+    // set the script path
+    json_object_set_new(script, "handle", json_string(entity->lua_script->script_handle));
+
+    // add the script object to the entity json
+    json_object_set_new(entity_json, "script", script);
+}
+
 void serialize_entity_audiosource(struct ye_entity *entity, json_t *entity_json){
     // create the audiosource object
     json_t *audiosource = json_object();
@@ -349,6 +363,10 @@ void editor_write_scene_to_disk(const char *path){
 
         if(entity->tag != NULL){
             serialize_entity_tag(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->lua_script != NULL){
+            serialize_entity_script(entity, json_object_get(entity_json, "components"));
         }
 
         if(entity->audiosource != NULL){

@@ -35,7 +35,7 @@
  */
 struct ye_component_lua_script {
     bool active;                    // controls whether system will act upon this component
-    char *script_path;              // the path to the script
+    char *script_handle;            // the path to the script
 
     lua_State *state;               // the lua state for this script
 
@@ -55,7 +55,7 @@ struct ye_component_lua_script {
  * @param entity The target entity
  * @param script_path The path to the script
  */
-bool ye_add_lua_script_component(struct ye_entity *entity, char *script_path);
+bool ye_add_lua_script_component(struct ye_entity *entity, char *handle);
 
 /**
  * @brief Remove a lua script component from an entity
