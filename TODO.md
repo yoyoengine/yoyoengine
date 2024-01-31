@@ -727,3 +727,15 @@ It involves more manual labor on the developer using the renderer but its really
 To make a true tilemap akin to unity it requires us to represent a ton of tiles in one renderer on one entitity potentially, unless we are doing like an entity painter thing,
 
 It is technically possible to represent a grid logically in the editor, and make a brush tool to paint entities from presets, so maybe that could compound with this tilemap system
+
+## LHJGFKJHDFKJGHKJDFGHJKFDHJG
+
+audio chunk count removed or reworked
+
+## auto find libs (broken for running outside of build dir)
+
+```cmake
+# for linux, tell the elf where to find the libs
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
+```

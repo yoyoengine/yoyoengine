@@ -708,7 +708,7 @@ void ye_load_scene(const char *scene_path){
             if(loop)
                 loops = -1;
 
-            ye_play_music(src,loop,volume);
+            ye_play_music(src,loops,volume);
         }
     }
 

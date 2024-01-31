@@ -468,6 +468,17 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 editor_re_attach_ecs();
             }
 
+            if(nk_menu_item_label(ctx, "Scene Settings", NK_TEXT_LEFT)){
+                if(!ui_component_exists("scene_settings")){
+                    ui_register_component("scene_settings", editor_panel_scene_settings);
+                    lock_viewport();
+                }
+                else{
+                    remove_ui_component("scene_settings");
+                    unlock_viewport();
+                }
+            }
+
             nk_menu_end(ctx);
         }
         nk_layout_row_push(ctx, 85);
