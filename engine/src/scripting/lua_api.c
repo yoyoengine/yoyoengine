@@ -74,6 +74,21 @@ int lua_log(lua_State* L){
     return 0;
 }
 
+int lua_load_scene(lua_State* L){ // TODO: totally not working
+    const char* scene = lua_tostring(L, 1);
+    char *scene_copy = malloc(strlen(scene) + 1);
+    strcpy(scene_copy, scene);
+    printf("loading scene: %s\n", scene_copy);
+    ye_load_scene(scene_copy);
+    free(scene_copy);
+    return 0;
+}
+
+int lua_debug_quit(lua_State* L){ // TODO: removeme
+    exit(0);
+    return 0;
+}
+
 /*
     Right now im just going to use this as a testbed for lua scripting API
 */
@@ -83,4 +98,6 @@ void ye_register_lua_scripting_api(lua_State *state){
 
     // register this lua log function
     lua_register(state, "ye_log", lua_log);
+    lua_register(state, "ye_load_scene", lua_load_scene);
+    lua_register(state, "ye_debug_quit", lua_debug_quit);
 }

@@ -151,6 +151,15 @@ void ye_system_audiosource(){
                     }
                 }
             }
+            else{
+                // global sound effect (not simulated)
+                if(src->playing && src->channel == -10){
+                    src->channel = ye_play_sound(src->handle, src->loops, src->volume);
+                }
+                Mix_Volume(src->channel, (int)(YE_STATE.engine.volume * src->volume));
+                // remove any spatial mix
+                Mix_SetPosition(src->channel, 0, 0);
+            }
         }
     }
 }

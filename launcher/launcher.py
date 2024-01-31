@@ -88,7 +88,7 @@ def open_editor(project_path):
     global running
     if running:
         try:
-            subprocess.Popen([launcher_json['editor binary'], project_path + "/resources"])
+            subprocess.Popen([launcher_json['editor binary'], project_path])
             app.quit()
         except:
             CTkMessagebox(title="Error", message="Your editor or project path could not be resolved. Please double check both.", icon="cancel")

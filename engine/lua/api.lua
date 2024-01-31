@@ -48,3 +48,30 @@ function ye_log(level, message) end
 -- --- @param id number The id of the entity
 -- --- @return boolean True if the entity was found, false otherwise
 -- function Entity:get_entity_by_id(id) end
+
+
+
+----------------
+-- Scene API  --
+----------------
+
+---**Load a scene by handle**
+---
+---@param handle string The path to the scene to load relative to resources/
+---@return nil
+---example:
+---```lua
+---ye_load_scene("scenes/game.yoyo")
+---```
+function ye_load_scene(handle) end
+
+
+
+----------------
+--    misc    --
+----------------
+
+---**Quit the game**
+---
+---@return nil
+function ye_debug_quit() end

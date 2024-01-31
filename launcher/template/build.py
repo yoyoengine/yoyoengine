@@ -72,10 +72,12 @@ class YoyoEngineBuildSystem:
         if(self.build_settings['delete_cache'] == True or self.delete_cache == True):
             print("[YOYO BUILD] Deleting cache...")
             # delete everything (files and folders recursively) in the build folder except build/out
-            clean_directory("./build", "out")
+            if os.path.exists("./build"):
+                clean_directory("./build", "out")
 
             # delete everything (files and folders recursively) in the build/out folder except build/out/_deps
-            clean_directory("./build/out", "_deps")
+            if os.path.exists("./build/out"):
+                clean_directory("./build/out", "_deps")
 
             # reset the flag
             self.build_settings['delete_cache'] = False

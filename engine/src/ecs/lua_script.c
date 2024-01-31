@@ -199,6 +199,8 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
 
     // remove from the lua_script list
     ye_entity_list_remove(&lua_script_list_head, entity);
+
+    // printf("Removed lua script component from entity %s\n", entity->name);
 }
 
 void ye_system_lua_scripting(){

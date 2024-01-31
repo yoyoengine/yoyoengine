@@ -764,6 +764,12 @@ saving order reverses entities
 
 actual click selection and drag selection and other sensible controls, cant really click to cycle objects in order
 
+should make a just normal run button for non rebuild conf changes
+
+fade in / fade out would be extremely nice for scene transitions and splash screen
+
+typing script path that doesnt exist creates it in editor
+
 ## future enhancements
 
 - [ ] lua pre compile bytecode
@@ -775,3 +781,25 @@ actual click selection and drag selection and other sensible controls, cant real
 - [ ] asserts for all the things, better error handling (we dont want to be crash prone as I'm sure we are now)
 - [ ] big ass refactoring and cleanup, especially of editor code
 - [ ] dont rebuild clean object files
+
+## things noticed from new project not streamlined
+
+must open build settings to generate file or it doesnt exist just hitting build and run
+
+lots of edge cases in build script for stuff not existing
+
+buld folder must exist first
+
+should template a gitignore
+
+should auto save or warn when building with no save
+
+DO NOT USE THE SCENE FILE CREATOR ITS TOTALLY BUGGED AND WILL WIPE YOUR SHIT
+
+scene camera does not have a camera component by default LMAO
+
+easy way for registering lua from C. like a fn quit built in
+
+there is output when fields updating in editor inspector / do a printf sweep
+
+scene loading is cooked up somehow. trying to call through lua does not work because it attempts to call back into a nonexistant state (I think)

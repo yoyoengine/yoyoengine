@@ -54,7 +54,7 @@ void ye_update_renderer_component(struct ye_entity *entity){
                 entity->renderer->renderer_impl.tile->handle
             );
             break;
-        default: // animation // TODO TODO
+        default: ; // this semicolon fixes a mingw complaint
             // try to open new meta file and get out "src" field
             json_t *META = NULL;
             if(YE_STATE.editor.editor_mode)
