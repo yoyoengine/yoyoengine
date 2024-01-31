@@ -327,6 +327,28 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                         nk_property_int(ctx, "#w", 0, &ent->renderer->renderer_impl.tile->src.w, 1000000, 1, 5);
                         nk_property_int(ctx, "#h", 0, &ent->renderer->renderer_impl.tile->src.h, 1000000, 1, 5);
                         break;
+                    case YE_RENDERER_TYPE_ANIMATION:
+                        nk_layout_row_dynamic(ctx, 25, 1);
+                        nk_label(ctx, "Animation Renderer", NK_TEXT_CENTERED);
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Meta file:", NK_TEXT_LEFT);
+
+                        // Allocate a temporary buffer that is large enough for user input
+                        char temp_animation_src_buffer[1024];
+                        strncpy(temp_animation_src_buffer, ent->renderer->renderer_impl.animation->meta_file, sizeof(temp_animation_src_buffer));
+                        temp_animation_src_buffer[sizeof(temp_animation_src_buffer) - 1] = '\0';  // Ensure null-termination
+                        
+                        // Allow the user to edit the text in the temporary buffer
+                        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_animation_src_buffer, sizeof(temp_animation_src_buffer), nk_filter_default);
+
+                        // If the text has been changed, replace the old text with the new one
+                        if (strcmp(temp_animation_src_buffer, ent->renderer->renderer_impl.animation->meta_file) != 0) {
+                            free(ent->renderer->renderer_impl.animation->meta_file);
+                            ent->renderer->renderer_impl.animation->meta_file = strdup(temp_animation_src_buffer);
+                            // recomputes the image texture
+                            ye_update_renderer_component(ent);
+                        }
+                        break;
                     default:
                         nk_label(ctx, "!!!Corrupted - NO TYPE!!!", NK_TEXT_CENTERED);
                         break;

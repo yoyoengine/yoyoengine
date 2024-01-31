@@ -55,7 +55,44 @@ void ye_update_renderer_component(struct ye_entity *entity){
             );
             break;
         default: // animation // TODO TODO
-            ye_logf(error,"not implemented yet\n");
+            // try to open new meta file and get out "src" field
+            json_t *META = NULL;
+            if(YE_STATE.editor.editor_mode)
+                META = ye_json_read(ye_path_resources(entity->renderer->renderer_impl.animation->meta_file));
+            else
+                META = yep_resource_json(entity->renderer->renderer_impl.animation->meta_file);
+            
+            if(META == NULL){
+                ye_logf(error, "Failed to load animation meta file %s\n", entity->renderer->renderer_impl.animation->meta_file);
+                return;
+            }
+
+            // get src
+            char *path = NULL;
+            if(!ye_json_string(META, "src", &path)){
+                ye_logf(error, "Failed to load SRC from animation meta file %s\n", entity->renderer->renderer_impl.animation->meta_file);
+                json_decref(META);
+                return;
+            }
+
+            // attempt to open src, if we get an error then it does not exist
+            SDL_Texture *texture = ye_image(path);
+
+            if(texture == NULL){
+                ye_logf(error, "Failed to load animation texture file %s\n", path);
+                json_decref(META);
+                return;
+            }
+
+            // if we made it here, the proposed change exists, so delete and re add the animator component with the same z
+            char *meta_file = strdup(entity->renderer->renderer_impl.animation->meta_file);
+            int z = entity->renderer->z;
+
+            ye_remove_renderer_component(entity);
+            ye_add_animation_renderer_component(entity, z, meta_file);
+
+            json_decref(META);
+            free(meta_file);
             break;
     }
 }
@@ -195,47 +232,99 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, const char *path, const char *format, size_t count, int frame_delay, int loops){
+void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const char *meta_file){
+    // load the meta file
+    json_t *META = NULL;
+    if(YE_STATE.editor.editor_mode)
+        META = ye_json_read(ye_path_resources(meta_file));
+    else
+        META = yep_resource_json(meta_file);
+    
+    if(META == NULL){
+        ye_logf(error, "Failed to load animation meta file %s\n", meta_file);
+        return;
+    }
+
+    // version of the file
+    int version; ye_json_int(META, "version", &version);
+    if(version != YE_ENGINE_ANIMATION_FILE_VERSION){
+        ye_logf(error, "Invalid animation meta file version %d against %d\n", version, YE_ENGINE_ANIMATION_FILE_VERSION);
+        json_decref(META);
+        return;
+    }
+
+    // source location of the map    
+    char *path = NULL; 
+    if(!ye_json_string(META, "src", &path)){
+        ye_logf(error, "Failed to load SRC from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+
+    // size of each frame
+    int frame_width;
+    if(!ye_json_int(META, "frame_width", &frame_width)){
+        ye_logf(error, "Failed to load frame_width from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+    int frame_height;
+    if(!ye_json_int(META, "frame_height", &frame_height)){
+        ye_logf(error, "Failed to load frame_height from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+
+    // number of frames
+    int frame_count;
+    if(!ye_json_int(META, "frame_count", &frame_count)){
+        ye_logf(error, "Failed to load frame_count from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+
+    // frame delay
+    int frame_delay;
+    if(!ye_json_int(META, "frame_delay", &frame_delay)){
+        ye_logf(error, "Failed to load frame_delay from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+
+    // loops
+    int loops;
+    if(!ye_json_int(META, "loops", &loops)){
+        ye_logf(error, "Failed to load loops from animation meta file %s\n", meta_file);
+        json_decref(META);
+        return;
+    }
+
     struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
-    animation->animation_path = strdup(path);
-    animation->image_format = strdup(format);
-    animation->frame_count = count;
+    animation->frame_count = frame_count;
     animation->frame_delay = frame_delay;
     animation->loops = loops;
     animation->last_updated = 0; // set as 0 now so the operations between now and setting it do not count towards its frame time
     animation->current_frame_index = 0;
     animation->paused = false;
-    animation->frames = (SDL_Texture**)malloc(count * sizeof(SDL_Texture*));
-
-    /*
-        load all the frames into memory TODO: this could be futurely optimized
-    
-        we only load the first frame in editor mode to save overhead loading.
-    */ 
-    if(YE_STATE.editor.editor_mode) {
-        char filename[256];  // Assuming a maximum filename length of 255 characters
-        snprintf(filename, sizeof(filename), "%s/0.%s", ye_path_resources(path), format);
-        animation->frames[0] = ye_image(filename);
-    } else {
-        for (size_t i = 0; i < (size_t)count; ++i) {
-            char filename[256];  // Assuming a maximum filename length of 255 characters
-            snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, format);
-            animation->frames[i] = ye_image(filename);
-        }
-    }
+    animation->animation_handle = strdup(path);
+    animation->meta_file = strdup(meta_file);
+    animation->frame_width = frame_width;
+    animation->frame_height = frame_height;
 
     // create the renderer top level
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_ANIMATION, z, animation);
 
-    // set the texture to the first frame
-    entity->renderer->texture = animation->frames[0];
+    // set the texture to the the map
+    entity->renderer->texture = ye_image(path);
 
-    // update rect based off generated image
-    SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
-    entity->renderer->rect.w = size.w;
-    entity->renderer->rect.h = size.h;
+    // update rect based off of frame size
+    entity->renderer->rect.w = frame_width;
+    entity->renderer->rect.h = frame_height;
 
     animation->last_updated = SDL_GetTicks(); // set the last updated to now so we can start ticking it accurately
+
+    // free the meta file
+    json_decref(META);
 }
 
 void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, char * handle, SDL_Rect src){
@@ -283,11 +372,9 @@ void ye_remove_renderer_component(struct ye_entity *entity){
             SDL_DestroyTexture(entity->renderer->texture);
             break;
         case YE_RENDERER_TYPE_ANIMATION:
-            // cache will handle freeing the frames as needed
-
-            free(entity->renderer->renderer_impl.animation->animation_path);
-            free(entity->renderer->renderer_impl.animation->image_format);
-            free(entity->renderer->renderer_impl.animation->frames);
+            // cache will handle freeing the frame map as needed
+            free(entity->renderer->renderer_impl.animation->animation_handle);
+            free(entity->renderer->renderer_impl.animation->meta_file);
             free(entity->renderer->renderer_impl.animation);
             break;
         case YE_RENDERER_TYPE_TILEMAP_TILE:
@@ -364,7 +451,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                                 }
                             }
                             animation->last_updated = now;
-                            current->entity->renderer->texture = animation->frames[animation->current_frame_index];
+                            // current->entity->renderer->texture = animation->frames[animation->current_frame_index]; was this the only thing to change?
                         }
                     }
                 }
@@ -379,7 +466,12 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 // ^ old system that relied on transform
             ) {
                 struct ye_rectf temp_entity_rect = ye_get_position(current->entity,YE_COMPONENT_RENDERER);
-                struct ye_rectf texture_rect = ye_convert_rect_rectf(ye_get_real_texture_size_rect(current->entity->renderer->texture));
+                struct ye_rectf texture_rect;
+                if(current->entity->renderer->type != YE_RENDERER_TYPE_ANIMATION)
+                    texture_rect = ye_convert_rect_rectf(ye_get_real_texture_size_rect(current->entity->renderer->texture));
+                else
+                    texture_rect = (struct ye_rectf){0, 0, current->entity->renderer->renderer_impl.animation->frame_width, current->entity->renderer->renderer_impl.animation->frame_height};
+                
                 ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center);
                 SDL_Rect entity_rect = ye_convert_rectf_rect(texture_rect);
 
@@ -421,6 +513,26 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     SDL_Rect *ent_src_rect = NULL;
                     if(current->entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE){
                         ent_src_rect = &current->entity->renderer->renderer_impl.tile->src;
+                    }
+
+                    /*
+                        For an animation, the src rect is
+                        {
+                            x: 0,
+                            y: current_frame_index * frame_height,
+                            w: frame_width,
+                            h: frame_height
+                        }
+                    */
+                    if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+                        struct ye_component_renderer * rend = current->entity->renderer;
+                        ent_src_rect = &(SDL_Rect){
+                            0,
+                            rend->renderer_impl.animation->current_frame_index * rend->renderer_impl.animation->frame_height,
+                            rend->renderer_impl.animation->frame_width,
+                            rend->renderer_impl.animation->frame_height
+                        };
+                        // printf("ent_src_rect: %d %d %d %d\n", ent_src_rect->x, ent_src_rect->y, ent_src_rect->w, ent_src_rect->h);
                     }
 
                     // if transform is flipped or rotated render it differently

@@ -160,22 +160,7 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             break;
         case YE_RENDERER_TYPE_ANIMATION:
             // set the animation path
-            json_object_set_new(impl, "animation path", json_string(entity->renderer->renderer_impl.animation->animation_path));
-
-            // set the image format
-            json_object_set_new(impl, "image format", json_string(entity->renderer->renderer_impl.animation->image_format));
-
-            // set the frame count
-            json_object_set_new(impl, "frame count", json_integer(entity->renderer->renderer_impl.animation->frame_count));
-            
-            // set the frame delay
-            json_object_set_new(impl, "frame delay", json_integer(entity->renderer->renderer_impl.animation->frame_delay));
-
-            // set the loops
-            json_object_set_new(impl, "loops", json_integer(entity->renderer->renderer_impl.animation->loops));
-            
-            // set the paused state
-            json_object_set_new(impl, "paused", json_boolean(entity->renderer->renderer_impl.animation->paused));
+            json_object_set_new(impl, "animation path", json_string(entity->renderer->renderer_impl.animation->meta_file));
 
             break;
         case YE_RENDERER_TYPE_TILEMAP_TILE:

@@ -234,7 +234,7 @@ void ye_render_all() {
         TODO: profile the performance of doing this even if these havent changed
     */
     SDL_RenderSetViewport(pRenderer, NULL);
-    SDL_RenderSetScale(pRenderer, 1.0f, 1.0f);
+    SDL_RenderSetScale(pRenderer, (float)1, (float)1);
 
     ui_render();
 

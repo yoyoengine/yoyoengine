@@ -112,19 +112,21 @@ struct ye_component_renderer_text_outlined {
  * @brief A structure to represent an animation renderer.
  */
 struct ye_component_renderer_animation {
-    char *animation_path;       ///< path to animation folder
-    char *image_format;         ///< format of image files in animation
+    char *animation_handle;     ///< resource for animation map image
+    char *meta_file;            ///< meta file for animation details
 
     size_t frame_count;         ///< number of frames in animation
 
     int frame_delay;            ///< delay between frames in ms
-    int last_updated;           ///< SDL_GetTicks() last frame advance
     int loops;                  ///< number of loops, -1 for infinite
+    bool paused;                ///< whether or not the animation is paused
+
+    int frame_width;            ///< width of each frame
+    int frame_height;           ///< height of each frame
+
+    // meta for engine:
+    int last_updated;           ///< SDL_GetTicks() last frame advance
     int current_frame_index;    ///< current frame index
-
-    SDL_Texture** frames;       ///< array of textures for each frame
-
-    bool paused;
 };
 
 /**
@@ -196,13 +198,9 @@ void ye_temp_add_text_outlined_renderer_component(struct ye_entity *entity, int 
  * @brief Temporarily adds an animation renderer component to an entity.
  * @param entity The entity to add the animation renderer component to.
  * @param z The z-index of the animation renderer component.
- * @param path The path to the animation.
- * @param format The format of the animation.
- * @param count The number of frames in the animation.
- * @param frame_delay The delay between frames in the animation.
- * @param loops The number of loops in the animation.
+ * @param meta_file The meta file to use for loading animation details.
  */
-void ye_temp_add_animation_renderer_component(struct ye_entity *entity, int z, const char *path, const char *format, size_t count, int frame_delay, int loops);
+void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const char *meta_file);
 
 /**
  * @brief Adds a tilemap tile renderer component to an entity.

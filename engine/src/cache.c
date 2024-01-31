@@ -88,30 +88,12 @@ void ye_pre_cache_scene(json_t *scene){
                 ye_image(src);
                 break;
             case YE_RENDERER_TYPE_ANIMATION:
-                // cache all images in animation path/framenum.extension
-                if(!ye_json_string(impl,"animation path",&path)){
-                    continue;
-                }
-                int frame_count;
-                if(!ye_json_int(impl,"frame count",&frame_count)){
-                    continue;
-                }
-                const char *extension = NULL;
-                if(!ye_json_string(impl,"image format",&extension)){
-                    continue;
-                }
-                // we only load the first frame in editor mode to save overhead loading
-                if(YE_STATE.editor.editor_mode) {
-                    char filename[256];  // Assuming a maximum filename length of 255 characters
-                    snprintf(filename, sizeof(filename), "%s/0.%s", path, extension);
-                    ye_image(filename);
-                } else {
-                    for(int i = 0; i<frame_count; ++i){
-                        char filename[256];  // Assuming a maximum filename length of 255 characters
-                        snprintf(filename, sizeof(filename), "%s/%d.%s", path, (int)i, extension);
-                        ye_image(filename);
-                    }
-                }
+                // we are just gonna let the animation add cache this. so we dont have to extract more nested keys from the anim meta
+                // // cache the master map
+                // if(!ye_json_string(impl,"animation path",&path)){
+                //     continue;
+                // }
+                // ye_image(path);
                 break;
             default:
                 break;

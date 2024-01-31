@@ -225,51 +225,13 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:
-            // get the animation path string
+            // get the animation path string (path to the meta file)
             if(!ye_json_string(impl,"animation path",&animation_path)) {
                 ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the animation path field\n", entity_name);
                 return;
             }
 
-            // get the image format string
-            const char *image_format = NULL;
-            if(!ye_json_string(impl,"image format",&image_format)) {
-                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the image format field\n", entity_name);
-                return;
-            }
-
-            // get the frame count int
-            int frame_count;
-            if(!ye_json_int(impl,"frame count",&frame_count)) {
-                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the frame count field\n", entity_name);
-                return;
-            }
-
-            // get the frame delay (ms) int
-            int frame_delay;
-            if(!ye_json_int(impl,"frame delay",&frame_delay)) {
-                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the frame delay field\n", entity_name);
-                return;
-            }
-
-            // get the loops int
-            int loops;
-            if(!ye_json_int(impl,"loops",&loops)) {
-                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the loops field\n", entity_name);
-                return;
-            }
-
-            ye_temp_add_animation_renderer_component(e,z,animation_path,image_format,frame_count,frame_delay,loops);
-
-            // get the paused bool
-            bool paused;
-            if(!ye_json_bool(impl,"paused",&paused)) {
-                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the paused field\n", entity_name);
-                return;
-            }
-            if(paused){
-                e->renderer->renderer_impl.animation->paused = true;
-            }
+            ye_add_animation_renderer_component(e,z,animation_path);
 
             break;
         case YE_RENDERER_TYPE_TILEMAP_TILE:
