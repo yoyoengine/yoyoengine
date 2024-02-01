@@ -86,7 +86,7 @@ void ye_run_lua_on_mount(struct ye_component_lua_script *script) {
 
 void ye_run_lua_on_unmount(struct ye_component_lua_script *script) {
     if(script == NULL) {
-        printf("script is null\n");
+        // printf("script is null\n");
         return;
     }
     

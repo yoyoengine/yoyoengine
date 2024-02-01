@@ -742,19 +742,13 @@ set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
 
 ## slk fjlkgjh dfk gjhlk
 
-scene config panel add default camera name
-
 move camera in a not bad way
-
-debug log??? does it need to ship with build??? does it get generated on its own?? is it even working?? does it respect the log level???
 
 remove all warnings
 
 add actual release modes
 
 figure out build system - i mean like the actual versions you attatch to builds
-
-stop showing console on windows builds for release mode
 
 collider add
 
@@ -786,20 +780,16 @@ typing script path that doesnt exist creates it in editor
 
 must open build settings to generate file or it doesnt exist just hitting build and run
 
-lots of edge cases in build script for stuff not existing
-
-buld folder must exist first
-
-should template a gitignore
-
 should auto save or warn when building with no save
 
 DO NOT USE THE SCENE FILE CREATOR ITS TOTALLY BUGGED AND WILL WIPE YOUR SHIT
 
-scene camera does not have a camera component by default LMAO
-
 easy way for registering lua from C. like a fn quit built in
 
-there is output when fields updating in editor inspector / do a printf sweep
-
 scene loading is cooked up somehow. trying to call through lua does not work because it attempts to call back into a nonexistant state (I think)
+
+logging should be totally disabled to file unless we are in debug mode, also shouldnt log things we dont need to in release
+
+build script doesnt acrually check debug mode, its just read in by engine at runtime.
+
+add icons through cmake. make this go hand in hand with the current impl which is scuffy at best. we really only care about these icons on windows to lend credibility.

@@ -1,9 +1,9 @@
 build
-examples/minesweeper/debug.log
-src/editor/debug.log
+debug.log
 examples/test
 test
 examples/NOT_minesweeper
 engine/docs
 yep/resources
 examples/splash
+examples/throwaway

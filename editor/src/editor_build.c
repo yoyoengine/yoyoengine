@@ -61,7 +61,7 @@ void editor_build(){
     // call the build script
     char command[256];
     snprintf(command, sizeof(command), "python3 -u \"%s\"", ye_path("build.py"));
-    printf("command: %s\n", command);
+    // printf("command: %s\n", command);
     system(command);
 }
 

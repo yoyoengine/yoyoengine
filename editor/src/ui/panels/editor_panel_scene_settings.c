@@ -34,6 +34,8 @@ json_t * SCENE = NULL;
 char * scene_name = NULL;
 int scene_version = 0;
 
+char scene_default_camera[256];
+
 char scene_music_path[256];
 bool scene_music_loop = true;
 float scene_music_volume = 1.0f;
@@ -60,11 +62,20 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             */
             // ye_json_string(SCENE, "name", &scene_name);
             ye_json_int(SCENE, "version", &scene_version);
-            
+            json_t * _scene; ye_json_object(SCENE, "scene", &_scene);
+
+            /*
+                Default Camera
+            */
+            char *dc = NULL;
+            if(!ye_json_string(_scene, "default camera", &dc))
+                strcpy(scene_default_camera, "");
+            else
+                strncpy(scene_default_camera, dc, 256);
+
             /*
                 Music
             */
-            json_t * _scene; ye_json_object(SCENE, "scene", &_scene);
             json_t * music; ye_json_object(_scene, "music", &music);
             char * mpath = NULL; ye_json_string(music, "src", &mpath);
             if(mpath != NULL)
@@ -97,11 +108,20 @@ void editor_panel_scene_settings(struct nk_context *ctx){
         
 
         nk_layout_row_dynamic(ctx, 30, 1);
-        nk_label_colored(ctx, "TODO: prefab and supplemental styles", NK_TEXT_LEFT, nk_rgb(255,255,0));
+        nk_label_colored(ctx, "TODO: prefabs and supplemental styles", NK_TEXT_LEFT, nk_rgb(255,255,0));
+
+        /*
+            Default Camera
+        */
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label(ctx, "Default Camera Path:", NK_TEXT_CENTERED);
+        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, scene_default_camera, 256, nk_filter_default);
 
         /*
             Music
         */
+        nk_layout_row_dynamic(ctx, 30, 1);
         nk_layout_row_dynamic(ctx, 30, 1);
         nk_label(ctx, "Scene Music Path:", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, scene_music_path, 256, nk_filter_default);
@@ -124,6 +144,7 @@ void editor_panel_scene_settings(struct nk_context *ctx){
                 update the keys
                 {
                     "scene":{
+                        "default camera":NEW_VALUE,
                         "music":{
                             "src":NEW_VALUE,
                             "loop":NEW_VALUE,
@@ -133,6 +154,9 @@ void editor_panel_scene_settings(struct nk_context *ctx){
                 }
             */
             json_t * _scene; ye_json_object(SCENE, "scene", &_scene);
+            
+            json_object_set_new(_scene, "default camera", json_string(scene_default_camera));
+            
             json_t * music; ye_json_object(_scene, "music", &music);
             json_object_set_new(music, "src", json_string(scene_music_path));
             json_object_set_new(music, "loop", json_boolean(scene_music_loop));

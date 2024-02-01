@@ -60,6 +60,10 @@ class YoyoEngineBuildSystem:
         self.game_platform = self.build_settings["platform"]
         self.build_cflags = self.build_settings["cflags"]
 
+        # add the -mwindows flag to disable console TODO: only if not debug build which isnt checked now
+        if self.game_platform == "windows":
+            self.build_cflags += " -mwindows"
+
         # we need the path to the engine, but only to specify its CMakeLists.txt
         self.build_engine_path = self.build_settings["engine_build_path"]
         # Check if the engine build path exists

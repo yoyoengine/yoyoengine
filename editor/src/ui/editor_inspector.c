@@ -623,7 +623,7 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
             if (strcmp(temp_buffer, ent->lua_script->script_handle) != 0) {
                 free(ent->lua_script->script_handle);
                 ent->lua_script->script_handle = strdup(temp_buffer);
-                printf("Changed script to %s\n", ent->lua_script->script_handle);
+                // printf("Changed script to %s\n", ent->lua_script->script_handle);
             }
 
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -718,7 +718,7 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             if (strcmp(temp_buffer_handle, ent->audiosource->handle) != 0) {
                 free(ent->audiosource->handle);
                 ent->audiosource->handle = strdup(temp_buffer_handle);
-                printf("Changed handle to %s\n", ent->audiosource->handle);
+                // printf("Changed handle to %s\n", ent->audiosource->handle);
             }
 
             if(_audiosource_disabled)
