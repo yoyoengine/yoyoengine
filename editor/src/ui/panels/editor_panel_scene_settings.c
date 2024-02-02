@@ -138,6 +138,7 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             remove_ui_component("scene_settings");
             unlock_viewport();
             json_decref(SCENE);
+            SCENE = NULL;
         }
         if(nk_button_label(ctx, "Save")){
             /*
@@ -157,7 +158,12 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             
             json_object_set_new(_scene, "default camera", json_string(scene_default_camera));
             
-            json_t * music; ye_json_object(_scene, "music", &music);
+            json_t * music; 
+            if(!ye_json_object(_scene, "music", &music)){
+                music = json_object();
+                json_object_set_new(_scene, "music", music);
+            }
+
             json_object_set_new(music, "src", json_string(scene_music_path));
             json_object_set_new(music, "loop", json_boolean(scene_music_loop));
             json_object_set_new(music, "volume", json_real(scene_music_volume));

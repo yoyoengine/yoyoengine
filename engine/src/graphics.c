@@ -200,6 +200,7 @@ void ye_render_all() {
         viewport.w = YE_STATE.engine.screen_width / 1.5;
         viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
         SDL_RenderSetViewport(pRenderer, &viewport);
+        // note: this is in practice useless, because in editor set logical size is overwriting this and we are painting to full screen buffer
     }
     else{
         /*

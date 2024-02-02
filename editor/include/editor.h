@@ -19,7 +19,7 @@
 #ifndef YE_EDITOR_H
 #define YE_EDITOR_H
 
-#define YE_EDITOR_VERSION "DEV 0"
+#define YE_EDITOR_VERSION "build 0"
 
 #include <stdbool.h>
 #include <jansson/jansson.h>

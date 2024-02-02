@@ -469,7 +469,11 @@ void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const ch
 */
 
 void ye_construct_scene(json_t *entities){
-    for(int i = 0; i < json_array_size(entities); i++){
+    /*
+        traverse backwards (serialization is traversing LL,
+        so we need to reverse it to keep the same order)
+    */
+    for(int i = json_array_size(entities) - 1; i >= 0; i--){
         json_t *entity = NULL;      ye_json_arr_object(entities,i,&entity);    
         
         // get entity name

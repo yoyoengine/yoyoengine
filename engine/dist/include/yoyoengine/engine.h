@@ -34,7 +34,7 @@
 /*
     Define some important constants to the engine
 */
-#define YE_ENGINE_VERSION "v0.0.1 dev"
+#define YE_ENGINE_VERSION "build 0"
 #define YE_ENGINE_SCENE_VERSION 0 // version 0 of scene files
 #define YE_ENGINE_STYLES_VERSION 0 // version 0 of style files
 #define YE_ENGINE_ANIMATION_FILE_VERSION 0 // version 0 of animation files

@@ -393,7 +393,10 @@ void ye_remove_renderer_component(struct ye_entity *entity){
 }
 
 void ye_system_renderer(SDL_Renderer *renderer) {
-    // if we are in editor mode
+    /*
+        These lines really suck and I wish they were better,
+        probably need actual zoom field tracking in the camera.
+    */
     if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
         // draw a grid of white evently spaced lines across the screen
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

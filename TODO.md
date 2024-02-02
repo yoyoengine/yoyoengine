@@ -742,19 +742,13 @@ set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
 
 ## slk fjlkgjh dfk gjhlk
 
-move camera in a not bad way
-
 remove all warnings
 
 add actual release modes
 
-figure out build system - i mean like the actual versions you attatch to builds
-
 collider add
 
 trigger colliders
-
-saving order reverses entities
 
 actual click selection and drag selection and other sensible controls, cant really click to cycle objects in order
 
@@ -775,12 +769,15 @@ typing script path that doesnt exist creates it in editor
 - [ ] asserts for all the things, better error handling (we dont want to be crash prone as I'm sure we are now)
 - [ ] big ass refactoring and cleanup, especially of editor code
 - [ ] dont rebuild clean object files
+- [ ] camera zoom centered in center of viewport not screen
 
 ## things noticed from new project not streamlined
 
 must open build settings to generate file or it doesnt exist just hitting build and run
 
 should auto save or warn when building with no save
+
+- for this would need to add a ton of lines everywhere we modify things that mark as dirty
 
 DO NOT USE THE SCENE FILE CREATOR ITS TOTALLY BUGGED AND WILL WIPE YOUR SHIT
 
@@ -790,6 +787,6 @@ scene loading is cooked up somehow. trying to call through lua does not work bec
 
 logging should be totally disabled to file unless we are in debug mode, also shouldnt log things we dont need to in release
 
-build script doesnt acrually check debug mode, its just read in by engine at runtime.
-
 add icons through cmake. make this go hand in hand with the current impl which is scuffy at best. we really only care about these icons on windows to lend credibility.
+
+better error reporting for neccessary components - highlight the objects and components in red. ex: camera comps NEED transforms

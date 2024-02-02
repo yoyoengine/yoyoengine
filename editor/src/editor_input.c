@@ -101,8 +101,17 @@ void editor_input_panning(SDL_Event event){
             camera_zoom = fmax(camera_zoom, 0.1f);
         }
 
+        // save the size before
+        float old_w = editor_camera->camera->view_field.w;
+        float old_h = editor_camera->camera->view_field.h;
+
+        // update the camera zoom
         editor_camera->camera->view_field.w = screenWidth / camera_zoom;
         editor_camera->camera->view_field.h = screenHeight / camera_zoom;
+
+        // offset position to keep center of the screen in the same place TODO: scale this with viewport size
+        editor_camera->transform->x -= (editor_camera->camera->view_field.w - old_w) / 2;
+        editor_camera->transform->y -= (editor_camera->camera->view_field.h - old_h) / 2;
 
         editor_update_mouse_world_pos(x, y);
     }

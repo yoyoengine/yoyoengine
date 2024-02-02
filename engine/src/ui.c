@@ -184,6 +184,10 @@ void ui_paint_cam_info(){
     char h_str[100];
     char z_str[100];
 
+    if(YE_STATE.engine.target_camera == NULL){
+        return;
+    }
+
     sprintf(x_str, "x: %f", YE_STATE.engine.target_camera->transform->x);
     sprintf(y_str, "y: %f", YE_STATE.engine.target_camera->transform->y);
     sprintf(w_str, "w: %d", YE_STATE.engine.target_camera->camera->view_field.w);
