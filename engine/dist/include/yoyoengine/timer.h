@@ -42,6 +42,8 @@ struct ye_timer {
 
 /**
  * @brief Node in the linked list of timers.
+ * 
+ * @note you must malloc the timer, but its memory will be managed by the timer system.
  */
 struct ye_timer_node {
     struct ye_timer * timer;

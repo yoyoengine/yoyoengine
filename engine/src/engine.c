@@ -102,6 +102,9 @@ void ye_process_frame(){
     YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks64();
 
+    // update timers
+    ye_update_timers();
+
     // C pre frame callback
     if(YE_STATE.engine.callbacks.pre_frame != NULL){
         YE_STATE.engine.callbacks.pre_frame();
@@ -273,6 +276,101 @@ void ye_update_base_path(char *path){
     executable_path = strdup(path);
 }
 
+void teardown_splash_screen(){
+    // open SETTINGS again
+    json_t *SETTINGS = ye_json_read(ye_path("settings.yoyo"));
+    
+    // retrieve and load the entry scene (editor mode handles this itself)
+    if(!YE_STATE.editor.editor_mode){
+        const char * entry_scene;
+        if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
+            ye_logf(info, "Detected entry: %s.\n", entry_scene);
+            ye_load_scene(entry_scene);
+        }
+        else{
+            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+        }
+    }
+
+    // no need to free timer, timer system will do it
+
+    // free the settings json as needed
+    if(SETTINGS != NULL)
+        json_decref(SETTINGS);
+}
+
+void setup_splash_screen(){
+    /*
+        Setup the engine logo screen
+
+        Construct ECS, add a timer to callback into loading the
+        default scene after 3000ms
+    */
+
+    if(!YE_STATE.editor.editor_mode){
+        // because play sound looks in resources pack, we need to pre cache the engine one
+        _ye_mixer_engine_cache("startup.mp3");
+        ye_play_sound("startup.mp3",0,1); // play startup sound
+    }
+
+    struct ye_entity * splash_cam = ye_create_entity();
+    ye_add_transform_component(splash_cam, 0,0);
+    ye_add_camera_component(splash_cam, 999, (SDL_Rect){0,0,1920,1080});
+    ye_set_camera(splash_cam);
+
+    // background for splash
+    struct ye_entity * splash_bg = ye_create_entity();
+    ye_add_transform_component(splash_bg, 0,0);
+    SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_bg.png"));
+    ye_cache_texture_manual(splash_bg_tex, "splash_bg.png");
+    ye_add_image_renderer_component_preloaded(splash_bg, 1, splash_bg_tex);
+    splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
+
+    // foreground logo for splash
+    struct ye_entity * splash_y = ye_create_entity();
+    ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
+    SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_y.png"));
+    ye_cache_texture_manual(splash_y_tex, "splash_y.png");
+    ye_add_image_renderer_component_preloaded(splash_y, 1, splash_y_tex);
+    splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
+
+    // gear spinning below logo
+    struct ye_entity * splash_gear = ye_create_entity();
+    ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
+    SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_gear.png"));
+    ye_cache_texture_manual(splash_gear_tex, "splash_gear.png");
+    ye_add_image_renderer_component_preloaded(splash_gear, 1, splash_gear_tex);
+    splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
+    ye_add_physics_component(splash_gear,0,0);
+    splash_gear->physics->rotational_velocity = 90;
+
+    // version label
+    struct ye_entity * splash_version = ye_create_entity();
+    ye_add_transform_component(splash_version, 0, 0);
+    SDL_Color white = {255, 255, 255, 255};
+    ye_cache_color("white", white);
+    TTF_Font *orbitron = yep_engine_resource_font("Orbitron-Regular.ttf");
+    ye_cache_font_manual("orbitron", orbitron);
+    ye_add_text_renderer_component(splash_version, 1, YE_ENGINE_VERSION, "orbitron", 64, "white");
+    splash_version->renderer->rect = (struct ye_rectf){
+        YE_STATE.engine.screen_width - 590,
+        235,
+        125,
+        75
+    };
+    ye_update_renderer_component(splash_version);
+
+    /*
+        Create a timer 3000ms from now to load the default scene
+    */
+    struct ye_timer * splash_timer = malloc(sizeof(struct ye_timer));
+    splash_timer->start_ticks = -1;
+    splash_timer->loops = 0;
+    splash_timer->length_ms = 3000;
+    splash_timer->callback = teardown_splash_screen;
+    ye_register_timer(splash_timer);
+}
+
 void ye_init_engine() {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
@@ -409,82 +507,11 @@ void ye_init_engine() {
         ye_logf(info,"Skipping Intro.\n");
     }
     else{
-        // TODO: FIXME - this wont work yet because we need to load from file at runtime
-        if(!YE_STATE.editor.editor_mode){
-            // because play sound looks in resources pack, we need to pre cache the engine one
-            _ye_mixer_engine_cache("startup.mp3");
-            ye_play_sound("startup.mp3",0,1); // play startup sound
-        }
-
-        // im not a particularly massive fan of using the unstable ECS just yet, but might as well
-        struct ye_entity * splash_cam = ye_create_entity();
-        ye_add_transform_component(splash_cam, 0,0);
-        ye_add_camera_component(splash_cam, 999, (SDL_Rect){0,0,1920,1080});
-        ye_set_camera(splash_cam);
-
-        // background for splash
-        struct ye_entity * splash_bg = ye_create_entity();
-        ye_add_transform_component(splash_bg, 0,0);
-        SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_bg.png"));
-        ye_cache_texture_manual(splash_bg_tex, "splash_bg.png");
-        ye_add_image_renderer_component_preloaded(splash_bg, 1, splash_bg_tex);
-        splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
-
-        // foreground logo for splash
-        struct ye_entity * splash_y = ye_create_entity();
-        ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
-        SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_y.png"));
-        ye_cache_texture_manual(splash_y_tex, "splash_y.png");
-        ye_add_image_renderer_component_preloaded(splash_y, 1, splash_y_tex);
-        splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
-
-        // gear spinning below logo
-        struct ye_entity * splash_gear = ye_create_entity();
-        ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
-        SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_gear.png"));
-        ye_cache_texture_manual(splash_gear_tex, "splash_gear.png");
-        ye_add_image_renderer_component_preloaded(splash_gear, 1, splash_gear_tex);
-        splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
-        ye_add_physics_component(splash_gear,0,0);
-        splash_gear->physics->rotational_velocity = 90;
-
-        // TODO: version numbers back please (awaiting text renderer)
-
-        #ifndef __EMSCRIPTEN__ // TODO: temp skip intro with emscripten
-
-        // get current ticks
-        int ticks = SDL_GetTicks();
-
-        // until we are 2550 ticks in the future
-        while(SDL_GetTicks() - ticks < 2550){
-            // process frame
-            ye_process_frame();
-        }
-
-        #endif
-
-        // we need to delete everything in the ECS and reset the camera
-        ye_destroy_entity(splash_cam);
-        ye_set_camera(NULL);
-        ye_destroy_entity(splash_bg);
-        ye_destroy_entity(splash_y);
-        ye_destroy_entity(splash_gear);
+        setup_splash_screen();
     }
 
     // debug output
     ye_logf(info, "Engine Fully Initialized.\n");
-
-    // retrieve and load the entry scene (editor mode handles this itself)
-    if(!YE_STATE.editor.editor_mode){
-        const char * entry_scene;
-        if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
-            ye_logf(info, "Detected entry: %s.\n", entry_scene);
-            ye_load_scene(entry_scene);
-        }
-        else{
-            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
-        }
-    }
 
     // free the settings json as needed
     if(SETTINGS != NULL)

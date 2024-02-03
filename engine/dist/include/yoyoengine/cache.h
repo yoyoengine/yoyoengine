@@ -209,6 +209,14 @@ void ye_cache_texture_manual(SDL_Texture *texture, const char *key);
 SDL_Texture * ye_cache_texture(const char *path);
 
 /**
+ * @brief Manually cache an already loaded font with a provided key
+ * 
+ * @param name The name of the font key
+ * @param font The font to cache
+ */
+TTF_Font * ye_cache_font_manual(const char *name, TTF_Font *font);
+
+/**
  * @brief Create a font from name, size, and path.
  * @param name The name of the font.
  * @param size The size of the font.

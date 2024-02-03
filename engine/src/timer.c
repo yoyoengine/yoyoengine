@@ -39,6 +39,7 @@ void ye_unregister_timer(struct ye_timer * timer){
             else {
                 prev->next = node->next;
             }
+            free(node->timer);
             free(node);
             return;
         }

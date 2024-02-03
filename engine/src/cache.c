@@ -354,6 +354,18 @@ SDL_Texture * ye_cache_texture(const char *path){
     return texture;
 }
 
+TTF_Font * ye_cache_font_manual(const char *name, TTF_Font *font){
+    // cache the font
+    struct ye_font_node *new_node = malloc(sizeof(struct ye_font_node));
+    new_node->font = font;
+    new_node->name = malloc(strlen(name) + 1);
+    strcpy(new_node->name, name);
+    new_node->size = 1; // we load the fonts at size 1 for now
+    HASH_ADD_KEYPTR(hh, cached_fonts_head, new_node->name, strlen(new_node->name), new_node);
+    // ye_logf(debug,"Cached font: %s\n",name);
+    return font;
+}
+
 TTF_Font * ye_cache_font(const char *name, /*int size,*/ const char *path){
     TTF_Font *font = NULL;
 
