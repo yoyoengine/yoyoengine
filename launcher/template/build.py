@@ -63,6 +63,8 @@ class YoyoEngineBuildSystem:
         # add the -mwindows flag to disable console TODO: only if not debug build which isnt checked now
         if self.game_platform == "windows":
             self.build_cflags += " -mwindows"
+        elif self.game_platform == "emscripten":
+            self.build_cflags += " --emrun"
         
         # if self.game_settings["debug_mode"] == True, add -g, -Wall, and -Wextra to the build flags
         if self.game_settings["debug_mode"] == True:
@@ -110,6 +112,9 @@ class YoyoEngineBuildSystem:
         elif self.game_platform == "windows":
             self.binary_dir = "bin/Windows"
             self.cmake_platform_name = "Windows"
+        elif self.game_platform == "emscripten":
+            self.binary_dir = "bin/Emscripten"
+            self.cmake_platform_name = "Emscripten"
     
     def configure(self):
         # write our CMakeLists.txt file and run cmake .. to configure
@@ -223,16 +228,35 @@ class YoyoEngineBuildSystem:
 
         set_target_properties({self.game_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
 
-        file(COPY "../resources.yep" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
-        file(COPY "../engine.yep" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
         file(COPY "../settings.yoyo" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+        file(COPY "../engine.yep" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})
+        file(COPY "../resources.yep" DESTINATION ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}})        
         """)
 
+        if(self.game_platform == "emscripten"):
+            cmake_file.write(f"""
+        
+        # emscripten specific settings
+        target_link_options({self.game_name} PRIVATE --bind -Wbad-function-cast -Wcast-function-type -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=1gb --preload-file {self.script_location}/build/out/{self.binary_dir}@/)
+        set(CMAKE_EXECUTABLE_SUFFIX \".html\")
+            """)
+        # target_link_options({self.game_name} PRIVATE --bind -Wbad-function-cast -Wcast-function-type -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=1gb --preload-file {self.script_location}/build/out/{self.binary_dir}/settings.yoyo@/ --preload-file {self.script_location}/build/out/{self.binary_dir}/engine.yep/@ --preload-file {self.script_location}/build/out/{self.binary_dir}/resources.yep/@)
         cmake_file.close()
 
         # create all toolchains we might need in the build folder
         toolchain_file = open("./build/toolchain-win.cmake", "w")
         toolchain_file.write("set(CMAKE_SYSTEM_NAME Windows)\nset(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)\nset(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)\nset(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)\nset(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)")
+        toolchain_file.close()
+
+        toolchain_file = open("./build/toolchain-emscripten.cmake", "w")
+        toolchain_file.write(f"""
+        set(CMAKE_SYSTEM_NAME Emscripten)
+        set(CMAKE_C_COMPILER \"emcc\")
+        set(CMAKE_CXX_COMPILER \"em++\")
+        set(CMAKE_CXX_FLAGS \"--bind\")
+        set(CMAKE_C_FLAGS \"\")
+        set(EMSCRIPTEN ON CACHE BOOL \"Enable Emscripten toolchain\" FORCE)
+        """)
         toolchain_file.close()
 
         # run cmake
@@ -249,6 +273,9 @@ class YoyoEngineBuildSystem:
         elif(self.game_platform == "windows"):
             print("[YOYO BUILD] Running cmake FOR WINDOWS")
             subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=./toolchain-win.cmake", ".."])
+        elif(self.game_platform == "emscripten"):
+            print("[YOYO BUILD] Running cmake FOR EMSCRIPTEN")
+            subprocess.run(["cmake", "-DCMAKE_TOOLCHAIN_FILE=./toolchain-emscripten.cmake", ".."])
         else:
             print("Error: Unknown platform \"" + self.game_platform + "\"")
             sys.exit()
@@ -261,7 +288,10 @@ class YoyoEngineBuildSystem:
         print("----------------------------------")
 
         # run make
-        subprocess.run(["make"])
+        if(self.game_platform == "emscripten"):
+            subprocess.run(["emmake", "make"])  # Use 4 threads
+        else:
+            subprocess.run(["make"])  # Use 4 threads
 
         # on windows, we need to copy the dlls from /lib into the executible dir
         if(self.game_platform == "windows"):
@@ -272,19 +302,30 @@ class YoyoEngineBuildSystem:
             os.remove("./bin/Windows/tricks.yoyo")
             os.remove("./bin/Windows/libyoyoengine.dll.a")
             print("[YOYO BUILD] Copied dlls to build folder.")
+        elif(self.game_platform == "emscripten"):
+            # copy only .data files from lib into root
+            for file in os.listdir("./bin/Emscripten/lib"):
+                if file.endswith(".data"):
+                    shutil.copy(f"./bin/Emscripten/lib/{file}", "./bin/Emscripten/")
+            
+            # delete tricks, lib, resources.yep, engine.yep
+            shutil.rmtree("./bin/Emscripten/tricks")
+            shutil.rmtree("./bin/Emscripten/lib")
+            print("[YOYO BUILD] Cleaned up Emscripten build folder.")
 
         # build cleanup, remove the include folder in the output
         if(os.path.exists(f"./bin/{self.cmake_platform_name}/include")):
             shutil.rmtree(f"./bin/{self.cmake_platform_name}/include")
         print("[YOYO BUILD] Removed include folder from build folder.")
 
-        # if there were zero tricks, remove the tricks folder (as long as we arent on windows because we have already removed this on windows)
-        if(self.game_platform != "windows" and len(os.listdir(f"./bin/{self.cmake_platform_name}/tricks")) == 1): # tricks.yoyo is always there
-            shutil.rmtree(f"./bin/{self.cmake_platform_name}/tricks")
+        if(self.game_platform == "emscripten"):
+            # dont need local copies, wasm linker has packed them into .data
+            os.remove("./bin/Emscripten/resources.yep")
+            os.remove("./bin/Emscripten/engine.yep")
+            os.remove("./bin/Emscripten/settings.yoyo")
 
-        # move engine.yep and resources.yep into the output folder
-        shutil.move(f"{self.script_location}/engine.yep", f"{self.binary_dir}/engine.yep")
-        shutil.move(f"{self.script_location}/resources.yep", f"{self.binary_dir}/resources.yep")
+            # rename the .html file to index.html, because itch and other html5 sites expect this
+            os.rename(f"./bin/Emscripten/{self.game_name}.html", f"./bin/Emscripten/index.html")
 
     def run(self):
         # if we recieved arg --run, run the game
@@ -300,6 +341,8 @@ class YoyoEngineBuildSystem:
                     subprocess.Popen(["wine", "./bin/Windows/"+self.game_name+".exe"])
                 else:
                     print("[YOYO BUILD] Error: I have not supported building games not on linux... so you should not be seeing this message at all.")
+            elif(self.game_platform == "emscripten"):
+                subprocess.Popen(["emrun", "./bin/Emscripten/"+self.game_name+".html"])
 
     
 if __name__ == "__main__":

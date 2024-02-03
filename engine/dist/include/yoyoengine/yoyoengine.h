@@ -25,6 +25,10 @@
 #define YE_ENGINE_MAIN_H
 #define NK_INCLUDE_FIXED_TYPES
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 /*
     Include all our headers in one place.
     This lets the game use

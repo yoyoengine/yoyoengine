@@ -86,4 +86,11 @@ void ye_remove_audiosource_component(struct ye_entity *entity);
  */
 void ye_system_audiosource();
 
+/**
+ * @brief Called from audio.c when a channel finishes, this function is in charge of re-scheduling audio chunks
+ * 
+ * @param channel The channel that finished
+ */
+void ye_audiosource_channel_finished(int channel);
+
 #endif

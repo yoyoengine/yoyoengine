@@ -218,7 +218,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             nk_label(ctx, "Platform:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The platform you are building for.");
-            static const char *platforms[] = {"linux", "windows"};
+            static const char *platforms[] = {"linux", "windows", "emscripten"};
             nk_combobox(ctx, platforms, NK_LEN(platforms), &build_platform_int, 25, nk_vec2(200,200));
 
             /*
@@ -272,7 +272,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 
                 // update build keys, then save
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
-                json_object_set_new(BUILD_FILE, "platform", json_string(build_platform_int == 0 ? "linux" : "windows"));
+                json_object_set_new(BUILD_FILE, "platform", json_string(platforms[build_platform_int]));
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
                 json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
                 ye_json_write(ye_path("build.yoyo"),BUILD_FILE);
@@ -477,6 +477,9 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         else{
                             if(strcmp(tmp_build_platform, "windows") == 0){
                                 build_platform_int = 1;
+                            }
+                            else if(strcmp(tmp_build_platform, "emscripten") == 0){
+                                build_platform_int = 2;
                             }
                             else{
                                 build_platform_int = 0;

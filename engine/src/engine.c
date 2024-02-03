@@ -276,6 +276,12 @@ void ye_update_base_path(char *path){
 void ye_init_engine() {
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
+    // printf("Executable path: %s\n", executable_path);
+
+    // #ifdef __EMSCRIPTEN__
+    //     free(executable_path);
+    //     executable_path = strdup("");
+    // #endif
 
     // Set default paths for engineResourcesPath and gameResourcesPath
     char engine_default_path[256], game_default_path[256], log_default_path[256];
@@ -444,6 +450,8 @@ void ye_init_engine() {
 
         // TODO: version numbers back please (awaiting text renderer)
 
+        #ifndef __EMSCRIPTEN__ // TODO: temp skip intro with emscripten
+
         // get current ticks
         int ticks = SDL_GetTicks();
 
@@ -452,6 +460,8 @@ void ye_init_engine() {
             // process frame
             ye_process_frame();
         }
+
+        #endif
 
         // we need to delete everything in the ECS and reset the camera
         ye_destroy_entity(splash_cam);

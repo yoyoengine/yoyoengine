@@ -790,3 +790,17 @@ logging should be totally disabled to file unless we are in debug mode, also sho
 add icons through cmake. make this go hand in hand with the current impl which is scuffy at best. we really only care about these icons on windows to lend credibility.
 
 better error reporting for neccessary components - highlight the objects and components in red. ex: camera comps NEED transforms
+
+## emscripten notes
+
+Debugging web apps is a mixed bag. You should compile and link with -gsource-map, which embeds a ton of source-level debugging information into the build, and make sure the app source code is available on the web server, which is often a scary proposition for various reasons.
+
+NEED TO MAKE A "CLICK HERE TO RUN" SCREEN EXCLUSIVELY FOR EM SO CAPTURE INPUT AND LET AUDIO START - actually prob not, itch does this with a setting
+
+NO PLUGINS for emscripten (test later)
+
+speed up builds with -j
+
+i think the engine splash needs to become an actual scene. this will play nice with emscripten and is probably generally better
+
+force zlib and other examples to not build

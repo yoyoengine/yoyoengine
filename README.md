@@ -22,7 +22,7 @@ A solid (if I do say so myself) 2D game engine that boasts
 
 - A Project Hub
 - Visual Editor
-- Multi-platform support (Windows + Linux with emscripten planned)
+- Multi-platform support (Windows, Linux, Emscripten)
 - Native C and lua scripting
 - Plugin system
 
@@ -55,6 +55,7 @@ This section is temporary and will be used to denote any important facts I need 
 ### editor
 
 - zooming too far out really messes with the SDL line renderer, and you will see weird visual artifacts.
+- check out <https://emscripten.org/docs/getting_started/downloads.html> for how to install emscripten, after that assuming you have everything else installed you can build to emscripten outputs
 
 ## Dependencies
 
@@ -69,6 +70,7 @@ This section is temporary and will be used to denote any important facts I need 
 - [make](https://www.gnu.org/software/make/)
 - [python3](https://www.python.org/)
 - [pip](https://pypi.org/project/pip/)
+- [emscripten](https://emscripten.org/) (for emscripten builds)
 
 ### Core & Editor
 

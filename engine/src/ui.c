@@ -137,7 +137,7 @@ void ui_end_input_checks(){
     nk_input_end(ctx);
 }
 
-void ui_paint_debug_overlay(){
+void ui_paint_debug_overlay(struct nk_context *ctx){
     // put all the parameters into strings for display
     char fps_str[100];
     char input_time_str[100];
@@ -177,7 +177,7 @@ void ui_paint_debug_overlay(){
     nk_end(ctx);
 }
 
-void ui_paint_cam_info(){
+void ui_paint_cam_info(struct nk_context *ctx){
     char x_str[100];
     char y_str[100];
     char w_str[100];

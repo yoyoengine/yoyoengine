@@ -45,68 +45,50 @@ void _example_input_handler(SDL_Event event){
 }
 #endif
 
+static void mainloop(void){
+    if(YG_RUNNING){
+        ye_process_frame();
+    }
+    else{
+        #ifdef __EMSCRIPTEN__
+            emscripten_cancel_main_loop();
+        #endif
+
+        #ifdef YOYO_PRE_SHUTDOWN
+            // run the pre shutdown function
+            yoyo_pre_shutdown();
+        #endif
+
+        // shutdown engine
+        ye_shutdown_engine();
+
+        #ifdef YOYO_POST_SHUTDOWN
+            // run the post shutdown function
+            yoyo_post_shutdown();
+        #endif
+
+        printf("Game exited successfully\n");
+        exit(0);
+    }
+}
+
 /*
     MAIN ENTRY POINT
 
     THIS CONTAINS THE GAME LOOP
 */
-int main(int argc, char** argv){
+void main(void){
     YG_RUNNING = true;
-    
-    #ifdef YOYO_PRE_INIT
-        // run the pre init function
-        yoyo_pre_init();
-    #endif
 
-    #ifdef YOYO_HANDLE_INPUT
-        YE_STATE.engine.callbacks.input_handler = yoyo_handle_input;
-    #else
-        YE_STATE.engine.callbacks.input_handler = _example_input_handler;
-    #endif
+    ye_logf(info, "Starting init\n");
     
-    // intialize the engine (engine will look at ./settings.yoyo for configuration)
     ye_init_engine();
 
-    #ifdef YOYO_POST_INIT
-        // run the post init function
-        yoyo_post_init();
-    #endif
-
-    // assign function pointers for custom scripted behavior
-    #ifdef YOYO_PRE_FRAME
-        YE_STATE.engine.callbacks.pre_frame = yoyo_pre_frame;
+    #ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop(mainloop, 0, 1);
     #else
-        YE_STATE.engine.callbacks.pre_frame = NULL;
+        while(true){mainloop();}
     #endif
-
-    #ifdef YOYO_POST_FRAME
-        YE_STATE.engine.callbacks.post_frame = yoyo_post_frame;
-    #else
-        YE_STATE.engine.callbacks.post_frame = NULL;
-    #endif
-    // ...etc. colliders and other triggers in future
-    printf("Game initialized successfully\n");
-
-    // create a game loop and persist it
-    while(YG_RUNNING){
-        ye_process_frame();
-    }
-
-    #ifdef YOYO_PRE_SHUTDOWN
-        // run the pre shutdown function
-        yoyo_pre_shutdown();
-    #endif
-
-    // shutdown engine
-    ye_shutdown_engine();
-
-    #ifdef YOYO_POST_SHUTDOWN
-        // run the post shutdown function
-        yoyo_post_shutdown();
-    #endif
-
-    printf("Game exited successfully\n");
-    return 0;
 }
 
 #ifdef _WIN32
