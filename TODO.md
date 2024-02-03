@@ -795,12 +795,14 @@ better error reporting for neccessary components - highlight the objects and com
 
 Debugging web apps is a mixed bag. You should compile and link with -gsource-map, which embeds a ton of source-level debugging information into the build, and make sure the app source code is available on the web server, which is often a scary proposition for various reasons.
 
-NEED TO MAKE A "CLICK HERE TO RUN" SCREEN EXCLUSIVELY FOR EM SO CAPTURE INPUT AND LET AUDIO START - actually prob not, itch does this with a setting
-
 NO PLUGINS for emscripten (test later)
 
 speed up builds with -j
 
-i think the engine splash needs to become an actual scene. this will play nice with emscripten and is probably generally better
-
 force zlib and other examples to not build
+
+## other build stuff
+
+we have a release and debug mode, but im not totally convinced it works. at the least the sigs arent stripped because thats a linker option that we are throwwing to compiler. idk what im doing at all
+
+-03 optimizes out the animation system for some reason lmao

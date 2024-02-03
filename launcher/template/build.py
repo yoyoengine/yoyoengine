@@ -67,8 +67,10 @@ class YoyoEngineBuildSystem:
             self.build_cflags += " --emrun"
         
         # if self.game_settings["debug_mode"] == True, add -g, -Wall, and -Wextra to the build flags
-        if self.game_settings["debug_mode"] == True:
+        if self.build_settings["build_mode"] == "debug":
             self.build_cflags += " -g -Wall -Wextra"
+        elif self.build_settings["build_mode"] == "release":
+            self.build_cflags += " -s -O3" # optimize heavily
 
         # we need the path to the engine, but only to specify its CMakeLists.txt
         self.build_engine_path = self.build_settings["engine_build_path"]
@@ -139,6 +141,14 @@ class YoyoEngineBuildSystem:
 
         cmake_minimum_required(VERSION 3.22.1)
         project({self.game_name})
+        """)
+        # if in release mode, set YOYO_ENGINE_BUILD_RELEASE to on cache bool
+        if self.build_settings["build_mode"] != "release":
+            cmake_file.write(f"set(YOYO_ENGINE_BUILD_RELEASE OFF CACHE BOOL \"Enable Release mode\" FORCE)\n")
+        else:
+            cmake_file.write(f"set(YOYO_ENGINE_BUILD_RELEASE ON CACHE BOOL \"Enable Release mode\" FORCE)\n")
+        
+        cmake_file.write(f"""
 
         add_subdirectory("{self.build_engine_path}/.." yoyoengine)
         include_directories(include ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/include)
@@ -150,6 +160,8 @@ class YoyoEngineBuildSystem:
         file(GLOB CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
 
         add_executable({self.game_name} ${{SOURCES}} ${{CUSTOM_SOURCES}})
+
+        # TODO: add optimization flags and stripping for binary here
 
         # lets the tricks know where to link against any deps that the game has
         set(YOYO_GAME_LINK_DIR ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/lib)

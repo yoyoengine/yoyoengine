@@ -44,12 +44,15 @@ Set(FETCHCONTENT_QUIET FALSE)
 # dont build tests
 set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
 
-# TODO: BY DEFAULT WE ARE BUILDING WITH DEBUG FLAGS. THIS IS BAD. FIX THIS WHEN EVERYTHING ISNT BROKEN
-option(YOYO_ENGINE_BUILD_RELEASE "Build the engine in release mode" OFF)
-
 # if not in release mode, build in debug mode which sets cflags for max warnings and debug sigs
+option(YOYO_ENGINE_BUILD_RELEASE "Build the engine in release mode" ON)
 if(NOT YOYO_ENGINE_BUILD_RELEASE)
     target_compile_options(yoyoengine PRIVATE -Wall -Wextra -g)
+    message(STATUS "Building yoyoengine in debug mode")
+else()
+    # target_compile_options(yoyoengine PRIVATE -03) COMPILER OPTIMIZATION DESTROYS ANIMATION SYSTEM
+    target_link_options(yoyoengine PRIVATE -s)
+    message(STATUS "Building yoyoengine in release mode")
 endif()
 
 ###############

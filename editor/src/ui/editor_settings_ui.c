@@ -57,6 +57,7 @@ char build_additional_cflags[128];
 char build_platform[32];
 int original_build_platform_int; // tracks the target platform when opening settings, to compare with after closing if we need to set the "delete_cache" build.yoyo bool
 int build_platform_int;
+int build_mode_int;
 char build_engine_build_path[256];
 
 /*
@@ -74,7 +75,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             struct nk_rect bounds;
 
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label_colored(ctx, "Project Settings:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
+            nk_label_colored(ctx, "Project Settings:", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
 
             /*
                 Project name
@@ -178,7 +179,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             // lay out our booleans
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label_colored(ctx, "Advanced Project Settings:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
+            nk_label_colored(ctx, "Advanced Project Settings:", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
             nk_layout_row_dynamic(ctx, 25, 2);
 
             /*
@@ -187,7 +188,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             bounds = nk_widget_bounds(ctx);
             nk_checkbox_label(ctx, "Debug Mode", (nk_bool*)&project_debug_mode);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
-                nk_tooltip(ctx, "If checked, the game will run in debug mode, which will allow you to use the console and other debug features.");
+                nk_tooltip(ctx, "If enabled, console and other debug features will be enabled at runtime.");
 
             /*
                 Checkbox for stretch viewport
@@ -208,7 +209,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
 
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label_colored(ctx, "Build Settings:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
+            nk_label_colored(ctx, "Build Settings:", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
 
             /*
                 Platform (dropdown)
@@ -241,6 +242,17 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 nk_tooltip(ctx, "Additional C flags to pass to the compiler.");
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_additional_cflags, 256, nk_filter_default);
 
+            /*
+                Build Mode (dropdown for debug, release)
+            */
+            nk_layout_row_dynamic(ctx, 25, 2);
+            bounds = nk_widget_bounds(ctx);
+            nk_label(ctx, "Build Mode:", NK_TEXT_LEFT);
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "The mode you are building for.");
+            static const char *build_modes[] = {"debug", "release"};
+            nk_combobox(ctx, build_modes, NK_LEN(build_modes), &build_mode_int, 25, nk_vec2(200,200));
+
             nk_layout_row_dynamic(ctx, 25, 1);
 
             // close button
@@ -271,6 +283,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 ye_json_write(ye_path("settings.yoyo"),SETTINGS);
                 
                 // update build keys, then save
+                json_object_set_new(BUILD_FILE, "build_mode", json_string(build_modes[build_mode_int]));
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
                 json_object_set_new(BUILD_FILE, "platform", json_string(platforms[build_platform_int]));
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
@@ -465,6 +478,22 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         }
                         strncpy(build_additional_cflags, (char*)tmp_build_additional_cflags, (size_t)sizeof(build_additional_cflags) - 1);
                         build_additional_cflags[(size_t)sizeof(build_additional_cflags) - 1] = '\0'; // null terminate just in case TODO: write helper?
+
+                        /*
+                            Build mode
+                        */
+                        char * tmp_build_mode;
+                        if(!ye_json_string(BUILD_FILE, "build_mode", &tmp_build_mode)){
+                            build_mode_int = 0;
+                        }
+                        else{
+                            if(strcmp(tmp_build_mode, "release") == 0){
+                                build_mode_int = 1;
+                            }
+                            else{
+                                build_mode_int = 0;
+                            }
+                        }
 
                         /*
                             Platform
