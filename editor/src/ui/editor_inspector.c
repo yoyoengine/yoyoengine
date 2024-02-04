@@ -73,6 +73,7 @@ void _paint_transform(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_transform_component(ent);
+                editor_unsaved();
             }
 
             nk_tree_pop(ctx);
@@ -86,6 +87,7 @@ void _paint_transform(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Transform Component")){
             ye_add_transform_component(ent, 0, 0);
+            editor_unsaved();
         }
     }
 }
@@ -150,6 +152,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->alignment = (enum ye_alignment)(i);
                         }
                         // printf("Selected alignment %d\n", i);
+                        editor_unsaved();
                     }
                 }
                 switch(ent->renderer->alignment){ // TODO: consolidate, this is yucky
@@ -212,6 +215,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.image->src = strdup(temp_src_buffer);
                             // recomputes the image texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         break;
@@ -251,6 +255,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.text->text = strdup(temp_buffer);
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         // color //
@@ -271,6 +276,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.text->color_name = strdup(temp_buffer_color);
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         // font //
@@ -291,6 +297,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.text->font_name = strdup(temp_buffer_font);
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         // font size //
@@ -301,6 +308,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.text->font_size = res;
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         // auto font size //
@@ -308,6 +316,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.text->font_size = _auto_calculate_font_size(ent->renderer->computed_pos);
                             // recomputes the text texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         break;
@@ -334,6 +343,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.tile->handle = strdup(temp_tilemap_src_buffer);
                             // recomputes the image texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
 
                         nk_layout_row_dynamic(ctx, 25, 1);
@@ -365,6 +375,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ent->renderer->renderer_impl.animation->meta_file = strdup(temp_animation_src_buffer);
                             // recomputes the image texture
                             ye_update_renderer_component(ent);
+                            editor_unsaved();
                         }
                         break;
                     default:
@@ -378,6 +389,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_renderer_component(ent);
+                editor_unsaved();
             }
 
             nk_tree_pop(ctx);
@@ -421,7 +433,6 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                 strncpy(proposed_animation_meta_path, temp_animation_src_buffer, sizeof(proposed_animation_meta_path));
                 proposed_animation_meta_path[sizeof(proposed_animation_meta_path) - 1] = '\0';  // Ensure null-termination
             }
-
         }
         else if(add_renderer_cb_selected_type == YE_RENDERER_TYPE_TILEMAP_TILE){
             nk_layout_row_dynamic(ctx, 25, 2);
@@ -449,18 +460,23 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
             switch(add_renderer_cb_selected_type){
                 case 0:
                     ye_add_text_renderer_component(ent, 99, "Sample Text", "default", 12, "white");
+                    editor_unsaved();
                     break;
                 case 1:
                     ye_add_text_outlined_renderer_component(ent, 99, "Sample Text", "default", 12, "white", "red", 5);
+                    editor_unsaved();
                     break;
                 case 2:
                     ye_add_image_renderer_component(ent, 1, "fakeimage.png");
+                    editor_unsaved();
                     break;
                 case 3:
                     ye_add_animation_renderer_component(ent, 1, proposed_animation_meta_path);
+                    editor_unsaved();
                     break;
                 case 4:
                     ye_add_tilemap_renderer_component(ent, 1, proposed_tilemap_meta_path, (SDL_Rect){0,0,100,100});
+                    editor_unsaved();
                     break;
                 default:
                     break;
@@ -487,6 +503,7 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_camera_component(ent);
+                editor_unsaved();
             }
             
             nk_tree_pop(ctx);
@@ -500,6 +517,7 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Camera Component")){
             ye_add_camera_component(ent, 9999, (SDL_Rect){0,0,1920,1080});
+            editor_unsaved();
         }
     }
 }
@@ -520,6 +538,7 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_collider_component(ent);
+                editor_unsaved();
             }
             
             nk_tree_pop(ctx);
@@ -533,6 +552,7 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Collider Component")){
             ye_add_static_collider_component(ent, (struct ye_rectf){0,0,0,0});
+            editor_unsaved();
         }
     }
 }
@@ -555,6 +575,7 @@ void _paint_physics(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_physics_component(ent);
+                editor_unsaved();
             }
             
             nk_tree_pop(ctx);
@@ -568,6 +589,7 @@ void _paint_physics(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Physics Component")){
             ye_add_physics_component(ent, 0, 0);
+            editor_unsaved();
         }
     }
 }
@@ -588,6 +610,7 @@ void _paint_tag(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_tag_component(ent);
+                editor_unsaved();
             }
 
             nk_tree_pop(ctx);
@@ -601,6 +624,7 @@ void _paint_tag(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Tag Component")){
             ye_add_tag_component(ent);
+            editor_unsaved();
         }
     }
 }
@@ -630,6 +654,7 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_lua_script_component(ent);
+                editor_unsaved();
             }
             
             nk_tree_pop(ctx);
@@ -651,6 +676,7 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Script Component")){
             ye_add_lua_script_component(ent, proposed_script_path); // TODO: lua system hasnt been updated for yep yet. we need to read from bytecode or just content
+            editor_unsaved();
         }
     }
 }
@@ -719,6 +745,7 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
                 free(ent->audiosource->handle);
                 ent->audiosource->handle = strdup(temp_buffer_handle);
                 // printf("Changed handle to %s\n", ent->audiosource->handle);
+                editor_unsaved();
             }
 
             if(_audiosource_disabled)
@@ -728,6 +755,7 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_audiosource_component(ent);
+                editor_unsaved();
             }
             
             nk_tree_pop(ctx);
@@ -741,6 +769,7 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Audiosource Component")){
             ye_add_audiosource_component(ent, "", 0, true, -1, true, (struct ye_rectf){0,0,0,0});
+            editor_unsaved();
         }
     }
 }

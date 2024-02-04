@@ -36,6 +36,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
             if(nk_button_label(ctx, "New Entity")){
                 ye_create_entity();
                 entity_list_head = ye_get_entity_list_head();
+                editor_unsaved();
             }
 
             nk_label(ctx, "Entities:", NK_TEXT_LEFT);
@@ -105,6 +106,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     }
 
                     ye_destroy_entity(current->entity);
+                    editor_unsaved();
                     entity_list_head = ye_get_entity_list_head();
                     nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                     break;
@@ -334,6 +336,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                         ye_json_write(new_scene_path, new_scene);
                         new_scene_popup_open = false;
                         editor_load_scene(new_scene_path);
+                        editor_saved();
                     }
                     
                     // cleanup
@@ -400,6 +403,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     unlock_viewport();
 
                     editor_load_scene(ye_path_resources(open_scene_name));
+                    editor_saved();
                 }
                 nk_popup_end(ctx);
             }
@@ -407,7 +411,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
 
         nk_menubar_begin(ctx);
 
-        nk_layout_row_begin(ctx, NK_STATIC, 25, 8);
+        nk_layout_row_begin(ctx, NK_STATIC, 25, 9); // TO ADD NEW ITEMS: CHANGE THIS VALUE
         /*
             File
             Scene
@@ -417,6 +421,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             ---SPACER---
             error count
             warning count
+            saved status
         */
         
         nk_layout_row_push(ctx, 45);
@@ -544,7 +549,12 @@ void ye_editor_paint_menu(struct nk_context *ctx){
         
         // spacer //
         // get the amount of space (less on small screens more on large)
-        int spacepx = ye_clamp(screenWidth - 1280,0,937);
+        int barlength = screenWidth / 1.5;
+        int dropdown_length = 45 + 55 + 85 + 45 + 45;
+        int status_length = 110 + 110 + 110;
+        int margin = 50;
+        int spacepx = ye_clamp(screenWidth - 1280,0,barlength - (dropdown_length + status_length) - margin);
+        // int spacepx = ye_clamp(screenWidth - 1280,0,(45 + 55 + 85 + 45 + 45) - (110 + 110 + 110));
         // printf("spacepx: %d\n", spacepx);
         nk_layout_row_push(ctx, spacepx);
         nk_label(ctx, "                                                                                                                        ", NK_TEXT_LEFT);
@@ -570,6 +580,27 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             nk_label_colored(ctx, buf, NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "Open the console to view. (Help > Shortcuts) to see keybind.");
+        }
+
+        // saved status
+        nk_layout_row_push(ctx, 110);
+        struct nk_rect bounds = nk_widget_bounds(ctx);
+        if(saving){
+            nk_label_colored(ctx, "Saving", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Scene is being saved to disk. Please do not terminate the editor.");
+        }
+        else{
+            if(unsaved){
+                nk_label_colored(ctx, "Unsaved", NK_TEXT_CENTERED, nk_rgb(255, 0, 255));
+                if (nk_input_is_mouse_hovering_rect(in, bounds))
+                    nk_tooltip(ctx, "You have unsaved changes. (Help > Shortcuts) to see keybind.");
+            }
+            else{
+                nk_label_colored(ctx, "Saved", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
+                if (nk_input_is_mouse_hovering_rect(in, bounds))
+                    nk_tooltip(ctx, "Scene is up to date with disk.");
+            }
         }
         nk_menubar_end(ctx);
         nk_end(ctx);

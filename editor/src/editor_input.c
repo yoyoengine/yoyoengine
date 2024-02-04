@@ -206,6 +206,7 @@ void editor_input_shortcuts(SDL_Event event){
             if (event.key.keysym.mod & KMOD_CTRL)
             {
                 editor_write_scene_to_disk(ye_path_resources(YE_STATE.runtime.scene_file_path));
+                editor_saved();
             }
             break;
         case SDLK_r:
@@ -215,6 +216,7 @@ void editor_input_shortcuts(SDL_Event event){
                 ye_logf(debug,"Editor Reloading Scene.\n");
                 ye_reload_scene();
                 editor_re_attach_ecs();
+                editor_saved();
             }
             // CTRL + R ->= build and run the project
             else if (event.key.keysym.mod & KMOD_CTRL)

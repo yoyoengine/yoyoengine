@@ -51,6 +51,8 @@
 /*
     INITIALIZE ALL
 */
+bool unsaved;
+bool saving; // in the process of saving
 bool quit;
 bool dragging;
 bool lock_viewport_interaction;
@@ -104,13 +106,6 @@ void editor_re_attach_ecs(){
     ye_logf(info, "Re-attatched ECS component pointers.\n");
 }
 
-/*
-    Really minimal stripped rendering function that will
-    load just one frame into the window of only ui
-
-    TODO:
-    opportunity to make a cool background screen for this loading
-*/
 void yoyo_loading_refresh(char * status)
 {
     // update status

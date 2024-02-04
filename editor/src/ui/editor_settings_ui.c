@@ -258,6 +258,9 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             // close button
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Save and Close")){
+
+                editor_saving();
+
                 project_settings_open = false;
                 lock_viewport_interaction = false;
 
@@ -289,6 +292,8 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
                 json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
                 ye_json_write(ye_path("build.yoyo"),BUILD_FILE);
+
+                editor_saved();
 
                 /*
                     This should be done in a modular way, engine should be rebuilt smartly also, we will want button for it later in dev when engine changes all the time

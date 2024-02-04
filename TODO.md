@@ -176,10 +176,6 @@ we wont see colliders or paintbounds on cameras because thery dont get rendererd
 
 - we currently mix fields of underscore and spaces, we need to pick one and rewrite all to be the same
 
-## serialization
-
-The font and color shit is rough, need to plan for serializing those.
-Personally, I think its best to just use the cache system youve already created, you could maybe tweak for loading unique or global style files, but you should stick to the existing system (which really isnt bad) instead of rewriting it for the 100th time.
 
 ## Documentation
 
@@ -217,12 +213,8 @@ when you do that you should overhaul it to be better and also interface with ins
 
 ## nuklear shit
 
-add horizontal tab thing to select which comp on entity, that way you can add new or delete existing
-
 combine multiple colors node editor
 or use something for node editor
-
-seperators and tab stuff more for readability
 
 ## refacotr
 
@@ -251,23 +243,15 @@ TEXT IS UNIQUE IN ITS OWN RIGHT WHERE IT DOESNT NECCESSARIALLY NEED A CACHE FOR 
 
 so I think the idea of the cache is alright, scenes are not massive so its ok to store literally anything that will ever be used in it. The thing is we dont get to intelligently destroy cache items becuase we have no idea how many things are actually using them. if you ever revisit the cache system you need to implement something like refcounting, which shouldnt be too bad since we have knowledge of the preprocessed scene file but can also add to the count in runtime if we get a cache hit
 
-enable terminal wrapping and resizing, why not?
-
-the way this refactor is going you will have to register custom fonts programatically unless you use editor and colors alos
-
 deltatime cooldown on editor inputs before updating them
 
 TODO left;
 cooldown so no spamming cache reload
 same thing with images src
 
-think about how to dynamically compute size?
-
 improve the console its lowkey ass. should be genuinely dynamic and auto select bottom input on open, and remember its last positions
 
 maybe build and run should save first
-
-finish rest of renderers
 
 ## other QOL
 
@@ -283,17 +267,9 @@ on x11 (wayland not tested or windows) sometimes fullscreen mode will literally 
 
 ## rambling part ten billion
 
-- maintain heiarchy order when saving
 - memory leak when reload spamming over time
 - right click popup menu to duplicate delete rename etc on entity buttons in list
 - drop downs listing fonts and colors from the cache instead of typing in
-
-## emscripten build target
-
-really only main loop needs changed, but you need to build all your deps as emscripten
-<https://emscripten.org/docs/compiling/Building-Projects.html?highlight=sdl2>
-
-build and run should save first
 
 ## ecs
 
@@ -337,10 +313,6 @@ other:
 
 progress bar would be cool, or a new console window with the build output
 
-## lua
-
-memory issues so bad it page faults on windows and on linux it sometimes fails to munmapchunk but gracefully exits anyways
-
 ## editor
 
 delete button push styles macro or function
@@ -354,17 +326,6 @@ You need to majorly refactor this plugin manager. this is some of the worst code
 ## TODO NEXT TIME
 
 literally the first thing on your list should be refactoring `editor_panel_tricks.c`, holy mother of bad code
-
-## try to port over to better build system
-
-list of all dependencies that need rebuilt:
-
-- SDL2
-  - do the mixer and other stuff get included?
-- nuklear/uthash not applicable
-- lua
-- jansson
-- all those mixed like libfreetype libmpg libpng
 
 ## cmake build api shit
 
@@ -394,17 +355,9 @@ cmake does not like to expose macros defined in source files to other source fil
 */
 ```
 
-## fix page faults in lua
-
-lets just store as booleans whethere signatures exist and invoke them by name. no reason to extract their references in the tables out. we are just farming page faults for no reason
-
 ## default tricks
 
 there should be a popup in the launcher that lets you choose some default tricks to use, downloading them via submodule and adding them to the project
-
-## windows build error libpng
-
-Im not sure what this is, I think its that it doesnt actually say that it links and requires the other libs in the windows dissasembler
 
 ## new build system
 
@@ -450,8 +403,6 @@ would be really hype to identify if we downloaded a trick from github and click 
 
 ## windows builds
 
-we want to be able to run it without console opening
-
 we want to link an icon to the exe
 
 ## yep files
@@ -459,18 +410,6 @@ we want to link an icon to the exe
 in the future we could hash the integer handles to get a unique id which would decrease file size slightly
 
 a .yepignore would be nice to know which files we deliberately dont want to pack
-
-### todo when you read this (i actually left some fun stuff this time)
-
-- start case switching what file type we are looking at in the packer
-- load images (can only be bmp jpeg jpg png) into RGBA arrays (research this with SDL)
-- same with PCM and audio (mp3 and wav i think only)
-- research online doing this with ttf files? I dont think we can do atlas because its rebuilt a lot (unless we build an atlas for every single size game uses at runtime which we couldnt ever know because of dynamic scripting)
-- draft api for engine reading this data out of the yep file
-- force the build system to not copy resources directories but the yep instead
-- hook up every location where we load resources to instead load from the yep file
-- refactor get resource function to just be like a get path
-  - this involves removing references to this that dip into /resources/.. to get somewhere (despair)
 
 ## backup of old image loading system
 
@@ -550,13 +489,6 @@ SDL_Surface *image = IMG_Load(itr->fullpath);
 
 ## new systems that need done
 
-### animation / tilesheet
-
-- animations need batched into one single file, we modulate the src rect to get frames
-- similarly, a tilemap system is needed to easily create levels
-- we need to be able to easily slice and access parts of tilemaps and texture atlases
-- could be a simple solution to create an importer for altases created outside like in aseprite or other software and read them that way rather than pack myself
-
 ## what if we exposed a really easy to use save data system?
 
 - could just be a small wrapper on top of the existing json functionality
@@ -564,7 +496,6 @@ SDL_Surface *image = IMG_Load(itr->fullpath);
 
 ## new platforms
 
-- emscripten doable with a toolchain file
 - macos support seems to work out of box, need toolchain for osxcross
 
 ## misc x9999
@@ -602,10 +533,6 @@ additional arg for gdb or something so that we instantly print out logs isntead 
 ## windows icon
 
 its pretty easy to setup icons but should do it in a platform agnostic way, cant always pack into file because might need loose, cmake takes an arg
-
-## build improvements
-
-different build/release modes
 
 ## editor improvements x2
 
@@ -660,8 +587,6 @@ maybe the issues with paintbounds is not casting to ints?
 if renderer is not on/disabled we cant preview colliders or audio range
 
 editor needs scene configureation/settings panel, add shortcut + menu bar + button in bottom maybe
-
-we really need to add support for creating components now
 
 prefabs would be nice but not sure how to best integrate that system
 
@@ -744,8 +669,6 @@ set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
 
 remove all warnings
 
-add actual release modes
-
 collider add
 
 trigger colliders
@@ -806,3 +729,13 @@ force zlib and other examples to not build
 we have a release and debug mode, but im not totally convinced it works. at the least the sigs arent stripped because thats a linker option that we are throwwing to compiler. idk what im doing at all
 
 -03 optimizes out the animation system for some reason lmao
+
+## editor saving mark
+
+it kinda makes no sense to show saving... if we are single threaded and blocking and dont update screen before
+
+we dont track every single modification (properties which modify ecs directly) for unsaved dirty marking. how can we get around this without manually creating before and after copies for each field in each frame for comparison?
+
+## misc lskgjhfljfd
+
+clear console button

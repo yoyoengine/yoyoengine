@@ -25,7 +25,16 @@
 #include <jansson/jansson.h>
 #include <yoyoengine/yoyoengine.h>
 
+/*
+    Macros for marking dirty and saving status
+*/
+#define editor_unsaved() unsaved = true 
+#define editor_saved() unsaved = saving = false;
+#define editor_saving() saving = true
+
 // global variables
+extern bool unsaved;
+extern bool saving;
 extern bool quit;
 extern bool dragging;
 extern bool lock_viewport_interaction;
@@ -56,6 +65,15 @@ void editor_load_scene(char * path);
 void editor_re_attach_ecs();
 
 void editor_reload_settings();
+
+/*
+    Really minimal stripped rendering function that will
+    load just one frame into the window of only ui
+
+    TODO:
+    opportunity to make a cool background screen for this loading
+*/
+void yoyo_loading_refresh(char * status);
 
 /*
     Locks the editor viewport from interaction

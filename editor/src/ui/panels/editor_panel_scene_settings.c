@@ -141,6 +141,9 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             SCENE = NULL;
         }
         if(nk_button_label(ctx, "Save")){
+
+            editor_saving();
+
             /*
                 update the keys
                 {
@@ -170,6 +173,8 @@ void editor_panel_scene_settings(struct nk_context *ctx){
 
             // write to file
             ye_json_write(ye_path_resources(YE_STATE.runtime.scene_file_path), SCENE);
+
+            editor_saved();
 
             remove_ui_component("scene_settings");
             unlock_viewport();
