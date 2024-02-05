@@ -402,7 +402,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                     open_scene_popup_open = false;
                     unlock_viewport();
 
-                    editor_load_scene(ye_path_resources(open_scene_name));
+                    editor_load_scene(open_scene_name);
                     editor_saved();
                 }
                 nk_popup_end(ctx);
