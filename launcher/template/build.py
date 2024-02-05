@@ -150,7 +150,7 @@ class YoyoEngineBuildSystem:
         
         cmake_file.write(f"""
 
-        add_subdirectory("{self.build_engine_path}/.." yoyoengine)
+        add_subdirectory("{self.build_engine_path}" yoyoengine)
         include_directories(include ${{CMAKE_BINARY_DIR}}/bin/${{CMAKE_SYSTEM_NAME}}/include)
 
         set(CMAKE_C_FLAGS "${{CMAKE_C_FLAGS}} {self.build_cflags}")

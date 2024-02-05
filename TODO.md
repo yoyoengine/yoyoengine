@@ -739,3 +739,11 @@ we dont track every single modification (properties which modify ecs directly) f
 ## misc lskgjhfljfd
 
 clear console button
+
+## discoveries during making game
+
+default build settings
+
+remove engine build path? - its used by build script for engine add subdir. think about how to make this better
+
+tricks/ folder template not generated and if not present cannot build
