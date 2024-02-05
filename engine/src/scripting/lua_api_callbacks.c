@@ -80,7 +80,7 @@ int callLuaFunction(lua_State* L, const char* functionName, ...) {
 
 void ye_run_lua_on_mount(struct ye_component_lua_script *script) {
     if(script->has_on_mount) {
-        callLuaFunction(script->state, "on_mount", LUA_END_ARGS);
+        callLuaFunction(script->state, "onMount", LUA_END_ARGS);
     }
 }
 
@@ -91,12 +91,12 @@ void ye_run_lua_on_unmount(struct ye_component_lua_script *script) {
     }
     
     if(script->has_on_unmount) {
-        callLuaFunction(script->state, "on_unmount", LUA_END_ARGS);
+        callLuaFunction(script->state, "onUnmount", LUA_END_ARGS);
     }
 }
 
 void ye_run_lua_on_update(struct ye_component_lua_script *script) {
     if(script->has_on_update) {
-        callLuaFunction(script->state, "on_update", LUA_END_ARGS);
+        callLuaFunction(script->state, "onUpdate", LUA_END_ARGS);
     }
 }

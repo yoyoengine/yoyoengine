@@ -735,3 +735,21 @@ void ye_reload_scene(){
     // free the temp copy
     free(temp);
 }
+
+char *deferred_scene_handle = NULL;
+
+void ye_load_scene_deferred(const char *scene_path){
+    if(deferred_scene_handle != NULL)
+        free(deferred_scene_handle);
+    deferred_scene_handle = strdup(scene_path);
+}
+
+bool ye_scene_check_deferred_load(){
+    if(deferred_scene_handle != NULL){
+        ye_load_scene(deferred_scene_handle);
+        free(deferred_scene_handle);
+        deferred_scene_handle = NULL;
+        return true;
+    }
+    return false;
+}

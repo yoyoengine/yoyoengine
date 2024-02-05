@@ -55,6 +55,12 @@ extern bool YG_RUNNING;
 // #define YOYO_HANDLE_INPUT
 
 /*
+    Called when lua script components are created, will send the
+    yoyo_lua_register function the lua state to register custom lua api.
+*/
+// #define YOYO_LUA_REGISTER
+
+/*
     Runs once per frame before the engine has done anything, but after the deltatime has been reset for the new frame.
 */
 // #define YOYO_PRE_FRAME

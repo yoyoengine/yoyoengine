@@ -76,6 +76,11 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *handle){
     luaL_openlibs(entity->lua_script->state);
     // TODO: we also need to individually register each api function here
     ye_register_lua_scripting_api(entity->lua_script->state);
+
+    // allow game to register lua bindings (function pointer pass state)
+    if(YE_STATE.engine.callbacks.register_lua != NULL)
+        YE_STATE.engine.callbacks.register_lua(entity->lua_script->state);
+
     // allow any C tricks to register lua bindings
     ye_register_trick_lua_bindings(entity->lua_script->state);
 
@@ -151,9 +156,9 @@ bool ye_add_lua_script_component(struct ye_entity *entity, char *handle){
         Look through the file and interpret what functions exist in this script
         ex: on_mount, on_update, on_trigger_enter, etc and assign struct fields
     */
-    _extract_signature(entity->lua_script, "on_mount", &(entity->lua_script->has_on_mount));
-    _extract_signature(entity->lua_script, "on_update", &(entity->lua_script->has_on_update));
-    _extract_signature(entity->lua_script, "on_unmount", &(entity->lua_script->has_on_unmount));
+    _extract_signature(entity->lua_script, "onMount", &(entity->lua_script->has_on_mount));
+    _extract_signature(entity->lua_script, "onUpdate", &(entity->lua_script->has_on_update));
+    _extract_signature(entity->lua_script, "onUnmount", &(entity->lua_script->has_on_unmount));
 
     /*
         call the lua scripts on_mount function in its state

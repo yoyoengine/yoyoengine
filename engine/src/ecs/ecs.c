@@ -271,6 +271,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
     if(entity->collider != NULL) ye_remove_collider_component(entity);
     if(entity->audiosource != NULL) ye_remove_audiosource_component(entity);
+    if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     // free the entity name
     free(entity->name);
 

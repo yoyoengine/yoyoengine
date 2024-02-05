@@ -35,7 +35,7 @@ char path_buffer[1024];
 char *base_path = NULL;
 
 // expose our engine state data to the whole engine
-struct ye_engine_state YE_STATE; // TODO: should null out pointers and stuff? maybe some of them are only used SOMETIMES but not all the time
+struct ye_engine_state YE_STATE = {0};
 
 // Global variables for resource paths
 char *executable_path = NULL;
@@ -101,6 +101,12 @@ void ye_process_frame(){
     // update time delta
     YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks64();
+
+    // check if a scene is deferred to be loaded and load it
+    if(ye_scene_check_deferred_load()){
+        YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
+        last_frame_time = SDL_GetTicks64();
+    }
 
     // update timers
     ye_update_timers();

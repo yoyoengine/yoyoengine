@@ -45,6 +45,18 @@ void _example_input_handler(SDL_Event event){
 }
 #endif
 
+#ifndef YOYO_LUA_REGISTER
+int exit_game(lua_State *L){
+    YG_RUNNING = false;
+    return 0;
+}
+
+void _register_lua_api(lua_State *L){
+    // register custom lua api
+    lua_register(L, "exitGame", exit_game);
+}
+#endif
+
 static void mainloop(void){
     if(YG_RUNNING){
         ye_process_frame();
@@ -82,7 +94,43 @@ void main(void){
 
     ye_logf(info, "Starting init\n");
     
+    #ifdef YOYO_PRE_INIT
+        // run the pre init function
+        yoyo_pre_init();
+    #endif
+
     ye_init_engine();
+
+    #ifdef YOYO_POST_INIT
+        // run the post init function
+        yoyo_post_init();
+    #endif
+
+    #ifdef YOYO_HANDLE_INPUT
+        YE_STATE.engine.callbacks.input_handler = yoyo_handle_input;
+    #else
+        YE_STATE.engine.callbacks.input_handler = _example_input_handler;
+    #endif
+
+    #ifdef YOYO_LUA_REGISTER
+        YE_STATE.engine.callbacks.register_lua = yoyo_lua_register;
+    #else
+        YE_STATE.engine.callbacks.register_lua = _register_lua_api;
+    #endif
+
+    // assign function pointers for custom scripted behavior
+    #ifdef YOYO_PRE_FRAME
+        YE_STATE.engine.callbacks.pre_frame = yoyo_pre_frame;
+    #else
+        YE_STATE.engine.callbacks.pre_frame = NULL;
+    #endif
+
+    #ifdef YOYO_POST_FRAME
+        YE_STATE.engine.callbacks.post_frame = yoyo_post_frame;
+    #else
+        YE_STATE.engine.callbacks.post_frame = NULL;
+    #endif
+    // ...etc. colliders and other triggers in future
 
     #ifdef __EMSCRIPTEN__
         emscripten_set_main_loop(mainloop, 0, 1);

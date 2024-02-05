@@ -56,4 +56,18 @@ char *ye_get_scene_name();
  */
 void ye_shutdown_scene_manager();
 
+/**
+ * @brief Defer loading a scene til next frame
+ * 
+ * @param scene_path The handle to the scene to load
+ */
+void ye_load_scene_deferred(const char *scene_path);
+
+/**
+ * @brief Runs once a frame, checks if a scene is deferred to be loaded and loads it
+ *
+ * @return bool True if a scene was loaded
+ */
+bool ye_scene_check_deferred_load();
+
 #endif

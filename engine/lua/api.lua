@@ -1,13 +1,13 @@
 ---@meta
 
 ---**called once when the script is mounted in engine**
-function on_mount() end
+function onMount() end
 
 ---**called once per frame (before render pass) when the script is active**
-function on_update() end
+function onUpdate() end
 
 ---**called once when the script is unmounted from engine**
-function on_unmount() end
+function onUnmount() end
 
 ---**Log a message through the engine's logging system.**
 ---
@@ -22,7 +22,7 @@ function on_unmount() end
 ---```lua
 ---ye_log("info","hello world!\n")
 ---```
-function ye_log(level, message) end
+function log(level, message) end
 
 
 ----------------
@@ -63,7 +63,7 @@ function ye_log(level, message) end
 ---```lua
 ---ye_load_scene("scenes/game.yoyo")
 ---```
-function ye_load_scene(handle) end
+function loadScene(handle) end
 
 
 
@@ -74,4 +74,4 @@ function ye_load_scene(handle) end
 ---**Quit the game**
 ---
 ---@return nil
-function ye_debug_quit() end
+function exitGame() end

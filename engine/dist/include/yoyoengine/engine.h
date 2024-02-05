@@ -31,6 +31,10 @@
 
 #include "graphics.h"
 
+#include <lua/lua.h>
+#include <lua/lualib.h>
+#include <lua/lauxlib.h>
+
 /*
     Define some important constants to the engine
 */
@@ -91,6 +95,7 @@ struct ye_engine_callbacks {
     void (*input_handler)(SDL_Event event);
     void (*pre_frame)();
     void (*post_frame)();
+    void (*register_lua)(lua_State *L);
 };
 
 /**
