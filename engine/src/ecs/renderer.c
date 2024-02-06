@@ -580,6 +580,18 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }
 
+                    // button bounds
+                    if(current->entity->button != NULL && YE_STATE.editor.button_bounds_visible){
+                        // paint the button bounds
+                        SDL_Rect button_bounds = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_BUTTON));
+                        // printf("button_bounds: %d %d %d %d\n", button_bounds.x, button_bounds.y, button_bounds.w, button_bounds.h);
+                        button_bounds.x = button_bounds.x - camera_rect.x;
+                        button_bounds.y = button_bounds.y - camera_rect.y;
+                        SDL_SetRenderDrawColor(renderer, 235, 52, 235, 255);
+                        SDL_RenderDrawRect(renderer, &button_bounds);
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                    }
+
                     // audio range
                     if(current->entity->audiosource != NULL && YE_STATE.editor.audiorange_visible){
                         SDL_Rect audio_range_rect = ye_convert_rectf_rect(

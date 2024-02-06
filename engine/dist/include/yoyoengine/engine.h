@@ -96,6 +96,7 @@ struct ye_engine_callbacks {
     void (*pre_frame)();
     void (*post_frame)();
     void (*register_lua)(lua_State *L);
+    void (*scene_load)(char *scene_name);
 };
 
 /**
@@ -204,11 +205,12 @@ struct ye_editor_config {
     bool display_names;
     bool freecam_enabled;
     bool audiorange_visible;
+    bool button_bounds_visible;
     /*
         Only work with editor_mode enabled:
     */
     bool editor_display_viewport_lines;
-    bool scene_camera_bounds_visible;
+    bool scene_camera_bounds_visible; // should work without editor but i dont feel like testing
 
     /*
         Used to track the selected editor entity

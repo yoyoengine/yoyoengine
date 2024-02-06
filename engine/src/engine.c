@@ -181,6 +181,11 @@ void ye_process_frame(){
             //    break;
         }
 
+        // poll for entity button events
+        if(!YE_STATE.editor.editor_mode){
+            ye_system_button(e);
+        }
+
         // send event to callback specified by game (if needed)
         if(YE_STATE.engine.callbacks.input_handler != NULL){
             YE_STATE.engine.callbacks.input_handler(e);
@@ -188,6 +193,7 @@ void ye_process_frame(){
     }
     ui_end_input_checks();
     YE_STATE.runtime.input_time = SDL_GetTicks64() - input_time;
+
 
     int physics_time = SDL_GetTicks64();
     if(!YE_STATE.editor.editor_mode){
@@ -312,6 +318,8 @@ void setup_splash_screen(){
         Construct ECS, add a timer to callback into loading the
         default scene after 3000ms
     */
+
+    YE_STATE.runtime.scene_name = strdup("engine_splash_screen");
 
     if(!YE_STATE.editor.editor_mode){
         // because play sound looks in resources pack, we need to pre cache the engine one

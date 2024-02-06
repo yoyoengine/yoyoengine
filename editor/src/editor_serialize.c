@@ -307,6 +307,23 @@ void serialize_entity_audiosource(struct ye_entity *entity, json_t *entity_json)
     json_object_set_new(entity_json, "audiosource", audiosource);
 }
 
+void serialize_entity_button(struct ye_entity *entity, json_t *entity_json){
+    // create the button object
+    json_t *button = json_object();
+
+    // set the active state
+    json_object_set_new(button, "active", json_boolean(entity->button->active));
+
+    // set the relative
+    json_object_set_new(button, "relative", json_boolean(entity->button->relative));
+
+    // set the position
+    serialize_entity_position(&entity->button->rect, button);
+
+    // add the button object to the entity json
+    json_object_set_new(entity_json, "button", button);
+}
+
 void editor_write_scene_to_disk(const char *path){
     ye_logf(info,"Writing scene to disk at %s\n", path);
     // load the scene file into a json_t
@@ -371,6 +388,10 @@ void editor_write_scene_to_disk(const char *path){
 
         if(entity->audiosource != NULL){
             serialize_entity_audiosource(entity, json_object_get(entity_json, "components"));
+        }
+
+        if(entity->button != NULL){
+            serialize_entity_button(entity, json_object_get(entity_json, "components"));
         }
 
         // add the entity to the entity json array

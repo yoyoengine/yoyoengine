@@ -774,6 +774,42 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
     }
 }
 
+void _paint_button(struct nk_context *ctx, struct ye_entity *ent){
+    if(ent->button != NULL){
+        if(nk_tree_push(ctx, NK_TREE_TAB, "Button", NK_MAXIMIZED)){
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->button->active);
+            nk_checkbox_label(ctx, "Relative", (nk_bool*)&ent->button->relative);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_property_float(ctx, "#x", -1000000, &ent->button->rect.x, 1000000, 1, 5);
+            nk_property_float(ctx, "#y", -1000000, &ent->button->rect.y, 1000000, 1, 5);
+            nk_property_float(ctx, "#w", -1000000, &ent->button->rect.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#h", -1000000, &ent->button->rect.h, 1000000, 1, 5);
+            
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            if(nk_button_label(ctx, "Remove Component")){
+                ye_remove_button_component(ent);
+                editor_unsaved();
+            }
+            
+            nk_tree_pop(ctx);
+        }
+    }
+    else{
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label_colored(ctx, "No button component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if(nk_button_label(ctx, "Add Button Component")){
+            ye_add_button_component(ent,(struct ye_rectf){0,0,0,0});
+            editor_unsaved();
+        }
+    }
+}
+
 bool comp_exists(int i, struct ye_entity *ent){
     switch(i){
         case 0:
@@ -799,6 +835,9 @@ bool comp_exists(int i, struct ye_entity *ent){
             break;
         case 7:
             return ent->audiosource != NULL;
+            break;
+        case 8:
+            return ent->button != NULL;
             break;
         default:
             return false;
@@ -839,12 +878,12 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                     Selector tile layout thing that shows all components in list
                 */
                 static int current_component_inspector_tab = 0;
-                const char *names[] = {"Transform", "Renderer", "Camera","Collider","Physics","Tag","Script","Audio Source"};
+                const char *names[] = {"Transform", "Renderer", "Camera","Collider","Physics","Tag","Script","Audio Source","Button"};
                 static int num_components = sizeof(names) / sizeof(names[0]); // does this mean its only computed here once?
 
                 nk_style_push_vec2(ctx, &ctx->style.window.spacing, nk_vec2(0,0));
                 nk_style_push_float(ctx, &ctx->style.button.rounding, 0);
-                nk_layout_row_dynamic(ctx, 50, num_components/2);
+                nk_layout_row_dynamic(ctx, 50, num_components/1.75);
                 for (int i = 0; i < num_components; ++i) {
                     // Check if the component is not null
                     if (comp_exists(i, ent)) {
@@ -894,6 +933,9 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                         break;
                     case 7: // audiosource //
                         _paint_audiosource(ctx,ent);
+                        break;
+                    case 8: // button //
+                        _paint_button(ctx,ent);
                         break;
                 }
             }

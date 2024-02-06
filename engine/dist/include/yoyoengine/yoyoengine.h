@@ -43,6 +43,7 @@
 #include "cache.h"
 #include "ui.h"
 #include "ecs/ecs.h"
+#include "ecs/button.h"
 #include "ecs/audiosource.h"
 #include "ecs/camera.h"
 #include "ecs/ecs.h"

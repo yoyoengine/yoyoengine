@@ -73,6 +73,12 @@ extern bool YG_RUNNING;
 // #define YOYO_POST_FRAME
 
 /*
+    Runs once after the scene has been loaded, before the render loop.
+    void yoyo_scene_load(char *scene_name);
+*/
+// #define YOYO_SCENE_LOAD
+
+/*
     Runs once before the engine is shutdown. You can still access YE_STATE here.
 */
 // #define YOYO_PRE_SHUTDOWN
@@ -127,6 +133,10 @@ extern bool YG_RUNNING;
 
 #ifdef YOYO_POST_FRAME
     void yoyo_post_frame();
+#endif
+
+#ifdef YOYO_SCENE_LOAD
+    void yoyo_scene_load(char *scene_name);
 #endif
 
 #ifdef YOYO_PRE_SHUTDOWN

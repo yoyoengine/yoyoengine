@@ -44,6 +44,7 @@ extern struct ye_entity_node *tag_list_head;
 extern struct ye_entity_node *collider_list_head;
 extern struct ye_entity_node *lua_script_list_head;
 extern struct ye_entity_node *audiosource_list_head;
+extern struct ye_entity_node *button_list_head;
 
 /**
  * @brief Linked list structure for storing entities
@@ -103,7 +104,7 @@ struct ye_entity {
     struct ye_component_transform *transform;       // transform component
     struct ye_component_renderer *renderer;         // renderer component
     struct ye_component_lua_script *lua_script;     // lua script component
-    struct ye_component_interactible *interactible; // interactible component
+    struct ye_component_button *button;             // button component
     struct ye_component_camera *camera;             // camera component
     struct ye_component_physics *physics;           // physics component
     struct ye_component_collider *collider;         // collider component
@@ -117,16 +118,6 @@ struct ye_entity {
 struct ye_vec2f {
     float x;
     float y;
-};
-
-/**
- * @brief Interactible component structure. Holds information on how an entity can be interacted with.
- */
-struct ye_component_interactible {
-    bool active;    // controls whether system will act upon this component
-
-    void *data;                     // data to communicate when callback finishes
-    void (*callback)(void *data);   // callback to run when entity is interacted with
 };
 
 /*

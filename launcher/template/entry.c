@@ -130,6 +130,12 @@ void main(void){
     #else
         YE_STATE.engine.callbacks.post_frame = NULL;
     #endif
+
+    #ifdef YOYO_SCENE_LOAD
+        YE_STATE.engine.callbacks.scene_load = yoyo_scene_load;
+    #else
+        YE_STATE.engine.callbacks.scene_load = NULL;
+    #endif
     // ...etc. colliders and other triggers in future
 
     #ifdef __EMSCRIPTEN__

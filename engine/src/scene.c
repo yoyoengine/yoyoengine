@@ -463,6 +463,26 @@ void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const ch
     }
 }
 
+void ye_construct_button(struct ye_entity* e, json_t* button, const char* entity_name){
+    // validate the position field
+    struct ye_rectf b = ye_retrieve_position(button);
+
+    // add the button component
+    ye_add_button_component(e,b);
+
+    // update active state
+    if(ye_json_has_key(button,"active")){
+        bool active = true;    ye_json_bool(button,"active",&active);
+        e->button->active = active;
+    }
+
+    // update the relative field
+    if(ye_json_has_key(button,"relative")){
+        bool relative = true;    ye_json_bool(button,"relative",&relative);
+        e->button->relative = relative;
+    }
+}
+
 /*
     ===================================================================
     ===================================================================
@@ -576,6 +596,16 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_audiosource(e,audiosource,entity_name);
+        }
+
+        // button comp
+        if(ye_json_has_key(components,"button")){
+            json_t *button = NULL; ye_json_object(components,"button",&button);
+            if(button == NULL){
+                ye_logf(warning,"Entity %s has a button field, but it's invalid.\n", entity_name);
+                continue;
+            }
+            ye_construct_button(e,button,entity_name);
         }
     }
 }
@@ -708,6 +738,10 @@ void ye_load_scene(const char *scene_path){
 
     // deref the scene file.
     json_decref(SCENE);
+
+    // send a scene loaded callback
+    if(YE_STATE.engine.callbacks.scene_load != NULL)
+        YE_STATE.engine.callbacks.scene_load(YE_STATE.runtime.scene_name);
 }
 
 char *ye_get_scene_name(){

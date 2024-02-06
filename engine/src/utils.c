@@ -213,6 +213,23 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
             }
             ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
             return pos;
+        case YE_COMPONENT_BUTTON:
+            if(entity->button != NULL){
+                // set x,y,w,h
+                pos = entity->button->rect;
+                pos.w = entity->button->rect.w;
+                pos.h = entity->button->rect.h;
+
+                // if relative adjust its position
+                if(entity->button->relative && entity->transform != NULL){
+                    pos.x += entity->transform->x;
+                    pos.y += entity->transform->y;
+                }
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null button component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
         default:
             ye_logf(error, "Tried to get position for component on \"%s\" that does not have a position or size. returning (0,0,0,0)\n",entity->name);
             return pos;

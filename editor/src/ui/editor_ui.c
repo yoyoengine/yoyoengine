@@ -181,6 +181,7 @@ void ye_editor_paint_options(struct nk_context *ctx){
             nk_checkbox_label(ctx, "Colliders", (nk_bool*)&YE_STATE.editor.colliders_visible);
             nk_checkbox_label(ctx, "Scene Camera Viewport", (nk_bool*)&YE_STATE.editor.scene_camera_bounds_visible);
             nk_checkbox_label(ctx, "Audio Range", (nk_bool*)&YE_STATE.editor.audiorange_visible);
+            nk_checkbox_label(ctx, "Button Bounds", (nk_bool*)&YE_STATE.editor.button_bounds_visible);
 
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Preferences:", NK_TEXT_LEFT);

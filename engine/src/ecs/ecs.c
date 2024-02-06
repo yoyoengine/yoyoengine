@@ -116,8 +116,7 @@ struct ye_entity_node *tag_list_head;
 struct ye_entity_node *collider_list_head;
 struct ye_entity_node *lua_script_list_head;
 struct ye_entity_node *audiosource_list_head;
-
-// struct ye_entity_node *interactible_list_head;
+struct ye_entity_node *button_list_head;
 
 struct ye_entity_node * ye_get_entity_list_head(){
     return entity_list_head;
@@ -138,7 +137,7 @@ struct ye_entity * ye_create_entity(){
     entity->renderer = NULL;
     entity->camera = NULL;
     entity->lua_script = NULL;
-    entity->interactible = NULL;
+    entity->button = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
     entity->tag = NULL;
@@ -167,7 +166,7 @@ struct ye_entity * ye_create_entity_named(const char *name){
     entity->renderer = NULL;
     entity->camera = NULL;
     entity->lua_script = NULL;
-    entity->interactible = NULL;
+    entity->button = NULL;
     entity->physics = NULL;
     entity->collider = NULL;
     entity->tag = NULL;
@@ -229,8 +228,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         */
     }
     if(entity->camera != NULL) ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
-    // if(entity->script != NULL) ye_add_script_component(new_entity, entity->script->script_path);
-    // if(entity->interactible != NULL) ye_add_interactible_component(new_entity, entity->interactible->interactible_type);
+    if(entity->button != NULL) ye_add_button_component(new_entity, entity->button->rect);
     if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
     if(entity->collider != NULL){
         if(entity->collider->is_trigger){
@@ -268,7 +266,7 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->physics != NULL) ye_remove_physics_component(entity);
     if(entity->tag != NULL) ye_remove_tag_component(entity);
     if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
-    // if(entity->interactible != NULL) ye_remove_interactible_component(entity);
+    if(entity->button != NULL) ye_remove_button_component(entity);
     if(entity->collider != NULL) ye_remove_collider_component(entity);
     if(entity->audiosource != NULL) ye_remove_audiosource_component(entity);
     if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
@@ -344,7 +342,8 @@ void ye_init_ecs(){
     tag_list_head = ye_entity_list_create();
     collider_list_head = ye_entity_list_create();
     audiosource_list_head = ye_entity_list_create();
-    // lua_script_list_head = ye_entity_list_create();
+    lua_script_list_head = ye_entity_list_create();
+    button_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
 }
 
@@ -387,6 +386,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&collider_list_head);
     ye_entity_list_destroy(&lua_script_list_head);
     ye_entity_list_destroy(&audiosource_list_head);
+    ye_entity_list_destroy(&button_list_head);
 
     // take care of cleaning up any entity pointers that exist in global state
     YE_STATE.engine.target_camera = NULL;
@@ -403,12 +403,12 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Int:%d Scr:%d Phy:%d Col:%d Tag:%d Aud:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Btn:%d Scr:%d Phy:%d Col:%d Tag:%d Aud:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
             current->entity->camera != NULL,
-            current->entity->interactible != NULL,
+            current->entity->button != NULL,
             current->entity->lua_script != NULL,
             current->entity->physics != NULL,
             current->entity->collider != NULL,

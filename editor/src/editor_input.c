@@ -211,7 +211,7 @@ void editor_input_shortcuts(SDL_Event event){
             break;
         case SDLK_r:
             // CTRL + SHIFT + R ->= reload the current scene
-            if (event.key.keysym.mod & KMOD_SHIFT)
+            if (event.key.keysym.mod & KMOD_CTRL && event.key.keysym.mod & KMOD_SHIFT)
             {
                 ye_logf(debug,"Editor Reloading Scene.\n");
                 ye_reload_scene();

@@ -747,3 +747,15 @@ default build settings
 remove engine build path? - its used by build script for engine add subdir. think about how to make this better
 
 tricks/ folder template not generated and if not present cannot build
+
+heiarchy panel put things in a tab thing from overview nuklear so they can scroll inside and we have sticky buttons up top
+
+editor keep last open scene saved when reopened
+
+## button component
+
+basically a collider.
+has some internal state which can be checked with scripts or c.
+not callback based, you need to poll for its current state
+
+released could come later pretty easily, SDL_MOUSEBUTTONUP
