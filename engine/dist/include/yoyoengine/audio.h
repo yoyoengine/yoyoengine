@@ -60,4 +60,13 @@ void ye_shutdown_audio();
 int ye_play_sound(char *handle, int loops, float volume_scale);
 void ye_play_music(char *handle, int loops, float volume_scale);
 
+/**
+ * @brief Set the volume for the entire audio system
+ * 
+ * @param volume A float from 0.0 to 1.0
+ * 
+ * @note This will update the global engine volume setting itself
+ */
+void ye_set_volume(float volume);
+
 #endif

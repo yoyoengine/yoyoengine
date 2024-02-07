@@ -282,3 +282,39 @@ void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y,
         }
     }
 }
+
+void ye_get_mouse_world_position(int *x, int *y){
+    // get the true world position of the camera
+    struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
+
+    // get the viewable screen dimensions
+    int viewableWidth, viewableHeight;
+
+    // find the scale (how much we blow up or shrink the output to the window based on camera size)
+    float scaleX, scaleY;
+
+    // get the true screen size of the display
+    struct ScreenSize screenSize = ye_get_screen_size();
+
+    if(!YE_STATE.engine.need_boxing){
+        // if we aren't using letterboxing, use the fullscreen dimensions
+        viewableWidth = screenSize.width;
+        viewableHeight = screenSize.height;
+        scaleX = viewableWidth / (float)YE_STATE.engine.target_camera->camera->view_field.w;
+        scaleY = viewableHeight / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+
+        // printf("Viewable size: %d, %d\n", viewableWidth, viewableHeight);
+
+        *x = ((*x / scaleX) + campos.x);
+        *y = ((*y / scaleY) + campos.y);
+    } else {
+        // if we are using letterboxing, use the letterbox dimensions
+        viewableWidth = YE_STATE.engine.letterbox.w;
+        viewableHeight = YE_STATE.engine.letterbox.h;
+        scaleX = viewableWidth / (float)YE_STATE.engine.target_camera->camera->view_field.w;
+        scaleY = viewableHeight / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+
+        *x = (((*x - YE_STATE.engine.letterbox.x) / scaleX) + campos.x);
+        *y = (((*y - YE_STATE.engine.letterbox.y) / scaleY) + campos.y);
+    }
+}

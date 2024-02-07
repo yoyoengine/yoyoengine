@@ -32,6 +32,8 @@ void ye_add_button_component(struct ye_entity *entity, struct ye_rectf rect){
     // private state
     button->is_hovered = false;
     button->is_clicked = false;
+    button->is_pressed = false;
+    button->_was_pressed = false;
 
     entity->button = button;
     ye_entity_list_add(&button_list_head, entity);
@@ -44,60 +46,58 @@ void ye_remove_button_component(struct ye_entity *entity){
 }
 
 void ye_system_button(SDL_Event event){
-    // if(event.type != SDL_MOUSEMOTION && event.type != SDL_MOUSEBUTTONDOWN && event.type != SDL_MOUSEBUTTONUP){
-    //     return;
-    // }
+    // filter non relevant events
+    if(event.type != SDL_MOUSEMOTION && event.type != SDL_MOUSEBUTTONDOWN && event.type != SDL_MOUSEBUTTONUP)
+        return;
 
-    // /*
-    //     For each button in the button list, get its position (accounting for relativity)
-    //     then proceed to check if the mouse is hovering over it and if it has been clicked on.
-    // */
+    // get the world space position 
+    int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY);
+    ye_get_mouse_world_position(&mouseX, &mouseY);
 
-    // int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY);
-    // bool clicking = (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP);
-    
-    // // printf("MouseX: %d, MouseY: %d\n", mouseX, mouseY);
-    // // printf("Clicking: %d\n", clicking);
+    // iterate over button list
+    struct ye_entity_node *itr = button_list_head;
+    while(itr != NULL){
+        struct ye_entity *entity = itr->entity;
+        struct ye_component_button *button = entity->button;
 
-    // struct ye_entity_node *itr = button_list_head;
-    // while(itr != NULL){
-    //     struct ye_entity *entity = itr->entity;
-    //     struct ye_component_button *button = entity->button;
+        // if the button is inactive, skip it
+        if(!button->active)
+            continue;
 
-    //     // if the button is inactive, skip it
-    //     if(!button->active)
-    //         continue;
+        // get the position of the button
+        struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_BUTTON);
 
-    //     // get the position of the button
-    //     struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_BUTTON);
+        // check if the mouse is hovering over the button
+        if(
+            mouseX >= pos.x && mouseX <= pos.x + pos.w &&   // within width
+            mouseY >= pos.y && mouseY <= pos.y + pos.h      // within height
+        )
+        {
+            // if within the bounds, we are hovering
+            button->is_hovered = true;
 
-    //     // printf("button %s at %f, %f, %f, %f\n", entity->name, pos.x, pos.y, pos.w, pos.h);
+            // if the mouse is down, we are pressing
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                button->is_pressed = true;
+            }
 
-    //     // check if the mouse is hovering over the button
-    //     if(
-    //         mouseX >= pos.x && mouseX <= pos.x + pos.w &&   // within width
-    //         mouseY >= pos.y && mouseY <= pos.y + pos.h      // within height
-    //     )
-    //     {
-    //         button->is_hovered = true;
-    //         printf("Hovered\n");
-    //         if(event.type == SDL_MOUSEBUTTONDOWN)
-    //             button->_clicking = true;
-    //         else
-    //             button->_clicking = false;
+            // if the mouse is up after a press we are clicking
+            if (button->_was_pressed && event.type == SDL_MOUSEBUTTONUP) {
+                button->is_clicked = true;
+            }
 
-    //         if(button->_clicking && event.type == SDL_MOUSEBUTTONUP){
-    //             button->is_clicked = true;
-    //             printf("Clicked\n");
-    //         }
-    //     }
-    //     else{
-    //         button->is_hovered = false;
-    //         button->is_clicked = false;
-    //     }
+            // update was_pressed for the next run
+            button->_was_pressed = button->is_pressed;
+        }
+        else{
+            button->is_hovered = false;
+            button->is_pressed = false;
+            button->is_clicked = false;
+            button->_was_pressed = false;
+        }
 
-    //     itr = itr->next;
-    // }
+        itr = itr->next;
+    }
 }
 
 /*
@@ -105,15 +105,25 @@ void ye_system_button(SDL_Event event){
 */
 
 bool ye_button_hovered(struct ye_entity *entity){
-    if(entity == NULL || entity->button == NULL)
+    if(entity == NULL || entity->button == NULL || entity->button->active == false)
         return false;
 
     return entity->button->is_hovered;
 }
 
 bool ye_button_clicked(struct ye_entity *entity){
-    if(entity == NULL || entity->button == NULL)
+    if(entity != NULL && entity->button != NULL && entity->button->active && entity->button->is_clicked){
+        entity->button->is_clicked = false;
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+bool ye_button_pressed(struct ye_entity *entity){
+    if(entity == NULL || entity->button == NULL || entity->button->active == false)
         return false;
 
-    return entity->button->is_clicked;
+    return entity->button->is_pressed;
 }

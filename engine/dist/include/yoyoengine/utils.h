@@ -165,4 +165,17 @@ SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type t
  */
 void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius);
 
+
+/**
+ * @brief Returns the world coordinates of a click on the window.
+ * 
+ * @param x A pointer to an int holding the SDL event x position.
+ * @param y A pointer to an int holding the SDL event y position.
+ * 
+ * @returns Will modify the int pointers passed in to reflect the new world position.
+ * 
+ * @note offsets based on letterboxing, target scaling, and camera positioning
+ */
+void ye_get_mouse_world_position(int *x, int *y);
+
 #endif

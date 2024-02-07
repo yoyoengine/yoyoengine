@@ -318,3 +318,10 @@ void ye_play_music(char *handle, int loops, float volume_scale){
 /*
     ==========================================
 */
+
+void ye_set_volume(float volume){
+    YE_STATE.engine.volume = (128 * volume);
+    Mix_VolumeMusic((128 * volume));
+    Mix_Volume(-1, (128 * volume));
+    ye_logf(debug, "Set audio volume to %d.\n", (int)(128 * volume));
+}

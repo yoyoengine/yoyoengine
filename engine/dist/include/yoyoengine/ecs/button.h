@@ -32,11 +32,12 @@ struct ye_component_button {
     struct ye_rectf rect;
 
     // this is state that the system will track
-    bool is_hovered;
-    bool is_clicked;
+    bool is_hovered;    // tracks mouse over
+    bool is_pressed;    // tracks mouse down and holding
+    bool is_clicked;    // tracks mouse up "clicked"
 
-    // used to track mousedown state
-    bool _clicking;
+    // private state
+    bool _was_pressed;  // tracks mouse down across event loop
 };
 
 void ye_add_button_component(struct ye_entity *entity, struct ye_rectf rect);
@@ -67,5 +68,12 @@ bool ye_button_hovered(struct ye_entity *entity);
  * @param entity The entity to be checked.
  */
 bool ye_button_clicked(struct ye_entity *entity);
+
+/**
+ * @brief Checks whether an entity's button is pressed.
+ * 
+ * @param entity The entity to be checked.
+ */
+bool ye_button_pressed(struct ye_entity *entity);
 
 #endif

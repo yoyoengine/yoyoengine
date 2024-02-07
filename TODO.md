@@ -759,3 +759,9 @@ has some internal state which can be checked with scripts or c.
 not callback based, you need to poll for its current state
 
 released could come later pretty easily, SDL_MOUSEBUTTONUP
+
+## screen
+
+better caching and tracking of screen size and aspect ratios and other scaling letterboxing things so we dont recompute it in like ten places
+
+get screen size uses the primary monitor

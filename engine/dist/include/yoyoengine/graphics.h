@@ -143,4 +143,15 @@ void ye_shutdown_graphics();
  */
 struct ScreenSize ye_get_screen_size();
 
+/*
+    GRAPHICS API:
+*/
+
+/**
+ * @brief Sets the window mode
+ * 
+ * @param mode The SDL window mode to change to
+ */
+void ye_set_window_mode(int mode);
+
 #endif

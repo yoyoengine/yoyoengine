@@ -51,6 +51,8 @@ This section is temporary and will be used to denote any important facts I need 
 - NOTE: make this section limitations and have a seperate notices
 - DO NOT USE SPACES IN FILE NAMES, this will break a lot of the file operations especially in the editor, core might be fine though.
 - Because of the nature of the editor, it only runs on linux and also accesses data through the loose file directories rather than the pack files which are accessed at runtime
+- for buttons, their state is updated on input events, meaning that a "clicked" button would only stop being clicked on the next event NOT the next frame. We could fix this with a iteration and reset at the beginning of each frame, but for now its reset when polled. So a button will only be "clicked" for the first access of the state after the click event.
+- There is a limitation in detection of the screen size. Moving games to be fullscreen on your non primary monitor will mess with the mouse position detection, as the size of your primary monitor is used to calculate fullscreen letterboxing
 
 ### editor
 

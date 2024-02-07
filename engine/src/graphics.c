@@ -275,6 +275,10 @@ void ye_recompute_boxing(){
     // calculate the aspect ratio
     float aspectRatio = (float)screenSize.width / (float)screenSize.height;
 
+    // print the screen size and aspect ratio
+    // ye_logf(debug,"Screen size: %d %d\n", screenSize.width, screenSize.height);
+    // ye_logf(debug,"Aspect ratio: %f\n", aspectRatio);
+
     // if the aspect ratio is not 16:9 TODO: change this to custom target and this whole thing to be generic
     if(aspectRatio != 16.0f / 9.0f){
         ye_logf(info,"Non targeted aspect ratio detected. Boxing will occur if stretching is disabled.\n");
@@ -309,6 +313,11 @@ void ye_recompute_boxing(){
         // printf("current screen size: %d %d\n", screenSize.width, screenSize.height);
         // printf("target aspect ratio: 16:9\n");
         // printf("viewport size: %d %d\n", targetWidth, targetHeight);
+    }
+    else{
+        YE_STATE.engine.need_boxing = false;
+        YE_STATE.engine.letterbox = (SDL_Rect){0,0,0,0};
+        ye_logf(debug,"Targeted aspect ratio detected. No boxing will occur.\n");
     }
 }
 
@@ -468,4 +477,14 @@ struct ScreenSize ye_get_screen_size(){
         SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
     }
     return screenSize;
+}
+
+/*
+    API
+*/
+
+void ye_set_window_mode(int mode){
+    SDL_SetWindowFullscreen(pWindow, mode);
+    YE_STATE.engine.window_mode = mode;
+    ye_recompute_boxing();
 }
