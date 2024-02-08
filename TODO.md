@@ -765,3 +765,11 @@ released could come later pretty easily, SDL_MOUSEBUTTONUP
 better caching and tracking of screen size and aspect ratios and other scaling letterboxing things so we dont recompute it in like ten places
 
 get screen size uses the primary monitor
+
+## notes
+
+you are responsible for making sure a button youre polling for exists, because if youre checking for api state it will return false if it doesnt exist
+
+## bugs with things
+
+animation creation script sometimes writes wrong image height

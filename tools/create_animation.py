@@ -38,7 +38,7 @@ def create_animation_metadata(folder_path):
         return
 
     # Create a new image by stacking frames vertically
-    frames = [Image.open(os.path.join(folder_path, file)) for file in frame_files]
+    frames = [Image.open(os.path.join(folder_path, file)) for file in frame_files if not file.endswith('.aseprite')]
     width, height = frames[0].size
     stacked_image = Image.new("RGBA", (width, height * len(frames)))
 
@@ -63,11 +63,11 @@ def create_animation_metadata(folder_path):
         "name": animation_name,
         "version": version,
         "src": f"animations/{animation_name}/{animation_name}.png",
-        "frame_width": frame_width,
-        "frame_height": frame_height / frame_count,
-        "frame_count": frame_count,
-        "frame_delay": frame_delay,
-        "loops": loops
+        "frame_width": int(frame_width),
+        "frame_height": int(frame_height / frame_count),
+        "frame_count": int(frame_count),
+        "frame_delay": int(frame_delay),
+        "loops": int(loops)
     }
 
     return metadata, stacked_image
