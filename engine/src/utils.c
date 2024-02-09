@@ -18,7 +18,7 @@
 
 #include <yoyoengine/yoyoengine.h>
 
-void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center){
+void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit){
     SDL_Rect _bounds = ye_convert_rectf_rect(*bounds_f);
     SDL_Rect _obj = ye_convert_rectf_rect(*obj_f);
     SDL_Rect * bounds = &_bounds;
@@ -38,12 +38,14 @@ void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum 
     float boundsAspectRatio = (float)bounds->w / (float)bounds->h;
     float objectAspectRatio = (float)obj->w / (float)obj->h;
 
-    if (objectAspectRatio > boundsAspectRatio) {
-        obj->h = bounds->w / objectAspectRatio;
-        obj->w = bounds->w;
-    } else {
-        obj->w = bounds->h * objectAspectRatio;
-        obj->h = bounds->h;
+    if (should_grow_to_fit) {
+        if (objectAspectRatio > boundsAspectRatio) {
+            obj->h = bounds->w / objectAspectRatio;
+            obj->w = bounds->w;
+        } else {
+            obj->w = bounds->h * objectAspectRatio;
+            obj->h = bounds->h;
+        }
     }
 
     switch(alignment) {

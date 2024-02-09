@@ -96,10 +96,65 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     return pTexture;
 }
 
+SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength) {
+    int temp = TTF_GetFontOutline(pFont);
+
+    SDL_Surface *fg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength); 
+
+    TTF_SetFontOutline(pFont, width);
+    
+    SDL_Surface *bg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pOutlineColor, wrapLength); 
+    
+    SDL_Rect rect = {width, width, fg_surface->w, fg_surface->h}; 
+
+    /* blit text onto its outline */ 
+    SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND); 
+    SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
+    SDL_FreeSurface(fg_surface); 
+    SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
+    SDL_FreeSurface(bg_surface);
+    
+    // error out if texture creation failed
+    if (pTexture == NULL) {
+        ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
+        return NULL;
+    }
+    
+    TTF_SetFontOutline(pFont, temp);
+
+    return pTexture;
+}
+
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderUTF8_Blended(pFont, pText, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
     
+    // error out if surface creation failed
+    if (pSurface == NULL) {
+        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
+        return missing_texture; // return missing texture, error has been logged
+    }
+
+    // create texture from surface
+    SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, pSurface);
+
+    // error out if texture creation failed
+    if (pTexture == NULL) {
+        ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
+        return missing_texture; // return missing texture, error has been logged
+    }
+
+    // free the surface memory
+    SDL_FreeSurface(pSurface);
+
+    // return the created texture
+    return pTexture;
+}
+
+SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength) {
+    // create surface from parameters
+    SDL_Surface *pSurface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength);
+
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", TTF_GetError());

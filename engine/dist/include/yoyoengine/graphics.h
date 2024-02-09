@@ -76,6 +76,11 @@ SDL_Texture * ye_create_image_texture(const char *pPath);
  */
 SDL_Texture *createTextTextureWithOutline();
 
+/*
+    Untested rn.
+*/
+SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength);
+
 /**
  * @brief Creates a text texture.
  * @param pText The text to be rendered.
@@ -84,6 +89,16 @@ SDL_Texture *createTextTextureWithOutline();
  * @return The created SDL_Texture.
  */
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor);
+
+/**
+ * @brief Creates a text texture with wrapping.
+ * @param pText The text to be rendered.
+ * @param pFont The font to be used.
+ * @param pColor The color of the text.
+ * @param wrapLength The length to wrap the text at.
+ * @return The created SDL_Texture.
+ */
+SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength);
 
 /**
  * @brief Renders all elements.

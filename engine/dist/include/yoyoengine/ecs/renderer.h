@@ -56,6 +56,7 @@ struct ye_component_renderer {
     struct ye_rectf rect;
 
     enum ye_alignment alignment;    ///< alignment of entity within its bounds
+    bool preserve_original_size;    ///< whether or not to preserve the original size of the entity when fitting bounds
     int z;                          ///< layer the entity sits on
     SDL_Point center;               ///< center of rotation
     float rotation;                 ///< rotation of entity in degrees
@@ -91,6 +92,7 @@ struct ye_component_renderer_text {
     char *color_name;   ///< name of the color to use
     TTF_Font *font;     ///< font to use
     SDL_Color *color;   ///< color of text
+    int wrap_width;     ///< if >0 then wrap text to this width (in pixels
 };
 
 /**
@@ -106,6 +108,7 @@ struct ye_component_renderer_text_outlined {
     TTF_Font *font;             ///< font to use
     SDL_Color *color;           ///< color of text
     SDL_Color *outline_color;   ///< color of text outline
+    int wrap_width;             ///< if >0 then wrap text to this width (in pixels)
 };
 
 /**
@@ -179,7 +182,7 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
  * @param font_size The size of the font to use for rendering the text.
  * @param color The color to use for rendering the text.
  */
-void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color);
+void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, int wrap_width);
 
 /**
  * @brief Temporarily adds an outlined text renderer component to an entity.
@@ -192,7 +195,7 @@ void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char 
  * @param outline_color The color to use for the outline of the text.
  * @param outline_size The size of the outline.
  */
-void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size);
+void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size, int wrap_width);
 
 /**
  * @brief Temporarily adds an animation renderer component to an entity.

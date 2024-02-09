@@ -115,6 +115,9 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
     // set the alignment
     json_object_set_new(renderer, "alignment", json_integer(entity->renderer->alignment));
 
+    // set the "preserve size"
+    json_object_set_new(renderer, "preserve size", json_boolean(entity->renderer->preserve_original_size));
+
     // set the position object
     serialize_entity_position(&entity->renderer->rect, renderer);
 
@@ -138,6 +141,9 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             // set the font size
             json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text->font_size));
 
+            // set wrap bool
+            json_object_set_new(impl, "wrap_width", json_integer(entity->renderer->renderer_impl.text->wrap_width));
+
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // set the text
@@ -156,6 +162,9 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text->font_size));
 
             json_object_set_new(impl, "outline color", json_string(entity->renderer->renderer_impl.text_outlined->outline_color_name));
+
+            // set wrap bool
+            json_object_set_new(impl, "wrap_width", json_integer(entity->renderer->renderer_impl.text_outlined->wrap_width));
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:

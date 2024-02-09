@@ -58,7 +58,7 @@ int ye_clamp(int value, int min, int max);
  * @param alignment The alignment to use.
  * @param center The center point of the object (to be written to).
  */
-void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center);
+void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit);
 
 /**
  * @brief Returns the size of a texture as an SDL_Rect

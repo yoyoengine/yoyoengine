@@ -130,6 +130,11 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                         break;
                 }
 
+                // preserve original size
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_checkbox_label(ctx, "Preserve Original Size", (nk_bool*)&ent->renderer->preserve_original_size);
+                // dont need to observe change since recomputed every frame
+
                 nk_layout_row_static(ctx, 50, 100, 3);
                 for (i = 0; i < 9; ++i) {
                     if (nk_selectable_label(ctx, "X", NK_TEXT_CENTERED, &alignment_arr[i])) {
@@ -257,6 +262,11 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             ye_update_renderer_component(ent);
                             editor_unsaved();
                         }
+
+                        // wrapping //
+                        nk_layout_row_dynamic(ctx, 25, 2);
+                        nk_label(ctx, "Wrap Width:", NK_TEXT_LEFT);
+                        nk_property_int(ctx, "#px", 0, &ent->renderer->renderer_impl.text->wrap_width, 1000000, 1, 5);
 
                         // color //
                         nk_layout_row_dynamic(ctx, 25, 2);
@@ -459,11 +469,11 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
         if(nk_button_label(ctx, "Add Renderer Component")){
             switch(add_renderer_cb_selected_type){
                 case 0:
-                    ye_add_text_renderer_component(ent, 99, "Sample Text", "default", 12, "white");
+                    ye_add_text_renderer_component(ent, 99, "Sample Text", "default", 12, "white",0);
                     editor_unsaved();
                     break;
                 case 1:
-                    ye_add_text_outlined_renderer_component(ent, 99, "Sample Text", "default", 12, "white", "red", 5);
+                    ye_add_text_outlined_renderer_component(ent, 99, "Sample Text", "default", 12, "white", "red", 5,0);
                     editor_unsaved();
                     break;
                 case 2:

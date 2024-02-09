@@ -773,3 +773,9 @@ you are responsible for making sure a button youre polling for exists, because i
 ## bugs with things
 
 animation creation script sometimes writes wrong image height
+
+changing wrap length should visually show cutoff or update text TODO
+
+## outlined text inspector
+
+THERES NO OUTLINED TEXT IN INSPECTOR YET LMAOOO

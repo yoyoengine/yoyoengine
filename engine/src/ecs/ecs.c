@@ -204,10 +204,10 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
             ye_add_image_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.image->src);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT){
-            ye_add_text_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font_name, entity->renderer->renderer_impl.text->font_size, entity->renderer->renderer_impl.text->color_name);
+            ye_add_text_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font_name, entity->renderer->renderer_impl.text->font_size, entity->renderer->renderer_impl.text->color_name, entity->renderer->renderer_impl.text->wrap_width);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_TEXT_OUTLINED){
-            ye_add_text_outlined_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->font_name, entity->renderer->renderer_impl.text_outlined->font_size, entity->renderer->renderer_impl.text_outlined->color_name, entity->renderer->renderer_impl.text_outlined->outline_color_name, entity->renderer->renderer_impl.text_outlined->outline_size);
+            ye_add_text_outlined_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->font_name, entity->renderer->renderer_impl.text_outlined->font_size, entity->renderer->renderer_impl.text_outlined->color_name, entity->renderer->renderer_impl.text_outlined->outline_color_name, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->wrap_width);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
             ye_add_animation_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.animation->animation_handle);

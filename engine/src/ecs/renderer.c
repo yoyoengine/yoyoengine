@@ -35,7 +35,10 @@ void ye_update_renderer_component(struct ye_entity *entity){
             entity->renderer->renderer_impl.text->color = ye_color(entity->renderer->renderer_impl.text->color_name);
 
             // create new text texture
-            entity->renderer->texture = createTextTexture(entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
+            if(entity->renderer->renderer_impl.text->wrap_width > 0)
+                entity->renderer->texture = createTextTextureWrapped(entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color, entity->renderer->renderer_impl.text->wrap_width);
+            else
+                entity->renderer->texture = createTextTexture(entity->renderer->renderer_impl.text->text, entity->renderer->renderer_impl.text->font, entity->renderer->renderer_impl.text->color);
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // destroy old text texture (not managed in cache)
@@ -47,7 +50,10 @@ void ye_update_renderer_component(struct ye_entity *entity){
             entity->renderer->renderer_impl.text_outlined->outline_color = ye_color(entity->renderer->renderer_impl.text_outlined->outline_color_name);
 
             // create new text texture
-            entity->renderer->texture = createTextTextureWithOutline(entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->font, entity->renderer->renderer_impl.text_outlined->color, entity->renderer->renderer_impl.text_outlined->outline_color);
+            if(entity->renderer->renderer_impl.text_outlined->wrap_width > 0)
+                entity->renderer->texture = createTextTextureWithOutlineWrapped(entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->font, entity->renderer->renderer_impl.text_outlined->color, entity->renderer->renderer_impl.text_outlined->outline_color, entity->renderer->renderer_impl.text_outlined->wrap_width);
+            else
+                entity->renderer->texture = createTextTextureWithOutline(entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->font, entity->renderer->renderer_impl.text_outlined->color, entity->renderer->renderer_impl.text_outlined->outline_color);
             break;
         case YE_RENDERER_TYPE_TILEMAP_TILE:
             entity->renderer->texture = ye_image(
@@ -117,9 +123,10 @@ void ye_add_renderer_component(
     entity->renderer->rotation = 0;
     entity->renderer->flipped_x = false;
     entity->renderer->flipped_y = false;
-    entity->renderer->center = (SDL_Point){0, 0}; // default center is the center of the bounds
-    entity->renderer->alignment = YE_ALIGN_MID_CENTER; // default alignment is mid center
-    entity->renderer->relative = true; // default is relative positioning
+    entity->renderer->center = (SDL_Point){0, 0};       // default center is the center of the bounds
+    entity->renderer->alignment = YE_ALIGN_MID_CENTER;  // default alignment is mid center
+    entity->renderer->preserve_original_size = false;   // default is to grow to fit
+    entity->renderer->relative = true;                  // default is relative positioning
 
     if(type == YE_RENDERER_TYPE_IMAGE){
         entity->renderer->renderer_impl.image = data;
@@ -181,13 +188,15 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color){
+void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color, int wrap_width){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
 
     text_renderer->font = ye_font(font, font_size);
     text_renderer->font_name = strdup(font);
     text_renderer->font_size = font_size;
+
+    text_renderer->wrap_width = wrap_width;
 
     text_renderer->color = ye_color(color);
     text_renderer->color_name = strdup(color);
@@ -196,7 +205,12 @@ void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char 
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT, z, text_renderer);
 
     // create the text texture
-    entity->renderer->texture = createTextTexture(text, text_renderer->font, text_renderer->color);
+    if(wrap_width > 0){
+        entity->renderer->texture = createTextTextureWrapped(text, text_renderer->font, text_renderer->color, wrap_width);
+    }
+    else{
+        entity->renderer->texture = createTextTexture(text, text_renderer->font, text_renderer->color);
+    }
 
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
@@ -204,13 +218,15 @@ void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char 
     entity->renderer->rect.h = size.h;
 }
 
-void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size){
+void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size, int wrap_width){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
 
     text_renderer->font = ye_font(font, font_size);
     text_renderer->font_name = strdup(font);
     text_renderer->font_size = font_size;
+
+    text_renderer->wrap_width = wrap_width;
 
     text_renderer->color = ye_color(color);
     text_renderer->color_name = strdup(color);
@@ -224,7 +240,10 @@ void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, co
     ye_add_renderer_component(entity, YE_RENDERER_TYPE_TEXT_OUTLINED, z, text_renderer);
 
     // create the text texture
-    entity->renderer->texture = createTextTextureWithOutline(text,outline_size,text_renderer->font,text_renderer->color,text_renderer->outline_color);
+    if(wrap_width > 0)
+        entity->renderer->texture = createTextTextureWithOutlineWrapped(text,outline_size,text_renderer->font,text_renderer->color,text_renderer->outline_color,wrap_width);
+    else
+        entity->renderer->texture = createTextTextureWithOutline(text,outline_size,text_renderer->font,text_renderer->color,text_renderer->outline_color);
 
     // update rect based off generated image
     SDL_Rect size = ye_get_real_texture_size_rect(entity->renderer->texture);
@@ -475,7 +494,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 else
                     texture_rect = (struct ye_rectf){0, 0, current->entity->renderer->renderer_impl.animation->frame_width, current->entity->renderer->renderer_impl.animation->frame_height};
                 
-                ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center);
+                ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center, !current->entity->renderer->preserve_original_size);
                 SDL_Rect entity_rect = ye_convert_rectf_rect(texture_rect);
 
                 // update computed bounds field //

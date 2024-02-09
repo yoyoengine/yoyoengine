@@ -365,7 +365,7 @@ void setup_splash_screen(){
     ye_cache_color("white", white);
     TTF_Font *orbitron = yep_engine_resource_font("Orbitron-Regular.ttf");
     ye_cache_font_manual("orbitron", orbitron);
-    ye_add_text_renderer_component(splash_version, 1, YE_ENGINE_VERSION, "orbitron", 64, "white");
+    ye_add_text_renderer_component(splash_version, 1, YE_ENGINE_VERSION, "orbitron", 64, "white",0);
     splash_version->renderer->rect = (struct ye_rectf){
         YE_STATE.engine.screen_width - 590,
         235,

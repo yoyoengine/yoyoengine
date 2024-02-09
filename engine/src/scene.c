@@ -177,7 +177,13 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 font_size = 16;
             }
 
-            ye_add_text_renderer_component(e,z,text,font,font_size,color);
+            int wrap_width;
+            if(!ye_json_int(impl,"wrap_width",&wrap_width)) {
+                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the wrap width field\n", entity_name);
+                return;
+            }
+
+            ye_add_text_renderer_component(e,z,text,font,font_size,color,wrap_width);
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // get the text field
@@ -221,7 +227,13 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
                 return;
             }
 
-            ye_add_text_outlined_renderer_component(e,z,_text,_font,outlined_font_size,_color,outline_color,outline_size);
+            int _wrap_width;
+            if(!ye_json_int(impl,"wrap_width",&_wrap_width)) {
+                ye_logf(warning,"Entity \"%s\" has a renderer component, but it is missing the wrap width field\n", entity_name);
+                return;
+            }
+
+            ye_add_text_outlined_renderer_component(e,z,_text,_font,outlined_font_size,_color,outline_color,outline_size,_wrap_width);
 
             break;
         case YE_RENDERER_TYPE_ANIMATION:
@@ -278,6 +290,14 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
     }
     // printf("alignment of %s: %d\n", entity_name, alignment);
     e->renderer->alignment = alignment;
+
+    // preserve_size
+    bool preserve_size;
+    if(!ye_json_bool(renderer,"preserve size",&preserve_size)) {
+        ye_logf(warning,"Entity %s has a renderer component, but it is missing the preserve size field\n", entity_name);
+        preserve_size = false;
+    }
+    e->renderer->preserve_original_size = preserve_size;
 
     // get a rotation if existant and update it
     if(ye_json_has_key(renderer,"rotation")){
