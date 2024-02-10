@@ -53,8 +53,8 @@ def create_animation_metadata(folder_path):
     # Get other metadata from user input or individual frame metadata
     version = 0
     frame_width = width
-    frame_height = height
     frame_count = len(frames)
+    frame_height = height / frame_count
     frame_delay = int(input("Enter frame delay in milliseconds: "))
     loops = int(input("Enter number of loops (-1 for infinite): "))
 
@@ -64,7 +64,7 @@ def create_animation_metadata(folder_path):
         "version": version,
         "src": f"animations/{animation_name}/{animation_name}.png",
         "frame_width": int(frame_width),
-        "frame_height": int(frame_height / frame_count),
+        "frame_height": int(frame_height),
         "frame_count": int(frame_count),
         "frame_delay": int(frame_delay),
         "loops": int(loops)
