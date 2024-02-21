@@ -557,6 +557,9 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         // printf("ent_src_rect: %d %d %d %d\n", ent_src_rect->x, ent_src_rect->y, ent_src_rect->w, ent_src_rect->h);
                     }
 
+                    if(current->entity->renderer->alignment == YE_ALIGN_STRETCH)
+                        ent_src_rect = NULL;
+
                     // if transform is flipped or rotated render it differently
                     if(current->entity->renderer->flipped_x || current->entity->renderer->flipped_y){
                         SDL_RendererFlip flip = SDL_FLIP_NONE;

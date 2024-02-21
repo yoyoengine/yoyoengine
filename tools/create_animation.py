@@ -54,7 +54,7 @@ def create_animation_metadata(folder_path):
     version = 0
     frame_width = width
     frame_count = len(frames)
-    frame_height = height / frame_count
+    frame_height = height
     frame_delay = int(input("Enter frame delay in milliseconds: "))
     loops = int(input("Enter number of loops (-1 for infinite): "))
 
@@ -87,4 +87,4 @@ with open(metapathagain, "w") as f:
     json.dump(meta, f)
 
 # save the stacked image to the resources folder
-image.save(os.path.join(resources_path, f"animations/{meta['name']}", f"{meta['name']}.png"))
+image.save(os.path.join(resources_path, f"{metadata_path}", f"{meta['name']}.png"))

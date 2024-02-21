@@ -28,8 +28,8 @@ void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum 
     if(alignment == YE_ALIGN_STRETCH){
         obj->w = bounds->w;
         obj->h = bounds->h;
-        obj->x = bounds->x;
-        obj->y = bounds->y;
+        // obj->x = bounds->x;
+        // obj->y = bounds->y;
         return;
     }
 

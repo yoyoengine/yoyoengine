@@ -477,7 +477,7 @@ void ye_init_graphics(){
         pIconSurface = IMG_Load(ye_get_engine_resource_static(YE_STATE.engine.icon_path));
     }
     else{
-        pIconSurface = yep_engine_resource_image(YE_STATE.engine.icon_path);
+        pIconSurface = yep_resource_image(YE_STATE.engine.icon_path);
     }
 
     if (pIconSurface == NULL) {

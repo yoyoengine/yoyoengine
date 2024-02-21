@@ -631,11 +631,12 @@ void ye_construct_scene(json_t *entities){
 }
 
 void ye_load_scene(const char *scene_path){
+    // shutdown and restart audio subsystem TODO: do some soft reset instead
+    ye_shutdown_audio();
+
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();
 
-    // shutdown and restart audio subsystem TODO: do some soft reset instead
-    ye_shutdown_audio();
     ye_init_audio();
 
     /*

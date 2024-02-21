@@ -770,6 +770,8 @@ get screen size uses the primary monitor
 
 you are responsible for making sure a button youre polling for exists, because if youre checking for api state it will return false if it doesnt exist
 
+fix the stretch alignment
+
 ## bugs with things
 
 animation creation script sometimes writes wrong image height
@@ -779,3 +781,22 @@ changing wrap length should visually show cutoff or update text TODO
 ## outlined text inspector
 
 THERES NO OUTLINED TEXT IN INSPECTOR YET LMAOOO
+
+## skjhfjkdfhgkjd
+
+track editor camera position before scene reload and move it back to smae spot after recreated
+
+multi select and duplicate and transform many at once
+
+icon path needs exposed through editor - could wait for nuklear to preview this as well
+icon and other changes were made in build.py for vannie for linking new libs and win32 icons, merge these into stable engine build but agnostically
+
+new icon system do with editor
+
+nk_image rob responded
+
+## audio shutdown and reinit is cooked
+
+it calls the callback for each channel on shutdown which might actually cause rescheduling chunks after we shutdown
+
+keepalive macro embedded in engine timer system

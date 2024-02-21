@@ -159,7 +159,7 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
             json_object_set_new(impl, "font", json_string(entity->renderer->renderer_impl.text_outlined->font_name));
 
             // set the font size
-            json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text->font_size));
+            json_object_set_new(impl, "font_size", json_integer(entity->renderer->renderer_impl.text_outlined->font_size));
 
             json_object_set_new(impl, "outline color", json_string(entity->renderer->renderer_impl.text_outlined->outline_color_name));
 
