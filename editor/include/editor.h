@@ -58,6 +58,24 @@ extern int mouse_world_y;
 
 extern char editor_settings_path[1024];
 
+/*
+    Icons for the editor UI in nuklear
+*/
+struct edicons {
+    struct nk_image style;
+    struct nk_image gear;
+    struct nk_image folder;
+    struct nk_image build;
+    struct nk_image trick;
+    struct nk_image play;
+    struct nk_image buildrun;
+    struct nk_image pack;
+    struct nk_image game;
+    struct nk_image eye;
+};
+
+extern struct edicons editor_icons;
+
 bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
 void editor_load_scene(char * path);

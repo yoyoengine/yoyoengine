@@ -74,3 +74,11 @@ void editor_build_and_run(){
     snprintf(command, sizeof(command), "python3 -u \"%s\" --run", ye_path("build.py"));
     system(command);
 }
+
+void editor_run(){
+
+    // call the build script
+    char command[256];
+    snprintf(command, sizeof(command), "python3 -u \"%s\" --run-only", ye_path("build.py"));
+    system(command);
+}

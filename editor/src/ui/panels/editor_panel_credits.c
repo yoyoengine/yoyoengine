@@ -23,26 +23,42 @@
 
 void editor_panel_credits(struct nk_context *ctx){
     if(nk_begin(ctx, "Credits", nk_rect((screenWidth / 2) - 200, (screenHeight / 2) - 200, 400, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|NK_WINDOW_TITLE)){
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_label(ctx, "Build Info:", NK_TEXT_CENTERED);
+
         nk_layout_row_dynamic(ctx, 20, 2);
         nk_label(ctx, "Yoyo Engine Version:", NK_TEXT_CENTERED);
-        nk_label(ctx, YE_ENGINE_VERSION, NK_TEXT_CENTERED);
+        nk_label_colored(ctx, YE_ENGINE_VERSION, NK_TEXT_LEFT, nk_rgb(0,255,0));
 
         // nk_label(ctx, "Scene File Version:", NK_TEXT_CENTERED);
         // nk_label(ctx, YE_ENGINE_SCENE_VERSION, NK_TEXT_CENTERED);
         
         nk_layout_row_dynamic(ctx, 20, 2);
         nk_label(ctx, "Yoyo Editor Version:", NK_TEXT_CENTERED);
-        nk_label(ctx, YE_EDITOR_VERSION, NK_TEXT_CENTERED);
+        nk_label_colored(ctx, YE_EDITOR_VERSION, NK_TEXT_LEFT, nk_rgb(0,255,0));
+
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_label(ctx, "License:", NK_TEXT_CENTERED);
+        nk_label_colored(ctx, "GNU GENERAL PUBLIC LICENSE Version 3", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
         
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);
-        nk_label(ctx, "Ryan Zmuda - 2023", NK_TEXT_CENTERED);
+        nk_label(ctx, "Ryan Zmuda, 2023-2024", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_label(ctx, "Additional Contributors:", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 20, 2);
+        nk_label(ctx, "Editor Icons:", NK_TEXT_CENTERED);
+        nk_label(ctx, "Ben Mathes", NK_TEXT_LEFT);
 
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_label(ctx, "External Libraries:", NK_TEXT_LEFT);
 
-        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_layout_row_dynamic(ctx, 20, 2);
 
         if(nk_button_label(ctx, "SDL")){
             #ifdef _WIN32
@@ -99,6 +115,9 @@ void editor_panel_credits(struct nk_context *ctx){
                 system("xdg-open https://github.com/akheron/jansson");
             #endif
         }
+
+        // empty label to take space (odd number of items for even layouting)
+        nk_label(ctx, "", NK_TEXT_LEFT);
 
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);

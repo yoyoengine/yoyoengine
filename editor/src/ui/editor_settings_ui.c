@@ -314,33 +314,46 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
 void ye_editor_paint_project(struct nk_context *ctx){
     if (nk_begin(ctx, "Project", nk_rect(0, 40 + screenHeight/1.5, screenWidth/1.5 / 2, screenHeight - (screenHeight/1.5) - 40),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            // TODO: build buttons with icons
-            // nk_layout_row_dynamic(ctx, 25, 1);
-
-            // create new texture from engine resource build_hammer.png
-
-            // SDL_Surface *hammer_surface = IMG_Load(ye_get_engine_resource_static("build_hammer.png"));
-            // SDL_Texture *hammer_texture = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, hammer_surface);
-
-            // nk_button_image(ctx, 
-            //     nk_image_ptr(hammer_surface)
-            // );
-
+            const struct nk_input *in = &ctx->input;
+            struct nk_rect bounds;
 
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Build Options:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
-            nk_layout_row_dynamic(ctx, 25, 2);
-            if(nk_button_label(ctx, "Build")){
+            nk_layout_row_static(ctx, 55, 55, 4);
+
+            bounds = nk_widget_bounds(ctx);
+            if(nk_button_image(ctx, editor_icons.pack)){
+                editor_build_packs();
+            }
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Rebuild the yep packs");
+
+            bounds = nk_widget_bounds(ctx);
+            if(nk_button_image(ctx, editor_icons.build)){
                 editor_build();
             }
-            if(nk_button_label(ctx, "Build and Run")){
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Build the project");
+
+            bounds = nk_widget_bounds(ctx);
+            if(nk_button_image(ctx, editor_icons.buildrun)){
                 editor_build_and_run();
             }
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Build the project and run it");
 
-            nk_layout_row_dynamic(ctx, 25, 1);
+            bounds = nk_widget_bounds(ctx);
+            if(nk_button_image(ctx, editor_icons.play)){
+                editor_run();
+            }
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Run the project");
+
+            nk_layout_row_dynamic(ctx, 35, 1);
             nk_label_colored(ctx, "Additional Actions:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
+            nk_layout_row_dynamic(ctx, 35, 2);
             // button to open project settings
-            if(nk_button_label(ctx, "Project Settings")){
+            if(nk_button_image_label(ctx, editor_icons.gear, "Project Settings", NK_TEXT_CENTERED)){
                 if(project_settings_open){
                     project_settings_open = false;
                     lock_viewport_interaction = false;
@@ -542,14 +555,14 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     }
                 }
             }
-            if(nk_button_label(ctx, "Browse Project Files")){
+            if(nk_button_image_label(ctx, editor_icons.folder, "Browse Project Files", NK_TEXT_CENTERED)){
                 char command[256];
                 snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path); // NOTCROSSPLATFORM
 
                 // Execute the command.
                 system(command);
             }
-            if(nk_button_label(ctx, "Edit styles.yoyo")){
+            if(nk_button_image_label(ctx, editor_icons.style, "Edit styles.yoyo", NK_TEXT_CENTERED)){
                 /*
                     Open a popout editor for the editor styles
                 */
@@ -561,7 +574,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     unlock_viewport();
                 }
             }
-            if(nk_button_label(ctx, "Manage/Install Tricks")){
+            if(nk_button_image_label(ctx, editor_icons.trick, "Manage/Install Tricks", NK_TEXT_CENTERED)){
                 /*
                     Open a popout editor for managing tricks
                 */
@@ -573,9 +586,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                 //     unlock_viewport();
                 // } this would not clean up memory, so just force closing through the panel for now
             }
-            if(nk_button_label(ctx, "Build Resource Packs")){
-                editor_build_packs();
-            }
+            nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Copyright (c) Ryan Zmuda 2023-2024", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
         nk_end(ctx);

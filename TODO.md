@@ -800,3 +800,12 @@ nk_image rob responded
 it calls the callback for each channel on shutdown which might actually cause rescheduling chunks after we shutdown
 
 keepalive macro embedded in engine timer system
+
+## skjhfgkjdfgkljflkjhdflkg hfdkljh
+
+you made a txt file in kate with ideas
+could do the unreal thing now. might not be worth the effort for drag tho
+
+## urgent
+
+you still need to bring over a lot of the improvements from raise a vannie including the changes to just that build.py

@@ -75,7 +75,10 @@ int mouse_world_x = 0;
 int mouse_world_y = 0;
 
 // TESTING
-struct ye_entity *snerfbot = NULL;
+struct ye_entity *snerfbot = NULL; // removeme? TODO
+
+// nk_image icons
+struct edicons editor_icons;
 
 /*
     ALL GLOBALS INITIALIZED
@@ -126,6 +129,18 @@ void yoyo_loading_refresh(char * status)
     SDL_UpdateWindowSurface(YE_STATE.runtime.window);
 }
 
+// pointers to destroy icon textures on shutdown
+SDL_Texture * style = NULL;
+SDL_Texture * gear = NULL;
+SDL_Texture * folder = NULL;
+SDL_Texture * build = NULL;
+SDL_Texture * trick = NULL;
+SDL_Texture * play = NULL;
+SDL_Texture * buildrun = NULL;
+SDL_Texture * pack = NULL;
+SDL_Texture * game = NULL;
+SDL_Texture * eye = NULL;
+
 /*
     main function
     accepts one string argument of the path to the project folder
@@ -144,6 +159,61 @@ int main(int argc, char **argv) {
 
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
+
+    // load editor icons //
+    // TODO: macro this?
+
+    SDL_Surface *tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_style.png"));
+    SDL_Texture *style = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.style = nk_image_ptr(style);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_gear.png"));
+    SDL_Texture *gear = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.gear = nk_image_ptr(gear);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_folder.png"));
+    SDL_Texture *folder = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.folder = nk_image_ptr(folder);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_build.png"));
+    SDL_Texture *build = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.build = nk_image_ptr(build);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_trick.png"));
+    SDL_Texture *trick = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.trick = nk_image_ptr(trick);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_play.png"));
+    SDL_Texture *play = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.play = nk_image_ptr(play);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_buildrun.png"));
+    SDL_Texture *buildrun = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.buildrun = nk_image_ptr(buildrun);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_pack.png"));
+    SDL_Texture *pack = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.pack = nk_image_ptr(pack);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_game.png"));
+    SDL_Texture *game = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.game = nk_image_ptr(game);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_eye.png"));
+    SDL_Texture *eye = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.eye = nk_image_ptr(eye);
+    SDL_FreeSurface(tmp_sur);
+
+    ///////////////////////
 
     // get an initial screen size
     struct ScreenSize ss = ye_get_screen_size();
@@ -277,6 +347,18 @@ int main(int argc, char **argv) {
     while(!quit) {
         ye_process_frame();
     }
+
+    // free editor icons
+    SDL_DestroyTexture(style);
+    SDL_DestroyTexture(gear);
+    SDL_DestroyTexture(folder);
+    SDL_DestroyTexture(build);
+    SDL_DestroyTexture(trick);
+    SDL_DestroyTexture(play);
+    SDL_DestroyTexture(buildrun);
+    SDL_DestroyTexture(pack);
+    SDL_DestroyTexture(game);
+    SDL_DestroyTexture(eye);
 
     ye_shutdown_engine();
     json_decref(SETTINGS);

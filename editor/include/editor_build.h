@@ -25,4 +25,6 @@ void editor_build();
 
 void editor_build_and_run();
 
+void editor_run();
+
 #endif
