@@ -37,7 +37,7 @@ struct ye_timer {
     int start_ticks;
     int loops;
     int length_ms;
-    void (*callback)(void);
+    void (*callback)();
 };
 
 /**

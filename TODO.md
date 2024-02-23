@@ -809,3 +809,11 @@ could do the unreal thing now. might not be worth the effort for drag tho
 ## urgent
 
 you still need to bring over a lot of the improvements from raise a vannie including the changes to just that build.py
+
+## cool others
+
+darwin builds
+
+emscripten wasm, is it possible to make savedata system store in browser?
+
+issues with compiler optimization is probably casts. go through and fix them all.

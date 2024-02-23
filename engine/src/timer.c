@@ -52,6 +52,7 @@ void ye_unregister_all_timers(){
     struct ye_timer_node * node = timers;
     while(node != NULL){
         struct ye_timer_node * next = node->next;
+        free(node->timer);
         free(node);
         node = next;
     }
@@ -77,6 +78,18 @@ void ye_update_timers(){
             }
             else {
                 ye_unregister_timer(timer);
+
+                /*
+                    Very important!!!
+
+                    If we unregister a timer, our *node becomes out of date.
+
+                    In order to avoid traversing and executing arbitrary data,
+                    we will just defer the rest of the timer checks to the next frame.
+
+                    This means we cannot gaurantee more than one timer running per frame.
+                */
+                break;
             }
         }
         node = node->next;
