@@ -55,7 +55,7 @@ struct ye_component_lua_script {
  * @param entity The target entity
  * @param script_path The path to the script
  */
-bool ye_add_lua_script_component(struct ye_entity *entity, char *handle);
+bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle);
 
 /**
  * @brief Remove a lua script component from an entity

@@ -74,7 +74,7 @@ void ye_update_renderer_component(struct ye_entity *entity){
             }
 
             // get src
-            char *path = NULL;
+            const char *path = NULL;
             if(!ye_json_string(META, "src", &path)){
                 ye_logf(error, "Failed to load SRC from animation meta file %s\n", entity->renderer->renderer_impl.animation->meta_file);
                 json_decref(META);
@@ -273,7 +273,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
     }
 
     // source location of the map    
-    char *path = NULL; 
+    const char *path = NULL; 
     if(!ye_json_string(META, "src", &path)){
         ye_logf(error, "Failed to load SRC from animation meta file %s\n", meta_file);
         json_decref(META);
@@ -346,7 +346,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
     json_decref(META);
 }
 
-void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, char * handle, SDL_Rect src){
+void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, const char * handle, SDL_Rect src){
     struct ye_component_renderer_tilemap_tile *tile = malloc(sizeof(struct ye_component_renderer_tilemap_tile));
     tile->handle = strdup(handle);
     tile->src = src;

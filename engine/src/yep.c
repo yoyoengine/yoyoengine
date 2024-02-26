@@ -147,7 +147,7 @@ void displayProgressBar(int current, int max) {
 
 ///////////////////////////////////////////
 
-bool _yep_open_file(char *file){
+bool _yep_open_file(const char *file){
     // if we already have this file open, don't open it again
     if(yep_file_path != NULL && strcmp(yep_file_path, file) == 0){
         return true;
@@ -195,7 +195,7 @@ void _yep_close_file(){
 /*
     Takes in references to where to output the data if found, and returns true if found, false if not found
 */
-bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size, uint8_t *compression_type, uint32_t *uncompressed_size, uint8_t *data_type){
+bool _yep_seek_header(const char *handle, char *name, uint32_t *offset, uint32_t *size, uint8_t *compression_type, uint32_t *uncompressed_size, uint8_t *data_type){
     // go to the beginning of the header section (3 byte) offset from beginning
     fseek(yep_file, 3, SEEK_SET);
 
@@ -234,7 +234,7 @@ bool _yep_seek_header(char *handle, char *name, uint32_t *offset, uint32_t *size
     return false;
 }
 
-struct yep_data_info yep_extract_data(char *file, char *handle){
+struct yep_data_info yep_extract_data(const char *file, const char *handle){
     if(!_yep_open_file(file)){
         ye_logf(error,"Error opening yep file %s\n", file);
         exit(1);
@@ -644,7 +644,7 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     Backend impl that takes in full details
 */
 
-struct yep_data_info _yep_misc(char *handle, char *file){
+struct yep_data_info _yep_misc(const char *handle, const char *file){
     // get and validate the data
     struct yep_data_info data = yep_extract_data(file, handle);
     if(data.data == NULL){
@@ -656,7 +656,7 @@ struct yep_data_info _yep_misc(char *handle, char *file){
     return data;
 }
 
-SDL_Surface * _yep_image(char *handle, char *path){
+SDL_Surface * _yep_image(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
 
@@ -674,7 +674,7 @@ SDL_Surface * _yep_image(char *handle, char *path){
     return surface;
 }
 
-json_t * _yep_json(char *handle, char *path){
+json_t * _yep_json(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
 
@@ -693,7 +693,7 @@ json_t * _yep_json(char *handle, char *path){
     return json;
 }
 
-Mix_Chunk * _yep_audio(char *handle, char *path){
+Mix_Chunk * _yep_audio(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
 
@@ -711,7 +711,7 @@ Mix_Chunk * _yep_audio(char *handle, char *path){
     return chunk;
 }
 
-Mix_Music * _yep_music(char *handle, char *path){
+Mix_Music * _yep_music(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
 
@@ -729,7 +729,7 @@ Mix_Music * _yep_music(char *handle, char *path){
     return music;
 }
 
-TTF_Font * _yep_font(char *handle, char *path){
+TTF_Font * _yep_font(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
 
@@ -753,27 +753,27 @@ TTF_Font * _yep_font(char *handle, char *path){
     Accessor functions that abstract the file they come from
 */
 
-SDL_Surface * yep_resource_image(char *handle){
+SDL_Surface * yep_resource_image(const char *handle){
     return _yep_image(handle, ye_path("resources.yep"));
 }
 
-json_t * yep_resource_json(char *handle){
+json_t * yep_resource_json(const char *handle){
     return _yep_json(handle, ye_path("resources.yep"));
 }
 
-Mix_Chunk * yep_resource_audio(char *handle){
+Mix_Chunk * yep_resource_audio(const char *handle){
     return _yep_audio(handle, ye_path("resources.yep"));
 }
 
-Mix_Music * yep_resource_music(char *handle){
+Mix_Music * yep_resource_music(const char *handle){
     return _yep_music(handle, ye_path("resources.yep"));
 }
 
-TTF_Font * yep_resource_font(char * handle){
+TTF_Font * yep_resource_font(const char * handle){
     return _yep_font(handle, ye_path("resources.yep"));
 }
 
-struct yep_data_info yep_resource_misc(char *handle){
+struct yep_data_info yep_resource_misc(const char *handle){
     return _yep_misc(handle, ye_path("resources.yep"));
 }
 
@@ -781,7 +781,7 @@ struct yep_data_info yep_resource_misc(char *handle){
     Just for ease of use (who cares about LOC) lets provide some accessors for engine resources
 */
 
-SDL_Surface * yep_engine_resource_image(char *handle){
+SDL_Surface * yep_engine_resource_image(const char *handle){
     /*
         If in editor mode, we need to load from loose file
     */
@@ -798,7 +798,7 @@ SDL_Surface * yep_engine_resource_image(char *handle){
     }
 }
 
-json_t * yep_engine_resource_json(char *handle){
+json_t * yep_engine_resource_json(const char *handle){
     /*
         If in editor mode, we need to load from loose file
     */
@@ -815,7 +815,7 @@ json_t * yep_engine_resource_json(char *handle){
     }
 }
 
-Mix_Chunk * yep_engine_resource_audio(char *handle){
+Mix_Chunk * yep_engine_resource_audio(const char *handle){
     /*
         If in editor mode, we need to load from loose file
     */
@@ -832,7 +832,7 @@ Mix_Chunk * yep_engine_resource_audio(char *handle){
     }
 }
 
-Mix_Music * yep_engine_resource_music(char *handle){
+Mix_Music * yep_engine_resource_music(const char *handle){
     /*
         If in editor mode, we need to load from loose file
     */
@@ -849,7 +849,7 @@ Mix_Music * yep_engine_resource_music(char *handle){
     }
 }
 
-TTF_Font * yep_engine_resource_font(char * handle){
+TTF_Font * yep_engine_resource_font(const char * handle){
     /*
         If in editor mode, we need to load from loose file
     */
@@ -866,6 +866,6 @@ TTF_Font * yep_engine_resource_font(char * handle){
     }
 }
 
-struct yep_data_info yep_engine_resource_misc(char *handle){
+struct yep_data_info yep_engine_resource_misc(const char *handle){
     return _yep_misc(handle, ye_path("engine.yep"));
 }

@@ -87,7 +87,7 @@ enum YEP_COMPRESSION {
  * @param handle The name of the resource to search for
  * @return void* The data of the resource allocated into the heap (NULL if not found) 
  */
-struct yep_data_info yep_extract_data(char *file, char *handle);
+struct yep_data_info yep_extract_data(const char *file, const char *handle);
 
 #ifdef __linux__
 
@@ -156,7 +156,7 @@ struct yep_data_info {
  * 
  * !!! YOU MUST FREE THE SURFACE YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-SDL_Surface * yep_resource_image(char *handle);
+SDL_Surface * yep_resource_image(const char *handle);
 
 /**
  * @brief Load a json file stored inside of resources.yep
@@ -166,7 +166,7 @@ SDL_Surface * yep_resource_image(char *handle);
  * 
  * !!! You must json_decref the json_t when you are done with it. !!!
  */
-json_t * yep_resource_json(char *handle);
+json_t * yep_resource_json(const char *handle);
 
 /**
  * @brief Load a audio file stored inside of resources.yep
@@ -176,7 +176,7 @@ json_t * yep_resource_json(char *handle);
  * 
  * !!! YOU MUST FREE THE CHUNK YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-Mix_Chunk * yep_resource_audio(char *handle);
+Mix_Chunk * yep_resource_audio(const char *handle);
 
 /**
  * @brief Load a music file stored inside of resources.yep
@@ -186,7 +186,7 @@ Mix_Chunk * yep_resource_audio(char *handle);
  * 
  * !!! YOU MUST FREE THE MUSIC YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-Mix_Music * yep_resource_music(char *handle);
+Mix_Music * yep_resource_music(const char *handle);
 
 /**
  * @brief Load a font file stored inside of resources.yep
@@ -196,7 +196,7 @@ Mix_Music * yep_resource_music(char *handle);
  * 
  * !!! YOU MUST FREE THE FONT YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-TTF_Font * yep_resource_font(char *handle);
+TTF_Font * yep_resource_font(const char *handle);
 
 /**
  * @brief Load a misc file stored inside of resources.yep
@@ -206,22 +206,22 @@ TTF_Font * yep_resource_font(char *handle);
  * 
  * !!! YOU MUST FREE THE DATA YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-struct yep_data_info yep_resource_misc(char *handle);
+struct yep_data_info yep_resource_misc(const char *handle);
 
 /*
     Engine api as well
 */
 
-SDL_Surface * yep_engine_resource_image(char *handle);
+SDL_Surface * yep_engine_resource_image(const char *handle);
 
-json_t * yep_engine_resource_json(char *handle);
+json_t * yep_engine_resource_json(const char *handle);
 
-Mix_Chunk * yep_engine_resource_audio(char *handle);
+Mix_Chunk * yep_engine_resource_audio(const char *handle);
 
-Mix_Music * yep_engine_resource_music(char *handle);
+Mix_Music * yep_engine_resource_music(const char *handle);
 
-TTF_Font * yep_engine_resource_font(char * handle);
+TTF_Font * yep_engine_resource_font(const char * handle);
 
-struct yep_data_info yep_engine_resource_misc(char *handle);
+struct yep_data_info yep_engine_resource_misc(const char *handle);
 
 #endif // YEP_H

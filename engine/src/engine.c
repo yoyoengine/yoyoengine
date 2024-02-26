@@ -61,7 +61,7 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     ye_path_relative(char*) takes in a path relative to the game executable and returns the full path
 */
 
-char * ye_path(char * path){
+char * ye_path(const char * path){
     static char path_relative_buffer[512];
 
     // this is set at engine init so discourage calling before then
@@ -74,7 +74,7 @@ char * ye_path(char * path){
     return path_relative_buffer;
 }
 
-char * ye_path_resources(char * path){
+char * ye_path_resources(const char * path){
     static char path_relative_buffer_resources[512];
     
     // this is set at engine init so discourage calling before then

@@ -213,7 +213,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
  * @param handle The handle to the tilemap source image (from loose or pack).
  * @param src The source rect of the tile.
  */
-void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, char * handle, SDL_Rect src);
+void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, const char * handle, SDL_Rect src);
 
 /**
  * @brief Removes a renderer component from an entity.

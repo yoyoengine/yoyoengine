@@ -48,7 +48,7 @@ void _ye_mixer_engine_cache(char *handle);
  * @param handle 
  * @return Mix_Chunk* 
  */
-Mix_Chunk *ye_audio(char *handle);
+Mix_Chunk *ye_audio(const char *handle);
 
 /*
     AUDIO SYSTEM
@@ -57,8 +57,8 @@ Mix_Chunk *ye_audio(char *handle);
 void ye_init_audio();
 void ye_shutdown_audio();
 
-int ye_play_sound(char *handle, int loops, float volume_scale);
-void ye_play_music(char *handle, int loops, float volume_scale);
+int ye_play_sound(const char *handle, int loops, float volume_scale);
+void ye_play_music(const char *handle, int loops, float volume_scale);
 
 /**
  * @brief Set the volume for the entire audio system

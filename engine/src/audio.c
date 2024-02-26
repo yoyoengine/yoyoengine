@@ -68,7 +68,7 @@ void ye_purge_mixer_cache(){
 /*
     This is intended to cache a brand NEW item, and that we've already checked for duplicates
 */
-void ye_mixer_cache(char *handle)
+void ye_mixer_cache(const char *handle)
 {
     // create struct to cache
     struct ye_mixer_cache_item *item = malloc(sizeof(struct ye_mixer_cache_item));
@@ -132,7 +132,7 @@ void _ye_mixer_engine_cache(char *handle)
 /*
     Api to return a mix chunk from a handle, and load it if not existant
 */
-Mix_Chunk *ye_audio(char *handle){
+Mix_Chunk *ye_audio(const char *handle){
     // check if the cache has an existing chunk by this handle
     struct ye_mixer_cache_item *item = NULL;
     HASH_FIND_STR(mix_cache_table, handle, item);
@@ -246,7 +246,7 @@ void ye_finished_channel(int channel){
     Play a sound by its handle.
     retrieves from cache, creates new channel for it
 */
-int ye_play_sound(char *handle, int loops, float volume_scale){ // loops will be decreased and passed to the channel finished callback to replay
+int ye_play_sound(const char *handle, int loops, float volume_scale){ // loops will be decreased and passed to the channel finished callback to replay
     // retrieve the chunk from the mixer cache
     Mix_Chunk *chunk = ye_audio(handle);
 
@@ -284,7 +284,7 @@ int ye_play_sound(char *handle, int loops, float volume_scale){ // loops will be
     Currently, I disabled freeing that data that the rwops for ye_music
     uses because it caused a windows page fault. TODO: investigate
 */
-void ye_play_music(char *handle, int loops, float volume_scale){
+void ye_play_music(const char *handle, int loops, float volume_scale){
 
     // #ifdef __linux__
 

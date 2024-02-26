@@ -62,7 +62,7 @@ void _extract_signature(struct ye_component_lua_script *script, const char *func
     lua_pop(L, 1); // Pop the function or nil value from the stack
 }
 
-bool ye_add_lua_script_component(struct ye_entity *entity, char *handle){
+bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
     ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
     // allocate and assign the component

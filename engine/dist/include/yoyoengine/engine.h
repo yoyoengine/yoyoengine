@@ -78,7 +78,7 @@ char* ye_get_engine_resource_static(const char *sub_path);
  * 
  * NOTE: this only persists until the next call to this function. You must make your own copies if you need it to stick around
  */
-char * ye_path(char * path);
+char * ye_path(const char * path);
 
 /**
  * @brief THIS IS NOT FOR USE WITH RUNTIME RESOURCES. This is for editor resources only.
@@ -86,7 +86,7 @@ char * ye_path(char * path);
  * @param path The path relative to the project resources folder
  * @return char* The constructed path
  */
-char * ye_path_resources(char * path);
+char * ye_path_resources(const char * path);
 
 /**
  * @brief This struct holds references to callbacks declared and assigned through C scripting.
