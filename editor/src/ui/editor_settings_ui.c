@@ -47,6 +47,7 @@ int project_framecap; // -1 for vsync, else 0-MAXINT
 int sdl_quality_hint; // 0-2 (nearest, linear, anisotropic)
 char _project_framecap_label[10];
 char project_window_title[256];
+char project_icon_path[256];
 bool project_stretch_viewport; // true or false
 bool project_stretch_resolution; // true or false
 
@@ -97,6 +98,16 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The title of the game window.");
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, project_window_title, 256, nk_filter_default);
+
+            /*
+                Icon Path
+            */
+            nk_layout_row_dynamic(ctx, 25, 2);
+            bounds = nk_widget_bounds(ctx);
+            nk_label(ctx, "Icon Path:", NK_TEXT_LEFT);
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "The path (from inside resources/) to the icon file you want to use for the game window.");
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, project_icon_path, 256, nk_filter_default);
 
             /*
                 Entry Scene
@@ -279,6 +290,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(SETTINGS, "name", json_string(project_name));
                 json_object_set_new(SETTINGS, "entry_scene", json_string(project_entry_scene));
                 json_object_set_new(SETTINGS, "window_title", json_string(project_window_title));
+                json_object_set_new(SETTINGS, "icon_path", json_string(project_icon_path));
                 json_object_set_new(SETTINGS, "log_level", json_integer(project_log_level));
                 json_object_set_new(SETTINGS, "volume", json_integer(project_volume));
                 json_object_set_new(SETTINGS, "debug_mode", project_debug_mode ? json_true() : json_false());
@@ -410,6 +422,15 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     }
                     strncpy(project_window_title, (char*)tmp_project_window_title, (size_t)sizeof(project_window_title) - 1);
                     project_window_title[(size_t)sizeof(project_window_title) - 1] = '\0'; // null terminate just in case TODO: write helper?
+
+                    /*
+                        Icon Path
+                    */
+                    const char * tmp_project_icon_path;
+                    if(!ye_json_string(SETTINGS, "icon_path", &tmp_project_icon_path)){
+                        strcpy((char*)tmp_project_icon_path, "");
+                    }
+                    strncpy(project_icon_path, (char*)tmp_project_icon_path, (size_t)sizeof(project_icon_path) - 1);
 
                     /*
                         Log Level

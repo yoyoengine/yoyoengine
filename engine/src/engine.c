@@ -251,6 +251,11 @@ float ye_delta_time(){
 void set_setting_string(char* key, char** value, json_t* settings) {
     const char * json_value;
     if (ye_json_string(settings, key, &json_value)) {
+
+        // if the value is empty, we don't want to set it
+        if(strcmp(json_value, "") == 0)
+            return;
+
         /*
             The existing value already exists as a default, so we need to free it
         */
