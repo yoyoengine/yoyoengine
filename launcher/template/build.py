@@ -25,7 +25,7 @@ import json
 # returns whether we specified some cli args
 def parse_args():
     args = sys.argv[1:]
-    return '--run' in args, '--clean' in args, '--delete-cache' in args
+    return '--run' in args, '--run-only' in args, '--clean' in args, '--delete-cache' in args
 
 # cleans a directory, excluding a single file or directory
 def clean_directory(path, exclude):
@@ -42,7 +42,7 @@ class YoyoEngineBuildSystem:
         self.script_version = script_version
 
         # get cli args
-        self.run_flag, self.clean_flag, self.delete_cache = parse_args()
+        self.run_flag, self.runonly_flag, self.clean_flag, self.delete_cache = parse_args()
         
         # chdir to where the script is located (to access things relatively)
         self.script_location = os.path.dirname(os.path.abspath(__file__))
@@ -59,12 +59,16 @@ class YoyoEngineBuildSystem:
         self.game_name = self.game_settings["name"].replace(" ", "_")
         self.game_platform = self.build_settings["platform"]
         self.build_cflags = self.build_settings["cflags"]
+        self.build_rc_path = self.build_settings["rc_path"]
+        
+        if self.runonly_flag:
+            return
 
         # add the -mwindows flag to disable console TODO: only if not debug build which isnt checked now
         if self.game_platform == "windows":
             self.build_cflags += " -mwindows"
         elif self.game_platform == "emscripten":
-            self.build_cflags += " --emrun"
+            self.build_cflags += " --emrun -Wcast-function-type -Wbad-function-cast"
         
         # if self.game_settings["debug_mode"] == True, add -g, -Wall, and -Wextra to the build flags
         if self.build_settings["build_mode"] == "debug":
@@ -159,7 +163,15 @@ class YoyoEngineBuildSystem:
 
         file(GLOB CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
 
-        add_executable({self.game_name} ${{SOURCES}} ${{CUSTOM_SOURCES}})
+        ## rpath on linux ##
+        SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+        SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+        SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
+        ####################
+
+        ## app icon stuff ##
+        add_executable({self.game_name} ${{SOURCES}} ${{CUSTOM_SOURCES}} {self.script_location}/{self.build_rc_path})
+        ####################
 
         # TODO: add optimization flags and stripping for binary here
 
@@ -354,7 +366,7 @@ class YoyoEngineBuildSystem:
                 else:
                     print("[YOYO BUILD] Error: I have not supported building games not on linux... so you should not be seeing this message at all.")
             elif(self.game_platform == "emscripten"):
-                subprocess.Popen(["emrun", "./bin/Emscripten/"+self.game_name+".html"])
+                subprocess.Popen(["emrun", "./bin/Emscripten/index.html"])
 
     
 if __name__ == "__main__":
@@ -368,10 +380,18 @@ if __name__ == "__main__":
     print("Game Platform: " + builder.game_platform)
     print("Build C Flags: " + builder.build_cflags)
     print("----------------------------------")
-        
-    builder.configure()
-    builder.build()
-    builder.run()
+    
+    if not builder.runonly_flag:
+        builder.configure()
+        builder.build()
+        builder.run()
+    else:
+        builder.run_flag = True
+
+        # chdir into the build folder
+        os.chdir("./build/out")
+
+        builder.run()
 
     print("----------------------------------")
     print("\033[92m" + "Build Successful!" + "\033[0m")

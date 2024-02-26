@@ -3,5 +3,6 @@
 
     "platform":"windows",
     "cflags":"-Wall -Wextra -g",
-    "engine_build_path":"/home/ryan/repos/yoyoengine/engine/build"
+    "engine_build_path":"/home/ryan/repos/yoyoengine/engine/build",
+    "rc_path":""
 }

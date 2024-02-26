@@ -79,7 +79,7 @@ static void mainloop(void){
             yoyo_post_shutdown();
         #endif
 
-        printf("Game exited successfully\n");
+        // printf("Game exited successfully\n");
         exit(0);
     }
 }
@@ -89,7 +89,11 @@ static void mainloop(void){
 
     THIS CONTAINS THE GAME LOOP
 */
+#ifdef __WIN32__
+int main(int argc, char *argv[]){
+#else
 void main(void){
+#endif
     YG_RUNNING = true;
 
     ye_logf(info, "Starting init\n");

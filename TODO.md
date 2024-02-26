@@ -774,8 +774,6 @@ fix the stretch alignment
 
 ## bugs with things
 
-animation creation script sometimes writes wrong image height
-
 changing wrap length should visually show cutoff or update text TODO
 
 ## outlined text inspector
@@ -788,12 +786,8 @@ track editor camera position before scene reload and move it back to smae spot a
 
 multi select and duplicate and transform many at once
 
-icon path needs exposed through editor - could wait for nuklear to preview this as well
-icon and other changes were made in build.py for vannie for linking new libs and win32 icons, merge these into stable engine build but agnostically
-
-new icon system do with editor
-
-nk_image rob responded
+nuklear preview the .rc icon? could eventually be a cool addition
+allow linking custom user libs without modifying build.py directly - maybe this ends up being some way to let them add cmake commands themselves
 
 ## audio shutdown and reinit is cooked
 
@@ -806,10 +800,6 @@ keepalive macro embedded in engine timer system
 you made a txt file in kate with ideas
 could do the unreal thing now. might not be worth the effort for drag tho
 
-## urgent
-
-you still need to bring over a lot of the improvements from raise a vannie including the changes to just that build.py
-
 ## cool others
 
 darwin builds
@@ -817,3 +807,11 @@ darwin builds
 emscripten wasm, is it possible to make savedata system store in browser?
 
 issues with compiler optimization is probably casts. go through and fix them all.
+
+## pre-acerola jam checklist
+
+- you should maintain the codebase and get rid of compiler errors
+- I think rounding or cast errors with size_t or other are the cause of the compiler optimizations breaking animation system
+- save build additional c flags per platform, so switching to windows will stash previous ones and restore them correctly when target changed
+- maybe build.yoyo and settings.yoyo should merge into one settings.yoyo, feels weird that they are seperate
+- actually make it not rebuild EVERYTHING with cmake

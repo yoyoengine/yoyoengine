@@ -59,6 +59,7 @@ int original_build_platform_int; // tracks the target platform when opening sett
 int build_platform_int;
 int build_mode_int;
 char build_engine_build_path[256];
+char build_rc_path[256];
 
 /*
     Helper functions
@@ -243,6 +244,16 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_additional_cflags, 256, nk_filter_default);
 
             /*
+                .rc path (string input)
+            */
+            nk_layout_row_dynamic(ctx, 25, 2);
+            bounds = nk_widget_bounds(ctx);
+            nk_label(ctx, ".rc Path", NK_TEXT_LEFT);
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "The RELATIVE (to the project root) path to the .rc file you want to use, defines the .exe icon on windows.");
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_rc_path, 256, nk_filter_default);
+
+            /*
                 Build Mode (dropdown for debug, release)
             */
             nk_layout_row_dynamic(ctx, 25, 2);
@@ -288,6 +299,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 // update build keys, then save
                 json_object_set_new(BUILD_FILE, "build_mode", json_string(build_modes[build_mode_int]));
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
+                json_object_set_new(BUILD_FILE, "rc_path", json_string(build_rc_path));
                 json_object_set_new(BUILD_FILE, "platform", json_string(platforms[build_platform_int]));
                 json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
                 json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
@@ -498,6 +510,16 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         build_additional_cflags[(size_t)sizeof(build_additional_cflags) - 1] = '\0'; // null terminate just in case TODO: write helper?
 
                         /*
+                            .rc path
+                        */
+                        const char * tmp_build_rc_path;
+                        if(!ye_json_string(BUILD_FILE, "rc_path", &tmp_build_rc_path)){
+                            strcpy((char*)tmp_build_rc_path,"");
+                        }
+                        strncpy(build_rc_path, (char*)tmp_build_rc_path, (size_t)sizeof(build_rc_path) - 1);
+                        build_rc_path[(size_t)sizeof(build_rc_path) - 1] = '\0'; // null terminate just in case TODO: write helper?
+
+                        /*
                             Build mode
                         */
                         char * tmp_build_mode;
@@ -549,6 +571,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                     else{
                         ye_logf(error, "build.yoyo not found.");
                         strcpy((char*)build_additional_cflags,"");
+                        strcpy((char*)build_rc_path,"");
                         strcpy((char*)build_platform,"linux");
                         build_platform_int = 0;
                         strcpy((char*)build_engine_build_path,"");
