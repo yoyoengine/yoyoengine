@@ -16,7 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/utils.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/collider.h>
 
 void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf rect){
     struct ye_component_collider *collider = malloc(sizeof(struct ye_component_collider));

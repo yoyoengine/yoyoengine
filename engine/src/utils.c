@@ -16,7 +16,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <math.h>
+
+#include <SDL2/SDL.h>
+
+#include <yoyoengine/utils.h>
+#include <yoyoengine/graphics.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit){
     SDL_Rect _bounds = ye_convert_rectf_rect(*bounds_f);

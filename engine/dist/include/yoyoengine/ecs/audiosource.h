@@ -25,7 +25,9 @@
 #ifndef YE_AUDIOSOURCE_H
 #define YE_AUDIOSOURCE_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/utils.h>
 
 struct ye_component_audiosource {
     bool active;            // whether or not the audio source is active

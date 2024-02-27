@@ -24,8 +24,6 @@
 #ifndef YE_ECS_H
 #define YE_ECS_H
 
-#include <yoyoengine/yoyoengine.h>
-#include <yoyoengine/utils.h>
 #include <stdbool.h>
 
 /*

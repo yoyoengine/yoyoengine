@@ -19,7 +19,10 @@
 #ifndef LUA_API_H
 #define LUA_API_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <lua/lua.h>
+// #include <lua/lualib.h>
+// #include <lua/lauxlib.h>
+#include <yoyoengine/ecs/lua_script.h>
 
 /**
  * @brief Takes in a lua state and registers the engine API with it.

@@ -30,7 +30,9 @@
 #ifndef YE_COLLIDER_H
 #define YE_COLLIDER_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/utils.h>
 
 /**
  * @brief A structure representing a collider component.

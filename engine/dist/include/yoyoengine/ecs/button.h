@@ -24,7 +24,12 @@
 #ifndef YE_BUTTON_H
 #define YE_BUTTON_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <SDL2/SDL.h>
+
+#include <yoyoengine/utils.h>
+#include <yoyoengine/ecs/ecs.h>
 
 struct ye_component_button {
     bool active;

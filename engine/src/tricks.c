@@ -16,9 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <lua/lua.h>
+
+#include <yoyoengine/tricks.h>
+#include <yoyoengine/logging.h>
 
 struct ye_trick_node * ye_tricks_head = NULL;
 

@@ -24,8 +24,8 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#ifndef nk
-#define nk
+#ifndef ye_nk
+#define ye_nk
 #include <Nuklear/nuklear.h>
 #endif
 

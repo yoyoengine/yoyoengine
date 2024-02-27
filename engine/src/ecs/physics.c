@@ -16,7 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/utils.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/ecs/transform.h>
 
 /*
     Physics component

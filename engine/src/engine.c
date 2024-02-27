@@ -25,7 +25,27 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#include <yoyoengine/yoyoengine.h>
+#include <jansson/jansson.h>
+
+#include <yoyoengine/ui.h>
+#include <yoyoengine/yep.h>
+#include <yoyoengine/scene.h>
+#include <yoyoengine/json.h>
+#include <yoyoengine/audio.h>
+#include <yoyoengine/timer.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/tricks.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/graphics.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/lua_script.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 // buffer to hold filepath strings
 // will be modified by getPath()

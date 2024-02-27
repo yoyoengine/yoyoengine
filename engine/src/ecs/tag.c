@@ -16,7 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/tag.h>
+
 
 void ye_add_tag_component(struct ye_entity *entity){
     if(entity->tag){

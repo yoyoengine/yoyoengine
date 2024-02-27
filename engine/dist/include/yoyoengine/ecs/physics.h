@@ -24,14 +24,15 @@
 #ifndef YE_PHYSICS_H
 #define YE_PHYSICS_H
 
-#include <yoyoengine/yoyoengine.h>
-
 /*
     Set a default of 10 substeps if the developer does not override it
 */
 #ifndef YE_PHYSICS_SUBSTEPS
     #define YE_PHYSICS_SUBSTEPS 10
 #endif
+
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
 
 /**
  * @brief Physics component structure

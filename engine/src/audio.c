@@ -17,8 +17,13 @@
 */
 
 #include <SDL_mixer.h>
+#include <uthash/uthash.h>
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/yep.h>
+#include <yoyoengine/audio.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 int totalChunks = 0;
 

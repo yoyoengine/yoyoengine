@@ -16,7 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <lua/lua.h>
+
+#include <yoyoengine/scene.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/lua_api.h>
 
 /*
     Bridge for lua talking to engine functions, its important that this

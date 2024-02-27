@@ -24,7 +24,7 @@
 #ifndef YE_TRANSFORM_H
 #define YE_TRANSFORM_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/ecs/ecs.h>
 
 /**
  * @brief The transform component

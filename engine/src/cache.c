@@ -16,8 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
 #include <string.h>
+
+#include <jansson/jansson.h>
+
+#include <yoyoengine/yep.h>
+#include <yoyoengine/json.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/renderer.h>
 
 /*
     Head nodes for our lists tracking cached resources

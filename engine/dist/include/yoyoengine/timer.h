@@ -25,7 +25,6 @@
 #define YE_TIMER_H
 
 #include <stdbool.h>
-#include <yoyoengine/yoyoengine.h>
 
 /**
  * @brief A timer that can be registered with the engine.

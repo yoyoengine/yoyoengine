@@ -20,7 +20,11 @@
     Please see json.h for implementation details and warnings as well as best practices
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <jansson/jansson.h>
+
+#include <yoyoengine/logging.h>
 
 #ifndef YE_JSON_WRITE_FLAGS
     #define YE_JSON_WRITE_FLAGS JSON_COMPACT

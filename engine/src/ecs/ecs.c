@@ -16,11 +16,25 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <SDL2/SDL.h>
+
+#include <yoyoengine/yep.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/tag.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/lua_script.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 // entity id counter (used to assign unique ids to entities)
 int eid = 0;

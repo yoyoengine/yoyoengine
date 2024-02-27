@@ -24,7 +24,17 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/ui.h>
+#include <yoyoengine/yep.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/tricks.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/lua_script.h>
 
 // define globals for file
 SDL_Window *pWindow = NULL;

@@ -24,7 +24,9 @@
 #ifndef YE_CAMERA_H
 #define YE_CAMERA_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <SDL2/SDL.h>
 
 /**
  * @brief The camera component

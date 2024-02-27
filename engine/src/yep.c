@@ -21,8 +21,9 @@
 
 #include <jansson/jansson.h> // jansson
 
-#include <yoyoengine/yoyoengine.h>
 #include <yoyoengine/yep.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
 
 #include <zlib.h>   // zlib compression
 

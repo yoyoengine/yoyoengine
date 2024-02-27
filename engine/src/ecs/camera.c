@@ -16,7 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/camera.h>
 
 void ye_set_camera(struct ye_entity *entity){
     YE_STATE.engine.target_camera = entity;

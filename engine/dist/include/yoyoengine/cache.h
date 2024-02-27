@@ -64,7 +64,10 @@
 #ifndef YE_CACHE_H
 #define YE_CACHE_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <jansson/jansson.h>
+#include "uthash/uthash.h"
 
 /**
  * @brief Pre-caches a scene.

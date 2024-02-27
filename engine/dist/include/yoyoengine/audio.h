@@ -24,6 +24,10 @@
 #ifndef YE_AUDIO_H
 #define YE_AUDIO_H
 
+#include <SDL_mixer.h>
+
+#include <uthash/uthash.h>
+
 // counter for audio chunks
 extern int totalChunks;
 

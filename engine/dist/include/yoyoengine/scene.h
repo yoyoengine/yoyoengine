@@ -24,7 +24,7 @@
 #ifndef YE_SCENE_H
 #define YE_SCENE_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
 
 /**
  * @brief Initializes the scene manager

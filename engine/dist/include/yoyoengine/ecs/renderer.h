@@ -24,7 +24,12 @@
 #ifndef YE_RENDERER_H
 #define YE_RENDERER_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
+#include <yoyoengine/utils.h>
 
 /**
  * @enum ye_component_renderer_type

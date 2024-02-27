@@ -16,7 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stddef.h>
+#include <stdlib.h>
+
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/transform.h>
 
 void ye_add_transform_component(struct ye_entity *entity, int x,int y){
     entity->transform = malloc(sizeof(struct ye_component_transform));

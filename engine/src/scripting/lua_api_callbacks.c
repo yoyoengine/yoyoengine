@@ -16,7 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <lua/lua.h>
+#include <lua/lualib.h>
+#include <lua/lauxlib.h>
+
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/lua_script.h>
 
 bool ye_run_lua_callback(struct ye_component_lua_script *script, int callback_ref, const char *callback_name) {
     lua_State *L = script->state;

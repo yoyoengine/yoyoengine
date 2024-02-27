@@ -16,7 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <lua/lua.h>
+
+#include <yoyoengine/yep.h>
+#include <yoyoengine/tricks.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/lua_api.h>
+#include <yoyoengine/ecs/lua_script.h>
 
 // marcro for getting the state
 // #define ls_state entity->lua_script->state

@@ -25,8 +25,11 @@
 #include <assert.h>
 #include <limits.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include <SDL2/SDL.h>
+
+#include <yoyoengine/ui.h>
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -39,15 +42,19 @@
 #define NK_SDL_RENDERER_IMPLEMENTATION
 #define NK_INCLUDE_STANDARD_BOOL
 
-#ifndef nk
-#define nk
+#ifndef ye_nk
+#define ye_nk
 #include <Nuklear/nuklear.h>
 #endif
 
 #include <Nuklear/nuklear_sdl_renderer.h>
 #include <Nuklear/style.h>
 
-#include <yoyoengine/yoyoengine.h>
+#include <yoyoengine/yep.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/transform.h>
 
 #define MAX_UI_COMPONENTS 30
 #define MAX_KEY_LENGTH 100

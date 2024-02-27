@@ -24,7 +24,8 @@
 #ifndef YE_TAG_H
 #define YE_TAG_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
 
 #define YE_TAG_MAX_NUMBER 10
 #define YE_TAG_MAX_LENGTH 20

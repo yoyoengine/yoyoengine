@@ -33,10 +33,8 @@
 #endif
 
 #include <jansson/jansson.h> // jansson
-
-#include <yoyoengine/yoyoengine.h>
-
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 /*
     Details on the file format:

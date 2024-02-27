@@ -24,7 +24,8 @@
 #ifndef YE_LUA_SCRIPT_H
 #define YE_LUA_SCRIPT_H
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+#include <yoyoengine/ecs/ecs.h>
 
 #include <lua/lua.h>
 #include <lua/lualib.h>

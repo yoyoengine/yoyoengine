@@ -16,9 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <string.h>
 
 #include <SDL_mixer.h>
+
+#include <yoyoengine/audio.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range){
     /*

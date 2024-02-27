@@ -33,6 +33,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include <SDL2/SDL.h>
 

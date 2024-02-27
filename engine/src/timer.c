@@ -16,7 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stddef.h>
+#include <stdlib.h>
+
+#include <SDL2/SDL.h>
+
+#include <yoyoengine/timer.h>
+#include <yoyoengine/logging.h>
 
 // list to track timers
 struct ye_timer_node * timers;

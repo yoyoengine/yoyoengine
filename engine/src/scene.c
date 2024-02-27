@@ -16,9 +16,29 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#include <jansson/jansson.h>
+
+#include <yoyoengine/yep.h>
+#include <yoyoengine/json.h>
+#include <yoyoengine/scene.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/audio.h>
+#include <yoyoengine/utils.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/tag.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/lua_script.h>
+#include <yoyoengine/ecs/audiosource.h>
+
 
 void ye_init_scene_manager(){
     YE_STATE.runtime.scene_name = NULL;

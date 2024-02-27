@@ -19,12 +19,21 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
-#include <yoyoengine/yoyoengine.h>
+#ifndef ye_nk
+#define ye_nk
+#include <Nuklear/nuklear.h>
+#endif
 
 #ifdef _WIN32
-#include <windows.h>
+    #include <windows.h>
 #endif
+
+#include <yoyoengine/scene.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/logging.h>
+#include <yoyoengine/ecs/ecs.h>
 
 // ANSI escape codes for color.
 #define RED     "\x1b[31m"

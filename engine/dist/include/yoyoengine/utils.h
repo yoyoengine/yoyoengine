@@ -24,8 +24,11 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdbool.h>
+
 #include <SDL2/SDL.h>
 
+#include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/logging.h>
 
 /**

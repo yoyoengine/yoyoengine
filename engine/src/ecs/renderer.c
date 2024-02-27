@@ -16,7 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <jansson/jansson.h>
+
+#include <yoyoengine/yep.h>
+#include <yoyoengine/json.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/engine.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/collider.h>
 
 void ye_update_renderer_component(struct ye_entity *entity){
     /*The purpose of this function is to be invoked when we know we have changed some internal variables of the renderer, and need to recompute the outputted texture*/

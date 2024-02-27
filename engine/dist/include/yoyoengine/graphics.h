@@ -24,11 +24,10 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <stdbool.h>
-
-#include <SDL2/SDL_ttf.h>
-
-#include <yoyoengine/yoyoengine.h>
+#include <SDL2/SDL.h>           // SDL_Rect, SDL_Texture, SDL_Color
+#include <stdbool.h>            // bool
+#include <SDL2/SDL_ttf.h>       // TTF_Font
+#include <yoyoengine/engine.h>  // struct ScreenSize
 
 /**
  * @brief Converts a float value to real pixel width.

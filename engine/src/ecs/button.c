@@ -16,7 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <yoyoengine/yoyoengine.h>
+#include <stdbool.h>
+
+#include <yoyoengine/utils.h>
+#include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ecs/button.h>
 
 /*
     Old SCDG impl is practically useless, but in repo history can still be found before this commit.
