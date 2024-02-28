@@ -40,8 +40,8 @@
 #include "editor_panels.h"
 #include "editor.h"
 #include "editor_input.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include <Nuklear/style.h>
 #include <Nuklear/nuklear_sdl_renderer.h>
 
@@ -211,6 +211,11 @@ int main(int argc, char **argv) {
     tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_eye.png"));
     SDL_Texture *eye = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
     editor_icons.eye = nk_image_ptr(eye);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_buildreconfigure.png"));
+    SDL_Texture *buildreconfigure = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.buildreconfigure = nk_image_ptr(buildreconfigure);
     SDL_FreeSurface(tmp_sur);
 
     ///////////////////////

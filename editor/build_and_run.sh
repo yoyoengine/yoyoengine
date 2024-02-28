@@ -5,5 +5,8 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-./build_linux.sh
-./build/bin/Linux/yoyoeditor "$1"
+PROJECT_PATH=$1
+shift
+
+./build_linux.sh $@
+./build/bin/Linux/yoyoeditor "$PROJECT_PATH"

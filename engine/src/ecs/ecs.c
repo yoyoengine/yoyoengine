@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/cache.h>

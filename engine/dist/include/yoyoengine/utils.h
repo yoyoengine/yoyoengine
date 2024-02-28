@@ -26,7 +26,7 @@
 
 #include <stdbool.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/logging.h>

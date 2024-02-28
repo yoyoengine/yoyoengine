@@ -600,14 +600,6 @@ heiarchy panel put things in a tab thing from overview nuklear so they can scrol
 
 editor keep last open scene saved when reopened
 
-## button component
-
-basically a collider.
-has some internal state which can be checked with scripts or c.
-not callback based, you need to poll for its current state
-
-released could come later pretty easily, SDL_MOUSEBUTTONUP
-
 ## screen
 
 better caching and tracking of screen size and aspect ratios and other scaling letterboxing things so we dont recompute it in like ten places
@@ -661,28 +653,3 @@ issues with compiler optimization is probably casts. go through and fix them all
 - I think rounding or cast errors with size_t or other are the cause of the compiler optimizations breaking animation system
 - save build additional c flags per platform, so switching to windows will stash previous ones and restore them correctly when target changed
 - maybe build.yoyo and settings.yoyo should merge into one settings.yoyo, feels weird that they are seperate
-- actually make it not rebuild EVERYTHING with cmake
-
-## header format
-
-include what is used in that HEADER or that FILE, only what we need. do it in this format:
-
-STDLIB STUFF
-
-EACH DEPENDANCT
-
-SPACED BETWEEN
-SPACED BUT THIS ONE IS SAME AS SPACED BETWEEN
-
-THENYOYOENGINEDEPS
-BUNCHEDTOGETHERLIKETHIS
-
-## LEFT OFF
-
-MAYBE IF YOU FINISH THE HEADER SHIT IT WILL WORK AS IT SHOULD. SOMETHING ABOOUT THE NORMAL SOURCE WORKED WITH TEST CMAKE BUT WHEN ENGINE SOURCE MOVED IN SAME FILE WENT COOKED
-
-## FIX FOR HEADER BUG
-
-you are overwriting included dir headers every configure stage, no wonder it recompiles every object
-
-does running make autoconf when needed?

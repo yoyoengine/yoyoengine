@@ -33,8 +33,8 @@
 #endif
 
 #include <jansson.h> // jansson
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL_mixer.h>
+#include <SDL_ttf.h>
 
 /*
     Details on the file format:
@@ -90,7 +90,7 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle);
 #ifdef __linux__
 
 /**
- * @brief Packs a given directory into a .yep, based on its dir name
+ * @brief Packs a given directory into a .yep, if the target directory is newer than the last pack, based on its dir name
  * 
  * @param directory The directory to pack (no spaces)
  * @param output_name The name of the output file (must include extension)
@@ -98,6 +98,16 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle);
  * @return false Failure
  */
 bool yep_pack_directory(char *directory_path, char *output_name);
+
+/**
+ * @brief ALWAYS packs a given directory into a .yep, based on its dir name
+ * 
+ * @param directory The directory to pack (no spaces)
+ * @param output_name The name of the output file (must include extension)
+ * @return true Success
+ * @return false Failure
+ */
+bool yep_force_pack_directory(char *directory_path, char *output_name);
 
 #endif
 

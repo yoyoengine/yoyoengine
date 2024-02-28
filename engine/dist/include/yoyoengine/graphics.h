@@ -24,9 +24,9 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <SDL2/SDL.h>           // SDL_Rect, SDL_Texture, SDL_Color
+#include <SDL.h>           // SDL_Rect, SDL_Texture, SDL_Color
 #include <stdbool.h>            // bool
-#include <SDL2/SDL_ttf.h>       // TTF_Font
+#include <SDL_ttf.h>       // TTF_Font
 #include <yoyoengine/engine.h>  // struct ScreenSize
 
 /**

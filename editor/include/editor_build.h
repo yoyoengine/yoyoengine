@@ -19,12 +19,16 @@
 #ifndef YE_EDITOR_BUILD_H
 #define YE_EDITOR_BUILD_H
 
-void editor_build_packs();
+#include <stdbool.h>
+
+void editor_build_packs(bool force);
 
 void editor_build();
 
 void editor_build_and_run();
 
 void editor_run();
+
+void editor_build_reconfigure();
 
 #endif

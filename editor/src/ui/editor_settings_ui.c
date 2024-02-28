@@ -343,15 +343,22 @@ void ye_editor_paint_project(struct nk_context *ctx){
 
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label_colored(ctx, "Build Options:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
-            nk_layout_row_static(ctx, 55, 55, 4);
+            nk_layout_row_static(ctx, 55, 55, 5);
 
             bounds = nk_widget_bounds(ctx);
             if(nk_button_image(ctx, editor_icons.pack)){
-                editor_build_packs();
+                editor_build_packs(true);
             }
             if (nk_input_is_mouse_hovering_rect(in, bounds))
-                nk_tooltip(ctx, "Rebuild the yep packs");
+                nk_tooltip(ctx, "Rebuild (FORCED) the yep packs");
 
+            bounds = nk_widget_bounds(ctx);
+            if(nk_button_image(ctx, editor_icons.buildreconfigure)){
+                editor_build_reconfigure();
+            }
+            if (nk_input_is_mouse_hovering_rect(in, bounds))
+                nk_tooltip(ctx, "Reconfigure and build the project");
+            
             bounds = nk_widget_bounds(ctx);
             if(nk_button_image(ctx, editor_icons.build)){
                 editor_build();

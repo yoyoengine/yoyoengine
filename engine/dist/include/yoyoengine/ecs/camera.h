@@ -26,7 +26,7 @@
 
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 /**
  * @brief The camera component

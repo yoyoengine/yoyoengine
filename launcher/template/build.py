@@ -25,7 +25,7 @@ import json
 # returns whether we specified some cli args
 def parse_args():
     args = sys.argv[1:]
-    return '--run' in args, '--run-only' in args, '--clean' in args, '--delete-cache' in args
+    return '--run' in args, '--run-only' in args, '--clean' in args, '--delete-cache' in args, '--reconfigure' in args
 
 # cleans a directory, excluding a single file or directory
 def clean_directory(path, exclude):
@@ -42,7 +42,7 @@ class YoyoEngineBuildSystem:
         self.script_version = script_version
 
         # get cli args
-        self.run_flag, self.runonly_flag, self.clean_flag, self.delete_cache = parse_args()
+        self.run_flag, self.runonly_flag, self.clean_flag, self.delete_cache, self.reconfigure = parse_args()
         
         # chdir to where the script is located (to access things relatively)
         self.script_location = os.path.dirname(os.path.abspath(__file__))
@@ -121,6 +121,10 @@ class YoyoEngineBuildSystem:
         elif self.game_platform == "emscripten":
             self.binary_dir = "bin/Emscripten"
             self.cmake_platform_name = "Emscripten"
+        
+        # check if cmake artifacts exist in the build folder, otherwise set self.reconfigure to True
+        if not os.path.exists("./build/CMakeLists.txt"):
+            self.reconfigure = True
     
     def configure(self):
         # write our CMakeLists.txt file and run cmake .. to configure
@@ -382,7 +386,11 @@ if __name__ == "__main__":
     print("----------------------------------")
     
     if not builder.runonly_flag:
-        builder.configure()
+        if(builder.reconfigure == True):
+            builder.configure()
+        else:
+            os.chdir("./build/out")
+
         builder.build()
         builder.run()
     else:

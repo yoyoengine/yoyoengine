@@ -64,8 +64,8 @@
 #ifndef YE_CACHE_H
 #define YE_CACHE_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include <jansson.h>
 #include "uthash/uthash.h"
 

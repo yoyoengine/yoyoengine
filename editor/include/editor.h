@@ -72,6 +72,7 @@ struct edicons {
     struct nk_image pack;
     struct nk_image game;
     struct nk_image eye;
+    struct nk_image buildreconfigure;
 };
 
 extern struct edicons editor_icons;

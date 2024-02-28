@@ -18,7 +18,7 @@
 
 #include <math.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/utils.h>
 #include <yoyoengine/graphics.h>

@@ -16,7 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <SDL2/SDL_image.h>
+#include <stdbool.h>
+
+#include <SDL_image.h>
 #include <SDL_mixer.h>
 
 #include <jansson.h> // jansson
@@ -112,6 +114,33 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
     }
 
     return 0;
+}
+
+/*
+    ============================= TIMESTAMP TRACKING =============================
+*/
+
+bool is_dir_outofdate(const char *target_directory, const char *yep_file_path){
+    // get the last modified time of the directory
+    struct stat dir_stat;
+    if(stat(target_directory, &dir_stat) != 0){
+        ye_logf(error,"Error: could not get last modified time of directory %s\n", target_directory);
+        return false;
+    }
+
+    // get the last modified time of the yep file
+    struct stat yep_stat;
+    if(stat(yep_file_path, &yep_stat) != 0){
+        ye_logf(error,"Error: could not get last modified time of yep file %s\n", yep_file_path);
+        return false;
+    }
+
+    // if the directory is newer than the yep file, return true
+    if(dir_stat.st_mtime > yep_stat.st_mtime){
+        return true;
+    }
+
+    return false;
 }
 
 /*
@@ -547,7 +576,7 @@ void write_pack_file(FILE *pack_file) {
     yep_pack_list.entry_count = 0;
 }
 
-bool yep_pack_directory(char *directory_path, char *output_name){
+bool _yep_pack_directory(char *directory_path, char *output_name){
     ye_logf(debug,"Packing directory %s...\n", directory_path);
 
     // call walk directory (first arg is root, second is current - this is for recursive relative path knowledge)
@@ -626,6 +655,21 @@ bool yep_pack_directory(char *directory_path, char *output_name){
     ye_logf(debug,"Done!\n");
 
     return true;
+}
+
+bool yep_force_pack_directory(char *directory_path, char *output_name){
+    ye_logf(debug,"Forcing pack of directory \"%s\"...\n", directory_path);
+    return _yep_pack_directory(directory_path, output_name);
+}
+
+bool yep_pack_directory(char *directory_path, char *output_name){
+    if(is_dir_outofdate(directory_path, output_name)){
+        ye_logf(debug,"Target directory \"%s\" is out of date, packing...\n", directory_path);
+        return _yep_pack_directory(directory_path, output_name);
+    } else {
+        ye_logf(debug,"Target directory \"%s\" is up to date, skipping...\n", directory_path);
+        return true;
+    }
 }
 
 #endif

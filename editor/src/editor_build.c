@@ -16,9 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdbool.h>
+
 #include <yoyoengine/yoyoengine.h>
 
-void editor_build_packs(){
+void editor_build_packs(bool force){
     // engine resources base dir
     char *_engine_resources = ye_get_engine_resource_static("");
     char *engine_resources = malloc(strlen(_engine_resources) + 1);
@@ -39,11 +41,17 @@ void editor_build_packs(){
     char *resources_yep = malloc(strlen(_resources_yep) + 1);
     strcpy(resources_yep, _resources_yep);
 
-    // pack the /engine_resources into a .yep file
-    yep_pack_directory(engine_resources, engine_yep);
+    if(force){
+        yep_force_pack_directory(engine_resources, engine_yep);
+        yep_force_pack_directory(resources, resources_yep);
+    }
+    else{
+        // pack the /engine_resources into a .yep file
+        yep_pack_directory(engine_resources, engine_yep);
 
-    // pack the /resources into a .yep file
-    yep_pack_directory(resources, resources_yep);
+        // pack the /resources into a .yep file
+        yep_pack_directory(resources, resources_yep);
+    }
 
     // free the memory
     free(engine_resources);
@@ -56,7 +64,7 @@ void editor_build_packs(){
 
 void editor_build(){
 
-    editor_build_packs();    
+    editor_build_packs(false);    
 
     // call the build script
     char command[256];
@@ -67,7 +75,7 @@ void editor_build(){
 
 void editor_build_and_run(){
 
-    editor_build_packs();
+    editor_build_packs(false);
 
     // call the build script
     char command[256];
@@ -77,8 +85,21 @@ void editor_build_and_run(){
 
 void editor_run(){
 
+    // TODO: do we want pack rebuild on run only? its pretty cheap if we dont change any files
+    editor_build_packs(false);
+
     // call the build script
     char command[256];
     snprintf(command, sizeof(command), "python3 -u \"%s\" --run-only", ye_path("build.py"));
+    system(command);
+}
+
+void editor_build_reconfigure(){
+
+    editor_build_packs(false);
+
+    // call the build script
+    char command[256];
+    snprintf(command, sizeof(command), "python3 -u \"%s\" --reconfigure", ye_path("build.py"));
     system(command);
 }

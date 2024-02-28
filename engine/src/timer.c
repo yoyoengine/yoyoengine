@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/timer.h>
 #include <yoyoengine/logging.h>
