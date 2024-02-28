@@ -1,89 +1,5 @@
 # TODO
 
-## custom symbols/icons
-
-resources i found on custom symbols while i give up for now:
-
-```c
-  struct nk_image {nk_handle handle; nk_ushort w, h; nk_ushort region[4];};
-
-  nk_image_ptr(void *ptr)
-  {
-      struct nk_image s;
-      nk_zero(&s, sizeof(s));
-      NK_ASSERT(ptr);
-      s.handle.ptr = ptr;
-      s.w = 0; s.h = 0;
-      s.region[0] = 0;
-      s.region[1] = 0;
-      s.region[2] = 0;
-      s.region[3] = 0;
-      return s;
-  }
-
-  SDL_Surface *IMG_Load(const char *file)
-  {
-  #if __EMSCRIPTEN__
-      int w, h;
-      char *data;
-      SDL_Surface *surf;
-
-      data = emscripten_get_preloaded_image_data(file, &w, &h);
-      if (data != NULL) {
-          surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
-          if (surf != NULL) {
-              SDL_memcpy(surf->pixels, data, w * h * 4);
-          }
-          free(data); /* This should NOT be SDL_free() */
-          return surf;
-      }
-  #endif
-
-      SDL_RWops *src = SDL_RWFromFile(file, "rb");
-      const char *ext = SDL_strrchr(file, '.');
-      if (ext) {
-          ext++;
-      }
-      if (!src) {
-          /* The error message has been set in SDL_RWFromFile */
-          return NULL;
-      }
-      return IMG_LoadTyped_RW(src, SDL_TRUE, ext);
-  }
-
-  //BROKEN CHATGPT SNIP
-  // static struct nk_image icon_load(const char *filename, SDL_Renderer* renderer) {
-  //     SDL_Texture *texture = NULL;
-  //     SDL_Surface* surface = IMG_Load(filename);
-  //     if (!surface) {
-  //         // Handle loading error
-  //         printf("[SDL]: failed to load image: %s", filename);
-  //     }
-
-  //     // Create a texture from the loaded surface
-  //     texture = SDL_CreateTextureFromSurface(renderer, surface);
-  //     SDL_FreeSurface(surface);  // Free the surface since we no longer need it
-
-  //     struct nk_image nuklearImage;
-  //     nuklearImage.handle.ptr = texture;  // Use the texture as the handle
-  //     nuklearImage.w = 150;
-  //     nuklearImage.h = 150;
-
-  //     return nuklearImage;
-  // }
-```
-
-<https://github.com/vurtun/nuklear/issues/476>
-<https://www.reddit.com/r/opengl/comments/ej43ct/help_with_nuklear_how_to_display_an_image_buffer/>
-<https://www.khronos.org/opengl/wiki/Image_Load_Store>
-<https://github.com/libsdl-org/SDL_image/blob/0eddb391e57a6b11a50dfdb61986315030480985/src/IMG.c#L277>
-<https://github.com/libsdl-org/SDL_image/blob/0eddb391e57a6b11a50dfdb61986315030480985/src/IMG.c#L217>
-<https://wiki.libsdl.org/SDL2/SDL_RWops>
-<https://gamedev.stackexchange.com/questions/131138/how-to-pass-png-image-data-directly-to-sdl>
-<https://github.com/vurtun/nuklear/blob/master/example/file_browser.c#L539>
-<https://www.reddit.com/r/opengl/comments/ehkmvv/help_displaying_image_buffer_in_nuklear/>
-<https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/overview.c#L2>
-
 ## confirmation pop ups notes
 
 ```c
@@ -162,10 +78,6 @@ way to tottally save state of editor, so that we could have a play button that w
 
 - who cares if we are reloading duplicate assets for the next scene, we could easily update this for fun later on, not force the optimization now when it doesnt matter. the engine is so lightweight anyways
 
-## wrapped text
-
-TTF_RenderText_Blended_Wrapped EXISTS HOLY SHIT
-
 ## considerations
 
 a very soft rule is please no spaces in any file names (they will break in most cases)
@@ -175,7 +87,6 @@ we wont see colliders or paintbounds on cameras because thery dont get rendererd
 ## json best practice
 
 - we currently mix fields of underscore and spaces, we need to pick one and rewrite all to be the same
-
 
 ## Documentation
 
@@ -237,10 +148,6 @@ also a console command to list cached textures by origin of type and name
 
 ## problems
 
-in the editor we are spamming new text textures by creating one every time we type, and this is bloating the cache (i think)
-
-TEXT IS UNIQUE IN ITS OWN RIGHT WHERE IT DOESNT NECCESSARIALLY NEED A CACHE FOR ITSELF, SO WE NEED TO BE MANAGING ITS MEMORY ISOLATED
-
 so I think the idea of the cache is alright, scenes are not massive so its ok to store literally anything that will ever be used in it. The thing is we dont get to intelligently destroy cache items becuase we have no idea how many things are actually using them. if you ever revisit the cache system you need to implement something like refcounting, which shouldnt be too bad since we have knowledge of the preprocessed scene file but can also add to the count in runtime if we get a cache hit
 
 deltatime cooldown on editor inputs before updating them
@@ -281,15 +188,11 @@ for all the stuff we only use debugging consider settings macros for it so its l
 
 ## logging
 
-debug file doesnt seem to write to in builds
-
 rename logging symbols everywhere to be YE_LL_LEVEL
 
 ## lua scripting
 
 read through references, you are doing bad practice for a lot of things like the naming convention
-
-whereever left off with lua scripting its pretty unhappy over some memory stuff, like the virtual address table handle lookups
 
 ## doing the plugin system
 
@@ -300,10 +203,6 @@ to call a lua function defined in a trick from lua scripts in engine it doesnt t
 maybe in the future include src url in trick.yoyo which can auto update if you ask it to
 
 something something inclues let other tricks build off of other tricks like modding sdks
-
-## plugin gui
-
-plugin panel in editor that lets you enable or disable plugins, shows their meta, add plugin from local file, install plugin from url (git)
 
 ## building
 
@@ -322,10 +221,6 @@ delete button push styles macro or function
 add to meta last edited and then track so if user adds new item we auto refresh next launch instead of foccing them to click refresh
 
 You need to majorly refactor this plugin manager. this is some of the worst code ive written in a long time. I need to stop programmign when I cant think straight.
-
-## TODO NEXT TIME
-
-literally the first thing on your list should be refactoring `editor_panel_tricks.c`, holy mother of bad code
 
 ## cmake build api shit
 
@@ -367,10 +262,6 @@ go through and make sure you turn off unnecesary build targets like all the test
 
 editor path is hard coded into settings now, rework this system
 
-## cmake gripes
-
-- fix so that it doesnt rebuild the entire thing EVERY TIME
-
 ## misc tricks thoughts
 
 ALSO TODO TOMORROW: editor build will freeze totally during the build. why?
@@ -380,10 +271,6 @@ TODO: fuck, i forgot to allow the game to link its own custom libraries. Force t
 ## editor improvements
 
 the editor should be a lot better about being project agnostic, so at any time we can open a new project, or maybe not. unity doesnt do that.
-
-## tricks thoughts ten billion
-
-maybe there is an issue with tricks callbacks running during startup? probably not
 
 ## todo tomorrow
 
@@ -400,10 +287,6 @@ this seems to lead to custom cmakelists.txt for the user to edit no matter what,
 ## trick auto updates
 
 would be really hype to identify if we downloaded a trick from github and click check for update
-
-## windows builds
-
-we want to link an icon to the exe
 
 ## yep files
 
@@ -502,25 +385,6 @@ SDL_Surface *image = IMG_Load(itr->fullpath);
 
 - icon rework kinda goes hand in hand with engine resource stuff because by default rn we are using an icon in egnine resources
 
-## key to uploading sdl images to nuklear?
-
-```c
-NK_INTERN void
-nk_sdl_device_upload_atlas(const void *image, int width, int height)
-{
-    struct nk_sdl_device *dev = &sdl.ogl;
-
-    SDL_Texture *g_SDLFontTexture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, height);
-    if (g_SDLFontTexture == NULL) {
-        SDL_Log("error creating texture");
-        return;
-    }
-    SDL_UpdateTexture(g_SDLFontTexture, NULL, image, 4 * width);
-    SDL_SetTextureBlendMode(g_SDLFontTexture, SDL_BLENDMODE_BLEND);
-    dev->font_tex = g_SDLFontTexture;
-}
-```
-
 ## youre gonna hate me for this
 
 we should probably actually have compiler macros and shit to compile out the engine being in editor mode now that its add subdired
@@ -529,10 +393,6 @@ this wouldnt be too bad because its more just cutting out lines that we dont use
 ## editor gdb
 
 additional arg for gdb or something so that we instantly print out logs isntead of them not showing up
-
-## windows icon
-
-its pretty easy to setup icons but should do it in a platform agnostic way, cant always pack into file because might need loose, cmake takes an arg
 
 ## editor improvements x2
 
@@ -600,8 +460,6 @@ audio emitters are constantly playing, and just muted if outside range
 
 BUG
 
-- reload scene no work (will)
-
 - check memory leaks mix chunks
 
 ## otha
@@ -657,17 +515,7 @@ It is technically possible to represent a grid logically in the editor, and make
 
 audio chunk count removed or reworked
 
-## auto find libs (broken for running outside of build dir)
-
-```cmake
-# for linux, tell the elf where to find the libs
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH '$ORIGIN/lib')
-```
-
 ## slk fjlkgjh dfk gjhlk
-
-remove all warnings
 
 collider add
 
@@ -836,3 +684,5 @@ MAYBE IF YOU FINISH THE HEADER SHIT IT WILL WORK AS IT SHOULD. SOMETHING ABOOUT 
 ## FIX FOR HEADER BUG
 
 you are overwriting included dir headers every configure stage, no wonder it recompiles every object
+
+does running make autoconf when needed?
