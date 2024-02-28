@@ -209,7 +209,7 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
 */
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
-    struct ye_entity *new_entity = ye_create_entity_named(strcat(strcat(entity->name, " "), "copy"));
+    struct ye_entity *new_entity = ye_create_entity_named(strcat(entity->name, " copy"));
 
     // copy all components
     if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);
@@ -224,26 +224,30 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
             ye_add_text_outlined_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.text_outlined->text, entity->renderer->renderer_impl.text_outlined->font_name, entity->renderer->renderer_impl.text_outlined->font_size, entity->renderer->renderer_impl.text_outlined->color_name, entity->renderer->renderer_impl.text_outlined->outline_color_name, entity->renderer->renderer_impl.text_outlined->outline_size, entity->renderer->renderer_impl.text_outlined->wrap_width);
         }
         else if(entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-            ye_add_animation_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.animation->animation_handle);
+            ye_add_animation_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.animation->meta_file);
         }
+
         /*
-
-        TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
-
+            Update any fields here that arent tracked by the constructor
+        */
         new_entity->renderer->flipped_x = entity->renderer->flipped_x;
         new_entity->renderer->flipped_y = entity->renderer->flipped_y;
-        new_entity->renderer->type = entity->renderer->type;
-        new_entity->renderer->z = entity->renderer->z;
         new_entity->renderer->active = entity->renderer->active;
-        new_entity->renderer->renderer_impl = entity->renderer->renderer_impl;
-        
-        TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
-
-        */
+        new_entity->renderer->rect = entity->renderer->rect;
+        new_entity->renderer->relative = entity->renderer->relative;
     }
-    if(entity->camera != NULL) ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
-    if(entity->button != NULL) ye_add_button_component(new_entity, entity->button->rect);
-    if(entity->physics != NULL) ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
+    if(entity->camera != NULL){ 
+        ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
+        new_entity->camera->active = entity->camera->active;
+    }
+    if(entity->button != NULL){
+        ye_add_button_component(new_entity, entity->button->rect);
+        new_entity->button->active = entity->button->active;
+    }
+    if(entity->physics != NULL){
+        ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
+        new_entity->physics->active = entity->physics->active;
+    }
     if(entity->collider != NULL){
         if(entity->collider->is_trigger){
             // ye_add_trigger_collider_component(new_entity, entity->collider->type, entity->collider->rect);
@@ -251,6 +255,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         else{
             ye_add_static_collider_component(new_entity, entity->collider->rect);
         }
+        new_entity->collider->active = entity->collider->active;
     }    
     if(entity->tag != NULL){
         ye_add_tag_component(new_entity);
@@ -259,6 +264,15 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
                 ye_add_tag(new_entity, entity->tag->tags[i]);
             }
         }
+        new_entity->tag->active = entity->tag->active;
+    }
+    if(entity->audiosource != NULL){
+        ye_add_audiosource_component(new_entity, entity->audiosource->handle, entity->audiosource->volume, entity->audiosource->play_on_awake, entity->audiosource->loops, entity->audiosource->simulated, entity->audiosource->range);
+        new_entity->audiosource->active = entity->audiosource->active;
+    }
+    if(entity->lua_script != NULL){
+        ye_add_lua_script_component(new_entity, entity->lua_script->script_handle);
+        new_entity->lua_script->active = entity->lua_script->active;
     }
 
     return new_entity;

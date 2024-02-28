@@ -25,7 +25,7 @@
 #include "editor_panels.h"
 #include <Nuklear/style.h>
 
-const float ratio[] = {0.03f, 0.92f, 0.05};
+const float ratio[] = {0.03f, 0.85f, /* up and down arrows: 0.05, 0.05, */ 0.06, 0.06};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
     int height = YE_STATE.editor.selected_entity == NULL ? screenHeight : screenHeight / 3;
@@ -44,7 +44,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
             nk_layout_row_dynamic(ctx, 25, 3);
             nk_label(ctx, "Active", NK_TEXT_LEFT);
             nk_label(ctx, "Name", NK_TEXT_CENTERED);
-            nk_label(ctx, "Delete", NK_TEXT_RIGHT);
+            nk_label(ctx, "Options", NK_TEXT_RIGHT);
 
             // iterate through entity_list_head and display the names of each entity as a button
             struct ye_entity_node *current = entity_list_head;
@@ -57,7 +57,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     current = current->next;
                     continue;
                 }
-                nk_layout_row(ctx, NK_DYNAMIC, 25, 3, ratio);
+                nk_layout_row(ctx, NK_DYNAMIC, 30, /*up and down arrows: 6 */ 4, ratio);
                 nk_checkbox_label(ctx, "", (nk_bool*)&current->entity->active);
 
                 // if the entity is selected, display it as a different color
@@ -67,7 +67,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     flag = true;
                 }
                 else if(!current->entity->active){
-                    nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(40,40,40))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(20,20,20))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(75,75,75))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
+                    nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(0,0,0))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(20,20,20))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(0,0,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                     flag = true;
                 }
 
@@ -95,6 +95,30 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 if(flag){ // if we are selected, pop our style items
                     nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                 }
+
+                /*
+                    // move up button
+                    if(nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_UP)){
+                    }
+
+                    // move down button
+                    if(nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_DOWN)){
+                    }
+                */
+
+                // push some pretty styles for green button!! (thank you nuklear forum!) :D
+                nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(35,35,35))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(0,255,0))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(0,255,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
+
+                // duplicate button
+                if(nk_button_image(ctx, editor_icons.duplicate)){
+                    ye_duplicate_entity(current->entity);
+                    entity_list_head = ye_get_entity_list_head();
+                    editor_unsaved();
+                    // nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
+                }
+
+                // pop green
+                nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
 
                 // push some pretty styles for red button!! (thank you nuklear forum!) :D
                 nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(35,35,35))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));

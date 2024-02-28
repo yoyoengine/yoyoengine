@@ -218,6 +218,11 @@ int main(int argc, char **argv) {
     editor_icons.buildreconfigure = nk_image_ptr(buildreconfigure);
     SDL_FreeSurface(tmp_sur);
 
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_duplicate.png"));
+    SDL_Texture *duplicate = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.duplicate = nk_image_ptr(duplicate);
+    SDL_FreeSurface(tmp_sur);
+
     ///////////////////////
 
     // get an initial screen size

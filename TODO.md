@@ -653,3 +653,8 @@ issues with compiler optimization is probably casts. go through and fix them all
 - I think rounding or cast errors with size_t or other are the cause of the compiler optimizations breaking animation system
 - save build additional c flags per platform, so switching to windows will stash previous ones and restore them correctly when target changed
 - maybe build.yoyo and settings.yoyo should merge into one settings.yoyo, feels weird that they are seperate
+
+## remaining large missing features
+
+- trigger colliders
+- lua scripting API full
