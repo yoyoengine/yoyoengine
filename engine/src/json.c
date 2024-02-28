@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 
-#include <jansson/jansson.h>
+#include <jansson.h>
 
 #include <yoyoengine/logging.h>
 

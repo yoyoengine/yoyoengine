@@ -22,7 +22,7 @@
 #define YE_EDITOR_VERSION "build 0"
 
 #include <stdbool.h>
-#include <jansson/jansson.h>
+#include <jansson.h>
 #include <yoyoengine/yoyoengine.h>
 
 /*

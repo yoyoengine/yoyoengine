@@ -7,7 +7,6 @@ set(YOYO_CMAKE_COPY_ENGINE_RESOURCES true CACHE BOOL "Copy the engine resources 
 
 # Include the engine project and directories for headers
 add_subdirectory(../engine engine_build)
-include_directories(include ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/include)
 
 # Set C/C++ compiler flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g")
@@ -24,6 +23,8 @@ if(UNIX)
     # Create the executable and link the engine library
     add_executable(${EXECUTABLE_NAME} ${SOURCES})
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE yoyoengine m)
+
+    target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
     # Set the output directory for the executable
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES

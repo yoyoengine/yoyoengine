@@ -26,6 +26,15 @@
 ######################################################################################
 
 ###############
+#    notes    #
+###############
+
+# - all of the headers that the engine links to are PUBLIC, so that the editor and any games automatically get them
+# - the engine itself builds deps statically and into one singular shared library
+# - the engine copies its resources to the output as well
+# - at the end of this file, a shared lib exists alongside a partially populated game build output with the engine resources
+
+###############
 #    setup    #
 ###############
 
@@ -36,7 +45,7 @@ file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
 
 add_library(yoyoengine SHARED ${SOURCES})
 
-target_include_directories(yoyoengine PRIVATE dist/include/)
+target_include_directories(yoyoengine PUBLIC dist/include/)
 
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
@@ -69,7 +78,7 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(jansson)
-target_include_directories(yoyoengine PRIVATE ${jansson_BINARY_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
 
 ###############
 #    SDL2     #
@@ -88,7 +97,7 @@ FetchContent_Declare(
 )
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 FetchContent_MakeAvailable(SDL2)
-target_include_directories(yoyoengine PRIVATE ${SDL2_SOURCE_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${SDL2_SOURCE_DIR}/include)
 
 ###############
 #    zlib     #
@@ -104,7 +113,7 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(zlib)
-target_include_directories(yoyoengine PRIVATE ${zlib_SOURCE_DIR})
+target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
 
 # needed for zlib static
 set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -159,7 +168,7 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(SDL2_ttf)
-target_include_directories(yoyoengine PRIVATE ${SDL2_ttf_SOURCE_DIR}) # include is in the root of the repo
+target_include_directories(yoyoengine PUBLIC ${SDL2_ttf_SOURCE_DIR}) # include is in the root of the repo
 
 ###############
 #  SDL_image  #
@@ -188,10 +197,10 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(SDL2_image)
-target_include_directories(yoyoengine PRIVATE ${SDL2_image_SOURCE_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/include)
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
-target_include_directories(yoyoengine PRIVATE ${SDL2_image_SOURCE_DIR}/external/zlib)
+target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/external/zlib)
 
 ###############
 #  SDL_mixer  #
@@ -216,7 +225,7 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(SDL2_mixer)
-target_include_directories(yoyoengine PRIVATE ${SDL2_mixer_SOURCE_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${SDL2_mixer_SOURCE_DIR}/include)
 
 ###############
 #     lua     #
@@ -231,7 +240,7 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(lua)
-target_include_directories(yoyoengine PRIVATE ${lua_SOURCE_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
 
 ###############
 #   linking   #
@@ -263,52 +272,6 @@ add_custom_command(
     # COMMENT "Copying libraries to platform-specific directory"
     COMMENT "Creating platform-specific bin directory"
 )
-
-###############
-#   headers   #
-###############
-
-set(INCLUDE_FOLDER ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/include)
-file(MAKE_DIRECTORY ${INCLUDE_FOLDER})
-
-add_custom_target(CopyHeaders
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/jansson
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${jansson_BINARY_DIR}/include ${INCLUDE_FOLDER}/jansson
-    
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/SDL2
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_BINARY_DIR}/include/SDL2 ${INCLUDE_FOLDER}/SDL2
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_image_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${SDL2_mixer_SOURCE_DIR}/include ${INCLUDE_FOLDER}/SDL2
-    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_ttf_SOURCE_DIR}/SDL_ttf.h ${INCLUDE_FOLDER}/SDL2
-    
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/lua
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${lua_SOURCE_DIR}/lua-5.4.5/include ${INCLUDE_FOLDER}/lua
-    
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/zlib
-    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_image_SOURCE_DIR}/external/zlib/zlib.h ${INCLUDE_FOLDER}/zlib
-
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/yoyoengine
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/yoyoengine ${INCLUDE_FOLDER}/yoyoengine
-
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/Nuklear
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/Nuklear ${INCLUDE_FOLDER}/Nuklear
-
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${INCLUDE_FOLDER}/uthash
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/uthash ${INCLUDE_FOLDER}/uthash
-
-    # copy an additional minimal config that for some reason SDL wont generate itself
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/include/SDL2 ${INCLUDE_FOLDER}/SDL2
-
-    COMMENT "Copying header files files to platform-specific directory"
-)
-
-# make sure we copy the headers AFTER SDL copies its own headers in its weird little freaky way
-add_dependencies(CopyHeaders sdl_headers_copy)
-add_dependencies(yoyoengine CopyHeaders)
-
-# we need to include this. This is because when we build the engine we know of all these headers, but from their FetchContent location,
-# which causes issues because OUR header files for the engine are written to include from our GENERATED include folder, not the fetchcontent
-target_include_directories(yoyoengine PRIVATE ${INCLUDE_FOLDER})
 
 ###############
 #  resources  #

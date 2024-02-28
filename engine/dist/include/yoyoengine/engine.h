@@ -31,9 +31,9 @@
 
 #include "graphics.h"
 
-#include <lua/lua.h>
-#include <lua/lualib.h>
-#include <lua/lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
 /*
     Define some important constants to the engine

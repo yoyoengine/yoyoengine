@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <jansson/jansson.h>
+#include <jansson.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/json.h>

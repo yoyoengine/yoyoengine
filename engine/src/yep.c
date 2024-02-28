@@ -19,7 +19,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL_mixer.h>
 
-#include <jansson/jansson.h> // jansson
+#include <jansson.h> // jansson
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/engine.h>

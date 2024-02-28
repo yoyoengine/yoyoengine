@@ -19,7 +19,7 @@
 #ifndef LUA_API_H
 #define LUA_API_H
 
-#include <lua/lua.h>
+#include <lua.h>
 // #include <lua/lualib.h>
 // #include <lua/lauxlib.h>
 #include <yoyoengine/ecs/lua_script.h>

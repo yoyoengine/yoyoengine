@@ -18,7 +18,7 @@
 
 #include <stdbool.h>
 
-#include <lua/lua.h>
+#include <lua.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/tricks.h>

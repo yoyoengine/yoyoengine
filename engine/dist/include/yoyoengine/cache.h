@@ -66,7 +66,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include <jansson/jansson.h>
+#include <jansson.h>
 #include "uthash/uthash.h"
 
 /**

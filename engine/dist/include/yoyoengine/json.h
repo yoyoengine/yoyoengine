@@ -37,7 +37,7 @@
 #ifndef YE_JSON_H
 #define YE_JSON_H
 
-#include <jansson/jansson.h>
+#include <jansson.h>
 #include <stdbool.h>
 
 /**

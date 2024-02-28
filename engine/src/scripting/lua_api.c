@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <lua/lua.h>
+#include <lua.h>
 
 #include <yoyoengine/scene.h>
 #include <yoyoengine/logging.h>

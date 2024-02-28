@@ -28,7 +28,7 @@
 #ifndef YE_TRICKS_H
 #define YE_TRICKS_H
 
-#include <lua/lua.h>
+#include <lua.h>
 
 extern struct ye_trick_node * ye_tricks_head;
 

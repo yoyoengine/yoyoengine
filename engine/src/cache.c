@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include <jansson/jansson.h>
+#include <jansson.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/json.h>

@@ -25,7 +25,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#include <jansson/jansson.h>
+#include <jansson.h>
 
 #include <yoyoengine/ui.h>
 #include <yoyoengine/yep.h>

@@ -32,7 +32,7 @@
     #include <linux/limits.h>   // - PATH_MAX
 #endif
 
-#include <jansson/jansson.h> // jansson
+#include <jansson.h> // jansson
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 
