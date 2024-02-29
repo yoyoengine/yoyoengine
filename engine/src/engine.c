@@ -544,6 +544,16 @@ void ye_init_engine() {
     */
     if(YE_STATE.engine.skipintro){
         ye_logf(info,"Skipping Intro.\n");
+
+        // load entry scene
+        const char * entry_scene;
+        if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
+            ye_logf(info, "Detected entry: %s.\n", entry_scene);
+            ye_load_scene(entry_scene);
+        }
+        else{
+            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+        }
     }
     else{
         setup_splash_screen();

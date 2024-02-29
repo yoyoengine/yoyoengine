@@ -140,7 +140,21 @@ void main(void){
     #else
         YE_STATE.engine.callbacks.scene_load = NULL;
     #endif
+
+    #ifdef YOYO_ADDITIONAL_RENDER
+        YE_STATE.engine.callbacks.additional_render = yoyo_additional_render;
+    #else
+        YE_STATE.engine.callbacks.additional_render = NULL;
+    #endif
     // ...etc. colliders and other triggers in future
+
+    /*
+        TODO: FIXME: DUMB HACK
+
+        we need to call scene load cb manually
+    */
+    if(YE_STATE.engine.callbacks.scene_load != NULL)
+        YE_STATE.engine.callbacks.scene_load(YE_STATE.runtime.scene_name);
 
     #ifdef __EMSCRIPTEN__
         emscripten_set_main_loop(mainloop, 0, 1);

@@ -97,6 +97,7 @@ struct ye_engine_callbacks {
     void (*post_frame)();
     void (*register_lua)(lua_State *L);
     void (*scene_load)(char *scene_name);
+    void (*additional_render)();
 };
 
 /**

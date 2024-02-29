@@ -89,6 +89,13 @@ extern bool YG_RUNNING;
 */
 // #define YOYO_POST_SHUTDOWN
 
+/*
+    Runs once a frame, after the engine has painted everything (except UI) from the ECS
+    renderer to the next frame buffer to be presented. Use this to do things like draw debug
+    lines or information.
+*/
+// #define YOYO_ADDITIONAL_RENDER
+
 
 
 /*
@@ -145,4 +152,8 @@ extern bool YG_RUNNING;
 
 #ifdef YOYO_POST_SHUTDOWN
     void yoyo_post_shutdown();
+#endif
+
+#ifdef YOYO_ADDITIONAL_RENDER
+    void yoyo_additional_render();
 #endif

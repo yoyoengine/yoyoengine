@@ -698,4 +698,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         SDL_RenderDrawRect(renderer, &selected_entity_rect);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
+
+    /*
+        Additional render step to allow the game to perform custom behavior
+    */
+    if(YE_STATE.engine.callbacks.additional_render != NULL)
+        YE_STATE.engine.callbacks.additional_render();
 }
