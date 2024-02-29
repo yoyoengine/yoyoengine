@@ -120,6 +120,9 @@ def new_project():
     print(os.path.join(script_dir, "template"))
     shutil.copytree(os.path.join(script_dir, "template"), new_project_path)
 
+    # create tricks folder in new_project_path
+    os.mkdir(os.path.join(new_project_path, "tricks"))
+
     # Update launcher.json
     launcher_json["projects"].append({"name": project_name, "path": project_path})
     update_json()

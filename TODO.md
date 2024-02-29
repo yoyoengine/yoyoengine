@@ -658,3 +658,5 @@ issues with compiler optimization is probably casts. go through and fix them all
 
 - trigger colliders
 - lua scripting API full
+
+## bugs found during acerola jam

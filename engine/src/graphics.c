@@ -481,13 +481,27 @@ void ye_init_graphics(){
         load icon to surface
     
         if we are editor, make sure to do it from loose file
+        
+        TODO: clean this up, I made a quick patch but this could be better
     */
     SDL_Surface *pIconSurface = NULL;
     if(YE_STATE.editor.editor_mode){
         pIconSurface = IMG_Load(ye_get_engine_resource_static(YE_STATE.engine.icon_path));
     }
     else{
-        pIconSurface = yep_resource_image(YE_STATE.engine.icon_path);
+        if(strcmp(YE_STATE.engine.icon_path,"enginelogo.png") == 0){
+            pIconSurface = yep_engine_resource_image("enginelogo.png");
+        }
+        else{
+            // check if YE_STATE.engine.icon_path is not empty
+            if(strcmp(YE_STATE.engine.icon_path,"") == 0){
+                ye_logf(warning, "No icon path set, using default.\n");
+                pIconSurface = yep_engine_resource_image("enginelogo.png");
+            }
+            else{
+                pIconSurface = yep_resource_image(YE_STATE.engine.icon_path);
+            }
+        }
     }
 
     if (pIconSurface == NULL) {
