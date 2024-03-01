@@ -102,6 +102,8 @@ void ye_system_physics(){
             // if we have velocity proceed with checks
             if(current->entity->physics->velocity.x != 0 || current->entity->physics->velocity.y != 0){
                 
+                // printf("started looking at entity with vx:%f vy:%f\n",current->entity->physics->velocity.x, current->entity->physics->velocity.y);
+
                 /*
                     CASE THAT ENTITY HAS NO COLLIDER
                     We just apply its velocity to its transform (also account for rotational)
@@ -128,11 +130,22 @@ void ye_system_physics(){
                 */
                 // get the current collider position
                 struct ye_rectf old_position = ye_get_position(current->entity,YE_COMPONENT_COLLIDER);
+
+                // // if relative, mitigate the offset bias
+                // if(current->entity->collider->relative){
+                //     old_position.x += current->entity->collider->rect.x;
+                //     old_position.y += current->entity->collider->rect.y;
+                // }
+
                 struct ye_rectf new_position = old_position;
+
+                // printf("original pos: %f,%f\n",old_position.x,old_position.y);
 
                 // calculate the change in position based on the velocity
                 float dx = current->entity->physics->velocity.x * delta;
                 float dy = current->entity->physics->velocity.y * delta;
+
+                // printf("calculated dx:%f dy:%f\n",dx,dy);
 
                 // if this entity has a static collider, we need to check if we are colliding with any other static colliders
                 if(current->entity->collider && !current->entity->collider->is_trigger && current->entity->collider->active){
@@ -142,6 +155,8 @@ void ye_system_physics(){
                         // Calculate the interpolated position based on the sub-step
                         new_position.x = old_position.x + substep * dx;
                         new_position.y = old_position.y + substep * dy;
+
+                        // printf("tested substep at x:%f y:%f\n",new_position.x,new_position.y);
                         
                         // check for collisions by comparing this interpolated position with all other colliders
                         struct ye_entity_node *current_collider = collider_list_head;
@@ -150,6 +165,15 @@ void ye_system_physics(){
                             if (current_collider->entity->id != current->entity->id && current_collider->entity->collider != NULL && current_collider->entity->collider->active) {
                                 // check if we collide with it
                                 if(ye_rectf_collision(new_position, ye_get_position(current_collider->entity,YE_COMPONENT_COLLIDER))){
+
+                                    /*
+                                        TODO: FIXME: PATCH
+
+                                        This should actually reset to the smallest fitting substep we took
+                                    */
+                                    new_position.x = old_position.x;
+                                    new_position.y = old_position.y;
+                                    
                                     break;
                                 }
                             }
@@ -188,7 +212,7 @@ void ye_system_physics(){
                     even if we havent changed our new position at all from the old, this line is still true.
                     We are changing whatever position this entity needs to be based on whatever substep max it hit or change it needs to be.
                 */
-                current->entity->transform->x = new_position.x;
+                current->entity->transform->x = new_position.x; // bug? relativity makes it so we need to do something diff because this is offset with relative from root transform?
                 current->entity->transform->y = new_position.y;
             }
             // if we have rotational velocity apply it (if we have a renderer)

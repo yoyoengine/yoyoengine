@@ -199,11 +199,15 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
                 pos.w = entity->collider->rect.w;
                 pos.h = entity->collider->rect.h;
 
+                // printf("UTIL: found pos at x:%f y:%f w:%f h:%f\n",pos.x,pos.y,pos.w,pos.h);
+
                 // if relative adjust its position
                 if(entity->collider->relative && entity->transform != NULL){
                     pos.x += entity->transform->x;
                     pos.y += entity->transform->y;
                 }
+
+                // printf("UTIL: adjusted pos at x:%f y:%f w:%f h:%f\n",pos.x,pos.y,pos.w,pos.h);
 
                 return pos;
             }

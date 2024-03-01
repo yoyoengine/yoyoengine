@@ -659,4 +659,13 @@ issues with compiler optimization is probably casts. go through and fix them all
 - trigger colliders
 - lua scripting API full
 
+## other features from acerola jam that would be cool
+
+- color tint controller
+- ye_synchronize_position_relative called once on init and tracks one object onto another when they move during scene lifetime
+
 ## bugs found during acerola jam
+
+- physics system is fried with negative relativity for a collider, its offsetting the new position by the relative distance as well as the dx, dy
+- physics system should treat each axis as a seperate calculation, so if youre hitting wall going north east, it should move you north if you are only colliding on the east axis
+- copying an entity renames the OG to "copy" as well
