@@ -49,8 +49,10 @@ struct ye_component_collider {
 
     bool is_trigger;        /**< Specifies whether this collider is a trigger. If false, it is a static collider. */
 
-    // trigger specific fields
-    // how are we responding to the trigger? broadcasting a message? calling a C callback? calling a lua callback?
+    /*
+        Meta tracking trigger states
+    */
+    // bool _trigger_entered;
 };
 
 /**
@@ -61,7 +63,13 @@ struct ye_component_collider {
  */
 void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf rect);
 
-// TODO: add trigger collider
+/**
+ * @brief Adds a trigger collider to an entity.
+ *
+ * @param entity The entity to which the collider is to be added.
+ * @param rect The rectangle defining the collider.
+ */
+void ye_add_trigger_collider_component(struct ye_entity *entity, struct ye_rectf rect);
 
 /**
  * @brief Removes an entity's collider component.

@@ -5,6 +5,8 @@ project(YoyoEditor)
 # set YOYO_CMAKE_COPY_ENGINE_RESOURCES to true/on since editor needs the engine resources loose folder
 set(YOYO_CMAKE_COPY_ENGINE_RESOURCES true CACHE BOOL "Copy the engine resources to the editor build directory")
 
+set(YOYO_ENGINE_BUILD_RELEASE off CACHE BOOL "Build engine for editor in debug mode")
+
 # Include the engine project and directories for headers
 add_subdirectory(../engine engine_build)
 

@@ -171,8 +171,10 @@ void ye_system_physics(){
 
                                         This should actually reset to the smallest fitting substep we took
                                     */
-                                    new_position.x = old_position.x;
-                                    new_position.y = old_position.y;
+                                    if(!current_collider->entity->collider->is_trigger){
+                                        new_position.x = old_position.x;
+                                        new_position.y = old_position.y;
+                                    }
                                     
                                     break;
                                 }
@@ -204,6 +206,14 @@ void ye_system_physics(){
                                 */
                                 
                                 break; // break out of the substep loop
+                            }
+                            else{
+                                /*
+                                    If we hit a trigger collider, broadcast the two collision entities into the
+                                    event callback
+                                */
+                                if(YE_STATE.engine.callbacks.trigger_enter != NULL)
+                                    YE_STATE.engine.callbacks.trigger_enter(current->entity,current_collider->entity);
                             }
                         } // TODO: do we want to cancel rotational velocity here too?
                     }

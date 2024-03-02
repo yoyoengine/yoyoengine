@@ -29,6 +29,11 @@ void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf 
     ye_entity_list_add(&collider_list_head, entity);
 }
 
+void ye_add_trigger_collider_component(struct ye_entity *entity, struct ye_rectf rect){
+    ye_add_static_collider_component(entity, rect);
+    entity->collider->is_trigger = true;
+}
+
 void ye_remove_collider_component(struct ye_entity *entity){
     free(entity->collider);
     entity->collider = NULL;

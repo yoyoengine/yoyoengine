@@ -412,8 +412,8 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
     // add the collider component
     if(!is_trigger)
         ye_add_static_collider_component(e,b);
-    // else
-        // ye_add_trigger_collider_component(e,b);
+    else
+        ye_add_trigger_collider_component(e,b);
 
     // validate the relative field
     bool relative;

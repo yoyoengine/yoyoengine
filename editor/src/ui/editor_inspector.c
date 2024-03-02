@@ -538,6 +538,8 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->collider->active);
             nk_checkbox_label(ctx, "Relative", (nk_bool*)&ent->collider->relative);
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_checkbox_label(ctx, "Is Trigger", (nk_bool*)&ent->collider->is_trigger);
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_property_float(ctx, "#x", -1000000, &ent->collider->rect.x, 1000000, 1, 5);
             nk_property_float(ctx, "#y", -1000000, &ent->collider->rect.y, 1000000, 1, 5);

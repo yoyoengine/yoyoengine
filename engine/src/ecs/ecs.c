@@ -209,7 +209,11 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
 */
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
-    struct ye_entity *new_entity = ye_create_entity_named(strcat(entity->name, " copy"));
+    char *temp = strdup(entity->name); strcat(temp, " copy");
+
+    struct ye_entity *new_entity = ye_create_entity_named(temp);
+
+    free(temp);
 
     // copy all components
     if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);

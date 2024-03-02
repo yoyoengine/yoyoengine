@@ -146,6 +146,12 @@ void main(void){
     #else
         YE_STATE.engine.callbacks.additional_render = NULL;
     #endif
+
+    #ifdef YOYO_TRIGGER_ENTER
+        YE_STATE.engine.callbacks.trigger_enter = yoyo_trigger_enter;
+    #else
+        YE_STATE.engine.callbacks.trigger_enter = NULL;
+    #endif
     // ...etc. colliders and other triggers in future
 
     /*

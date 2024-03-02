@@ -30,6 +30,7 @@
 #include <SDL_ttf.h>
 
 #include "graphics.h"
+#include "ecs/ecs.h"
 
 #include <lua.h>
 #include <lualib.h>
@@ -98,6 +99,7 @@ struct ye_engine_callbacks {
     void (*register_lua)(lua_State *L);
     void (*scene_load)(char *scene_name);
     void (*additional_render)();
+    void (*trigger_enter)(struct ye_entity *e1, struct ye_entity *e2);
 };
 
 /**

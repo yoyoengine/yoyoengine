@@ -96,6 +96,12 @@ extern bool YG_RUNNING;
 */
 // #define YOYO_ADDITIONAL_RENDER
 
+/*
+    Enables the callback which will send the struct ye_entity * to two colliders, entity two being the source trigger
+    and entity one being the static collider that touched it
+*/
+#define YOYO_TRIGGER_ENTER
+
 
 
 /*
@@ -156,4 +162,8 @@ extern bool YG_RUNNING;
 
 #ifdef YOYO_ADDITIONAL_RENDER
     void yoyo_additional_render();
+#endif
+
+#ifdef YOYO_TRIGGER_ENTER
+    void yoyo_trigger_enter();
 #endif
