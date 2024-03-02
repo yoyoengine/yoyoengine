@@ -49,8 +49,16 @@ struct ye_timer_node {
     struct ye_timer_node * next;
 };
 
+/*
+    Optional function to be registered by
+    user that gives info on timer system
+*/
+void ye_timer_overlay(struct nk_context *ctx);
+
 /**
  * @brief Register a timer with the engine.
+ * 
+ * @note !!! YOU ARE RESPONSIBLE FOR SETTING EVERY FIELD, INCLUDING START TICKS !!!
  * 
  * @param timer The timer to register.
  */

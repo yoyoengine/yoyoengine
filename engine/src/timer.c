@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include <SDL.h>
+#include <Nuklear/nuklear.h>
 
 #include <yoyoengine/timer.h>
 #include <yoyoengine/logging.h>
@@ -27,11 +28,36 @@
 // list to track timers
 struct ye_timer_node * timers;
 
+// some meta the timer system can keep track of
+int num_registered_timers = 0;
+int timers_checked_this_frame = 0;
+
+/*
+    Optional function to be registered
+    that gives info on timer system
+*/
+void ye_timer_overlay(struct nk_context *ctx){
+    char num_reg[20]; sprintf(num_reg, "registered_timers:%d",num_registered_timers);
+    char checked[20]; sprintf(checked, "checked this frame:%d",timers_checked_this_frame);
+    char cur_ticks[200]; sprintf(cur_ticks, "current_ticks:%d",SDL_GetTicks());
+    if (nk_begin(ctx, "timer debug", nk_rect(10, 10, 220, 200),
+                    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label(ctx, num_reg, NK_TEXT_LEFT);
+        nk_label(ctx, cur_ticks, NK_TEXT_LEFT);
+        nk_label(ctx, checked, NK_TEXT_LEFT);
+    }
+    nk_end(ctx);
+}
+
 void ye_register_timer(struct ye_timer * timer){
     struct ye_timer_node * node = malloc(sizeof(struct ye_timer_node));
     node->timer = timer;
     node->next = timers;
     timers = node;
+
+    // state
+    num_registered_timers++;
 }
 
 void ye_unregister_timer(struct ye_timer * timer){
@@ -47,6 +73,7 @@ void ye_unregister_timer(struct ye_timer * timer){
             }
             free(node->timer);
             free(node);
+            num_registered_timers--;
             return;
         }
         prev = node;
@@ -63,11 +90,25 @@ void ye_unregister_all_timers(){
         node = next;
     }
     timers = NULL;
+    num_registered_timers = 0;
 }
 
+/*
+    Debug notes:
+    - not removing any timers during the timespan it has two registered with the most recent still ticking
+*/
 void ye_update_timers(){
+    timers_checked_this_frame = 0;
     struct ye_timer_node * node = timers;
     while(node != NULL){
+        timers_checked_this_frame++;
+
+        // left for debug purposes
+        // printf("checking timer:\n");
+        // printf("    start time: %d:\n",node->timer->start_ticks);
+        // printf("    length: %d:\n",node->timer->length_ms);
+        // printf("    loops remaining: %d:\n",node->timer->loops);
+
         struct ye_timer * timer = node->timer;
         if(timer->start_ticks == -1){
             timer->start_ticks = SDL_GetTicks();
@@ -83,7 +124,14 @@ void ye_update_timers(){
                 timer->start_ticks = SDL_GetTicks();
             }
             else {
+                // left for debug purposes
+                // printf("unregistered a timer\n");
+                // ye_unregister_timer(timer);
+
+                // remove a timer, and restart this process, we will reach same timers again, but thats ok
                 ye_unregister_timer(timer);
+                node = timers;
+                continue;
 
                 /*
                     Very important!!!
@@ -95,7 +143,7 @@ void ye_update_timers(){
 
                     This means we cannot gaurantee more than one timer running per frame.
                 */
-                break;
+                // break;
             }
         }
         node = node->next;
