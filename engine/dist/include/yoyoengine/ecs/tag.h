@@ -69,4 +69,15 @@ void ye_remove_tag(struct ye_entity *entity, const char *tag);
  */
 void ye_remove_tag_component(struct ye_entity *entity);
 
+
+/**
+ * @brief Returns true if an entity has a specified tag
+ * 
+ * @param entity The entity to check
+ * @param tag The tag to check for
+ * @return true 
+ * @return false 
+ */
+bool entity_has_tag(struct ye_entity *entity, const char *tag);
+
 #endif

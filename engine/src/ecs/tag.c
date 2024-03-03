@@ -122,3 +122,15 @@ void ye_remove_tag_component(struct ye_entity *entity){
 
     ye_entity_list_remove(&tag_list_head, entity);
 }
+
+bool entity_has_tag(struct ye_entity *entity, const char *tag){
+    // TODO: add more checks for active and such?
+    if(entity->tag != NULL){
+        for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
+            if(strcmp(tag, entity->tag->tags[i]) == 0){
+                return true;
+            }
+        }
+    }
+    return false;
+}

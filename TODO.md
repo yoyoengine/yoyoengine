@@ -671,6 +671,7 @@ issues with compiler optimization is probably casts. go through and fix them all
 - physics system should treat each axis as a seperate calculation, so if youre hitting wall going north east, it should move you north if you are only colliding on the east axis
 - copying an entity renames the OG to "copy" as well
 - serialize or expose center of rotation in editor
+- for missing assets, we used to have missing thing for images but yep will exit(1) if a header does not exist, so wrap this for images to ensure we get missing back if needed
 
 ## things that might need done during acerola jam
 

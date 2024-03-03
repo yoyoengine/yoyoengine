@@ -190,6 +190,9 @@ void ye_system_physics(){
                                 current->entity->physics->velocity.x = 0;
                                 current->entity->physics->velocity.y = 0;
 
+                                if(YE_STATE.engine.callbacks.collision != NULL)
+                                    YE_STATE.engine.callbacks.collision(current->entity,current_collider->entity);
+
                                 /*
                                     Saving for later as it may be relevant to the future:
 

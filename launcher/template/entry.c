@@ -152,6 +152,12 @@ void main(void){
     #else
         YE_STATE.engine.callbacks.trigger_enter = NULL;
     #endif
+
+    #ifdef YOYO_COLLISION
+        YE_STATE.engine.callbacks.collision = yoyo_collision;
+    #else
+        YE_STATE.engine.callbacks.collision = NULL;
+    #endif
     // ...etc. colliders and other triggers in future
 
     /*

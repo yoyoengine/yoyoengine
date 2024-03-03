@@ -100,6 +100,7 @@ struct ye_engine_callbacks {
     void (*scene_load)(char *scene_name);
     void (*additional_render)();
     void (*trigger_enter)(struct ye_entity *e1, struct ye_entity *e2);
+    void (*collision)(struct ye_entity *e1, struct ye_entity *e2);
 };
 
 /**
