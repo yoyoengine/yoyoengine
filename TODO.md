@@ -663,12 +663,14 @@ issues with compiler optimization is probably casts. go through and fix them all
 
 - color tint controller
 - ye_synchronize_position_relative called once on init and tracks one object onto another when they move during scene lifetime
+- aseprite has a json export for sprite sheets, should add a way to import those automatically
 
 ## bugs found during acerola jam
 
 - physics system is fried with negative relativity for a collider, its offsetting the new position by the relative distance as well as the dx, dy
 - physics system should treat each axis as a seperate calculation, so if youre hitting wall going north east, it should move you north if you are only colliding on the east axis
 - copying an entity renames the OG to "copy" as well
+- serialize or expose center of rotation in editor
 
 ## things that might need done during acerola jam
 

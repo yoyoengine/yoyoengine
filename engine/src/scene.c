@@ -321,8 +321,8 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 
     // get a rotation if existant and update it
     if(ye_json_has_key(renderer,"rotation")){
-        int angle = 0;    ye_json_int(renderer,"rotation",&angle);
-        e->renderer->rotation = (float)angle;
+        float angle = 0;    ye_json_float(renderer,"rotation",&angle);
+        e->renderer->rotation = angle;
     }
 
     // if "center" exists validate x and y and set them

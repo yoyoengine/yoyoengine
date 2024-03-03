@@ -121,6 +121,9 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
     // set the position object
     serialize_entity_position(&entity->renderer->rect, renderer);
 
+    // set the roatation
+    json_object_set_new(renderer, "rotation", json_real(entity->renderer->rotation));
+
     // and now the fun part... the renderer specific impl
 
     // create impl object
