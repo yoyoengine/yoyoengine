@@ -664,6 +664,10 @@ issues with compiler optimization is probably casts. go through and fix them all
 - color tint controller
 - ye_synchronize_position_relative called once on init and tracks one object onto another when they move during scene lifetime
 - aseprite has a json export for sprite sheets, should add a way to import those automatically
+- rounded colliders will be super important. probably also custom mesh colliders (could have made whole map out of one wall collider)
+- utility function to pin entities onto others to track
+- function to get transform locations but from the center of their renderer or collider or other utilities
+- ye_debug_line to register at some point during frame before render to draw a line from two points
 
 ## bugs found during acerola jam
 

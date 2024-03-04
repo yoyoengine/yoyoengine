@@ -478,8 +478,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                                 animation->current_frame_index = animation->current_frame_index % animation->frame_count;
                                 if(animation->loops != -1){
                                     animation->loops--;
-                                    if(animation->loops == 0){
+                                    if(animation->loops <= 0){
                                         animation->paused = true; // TODO: dont just pause when it ends, but give option to destroy/ disable renderer
+                                        // pause on the last frame of the animation
+                                        animation->current_frame_index = animation->frame_count - 1;
                                     }
                                 }
                             }

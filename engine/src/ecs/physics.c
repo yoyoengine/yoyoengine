@@ -97,6 +97,12 @@ void ye_system_physics(){
     // iterate over all entities with physics
     struct ye_entity_node *current = physics_list_head;
     while (current != NULL) {
+        // if the current entity is inactive, dont run physics on it
+        if(!current->entity->active){
+            current = current->next;
+            continue;
+        }
+
         // if we have a physics component and a transform component
         if (current->entity->physics->active && current->entity->transform != NULL) {
             // if we have velocity proceed with checks
@@ -105,10 +111,10 @@ void ye_system_physics(){
                 // printf("started looking at entity with vx:%f vy:%f\n",current->entity->physics->velocity.x, current->entity->physics->velocity.y);
 
                 /*
-                    CASE THAT ENTITY HAS NO COLLIDER
+                    CASE THAT ENTITY HAS NO COLLIDER (or inactive one)
                     We just apply its velocity to its transform (also account for rotational)
                 */
-                if(current->entity->collider == NULL){
+                if(current->entity->collider == NULL || !current->entity->collider->active){
                     current->entity->transform->x += current->entity->physics->velocity.x * delta;
                     current->entity->transform->y += current->entity->physics->velocity.y * delta;
                     
@@ -183,7 +189,7 @@ void ye_system_physics(){
                         }
 
                         // if we actually hit a collider this step, current_collider will not be NULL
-                        if(current_collider != NULL){
+                        if(current_collider != NULL && current_collider->entity->active && current_collider->entity->collider->active){
                             // ye_logf(debug, "Hit collider on entity %d\n", current_collider->entity->id);
                             // if collider we touched is static
                             if(!current_collider->entity->collider->is_trigger){
