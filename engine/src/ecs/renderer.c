@@ -516,11 +516,27 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
                 // entity rect is now a reflection of the actual calculated rect
 
+                /*
+                    TODO: HACK FOR ACEROLA JAM ZERO, THERE IS A BETTER WAY TO FORMULAICALLY DETERMINE THIS OFFSET TO CUT
+                    DOWN ON RENDERING COSTS
+                    
+                    still render things NEAR the camera if they are rotated so we dont get artifacts for rotated sprites
+                    (popping out while still in view, not accounting for rotation)
+                */
+                int occlusion_offset_x = 0;
+                int occlusion_offset_y = 0;
+                if(current->entity->renderer->rotation != 0){
+                    occlusion_offset_x = YE_STATE.engine.target_camera->camera->view_field.w;
+                    occlusion_offset_y = YE_STATE.engine.target_camera->camera->view_field.h;
+                    // occlusion_offset_x = 1920;
+                    // occlusion_offset_y = 1080;
+                }
+
                 // occlusion check
-                if (entity_rect.x + entity_rect.w < camera_rect.x ||
-                    entity_rect.x > camera_rect.x + camera_rect.w ||
-                    entity_rect.y + entity_rect.h < camera_rect.y ||
-                    entity_rect.y > camera_rect.y + camera_rect.h
+                if (entity_rect.x + entity_rect.w < camera_rect.x - occlusion_offset_x ||
+                    entity_rect.x > camera_rect.x + camera_rect.w + occlusion_offset_x ||
+                    entity_rect.y + entity_rect.h < camera_rect.y - occlusion_offset_y ||
+                    entity_rect.y > camera_rect.y + camera_rect.h + occlusion_offset_y
                     )
                 {
                     // do not draw the object
