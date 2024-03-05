@@ -123,7 +123,7 @@ void ye_remove_tag_component(struct ye_entity *entity){
     ye_entity_list_remove(&tag_list_head, entity);
 }
 
-bool entity_has_tag(struct ye_entity *entity, const char *tag){
+bool ye_entity_has_tag(struct ye_entity *entity, const char *tag){
     // TODO: add more checks for active and such?
     if(entity->tag != NULL){
         for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
@@ -133,4 +133,15 @@ bool entity_has_tag(struct ye_entity *entity, const char *tag){
         }
     }
     return false;
+}
+
+void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent)){
+    struct ye_entity_node *itr = tag_list_head;
+    while(itr != NULL){
+        if(ye_entity_has_tag(itr->entity,tag)){
+            callback(itr->entity);
+        }
+
+        itr = itr->next;
+    }
 }

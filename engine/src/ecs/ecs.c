@@ -325,6 +325,7 @@ struct ye_entity * ye_get_entity_by_name(const char *name){
         current = current->next;
     }
 
+    ye_logf(error, "COULD NOT LOCATE ENTITY BY THE NAME \"%s\"\n",name);
     return NULL;
 }
 
@@ -340,6 +341,7 @@ struct ye_entity * ye_get_entity_by_tag(const char *tag){
         current = current->next;
     }
 
+    ye_logf(error, "COULD NOT LOCATE ENTITY BY THE TAG \"%s\"\n",tag);
     return NULL;
 }
 
@@ -353,6 +355,7 @@ struct ye_entity *ye_get_entity_by_id(int id){
         current = current->next;
     }
 
+    ye_logf(error, "COULD NOT LOCATE ENTITY BY THE ID \"%d\"\n",id);
     return NULL;
 }
 

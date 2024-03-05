@@ -78,6 +78,14 @@ void ye_remove_tag_component(struct ye_entity *entity);
  * @return true 
  * @return false 
  */
-bool entity_has_tag(struct ye_entity *entity, const char *tag);
+bool ye_entity_has_tag(struct ye_entity *entity, const char *tag);
+
+/**
+ * @brief Iterates over every tagged entity, passing each one that matches a tag to a specified callback
+ * 
+ * @param tag The tag to match entities against
+ * @param callback The non null callback with a struct ye_entity * parameter
+ */
+void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent));
 
 #endif
