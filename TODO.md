@@ -669,7 +669,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - function to get transform locations but from the center of their renderer or collider or other utilities
 - ye_debug_line to register at some point during frame before render to draw a line from two points
 - allow setting rotation point through clicking world space in editor and converting that to relative to entity renderer
-- search bar at top of entity list, to search by name or tags
 - easier timer constructor, they are more common than anticipated
 
 ## bugs found during acerola jam

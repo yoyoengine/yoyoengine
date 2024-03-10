@@ -25,6 +25,9 @@
 #include "editor_panels.h"
 #include <Nuklear/style.h>
 
+char search_text[256] = {""};
+int matching_results = 0;
+
 const float ratio[] = {0.03f, 0.85f, /* up and down arrows: 0.05, 0.05, */ 0.06, 0.06};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
@@ -39,6 +42,31 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 editor_unsaved();
             }
 
+            /*
+                Display search bar, with additional text for matching results
+            */
+            if(strcmp(search_text,"") != 0){
+                nk_layout_row_dynamic(ctx, 30, 2);
+                nk_label(ctx, "Search:", NK_TEXT_LEFT);
+                char txt[64];
+                sprintf(txt,"%d matching results",matching_results);
+                
+                if(matching_results > 0){
+                    nk_label_colored(ctx, txt, NK_TEXT_LEFT,nk_rgb(0,255,0));
+                }
+                else{
+                    nk_label_colored(ctx, txt, NK_TEXT_LEFT,nk_rgb(255,0,0));
+                }
+            }
+            else{
+                nk_layout_row_dynamic(ctx, 30, 1);
+                nk_label(ctx, "Search:", NK_TEXT_LEFT);
+            }
+            nk_layout_row_dynamic(ctx, 30, 1);
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, search_text, 256, nk_filter_default);
+
+            nk_layout_row_dynamic(ctx, 30, 1);
+            nk_layout_row_dynamic(ctx, 30, 1);
             nk_label(ctx, "Entities:", NK_TEXT_LEFT);
 
             nk_layout_row_dynamic(ctx, 25, 3);
@@ -48,6 +76,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
 
             // iterate through entity_list_head and display the names of each entity as a button
             struct ye_entity_node *current = entity_list_head;
+            matching_results = 0;
             while(current != NULL){
                 /*
                     Honestly, should just leave editor camera in the heiarchy for fun lol
@@ -57,6 +86,44 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     current = current->next;
                     continue;
                 }
+
+                /*
+                    If the search bar has text in it:
+                    - check for matches within entity names
+                    - then fall back on any tags matching the search text
+                */
+                if(strcmp(search_text,"") != 0){
+                    // check if name has search term
+                    char * ret = strstr(current->entity->name,search_text);
+                    if(ret == NULL){
+                        // if name doesnt, check if we potentially have a tag that matches search term
+                        if(current->entity->tag != NULL){
+                            // loop over all tags and check for matches
+                            bool tag_matches = false;
+                            for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
+                                ret = strstr(current->entity->tag->tags[i], search_text);
+                                if(ret != NULL){
+                                    // printf("matched tag: %s\n",current->entity->tag->tags[i]);
+                                    tag_matches = true;
+                                }
+                            }
+
+                            // if we didnt find a tag match, skip entity
+                            if(!tag_matches){
+                                current = current->next;
+                                continue;
+                            }
+                        }
+                        else{
+                            // no name or tag match found, skip rendering this in hiearchy
+                            current = current->next;
+                            continue;
+                        }
+                    }
+                    // printf("matched %s, %s\n",search_text,ret);
+                }
+                matching_results++;
+
                 nk_layout_row(ctx, NK_DYNAMIC, 30, /*up and down arrows: 6 */ 4, ratio);
                 nk_checkbox_label(ctx, "", (nk_bool*)&current->entity->active);
 
@@ -140,6 +207,10 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
 
                 current = current->next;
+            }
+            if(matching_results <= 0){
+                nk_layout_row_dynamic(ctx, 60, 1);
+                nk_label_colored(ctx,"no results!",NK_TEXT_CENTERED,nk_rgb(255, 255, 0));
             }
         nk_end(ctx);
     }
