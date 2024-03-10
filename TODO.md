@@ -670,6 +670,10 @@ issues with compiler optimization is probably casts. go through and fix them all
 - ye_debug_line to register at some point during frame before render to draw a line from two points
 - allow setting rotation point through clicking world space in editor and converting that to relative to entity renderer
 - easier timer constructor, they are more common than anticipated
+- case insensitivity in search bar
+- easily close hiearchy when searching to collapse it
+- set the active entity to recently duplicated one
+- enter key to submit imputs
 
 ## bugs found during acerola jam
 
@@ -679,6 +683,9 @@ issues with compiler optimization is probably casts. go through and fix them all
 - serialize or expose center of rotation in editor
 - for missing assets, we used to have missing thing for images but yep will exit(1) if a header does not exist, so wrap this for images to ensure we get missing back if needed
 - audiosource system is cooked beyond belief. trying to free memory that has alreayd been freed, or accessed idk its from setting volume of channels, check valgrind
+- crashes on scene reloads a lot
+- sync rotation on duplicated entities
+- colliders are mega scuff, if more than one is touching things get weiiirdd
 
 ## things that might need done during acerola jam
 

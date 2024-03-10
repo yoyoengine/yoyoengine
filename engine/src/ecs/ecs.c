@@ -254,7 +254,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     }
     if(entity->collider != NULL){
         if(entity->collider->is_trigger){
-            // ye_add_trigger_collider_component(new_entity, entity->collider->type, entity->collider->rect);
+            ye_add_trigger_collider_component(new_entity, entity->collider->rect);
         }
         else{
             ye_add_static_collider_component(new_entity, entity->collider->rect);
