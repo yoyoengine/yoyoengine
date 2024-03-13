@@ -674,6 +674,11 @@ issues with compiler optimization is probably casts. go through and fix them all
 - easily close hiearchy when searching to collapse it
 - set the active entity to recently duplicated one
 - enter key to submit imputs
+- button to easily sync collider size to renderer size (rotation included)
+- other collider shapes and skews
+- expose renderer rect to manually cull instead of black boxes
+- physics component duplification fields
+- table of strings assosciated function pointers, use console commands to toggle engine debugging overlays
 
 ## bugs found during acerola jam
 
@@ -686,6 +691,7 @@ issues with compiler optimization is probably casts. go through and fix them all
 - crashes on scene reloads a lot
 - sync rotation on duplicated entities
 - colliders are mega scuff, if more than one is touching things get weiiirdd
+- adding intro seemed to cause inconsistant loading into entry scene
 
 ## things that might need done during acerola jam
 
