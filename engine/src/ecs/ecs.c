@@ -239,6 +239,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->renderer->active = entity->renderer->active;
         new_entity->renderer->rect = entity->renderer->rect;
         new_entity->renderer->relative = entity->renderer->relative;
+        new_entity->renderer->rotation = entity->renderer->rotation;
     }
     if(entity->camera != NULL){ 
         ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
@@ -251,6 +252,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     if(entity->physics != NULL){
         ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);
         new_entity->physics->active = entity->physics->active;
+        new_entity->physics->rotational_velocity = entity->physics->rotational_velocity;
     }
     if(entity->collider != NULL){
         if(entity->collider->is_trigger){
@@ -260,6 +262,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
             ye_add_static_collider_component(new_entity, entity->collider->rect);
         }
         new_entity->collider->active = entity->collider->active;
+        new_entity->collider->is_trigger = entity->collider->is_trigger;
     }    
     if(entity->tag != NULL){
         ye_add_tag_component(new_entity);

@@ -178,9 +178,13 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
 
                 // duplicate button
                 if(nk_button_image(ctx, editor_icons.duplicate)){
-                    ye_duplicate_entity(current->entity);
+                    struct ye_entity * new = ye_duplicate_entity(current->entity);
                     entity_list_head = ye_get_entity_list_head();
                     editor_unsaved();
+
+                    // set the active entity as the newly duplicated one
+                    YE_STATE.editor.selected_entity = new;
+
                     // nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                 }
 

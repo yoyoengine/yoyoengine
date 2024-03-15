@@ -50,7 +50,6 @@ extern char *project_path;
 // some fields for current selected entity tracking (this will be messy)
 // actually lets be really smart and keep local copy
 extern struct ye_entity staged_entity;
-extern struct ye_component_transform staged_transform;
 extern json_t * SETTINGS;
 
 extern int mouse_world_x;

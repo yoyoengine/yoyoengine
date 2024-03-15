@@ -65,7 +65,6 @@ int screenHeight;
 struct ye_entity_node *entity_list_head;
 char *project_path;
 struct ye_entity staged_entity;
-struct ye_component_transform staged_transform;
 json_t *SETTINGS;
 
 // holds the path to the editor settings file
@@ -73,9 +72,6 @@ char editor_settings_path[1024];
 
 int mouse_world_x = 0;
 int mouse_world_y = 0;
-
-// TESTING
-struct ye_entity *snerfbot = NULL; // removeme? TODO
 
 // nk_image icons
 struct edicons editor_icons;

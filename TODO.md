@@ -644,7 +644,7 @@ could do the unreal thing now. might not be worth the effort for drag tho
 
 darwin builds
 
-emscripten wasm, is it possible to make savedata system store in browser?
+emscripten wasm, is it possible to make savedata system store in browser? - i saw unity or godot has some kinda browser savedata system with either cookies or local storage
 
 issues with compiler optimization is probably casts. go through and fix them all.
 
@@ -656,7 +656,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 
 ## remaining large missing features
 
-- trigger colliders
 - lua scripting API full
 
 ## other features from acerola jam that would be cool
@@ -677,19 +676,17 @@ issues with compiler optimization is probably casts. go through and fix them all
 - button to easily sync collider size to renderer size (rotation included)
 - other collider shapes and skews
 - expose renderer rect to manually cull instead of black boxes
-- physics component duplification fields
 - table of strings assosciated function pointers, use console commands to toggle engine debugging overlays
 
 ## bugs found during acerola jam
 
 - physics system is fried with negative relativity for a collider, its offsetting the new position by the relative distance as well as the dx, dy
 - physics system should treat each axis as a seperate calculation, so if youre hitting wall going north east, it should move you north if you are only colliding on the east axis
-- copying an entity renames the OG to "copy" as well
+- copying entities fails if the name gets too long
 - serialize or expose center of rotation in editor
 - for missing assets, we used to have missing thing for images but yep will exit(1) if a header does not exist, so wrap this for images to ensure we get missing back if needed
 - audiosource system is cooked beyond belief. trying to free memory that has alreayd been freed, or accessed idk its from setting volume of channels, check valgrind
 - crashes on scene reloads a lot
-- sync rotation on duplicated entities
 - colliders are mega scuff, if more than one is touching things get weiiirdd
 - adding intro seemed to cause inconsistant loading into entry scene
 
