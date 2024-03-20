@@ -11,5 +11,6 @@
     "log_level": 0,
     "framecap": -1,
     "stretch_viewport": false,
-    "volume": 128
+    "volume": 128,
+    "icon_path":""
 }
