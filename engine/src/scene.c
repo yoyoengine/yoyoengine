@@ -78,6 +78,7 @@ struct ye_rectf ye_retrieve_position(json_t *parent){
             };
         }
     }
+    return b;
 }
 
 void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* entity_name) {
