@@ -28,6 +28,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/debug_renderer.h>
 
 void ye_update_renderer_component(struct ye_entity *entity){
     /*The purpose of this function is to be invoked when we know we have changed some internal variables of the renderer, and need to recompute the outputted texture*/
@@ -721,7 +722,13 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
     /*
         Additional render step to allow the game to perform custom behavior
+        TODO: removeme?
     */
     if(YE_STATE.engine.callbacks.additional_render != NULL)
         YE_STATE.engine.callbacks.additional_render();
+
+    /*
+        Perform additional immediate and callback based rendering on top of the frame we have just prepared
+    */
+    ye_debug_renderer_render();
 }

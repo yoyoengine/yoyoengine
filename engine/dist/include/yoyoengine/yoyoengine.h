@@ -39,6 +39,7 @@
 #include "yep.h"            // custom binary format parser/packer
 #include "json.h"           // jansson wrapper
 #include "graphics.h"
+#include "debug_renderer.h"
 #include "uthash/uthash.h"
 #include "cache.h"
 #include "ui.h"

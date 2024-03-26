@@ -37,6 +37,7 @@
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/lua_script.h>
+#include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
 
 
@@ -657,6 +658,9 @@ void ye_load_scene(const char *scene_path){
 
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();
+
+    // wipe non persistant render entities (additional and debug)
+    ye_debug_renderer_cleanup(false);
 
     ye_init_audio();
 

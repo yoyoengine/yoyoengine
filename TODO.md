@@ -694,3 +694,27 @@ issues with compiler optimization is probably casts. go through and fix them all
 
 - trigger colliders
   - trigger stay and trigger exit can come at a later date
+
+## im back
+
+additional render callbacks is good because it allows us to remove things that dont belong in the core, like hihglighting selected entites, thats a total breach of code seperation
+
+- it could also be good to have like ye_draw_line ye_draw_rect just as like a debug immediate mode thing
+
+current
+
+- prio on ripping out old selection state in favor of an additional render which can also handle the drag state
+
+- dragging rect needs a small pixel gap to make sure we are above tolerance, currently any mouse movement triggers drag
+
+wishlist:
+
+- SDL gfx for thicker lines and cooler shapes
+- cpmake for caching downloads of deps
+
+## ignoring above: here is for tomorrow
+
+- detect items in selection and drags to place into selection collection
+- maybe shift is to select, where some other bind is to move things around with mouse? i j k l?
+- rip out old selected entity logic
+- add into editor loop a function to render a rect around each selected entity

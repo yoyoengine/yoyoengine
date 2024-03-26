@@ -44,6 +44,7 @@
 #include <yoyoengine/ecs/physics.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
 
@@ -572,6 +573,9 @@ void ye_shutdown_engine(){
 
     // shut tricks down
     ye_shutdown_tricks();
+
+    // purge debug renderer
+    ye_debug_renderer_cleanup(true);
 
     // shutdown ECS
     ye_shutdown_ecs();
