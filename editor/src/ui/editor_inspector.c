@@ -24,6 +24,7 @@
 #include "editor_ui.h"
 #include "editor_serialize.h"
 #include "editor_panels.h"
+#include "editor_selection.h"
 
 /*
     Some variables used globally
@@ -120,12 +121,12 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                 for (int i = 0; i < 9; i++) {alignment_arr[i] = 0;}
                 // ^ zero the arr then we load its value from actual comp property
 
-                switch(YE_STATE.editor.selected_entity->renderer->alignment){
+                switch(editor_current_selection->renderer->alignment){
                     case 9:
                         // stretch, nothing selected
                         break;
                     default:
-                        alignment_arr[YE_STATE.editor.selected_entity->renderer->alignment] = 1;
+                        alignment_arr[editor_current_selection->renderer->alignment] = 1;
                         // printf("alignment: %d\n", YE_STATE.editor.selected_entity->renderer->alignment);
                         break;
                 }
@@ -863,15 +864,25 @@ bool comp_exists(int i, struct ye_entity *ent){
     defined in editor_ui.h
 */
 void ye_editor_paint_inspector(struct nk_context *ctx){
-    struct ye_entity *ent = YE_STATE.editor.selected_entity;
-    if(ent == NULL){
+    if(num_editor_selections == 0){
         return;
     }
+
+    struct ye_entity *ent = editor_current_selection;
     if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 3, screenWidth - screenWidth/1.5, screenHeight - screenHeight/3),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
-            if(ent == NULL){
+            if (num_editor_selections > 1){
                 nk_layout_row_dynamic(ctx, 25, 1);
-                nk_label_colored(ctx, "No entity selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
+                nk_label_colored(ctx, "Multiple entities selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
+                
+                /*
+                    TODO:
+                    Provide actions for multiple selected entities
+                    like delete, duplicate, scale/move, etc
+                */
+                
+                nk_end(ctx);
+                return;
             }
             else{
                 nk_layout_row_dynamic(ctx, 25, 2);

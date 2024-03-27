@@ -181,4 +181,13 @@ void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y,
  */
 void ye_get_mouse_world_position(int *x, int *y);
 
+/**
+ * @brief Checks if a specified component exists on an entity
+ * 
+ * @param entity The entity to check
+ * @param type The type of component to check for
+ * @return bool Sucess or failure
+*/
+bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type);
+
 #endif

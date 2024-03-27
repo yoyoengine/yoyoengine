@@ -23,6 +23,7 @@
 #include "editor_ui.h"
 #include "editor_serialize.h"
 #include "editor_panels.h"
+#include "editor_selection.h"
 #include <Nuklear/style.h>
 
 char search_text[256] = {""};
@@ -31,7 +32,7 @@ int matching_results = 0;
 const float ratio[] = {0.03f, 0.85f, /* up and down arrows: 0.05, 0.05, */ 0.06, 0.06};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
-    int height = YE_STATE.editor.selected_entity == NULL ? screenHeight : screenHeight / 3;
+    int height = num_editor_selections == 0 ? screenHeight : screenHeight / 3;
     if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -129,7 +130,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
 
                 // if the entity is selected, display it as a different color
                 bool flag = false; // messy way to do this, but it works
-                if(YE_STATE.editor.selected_entity == current->entity){
+                if(editor_is_selected(current->entity)){
                     nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(100,100,100))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(75,75,75))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(50,50,50))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                     flag = true;
                 }
@@ -139,15 +140,15 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 }
 
                 if(nk_button_label(ctx, current->entity->name)){
-                    if(YE_STATE.editor.selected_entity == current->entity){
-                        YE_STATE.editor.selected_entity = NULL;
+                    if(editor_is_selected(current->entity)){
+                        editor_deselect(current->entity);
                         // pop our style items if we pushed them
                         if(flag){ // if we are selected, pop our style items
                             nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                         }
                         break;
                     }
-                    YE_STATE.editor.selected_entity = current->entity;
+                    editor_select(current->entity);
                     entity_list_head = ye_get_entity_list_head();
                     // set all our current entity staging fields
                     staged_entity = *current->entity; // TODO this is hard because we have to copy all the components too... maybe we just need to let modification of fields directly and skip them if they are invalid
@@ -183,7 +184,8 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                     editor_unsaved();
 
                     // set the active entity as the newly duplicated one
-                    YE_STATE.editor.selected_entity = new;
+                    editor_deselect(current->entity);
+                    editor_select(new);
 
                     // nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_style_item(ctx); nk_style_pop_vec2(ctx);
                 }
@@ -196,8 +198,8 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 
                 if(nk_button_symbol(ctx, NK_SYMBOL_X)){
                     // if our selected entity is the current entity, close the hiearchy
-                    if(YE_STATE.editor.selected_entity == current->entity){
-                        YE_STATE.editor.selected_entity = NULL;
+                    if(editor_is_selected(current->entity)){
+                        editor_deselect(current->entity);
                     }
 
                     ye_destroy_entity(current->entity);

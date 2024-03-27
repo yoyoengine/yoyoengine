@@ -217,11 +217,6 @@ struct ye_editor_config {
     bool scene_camera_bounds_visible; // should work without editor but i dont feel like testing
 
     /*
-        Used to track the selected editor entity
-    */
-    struct ye_entity *selected_entity;
-
-    /*
         Only used in editor mode to designate the camera the scene file has marked
         as default, so when we replace the rendering camera with the editor camera
         we still know which camera the scene file has marked as default

@@ -711,6 +711,8 @@ wishlist:
 
 - SDL gfx for thicker lines and cooler shapes
 - cpmake for caching downloads of deps
+- it is possible to detect unsaved for changes in internal variables, save before we let nuklear handle input and check against original
+- drawing the grid of lines really isnt that hard
 
 ## ignoring above: here is for tomorrow
 
@@ -718,3 +720,13 @@ wishlist:
 - maybe shift is to select, where some other bind is to move things around with mouse? i j k l?
 - rip out old selected entity logic
 - add into editor loop a function to render a rect around each selected entity
+
+## other shi
+
+rebind pan to mmb
+pan should keep mouse world position in other mouse world position at end
+
+## critical editor QOL fix
+
+something is very fucked up about the zooming and panning scaling.
+This is a blocking issue that prevents fixing things like live panning.

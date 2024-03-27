@@ -477,7 +477,6 @@ void ye_init_engine() {
 
     // initialize some editor state
     YE_STATE.editor.scene_default_camera = NULL;
-    YE_STATE.editor.selected_entity = NULL;
 
     // ----------------- Begin Setup -------------------
 

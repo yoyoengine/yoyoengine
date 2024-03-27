@@ -36,10 +36,7 @@
 extern bool unsaved;
 extern bool saving;
 extern bool quit;
-extern bool dragging;
 extern bool lock_viewport_interaction;
-extern int last_x;
-extern int last_y;
 extern struct ye_entity * editor_camera;
 extern struct ye_entity * origin;
 extern int screenWidth;
@@ -54,6 +51,15 @@ extern json_t * SETTINGS;
 
 extern int mouse_world_x;
 extern int mouse_world_y;
+
+// selecting info
+extern SDL_Rect editor_selecting_rect;
+extern bool editor_selecting;
+
+// panning info
+extern SDL_Point pan_start;
+extern SDL_Point pan_end;
+extern bool editor_panning;
 
 extern char editor_settings_path[1024];
 

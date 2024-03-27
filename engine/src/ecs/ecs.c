@@ -429,7 +429,6 @@ void ye_shutdown_ecs(){
     // take care of cleaning up any entity pointers that exist in global state
     YE_STATE.engine.target_camera = NULL;
     YE_STATE.editor.scene_default_camera = NULL;
-    YE_STATE.editor.selected_entity = NULL;
 
     eid = 0; // TODO: is this a good choice?
 

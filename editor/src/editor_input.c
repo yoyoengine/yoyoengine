@@ -16,17 +16,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <math.h>
+
 #include <yoyoengine/yoyoengine.h>
+
 #include "editor.h"
 #include "editor_serialize.h"
 #include "editor_build.h"
-#include <math.h>
+#include "editor_selection.h"
 
 /*
     Getting this equation right was exponentially more difficult than you could possibly imagine
 */
 void editor_update_mouse_world_pos(int x, int y){
-    y = y - 35; // account for the menu bar
+    // y = y - 35; // account for the menu bar
 
     float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
     float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
@@ -43,47 +46,63 @@ bool is_hovering_editor(int x, int y){
             y > 35 && y < 35 + screenHeight / 1.5);
 }
 
+float original_pan_x, original_pan_y, original_cam_x, original_cam_y;
 float camera_zoom = 1.0;
 float camera_zoom_sens = 1.0;
 void editor_input_panning(SDL_Event event){
-    // get the actual mouse position (the mouse wheel event will not give us the actual mouse position)
-    int x, y;
-    SDL_GetMouseState(&x, &y);
+    // get the current mouse position in window
+    int _mx, _my; SDL_GetMouseState(&_mx, &_my);
+    float mx = _mx;
+    float my = _my;
 
-    // initial right click down, initialize panning
+    // use the camera size to calculate the world coordinates of the mouse position
+    float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
+    float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+    struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
+    mx = ((mx / scaleX) + campos.x);
+    my = ((my / scaleY) + campos.y);
+
+    // if middle mouse clicked down, initialize panning
     if (event.type == SDL_MOUSEBUTTONDOWN) {
-        if (event.button.button == SDL_BUTTON_RIGHT) {
-            if (is_hovering_editor(x, y) &&
-                !lock_viewport_interaction)
-            {
-                dragging = true;
-                last_x = event.button.x;
-                last_y = event.button.y;
+        if (event.button.button == SDL_BUTTON_MIDDLE) {
+            if (!lock_viewport_interaction) {
+                editor_panning = true;
+                
+                original_pan_x = mx;
+                original_pan_y = my;
+                original_cam_x = editor_camera->transform->x;
+                original_cam_y = editor_camera->transform->y;
+
+                pan_start = (SDL_Point){original_pan_x, original_pan_y};
+                pan_end = (SDL_Point){original_pan_x, original_pan_y};
+
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL));
             }
         }
     }
-    // release right click, stop panning TODO: add checks for if we are even panning here
+    // if middle mouse released, stop panning
     else if (event.type == SDL_MOUSEBUTTONUP) {
-        if (event.button.button == SDL_BUTTON_RIGHT)
-        {
-            dragging = false;
+        if (event.button.button == SDL_BUTTON_MIDDLE) {
+            editor_panning = false;
             SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
+
+            // temp: pan to result now
+            float dx = mx - original_pan_x;
+            float dy = my - original_pan_y;
+            editor_camera->transform->x = original_cam_x - dx;
+            editor_camera->transform->y = original_cam_y - dy;
         }
     }
-    // mouse movement, if we are panning then move the camera
+    // mouse movement, if we are panning move the camera
     else if (event.type == SDL_MOUSEMOTION) {
-        if (dragging)
-        {
-            int dx = event.motion.x - last_x;
-            int dy = event.motion.y - last_y;
-            editor_camera->transform->x -= dx;
-            editor_camera->transform->y -= dy; // editor camera is relative so we can just move its transform
-            last_x = event.motion.x;
-            last_y = event.motion.y;
+        if (editor_panning) {
+            float dx = mx - original_pan_x;
+            float dy = my - original_pan_y;
+
+            pan_end = (SDL_Point){mx, my};
         }
     }
-    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(x, y) && !lock_viewport_interaction)
+    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(mx, my) && !lock_viewport_interaction)
     {
         float dt = ye_delta_time();
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
@@ -113,61 +132,7 @@ void editor_input_panning(SDL_Event event){
         editor_camera->transform->x -= (editor_camera->camera->view_field.w - old_w) / 2;
         editor_camera->transform->y -= (editor_camera->camera->view_field.h - old_h) / 2;
 
-        editor_update_mouse_world_pos(x, y);
-    }
-}
-
-/*
-    Selecting entities and manipulating them
-*/
-void editor_input_selection(SDL_Event event){
-    if (event.type == SDL_MOUSEBUTTONDOWN) {
-
-        // experimental change to deselect active window when focusing editor
-        //
-        // if(!lock_viewport_interaction){
-        //     if(is_hovering_editor(event.button.x,event.button.y)){
-        //         YE_STATE.engine.ctx->active = NULL;
-        //         ye_logf(warning, "deselecting entity\n");
-        //     }
-        // }
-
-        if (event.button.button == SDL_BUTTON_LEFT) {   
-            // dont do anything if we are outside the viewport
-            if (is_hovering_editor(event.button.x,event.button.y) &&
-                !lock_viewport_interaction){
-
-                bool nothing = true;
-                // check what entity we clicked over, we clicked on an entity (thats ignoring our current selection) we should change the current selection, else we deselect
-                struct ye_entity_node *clicked_entity = entity_list_head;
-                while (clicked_entity != NULL)
-                {
-                    if(clicked_entity->entity == YE_STATE.editor.selected_entity || clicked_entity->entity->camera != NULL || clicked_entity->entity == origin)
-                    {
-                        clicked_entity = clicked_entity->next;
-                        continue;
-                    }
-
-                    // TODO: we can only select rendered objects rn
-                    if (
-                        clicked_entity->entity->renderer != NULL && 
-                        ye_point_in_rect(mouse_world_x, mouse_world_y, ye_get_position_rect(clicked_entity->entity, YE_COMPONENT_RENDERER)))
-                    {
-                        // we clicked on this entity
-                        if (clicked_entity->entity != YE_STATE.editor.selected_entity)
-                        {
-                            YE_STATE.editor.selected_entity = clicked_entity->entity;
-                        }
-                        nothing = false;
-                        break;
-                    }
-                    clicked_entity = clicked_entity->next; // TODO: solve world mouse point
-                }
-                if(nothing){
-                    YE_STATE.editor.selected_entity = NULL;
-                }
-            }
-        }
+        editor_update_mouse_world_pos(mx, my);
     }
 }
 
@@ -246,7 +211,7 @@ void editor_handle_input(SDL_Event event) {
 
     // misc input handling
     editor_input_panning(event);
-    editor_input_selection(event);
+    editor_selection_handler(event); // editor_selection.c
     editor_input_misc(event);
     editor_input_shortcuts(event);
 }

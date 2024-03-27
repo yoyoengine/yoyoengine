@@ -54,10 +54,7 @@
 bool unsaved;
 bool saving; // in the process of saving
 bool quit;
-bool dragging;
 bool lock_viewport_interaction;
-int last_x;
-int last_y;
 struct ye_entity *editor_camera;
 struct ye_entity *origin;
 int screenWidth;
@@ -72,6 +69,15 @@ char editor_settings_path[1024];
 
 int mouse_world_x = 0;
 int mouse_world_y = 0;
+
+// selecting info
+SDL_Rect editor_selecting_rect;
+bool editor_selecting = false;
+
+// panning info
+SDL_Point pan_start;
+SDL_Point pan_end;
+bool editor_panning = false;
 
 // nk_image icons
 struct edicons editor_icons;
@@ -142,6 +148,9 @@ SDL_Texture * eye = NULL;
     accepts one string argument of the path to the project folder
 */
 int main(int argc, char **argv) {
+    // idk why i put this first but whatever
+    editor_selecting_rect = (SDL_Rect){0, 0, 0, 0};
+
     (void)argc; // supress compiler warning
 
     // build up editor contexts
@@ -351,6 +360,11 @@ int main(int argc, char **argv) {
     ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
 
     while(!quit) {
+        if(editor_selecting)
+            ye_debug_render_rect(editor_selecting_rect.x, editor_selecting_rect.y, editor_selecting_rect.w, editor_selecting_rect.h, (SDL_Color){255, 0, 0, 255});
+        if(editor_panning)
+            ye_debug_render_line(pan_start.x, pan_start.y, pan_end.x, pan_end.y, (SDL_Color){255, 255, 255, 255});
+        editor_render_selection_rects();
         ye_process_frame();
     }
 

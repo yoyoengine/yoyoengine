@@ -17,6 +17,9 @@
 */
 
 #include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159
+#endif
 
 #include <SDL.h>
 
@@ -333,5 +336,30 @@ void ye_get_mouse_world_position(int *x, int *y){
 
         *x = (((*x - YE_STATE.engine.letterbox.x) / scaleX) + campos.x);
         *y = (((*y - YE_STATE.engine.letterbox.y) / scaleY) + campos.y);
+    }
+}
+
+bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
+    switch(type){
+        case YE_COMPONENT_TRANSFORM:
+            return entity->transform != NULL;
+        case YE_COMPONENT_RENDERER:
+            return entity->renderer != NULL;
+        case YE_COMPONENT_CAMERA:
+            return entity->camera != NULL;
+        case YE_COMPONENT_PHYSICS:
+            return entity->physics != NULL;
+        case YE_COMPONENT_TAG:
+            return entity->tag != NULL;
+        case YE_COMPONENT_COLLIDER:
+            return entity->collider != NULL;
+        case YE_COMPONENT_LUA_SCRIPT:
+            return entity->lua_script != NULL;
+        case YE_COMPONENT_AUDIOSOURCE:
+            return entity->audiosource != NULL;
+        case YE_COMPONENT_BUTTON:
+            return entity->button != NULL;
+        default:
+            return false;
     }
 }

@@ -25,8 +25,6 @@ bool is_hovering_editor(int x, int y);
 
 void editor_input_panning(SDL_Event event);
 
-void editor_input_selection(SDL_Event event);
-
 void editor_input_misc(SDL_Event event);
 
 void editor_input_shortcuts(SDL_Event event);

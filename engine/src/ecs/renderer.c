@@ -709,16 +709,16 @@ void ye_system_renderer(SDL_Renderer *renderer) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     }
 
-    // TODO: selected means only draw if it has a renderer for now, need to just make this show all components (collider, etc)
-    if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL && YE_STATE.editor.selected_entity->renderer != NULL){
-        // draw a pink rect around the selected entity rect
-        SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-        SDL_Rect selected_entity_rect = ye_get_position_rect(YE_STATE.editor.selected_entity,YE_COMPONENT_RENDERER);
-        selected_entity_rect.x = selected_entity_rect.x - camera_rect.x;
-        selected_entity_rect.y = selected_entity_rect.y - camera_rect.y;
-        SDL_RenderDrawRect(renderer, &selected_entity_rect);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    }
+    // TODO: removeme?
+    // if(YE_STATE.editor.editor_mode && YE_STATE.editor.selected_entity != NULL && YE_STATE.editor.selected_entity->renderer != NULL){
+    //     // draw a pink rect around the selected entity rect
+    //     SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
+    //     SDL_Rect selected_entity_rect = ye_get_position_rect(YE_STATE.editor.selected_entity,YE_COMPONENT_RENDERER);
+    //     selected_entity_rect.x = selected_entity_rect.x - camera_rect.x;
+    //     selected_entity_rect.y = selected_entity_rect.y - camera_rect.y;
+    //     SDL_RenderDrawRect(renderer, &selected_entity_rect);
+    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // }
 
     /*
         Additional render step to allow the game to perform custom behavior
