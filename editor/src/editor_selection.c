@@ -266,7 +266,7 @@ void editor_deselect(struct ye_entity * ent){
 
 void editor_select(struct ye_entity * ent){
     // check if keyboard is currently pressing ctrl
-    if(SDL_GetModState() & KMOD_CTRL){
+    if(!(SDL_GetModState() & KMOD_CTRL)){
         clear_selections();
     }
     add_selection(ent);

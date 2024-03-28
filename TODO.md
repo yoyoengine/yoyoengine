@@ -709,7 +709,7 @@ current
 
 wishlist:
 
-- SDL gfx for thicker lines and cooler shapes
+- SDL2 gfx from <https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h> for other advanced shapes
 - cpmake for caching downloads of deps
 - it is possible to detect unsaved for changes in internal variables, save before we let nuklear handle input and check against original
 - drawing the grid of lines really isnt that hard

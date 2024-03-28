@@ -146,7 +146,22 @@ set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
 set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
 
 ###############
-#  SD2L_ttf   #
+#   SDL_gfx   #
+###############
+
+# NOTE: SDL_gfx is extremely deprecated, and not worth bothering with anymore. I'm leaving this here just in case
+
+# FetchContent_Declare(
+#     SDL_gfx
+#     GIT_REPOSITORY https://github.com/zoogies/SDL_gfx-cmake
+#     GIT_PROGRESS TRUE
+# )
+# FetchContent_MakeAvailable(SDL_gfx)
+# target_include_directories(SDL_gfx PUBLIC ${SDL2_SOURCE_DIR}/include) # give access to SDL.h
+# target_include_directories(yoyoengine PUBLIC ${SDL_gfx_SOURCE_DIR}) # include is in the root of the repo
+
+###############
+#  SDL2_ttf   #
 ###############
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")

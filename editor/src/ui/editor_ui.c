@@ -250,13 +250,22 @@ void ye_editor_paint_info_overlay(struct nk_context *ctx){
 */
 bool show_info_overlay = false;
 bool show_camera_overlay = false;
+bool show_debug_overlay = false;
 void ye_editor_paint_options(struct nk_context *ctx){
     if (nk_begin(ctx, "Options", nk_rect(screenWidth/1.5 / 2, 40 + screenHeight/1.5, screenWidth - screenWidth/1.5, (screenHeight - screenHeight/1.5) - 40),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             
             nk_label(ctx, "Overlays:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_dynamic(ctx, 25, 3);
+            if(nk_checkbox_label(ctx, "Debug", (nk_bool*)&show_debug_overlay)){
+                if(show_debug_overlay){
+                    ui_register_component("debug",ui_paint_debug_overlay);
+                }
+                else{
+                    remove_ui_component("debug");
+                }
+            }
             if(nk_checkbox_label(ctx, "Info", (nk_bool*)&show_info_overlay)){
                 if(show_info_overlay){
                     ui_register_component("info_overlay",ye_editor_paint_info_overlay);
