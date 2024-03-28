@@ -363,3 +363,36 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
             return false;
     }
 }
+
+bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, int thickness, SDL_Color color) {
+    // Calculate the angle of the line
+    float angle = atan2(y2 - y1, x2 - x1);
+
+    // Calculate the perpendicular offset for vertices
+    float offsetX = sin(angle) * thickness / 2;
+    float offsetY = cos(angle) * thickness / 2;
+
+    // Define vertices for the line
+    SDL_Vertex vertices[4];
+    vertices[0] = (SDL_Vertex){{x1 + offsetX, y1 - offsetY},color};
+    vertices[1] = (SDL_Vertex){{x1 - offsetX, y1 + offsetY},color};
+    vertices[2] = (SDL_Vertex){{x2 + offsetX, y2 - offsetY},color};
+    vertices[3] = (SDL_Vertex){{x2 - offsetX, y2 + offsetY},color};
+
+    // Define indices for the line segments
+    int indices[6] = {0, 1, 2, 1, 2, 3};
+
+    // Render the geometry
+    return SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
+}
+
+void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color){
+    // draw top
+    ye_draw_thick_line(renderer, x, y, x + w, y, thickness, color);
+    // draw right
+    ye_draw_thick_line(renderer, x + w, y, x + w, y + h, thickness, color);
+    // draw bottom
+    ye_draw_thick_line(renderer, x, y + h, x + w, y + h, thickness, color);
+    // draw left
+    ye_draw_thick_line(renderer, x, y, x, y + h, thickness, color);
+}

@@ -190,4 +190,31 @@ void ye_get_mouse_world_position(int *x, int *y);
 */
 bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type);
 
+/**
+ * @brief Draws a line with a specified thickness.
+ * 
+ * @param renderer The renderer to draw the line on.
+ * @param x1 The x position of the start of the line.
+ * @param y1 The y position of the start of the line.
+ * @param x2 The x position of the end of the line.
+ * @param y2 The y position of the end of the line.
+ * @param thickness The thickness of the line.
+ * @param color The color of the line.
+ * @return bool Success or failure.
+*/
+bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, int thickness, SDL_Color color);
+
+/**
+ * @brief Draws a rectangle with a specified thickness.
+ * 
+ * @param renderer The renderer to draw the rectangle on.
+ * @param x The x position of the rectangle.
+ * @param y The y position of the rectangle.
+ * @param w The width of the rectangle.
+ * @param h The height of the rectangle.
+ * @param thickness The thickness of the rectangle.
+ * @param color The color of the rectangle.
+*/
+void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color);
+
 #endif

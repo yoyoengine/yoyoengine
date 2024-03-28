@@ -99,13 +99,15 @@ void ye_debug_renderer_render(){
         
         switch (itr->type) {
             case YE_DEBUG_RENDER_LINE:
-                SDL_RenderDrawLine(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y);
+                // SDL_RenderDrawLine(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y);
+                ye_draw_thick_line(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y, 10, itr->color);
                 break;
             case YE_DEBUG_RENDER_RECT:
                 SDL_Rect rect = itr->data.rect;
                 rect.x -= camera_rect.x;
                 rect.y -= camera_rect.y;
-                SDL_RenderDrawRect(renderer, &rect);
+                // SDL_RenderDrawRect(renderer, &rect);
+                ye_draw_thick_rect(renderer, rect.x, rect.y, rect.w, rect.h, 10, itr->color);
                 break;
             case YE_DEBUG_RENDER_CIRCLE:
                 ye_draw_circle(renderer, itr->data.circle.center.x - camera_rect.x, itr->data.circle.center.y - camera_rect.y, itr->data.circle.radius);
