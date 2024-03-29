@@ -356,6 +356,9 @@ int main(int argc, char **argv) {
 
     entity_list_head = ye_get_entity_list_head();
 
+    // TODO: remove in future when we serialize editor prefs
+    YE_STATE.editor.editor_display_viewport_lines = true;
+
     ye_logf(info, "Editor fully initialized.\n");
     ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
 
