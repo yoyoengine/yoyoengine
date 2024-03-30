@@ -46,14 +46,16 @@ bool is_hovering_editor(int x, int y){
             y > 35 && y < 35 + screenHeight / 1.5);
 }
 
-float original_pan_x, original_pan_y, original_cam_x, original_cam_y;
+float last_pan_x, last_pan_y;
 float camera_zoom = 1.0;
 float camera_zoom_sens = 1.0;
-void editor_input_panning(SDL_Event event){
+float mx, my;
+
+void update_mx_my(){
     // get the current mouse position in window
     int _mx, _my; SDL_GetMouseState(&_mx, &_my);
-    float mx = _mx;
-    float my = _my;
+    mx = _mx;
+    my = _my;
 
     // use the camera size to calculate the world coordinates of the mouse position
     float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
@@ -61,6 +63,12 @@ void editor_input_panning(SDL_Event event){
     struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
     mx = ((mx / scaleX) + campos.x);
     my = ((my / scaleY) + campos.y);
+}
+
+void editor_input_panning(SDL_Event event){
+
+    // get mouse world pos
+    update_mx_my();
 
     // if middle mouse clicked down, initialize panning
     if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -68,15 +76,11 @@ void editor_input_panning(SDL_Event event){
             if (!lock_viewport_interaction) {
                 editor_panning = true;
                 
-                original_pan_x = mx;
-                original_pan_y = my;
-                original_cam_x = editor_camera->transform->x;
-                original_cam_y = editor_camera->transform->y;
-
-                pan_start = (SDL_Point){original_pan_x, original_pan_y};
-                pan_end = (SDL_Point){original_pan_x, original_pan_y};
-
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL));
+
+                // set the starting point for our pan on first frame
+                last_pan_x = mx;
+                last_pan_y = my;
             }
         }
     }
@@ -85,21 +89,24 @@ void editor_input_panning(SDL_Event event){
         if (event.button.button == SDL_BUTTON_MIDDLE) {
             editor_panning = false;
             SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
-
-            // temp: pan to result now
-            float dx = mx - original_pan_x;
-            float dy = my - original_pan_y;
-            editor_camera->transform->x = original_cam_x - dx;
-            editor_camera->transform->y = original_cam_y - dy;
         }
     }
     // mouse movement, if we are panning move the camera
     else if (event.type == SDL_MOUSEMOTION) {
         if (editor_panning) {
-            float dx = mx - original_pan_x;
-            float dy = my - original_pan_y;
+            // get the diff we need to pan by
+            float dx = mx - last_pan_x;
+            float dy = my - last_pan_y;
 
-            pan_end = (SDL_Point){mx, my};
+            // pan the camera
+            editor_camera->transform->x -= dx;
+            editor_camera->transform->y -= dy;
+
+            // get the new world location as our next starting point
+            update_mx_my();
+
+            last_pan_x = mx;
+            last_pan_y = my;
         }
     }
     else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(mx, my) && !lock_viewport_interaction)
