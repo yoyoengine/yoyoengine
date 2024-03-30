@@ -109,7 +109,7 @@ void editor_input_panning(SDL_Event event){
             last_pan_y = my;
         }
     }
-    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(mx, my) && !lock_viewport_interaction)
+    else if (event.type == SDL_MOUSEWHEEL /*&& is_hovering_editor(mx, my)*/ && !lock_viewport_interaction) // this broke something and idk why
     {
         float dt = ye_delta_time();
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed
@@ -131,13 +131,30 @@ void editor_input_panning(SDL_Event event){
         float old_w = editor_camera->camera->view_field.w;
         float old_h = editor_camera->camera->view_field.h;
 
+        float old_mx = mx;
+        float old_my = my;
+
         // update the camera zoom
         editor_camera->camera->view_field.w = screenWidth / camera_zoom;
         editor_camera->camera->view_field.h = screenHeight / camera_zoom;
 
-        // offset position to keep center of the screen in the same place TODO: scale this with viewport size
-        editor_camera->transform->x -= (editor_camera->camera->view_field.w - old_w) / 2;
-        editor_camera->transform->y -= (editor_camera->camera->view_field.h - old_h) / 2;
+        update_mx_my();
+
+        switch(EDITOR_STATE.zoom_style){
+            case ZOOM_TOP_LEFT:
+                // no behavior, zooms top left of camera by default
+                break;
+            case ZOOM_CENTER:
+                // offset position to keep center of the screen in the same place TODO: scale this with viewport size
+                editor_camera->transform->x -= (editor_camera->camera->view_field.w - old_w) / 2;
+                editor_camera->transform->y -= (editor_camera->camera->view_field.h - old_h) / 2;
+                break;
+            case ZOOM_MOUSE:
+                // move the camera, so that we have zoomed centered on the mouse
+                editor_camera->transform->x -= (mx - old_mx);
+                editor_camera->transform->y -= (my - old_my);
+                break;
+        }
 
         editor_update_mouse_world_pos(mx, my);
     }

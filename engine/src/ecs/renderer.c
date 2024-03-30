@@ -439,6 +439,63 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             SDL_RenderDrawLine(renderer, 0, i, YE_STATE.engine.target_camera->camera->view_field.w, i);
         }
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+
+        SDL_Rect cam = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
+
+        // x axis
+        ye_draw_thick_line(
+            renderer,
+            0,
+            0 - cam.y,
+            cam.w,
+            0 - cam.y,
+            6,
+            (SDL_Color){255, 255, 255, 255}
+        );
+
+        // y axis
+        ye_draw_thick_line(
+            renderer,
+            0 - cam.x,
+            0,
+            0 - cam.x,
+            cam.h,
+            6,
+            (SDL_Color){255, 255, 255, 255}
+        );
+
+        /*
+            TODO: experimental subsectioning lines
+        */
+        // int num_lines = 5;
+        // int line_spacing = cam.w / num_lines;
+        // int x_offset = cam.x % line_spacing;
+
+        // for(int i = 1; i < num_lines; i++){
+        //     ye_draw_thick_line(
+        //         renderer,
+        //         (i * line_spacing) - x_offset,
+        //         0,
+        //         (i * line_spacing) - x_offset,
+        //         cam.h,
+        //         2,
+        //         (SDL_Color){255, 0, 0, 255}
+        //     );
+        // }
+        
+        // int y_offset = cam.y % line_spacing;
+
+        // for(int i = 1; i < num_lines; i++){
+        //     ye_draw_thick_line(
+        //         renderer,
+        //         0,
+        //         (i * line_spacing) - y_offset,
+        //         cam.w,
+        //         (i * line_spacing) - y_offset,
+        //         2,
+        //         (SDL_Color){0, 255, 0, 255}
+        //     );
+        // }
     }
 
     // check if we have a non-null, active camera targeted

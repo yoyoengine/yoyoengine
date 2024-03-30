@@ -703,13 +703,10 @@ additional render callbacks is good because it allows us to remove things that d
 
 current
 
-- prio on ripping out old selection state in favor of an additional render which can also handle the drag state
-
 - dragging rect needs a small pixel gap to make sure we are above tolerance, currently any mouse movement triggers drag
 
 wishlist:
 
-- SDL2 gfx from <https://github.com/rtrussell/BBCSDL/blob/master/include/SDL2_gfxPrimitives.h> for other advanced shapes
 - cpmake for caching downloads of deps
 - it is possible to detect unsaved for changes in internal variables, save before we let nuklear handle input and check against original
 - drawing the grid of lines really isnt that hard
@@ -718,15 +715,3 @@ wishlist:
 
 - detect items in selection and drags to place into selection collection
 - maybe shift is to select, where some other bind is to move things around with mouse? i j k l?
-- rip out old selected entity logic
-- add into editor loop a function to render a rect around each selected entity
-
-## other shi
-
-rebind pan to mmb
-pan should keep mouse world position in other mouse world position at end
-
-## critical editor QOL fix
-
-something is very fucked up about the zooming and panning scaling.
-This is a blocking issue that prevents fixing things like live panning.

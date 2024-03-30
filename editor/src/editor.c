@@ -63,6 +63,7 @@ struct ye_entity_node *entity_list_head;
 char *project_path;
 struct ye_entity staged_entity;
 json_t *SETTINGS;
+struct editor_state EDITOR_STATE;
 
 // holds the path to the editor settings file
 char editor_settings_path[1024];
@@ -150,6 +151,14 @@ SDL_Texture * eye = NULL;
 int main(int argc, char **argv) {
     // idk why i put this first but whatever
     editor_selecting_rect = (SDL_Rect){0, 0, 0, 0};
+
+    /*
+        Define editor state and set any defaults
+        for first timers or unserialized values
+    */
+    EDITOR_STATE = (struct editor_state){
+        .zoom_style = ZOOM_MOUSE
+    };
 
     (void)argc; // supress compiler warning
 

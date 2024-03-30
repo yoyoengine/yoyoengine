@@ -83,6 +83,25 @@ struct edicons {
 
 extern struct edicons editor_icons;
 
+/*
+    Struct to hold editor preferences/settings
+
+    TODO: decide how struct members here and editor specific YE_STATE struct members
+    will interact. Should they have pointers in here?
+*/
+struct editor_state {
+    /*
+        Camera Zoom Style
+    */
+    enum {
+        ZOOM_TOP_LEFT,
+        ZOOM_CENTER,
+        ZOOM_MOUSE
+    } zoom_style;
+};
+
+extern struct editor_state EDITOR_STATE;
+
 bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
 void editor_load_scene(char * path);
