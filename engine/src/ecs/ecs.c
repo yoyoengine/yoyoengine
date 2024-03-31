@@ -209,7 +209,14 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
 */
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
-    char *temp = strdup(entity->name); strcat(temp, " copy");
+    char *suffix = " copy";
+    int temp_len = strlen(entity->name) + strlen(suffix) + 1; // +1 for the null-terminating character
+    char *temp = (char *)malloc(temp_len * sizeof(char));
+    if (temp == NULL) {
+        // handle error
+    }
+    strcpy(temp, entity->name);
+    strcat(temp, suffix);
 
     struct ye_entity *new_entity = ye_create_entity_named(temp);
 
