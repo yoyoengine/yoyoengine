@@ -697,10 +697,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 
 ## im back
 
-additional render callbacks is good because it allows us to remove things that dont belong in the core, like hihglighting selected entites, thats a total breach of code seperation
-
-- it could also be good to have like ye_draw_line ye_draw_rect just as like a debug immediate mode thing
-
 current
 
 - dragging rect needs a small pixel gap to make sure we are above tolerance, currently any mouse movement triggers drag
@@ -709,7 +705,6 @@ wishlist:
 
 - cpmake for caching downloads of deps
 - it is possible to detect unsaved for changes in internal variables, save before we let nuklear handle input and check against original
-- drawing the grid of lines really isnt that hard
 
 ## ignoring above: here is for tomorrow
 

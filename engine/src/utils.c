@@ -40,10 +40,13 @@ void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum 
 
     // check if some loser wants to stretch something
     if(alignment == YE_ALIGN_STRETCH){
+        obj->x = bounds->x;
+        obj->y = bounds->y;
         obj->w = bounds->w;
         obj->h = bounds->h;
-        // obj->x = bounds->x;
-        // obj->y = bounds->y;
+        *center = (SDL_Point){obj->w / 2, obj->h / 2};
+        *bounds_f = ye_convert_rect_rectf(*bounds);
+        *obj_f = ye_convert_rect_rectf(*obj);
         return;
     }
 
