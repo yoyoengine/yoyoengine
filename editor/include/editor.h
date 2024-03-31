@@ -39,8 +39,8 @@ extern bool quit;
 extern bool lock_viewport_interaction;
 extern struct ye_entity * editor_camera;
 extern struct ye_entity * origin;
-extern int screenWidth;
-extern int screenHeight;
+extern float screenWidth;
+extern float screenHeight;
 extern struct ye_entity_node * entity_list_head;
 extern char *project_path;
 

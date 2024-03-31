@@ -160,8 +160,8 @@ set_style(struct nk_context *ctx, enum theme theme)
         table[NK_COLOR_EDIT_CURSOR]=                amoled_black;
         table[NK_COLOR_COMBO]=                      nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_CHART]=                      amoled_black;
-        table[NK_COLOR_CHART_COLOR]=                amoled_black;
-        table[NK_COLOR_CHART_COLOR_HIGHLIGHT]=      amoled_black;
+        table[NK_COLOR_CHART_COLOR]=                amoled_white;
+        table[NK_COLOR_CHART_COLOR_HIGHLIGHT]=      amoled_white;
         table[NK_COLOR_SCROLLBAR]=                  nk_rgba(20, 20, 20, 255);
         table[NK_COLOR_SCROLLBAR_CURSOR]=           amoled_white;
         table[NK_COLOR_SCROLLBAR_CURSOR_HOVER]=     amoled_white;

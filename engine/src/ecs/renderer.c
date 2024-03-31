@@ -423,24 +423,68 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     ye_entity_list_remove(&renderer_list_head, entity);
 }
 
-void ye_system_renderer(SDL_Renderer *renderer) {
-    /*
-        These lines really suck and I wish they were better,
-        probably need actual zoom field tracking in the camera.
-    */
-    if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
-        // draw a grid of white evently spaced lines across the screen
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 50);
-        for(int i = 0; i < YE_STATE.engine.target_camera->camera->view_field.w; i += 32){
-            SDL_RenderDrawLine(renderer, i, 0, i, YE_STATE.engine.target_camera->camera->view_field.h);
-        }
-        for(int i = 0; i < YE_STATE.engine.target_camera->camera->view_field.h; i += 32){
-            SDL_RenderDrawLine(renderer, 0, i, YE_STATE.engine.target_camera->camera->view_field.w, i);
-        }
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+void _draw_subsecting_lines(SDL_Renderer * renderer, SDL_Rect cam, int line_spacing, int thickness, SDL_Color color) {
+    int num_lines = cam.w / line_spacing;
+    int x_offset = cam.x % line_spacing;
 
+    for(int i = 0; i < num_lines; i++){
+        ye_draw_thick_line(
+            renderer,
+            (i * line_spacing) - x_offset,
+            0,
+            (i * line_spacing) - x_offset,
+            cam.h,
+            thickness,
+            color
+        );
+    }
+    
+    int y_offset = cam.y % line_spacing;
+
+    for(int i = 0; i < num_lines; i++){
+        ye_draw_thick_line(
+            renderer,
+            0,
+            (i * line_spacing) - y_offset,
+            cam.w,
+            (i * line_spacing) - y_offset,
+            thickness,
+            color
+        );
+    }
+
+    // printf("drew %dx%d lines\n", num_lines, num_lines);
+    // printf("x offset: %d, y offset: %d\n", x_offset, y_offset);
+}
+
+void ye_system_renderer(SDL_Renderer *renderer) {
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
+
+        // get the cam pos
         SDL_Rect cam = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
+
+        /*
+            Grid of subsecting lines
+        */
+        if(cam.w < 2560)
+            _draw_subsecting_lines(renderer, cam, 50, 1, (SDL_Color){25, 25, 25, 255});
+        // if(cam.w < 3840)
+        if(cam.w < 5000)
+            _draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 255});
+        if(cam.w < 9500)
+            _draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 255});
+        if(cam.w > 10000){
+            int thickness = ((cam.w - 9500) / 2000) + 7;
+            // printf("thickness: %d\n", thickness);
+            _draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 255});
+        }
+        else{
+            _draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 255});
+        }
+
+        /*
+            Overpaint the axes
+        */
 
         // x axis
         ye_draw_thick_line(
@@ -449,8 +493,8 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             0 - cam.y,
             cam.w,
             0 - cam.y,
-            6,
-            (SDL_Color){255, 255, 255, 255}
+            10,
+            (SDL_Color){225, 225, 225, 255}
         );
 
         // y axis
@@ -460,42 +504,9 @@ void ye_system_renderer(SDL_Renderer *renderer) {
             0,
             0 - cam.x,
             cam.h,
-            6,
-            (SDL_Color){255, 255, 255, 255}
+            10,
+            (SDL_Color){225, 225, 225, 255}
         );
-
-        /*
-            TODO: experimental subsectioning lines
-        */
-        // int num_lines = 5;
-        // int line_spacing = cam.w / num_lines;
-        // int x_offset = cam.x % line_spacing;
-
-        // for(int i = 1; i < num_lines; i++){
-        //     ye_draw_thick_line(
-        //         renderer,
-        //         (i * line_spacing) - x_offset,
-        //         0,
-        //         (i * line_spacing) - x_offset,
-        //         cam.h,
-        //         2,
-        //         (SDL_Color){255, 0, 0, 255}
-        //     );
-        // }
-        
-        // int y_offset = cam.y % line_spacing;
-
-        // for(int i = 1; i < num_lines; i++){
-        //     ye_draw_thick_line(
-        //         renderer,
-        //         0,
-        //         (i * line_spacing) - y_offset,
-        //         cam.w,
-        //         (i * line_spacing) - y_offset,
-        //         2,
-        //         (SDL_Color){0, 255, 0, 255}
-        //     );
-        // }
     }
 
     // check if we have a non-null, active camera targeted

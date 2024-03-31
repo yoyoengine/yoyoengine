@@ -144,7 +144,18 @@ void ui_end_input_checks(){
     nk_input_end(ctx);
 }
 
+// used to represent debug chart data in ui.c
+struct ye_debug_chart_value {
+    int ticks;
+    float value;
+};
+
+struct ye_debug_chart_value framerate_log[60];
+int framerate_log_index = 0;
+int last_updated_framerate_log = 0;
+
 void ui_paint_debug_overlay(struct nk_context *ctx){
+
     // put all the parameters into strings for display
     char fps_str[100];
     char input_time_str[100];
@@ -167,8 +178,62 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     sprintf(audio_chunk_count_str, "audio chunk count: %d", YE_STATE.runtime.audio_chunk_count);
     sprintf(log_line_count_str, "log line count: %d", YE_STATE.runtime.log_line_count);
 
+    // update chart logs
+
+    int ticks = SDL_GetTicks();
+
+    // fps chart logs
+    if(ticks - last_updated_framerate_log > 100){
+        framerate_log[framerate_log_index].ticks = ticks;
+        framerate_log[framerate_log_index].value = YE_STATE.runtime.fps;
+        framerate_log_index++;
+        if(framerate_log_index >= 60){
+            framerate_log_index = 0;
+        }
+        last_updated_framerate_log = ticks;
+    }
+
+    // paint gui
     if (nk_begin(ctx, "Metrics", nk_rect(10, 10, 220, 200),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
+        
+        // fps chart
+        nk_layout_row_dynamic(ctx, 50, 1);
+
+        struct nk_color chart_color;
+        if(YE_STATE.runtime.fps < 30){
+            chart_color = nk_rgb(255, 0, 0);
+        }
+        else if(YE_STATE.runtime.fps < 60){
+            chart_color = nk_rgb(255, 255, 0);
+        }
+        else{
+            chart_color = nk_rgb(0, 255, 0);
+        }
+
+        if(nk_chart_begin_colored(ctx, NK_CHART_LINES, chart_color, nk_rgb(255,255,255), 60, 0, 144)){
+            for(int i = framerate_log_index; i < framerate_log_index + 60; i++){
+                int current_index = i % 60;
+                nk_flags res = nk_chart_push(ctx, framerate_log[current_index].value);
+                if(res & NK_CHART_HOVERING){
+                    if(nk_tooltip_begin(ctx, 100)){
+                        nk_layout_row_dynamic(ctx, 20, 1);
+
+                        char value_str[100];
+                        sprintf(value_str, "FPS: %.2f", framerate_log[current_index].value);
+                        nk_label(ctx, value_str, NK_TEXT_LEFT);
+                        
+                        char time_str[100];
+                        sprintf(time_str, "Ticks: %d", framerate_log[current_index].ticks);
+                        nk_label(ctx, time_str, NK_TEXT_LEFT);
+
+                        nk_tooltip_end(ctx);
+                    }
+                }
+            }
+            nk_chart_end(ctx);
+        }
+
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, fps_str, NK_TEXT_LEFT);
         nk_label(ctx, input_time_str, NK_TEXT_LEFT);
@@ -210,6 +275,10 @@ void ui_paint_cam_info(struct nk_context *ctx){
             nk_label(ctx, w_str, NK_TEXT_LEFT);
             nk_label(ctx, h_str, NK_TEXT_LEFT);
             nk_label(ctx, z_str, NK_TEXT_LEFT);
+
+        nk_property_int(ctx, "width", 0, &YE_STATE.engine.target_camera->camera->view_field.w, 90000, 1, 1);
+        nk_property_int(ctx, "height", 0, &YE_STATE.engine.target_camera->camera->view_field.h, 90000, 1, 1);
+
     nk_end(ctx);
     }
 }
