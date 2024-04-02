@@ -48,8 +48,6 @@ need some generic dialog popups as global state. functions can call like "input 
 - changing Z in editor only changes the value, it does not re sort the list.
   TODO: impl re sorting the list on z value change
 
-- stretch alignment seems to default back to pixel size of image. might not be a bug, but actually a feature
-
 - TODO: actual duplicate button in editor
 
 - all #defines we should add a #ifndef before defining them so they can technically be set by user if they want to
@@ -134,11 +132,6 @@ editor_ui.c is a bloated mess - i moved a little bit of it just now but its not 
 ## misc 202304309505943
 
 viewport seems to overlap title bar for bottom two editor panels
-
-## panning zoom improvements
-
-I would rlly like to have zoom center on camera center or mouse but idk the math for that
-for panning I would like the pan to keep the mouse pointer on the world pos it started on
 
 ## cache size counter
 
@@ -294,82 +287,6 @@ in the future we could hash the integer handles to get a unique id which would d
 
 a .yepignore would be nice to know which files we deliberately dont want to pack
 
-## backup of old image loading system
-
-```c
-SDL_Surface *image = IMG_Load(itr->fullpath);
-            if(!image){
-                ye_logf(error,"Error loading image %s\n", itr->fullpath);
-                exit(1);
-            }
-
-            // print out the format of the image from the surface
-            SDL_PixelFormat *format = image->format;
-            
-            // init some vars that are specific to the format we work with
-            uint8_t bytes_per_pixel;
-
-            // switch on the format type to handle different formats
-            switch(format->format){
-                case SDL_PIXELFORMAT_RGB24:
-                    ye_logf(debug,"Image format: RGB24\n");
-                    data_type = (uint8_t)YEP_DATATYPE_IMAGE_RGB24;
-                    bytes_per_pixel = 3;
-                    break;
-                case SDL_PIXELFORMAT_ABGR8888:
-                    ye_logf(debug,"Image format: ARGB8888\n");
-                    data_type = (uint8_t)YEP_DATATYPE_IMAGE_ABGR888;
-                    bytes_per_pixel = 4;
-                    break;
-                default:
-                    ye_logf(debug,"Image format: UNKNOWN\n");
-                    exit(1);
-                    break;
-            }
-
-            printf("Image format: %s\n", SDL_GetPixelFormatName(format->format));
-
-            // check if this requires locking (VERY UNLIKELY)
-            if(SDL_MUSTLOCK(image)){
-                SDL_LockSurface(image);
-                printf("Locked surface\n");
-            }
-
-            // alloc the data and copy into it
-            int malloc_data_size = sizeof(uint16_t) + sizeof(uint16_t) + (image->w * image->h * bytes_per_pixel);
-            data = (char*)malloc(malloc_data_size);
-
-            // check for if width exceeds the max value
-            if(image->w > UINT16_MAX || image->h > UINT16_MAX){
-                ye_logf(error,"Error: image %s width exceeds max value of %d\n", itr->fullpath, UINT16_MAX);
-                exit(1);
-            }
-
-            uint16_t width = image->w;
-            uint16_t height = image->h;
-            memcpy(data, &width, sizeof(uint16_t));
-            memcpy(data + sizeof(uint16_t), &height, sizeof(uint16_t));
-
-            // need to dereference the void pointer for pixels
-            uint32_t* pixels = (uint32_t*)image->pixels;
-
-            memcpy(
-                data + sizeof(uint16_t) + sizeof(uint16_t), // offset from the w,h meta
-                pixels,                                     // pixel data
-                image->w * image->h * bytes_per_pixel       // size
-            );
-            
-            printf("Image %s is %d x %d\n", itr->fullpath, image->w, image->h);
-
-            // set vars
-            data_size = sizeof(uint16_t) + sizeof(uint16_t) + (image->w * image->h * bytes_per_pixel);
-            uncompressed_size = data_size;
-            compression_type = (uint8_t)YEP_COMPRESSION_NONE;
-
-            // cleanup
-            SDL_FreeSurface(image);
-```
-
 ## new systems that need done
 
 ## what if we exposed a really easy to use save data system?
@@ -442,8 +359,6 @@ bumped nuklear ver for disabled feature, check what else has been added and if w
 
 check your style impl because with disabled widgets the checkbox does not fade color
 
-maybe the issues with paintbounds is not casting to ints?
-
 if renderer is not on/disabled we cant preview colliders or audio range
 
 editor needs scene configureation/settings panel, add shortcut + menu bar + button in bottom maybe
@@ -466,39 +381,9 @@ BUG
 
 fading in and out scene loader transitions
 
-scene settings panel editor
-
 mixer start falloff range
 
 audio listener specification rather than default camera center
-
-## nuklear charts
-
-```c
-/* line chart */
-            id = 0;
-            index = -1;
-            nk_layout_row_dynamic(ctx, 100, 1);
-            if (nk_chart_begin(ctx, NK_CHART_LINES, 32, -1.0f, 1.0f)) {
-                for (i = 0; i < 32; ++i) {
-                    nk_flags res = nk_chart_push(ctx, (float)cos(id));
-                    if (res & NK_CHART_HOVERING)
-                        index = (int)i;
-                    if (res & NK_CHART_CLICKED)
-                        line_index = (int)i;
-                    id += step;
-                }
-                nk_chart_end(ctx);
-            }
-
-            if (index != -1)
-                nk_tooltipf(ctx, "Value: %.2f", (float)cos((float)index*step));
-            if (line_index != -1) {
-                nk_layout_row_dynamic(ctx, 20, 1);
-                nk_labelf(ctx, NK_TEXT_LEFT, "Selected value: %.2f", (float)cos((float)index*step));
-            }
-
-```
 
 ## tmaps
 
@@ -616,10 +501,6 @@ fix the stretch alignment
 
 changing wrap length should visually show cutoff or update text TODO
 
-## outlined text inspector
-
-THERES NO OUTLINED TEXT IN INSPECTOR YET LMAOOO
-
 ## skjhfjkdfhgkjd
 
 track editor camera position before scene reload and move it back to smae spot after recreated
@@ -671,7 +552,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - easier timer constructor, they are more common than anticipated
 - case insensitivity in search bar
 - easily close hiearchy when searching to collapse it
-- set the active entity to recently duplicated one
 - enter key to submit imputs
 - button to easily sync collider size to renderer size (rotation included)
 - other collider shapes and skews
