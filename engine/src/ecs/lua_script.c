@@ -72,7 +72,7 @@ void _extract_signature(struct ye_component_lua_script *script, const char *func
 }
 
 bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
-    ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
+    // ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
     // allocate and assign the component
     entity->lua_script = malloc(sizeof(struct ye_component_lua_script));
@@ -184,7 +184,7 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
     // add to the lua_script list
     ye_entity_list_add(&lua_script_list_head, entity);
 
-    ye_logf(debug,"Successfully added lua script component to entity %s\n", entity->name);
+    // ye_logf(debug,"Successfully added lua script component to entity %s\n", entity->name);
 
     return true;
 }

@@ -161,15 +161,20 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             
             json_object_set_new(_scene, "default camera", json_string(scene_default_camera));
             
-            json_t * music; 
-            if(!ye_json_object(_scene, "music", &music)){
-                music = json_object();
-                json_object_set_new(_scene, "music", music);
-            }
+            /*
+                Only create the music section if src is not empty
+            */
+            if(strlen(scene_music_path) > 0){
+                json_t * music; 
+                if(!ye_json_object(_scene, "music", &music)){
+                    music = json_object();
+                    json_object_set_new(_scene, "music", music);
+                }
 
-            json_object_set_new(music, "src", json_string(scene_music_path));
-            json_object_set_new(music, "loop", json_boolean(scene_music_loop));
-            json_object_set_new(music, "volume", json_real(scene_music_volume));
+                json_object_set_new(music, "src", json_string(scene_music_path));
+                json_object_set_new(music, "loop", json_boolean(scene_music_loop));
+                json_object_set_new(music, "volume", json_real(scene_music_volume));
+            }
 
             // write to file
             ye_json_write(ye_path_resources(YE_STATE.runtime.scene_file_path), SCENE);

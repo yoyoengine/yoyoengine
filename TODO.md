@@ -590,3 +590,8 @@ wishlist:
 
 - detect items in selection and drags to place into selection collection
 - maybe shift is to select, where some other bind is to move things around with mouse? i j k l?
+
+## stuff
+
+- SDL has a file drop event, could use it to auto import files into resources
+  - https://wiki.libsdl.org/SDL2/SDL_DropEvent

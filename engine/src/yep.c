@@ -284,7 +284,7 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle){
 
     // try to get our header
     if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)){
-        ye_logf(error,"Error: could not find resource %s in file %s\n", handle, file);
+        ye_logf(error,"Error: could not find resource \"%s\" in file %s\n", handle, file);
         exit(1);
     }
 
