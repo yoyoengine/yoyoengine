@@ -91,6 +91,17 @@ int lua_debug_quit(lua_State* L){ // TODO: removeme
     return 0;
 }
 
+////////////////////////////////////////////////////////////
+
+/*
+    This is a really shitty way of doing it, but for now
+    im just going to add API functions here as I use them
+    and declare them in ye_register_lua_scripting_api, in
+    the future I can refactor
+*/
+
+////////////////////////////////////////////////////////////
+
 /*
     Right now im just going to use this as a testbed for lua scripting API
 */

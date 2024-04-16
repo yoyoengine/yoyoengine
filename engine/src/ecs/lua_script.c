@@ -71,6 +71,44 @@ void _extract_signature(struct ye_component_lua_script *script, const char *func
     lua_pop(L, 1); // Pop the function or nil value from the stack
 }
 
+// really shitty and weird utility function to grab some lua script into a buffer
+char* _retrieve_script(const char* handle, bool is_resources_yep) {
+    char *data = NULL;
+    if(YE_STATE.editor.editor_mode){
+        char *full_path = ye_path_resources(handle);
+        FILE *file = fopen(full_path, "r");
+        if(file == NULL){
+            ye_logf(error,"Failed to open file %s\n", full_path);
+            return NULL;
+        }
+        fseek(file, 0, SEEK_END);
+        long length = ftell(file);
+        fseek(file, 0, SEEK_SET);
+        data = malloc(length + 1);
+        fread(data, 1, length, file);
+        fclose(file);
+        data[length] = '\0';
+    }
+    else{
+        struct yep_data_info d;
+
+        if(is_resources_yep)
+            d = yep_resource_misc(handle);
+        else
+            d = yep_engine_resource_misc(handle);
+        
+        if(d.data == NULL){
+            ye_logf(error,"Failed to open file %s\n", handle);
+            return NULL;
+        }
+        data = malloc(d.size + 1);
+        memcpy(data, d.data, d.size);
+        data[d.size] = '\0';
+        free(d.data);
+    }
+    return data;
+}
+
 bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
     // ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
@@ -103,71 +141,68 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
     }
 
     /*
-        Load the script data into a string
+        if we arent in editor, no need to setup the API and actually run the script
+        TODO: this could break stuff in the future if you try to add editor run mode
     */
-    char *script_data = NULL;
-    if(YE_STATE.editor.editor_mode){
+    if(!YE_STATE.editor.editor_mode){
         /*
-            Open ye_path_resources(handle) and read it into script_data
+            Load our engine lua runtime abstractions and run them
+            (from engine.yep/runtime.lua)
         */
-        char *path = ye_path_resources(handle);
-        FILE *file = fopen(path, "r");
-        if(file == NULL){
-            ye_logf(error,"Failed to open script file %s\n", path);
-            entity->lua_script->active = false;
-            free(entity->lua_script);
-            entity->lua_script = NULL;
-            return false;
-        }
-        fseek(file, 0, SEEK_END);
-        long length = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        script_data = malloc(length + 1);
-        fread(script_data, 1, length, file);
-        fclose(file);
-        script_data[length] = '\0';
-    }
-    else{
-        // read from yep
-        struct yep_data_info d = yep_resource_misc(handle);
-
-        if(d.data == NULL){
-            ye_logf(error,"Failed to open script file %s\n", handle);
+        char *runtime = _retrieve_script("runtime.lua", false);
+        if(runtime == NULL){
             entity->lua_script->active = false;
             free(entity->lua_script);
             entity->lua_script = NULL;
             return false;
         }
 
-        script_data = malloc(d.size + 1);
-        memcpy(script_data, d.data, d.size);
-        script_data[d.size] = '\0';
+        if(!_run_script(entity->lua_script->state, runtime)){
+            lua_close(entity->lua_script->state);
+            entity->lua_script->active = false;
+            entity->lua_script->state = NULL;
+            free(entity->lua_script);
+            entity->lua_script = NULL;
+            return false;
+        }
 
-        free(d.data);
+        // ye_logf(debug,"Successfully bootstrapped engine runtime lua script\n");
+
+        /*
+            Load the script data into a string
+        */
+        char *script_data = _retrieve_script(handle, true);
+        if(script_data == NULL){
+            entity->lua_script->active = false;
+            free(entity->lua_script);
+            entity->lua_script = NULL;
+            return false;
+        }
+
+        // TEMP: print the script data
+        // ye_logf(debug,"Script data:\n%s\n", script_data);
+
+        /*
+            Load our script into the lua state, which will inherently run it
+        */
+        if(!_run_script(entity->lua_script->state, script_data)){
+            lua_close(entity->lua_script->state);
+            entity->lua_script->active = false;
+            entity->lua_script->state = NULL;
+            free(entity->lua_script);
+            entity->lua_script = NULL;
+            return false;
+        }
+
+        /*
+            Look through the file and interpret what functions exist in this script
+            ex: on_mount, on_update, on_trigger_enter, etc and assign struct fields
+        */
+        _extract_signature(entity->lua_script, "onMount", &(entity->lua_script->has_on_mount));
+        _extract_signature(entity->lua_script, "onUpdate", &(entity->lua_script->has_on_update));
+        _extract_signature(entity->lua_script, "onUnmount", &(entity->lua_script->has_on_unmount));
     }
 
-    // TEMP: print the script data
-    // ye_logf(debug,"Script data:\n%s\n", script_data);
-
-    /*
-        Load our script into the lua state, which will inherently run it
-    */
-    if(!_run_script(entity->lua_script->state, script_data)){
-        lua_close(entity->lua_script->state);
-        entity->lua_script->active = false;
-        entity->lua_script->state = NULL;
-        free(entity->lua_script);
-        entity->lua_script = NULL;
-        return false;
-    }
-
-    /*
-        Look through the file and interpret what functions exist in this script
-        ex: on_mount, on_update, on_trigger_enter, etc and assign struct fields
-    */
-    _extract_signature(entity->lua_script, "onMount", &(entity->lua_script->has_on_mount));
-    _extract_signature(entity->lua_script, "onUpdate", &(entity->lua_script->has_on_update));
-    _extract_signature(entity->lua_script, "onUnmount", &(entity->lua_script->has_on_unmount));
 
     /*
         call the lua scripts on_mount function in its state

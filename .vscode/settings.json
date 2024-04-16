@@ -8,6 +8,7 @@
     },
     "cmake.sourceDirectory": "/home/ryan/repos/yoyoengine/engine",
     "Lua.workspace.library": [
-        "/home/ryan/repos/yoyoengine/engine/lua/api.lua"
+        "/home/ryan/repos/yoyoengine/engine/lua/api.lua",
+        "/home/ryan/repos/yoyoengine/engine/dist/resources/runtime.lua"
     ],
 }
