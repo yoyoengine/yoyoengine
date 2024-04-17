@@ -29,6 +29,12 @@ function log(level, message) end
 -- Entity API --
 ----------------
 
+-- NOTE: this is the lower level bridge api, that is abstracted by methods in Entity class
+
+function ye_lua_ent_set_active(entity, state) end
+
+function ye_lua_ent_get_entity_named(name) end
+
 
 
 -- ---@class Entity

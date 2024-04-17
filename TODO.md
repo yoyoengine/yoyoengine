@@ -595,3 +595,9 @@ wishlist:
 
 - SDL has a file drop event, could use it to auto import files into resources
   - https://wiki.libsdl.org/SDL2/SDL_DropEvent
+
+## uhhh actually doing lua api
+
+- need to close editor and re open for runtime.lua to sync,,,
+
+- WHEN C REPORTS A NUL VALUE YOU NEED TO PUSHNIL INSTEAD OF A VOID * AS USERDATA, BECAUSE A VOID * USERDATA IS NOT EQUAL TO NIL IN LUA, ITS A USERDATA POINTING TO NULL IN C

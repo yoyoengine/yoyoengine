@@ -91,26 +91,20 @@ int lua_debug_quit(lua_State* L){ // TODO: removeme
     return 0;
 }
 
-////////////////////////////////////////////////////////////
+
 
 /*
-    This is a really shitty way of doing it, but for now
-    im just going to add API functions here as I use them
-    and declare them in ye_register_lua_scripting_api, in
-    the future I can refactor
-*/
-
-////////////////////////////////////////////////////////////
-
-/*
-    Right now im just going to use this as a testbed for lua scripting API
+    Reach out to all the decentralized api
+    files and call their register functions
 */
 void ye_register_lua_scripting_api(lua_State *state){
-    //lua_register(state, "log", lua_log);
-
-
-    // register this lua log function
+    // scattered fns
     lua_register(state, "log", lua_log);
     lua_register(state, "loadScene", lua_load_scene);
     // lua_register(state, "ye_debug_quit", lua_debug_quit);
+
+    /*
+        Entity
+    */
+    ye_lua_entity_register(state);
 }

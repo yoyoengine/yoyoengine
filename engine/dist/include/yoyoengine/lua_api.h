@@ -38,4 +38,13 @@ void ye_run_lua_on_mount(struct ye_component_lua_script *script);
 void ye_run_lua_on_unmount(struct ye_component_lua_script *script);
 void ye_run_lua_on_update(struct ye_component_lua_script *script);
 
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+    Entity
+*/
+void ye_lua_entity_register(lua_State *L);
+
+//////////////////////////////////////////////////////////////////////////////
+
 #endif
