@@ -601,3 +601,5 @@ wishlist:
 - need to close editor and re open for runtime.lua to sync,,,
 
 - WHEN C REPORTS A NUL VALUE YOU NEED TO PUSHNIL INSTEAD OF A VOID * AS USERDATA, BECAUSE A VOID * USERDATA IS NOT EQUAL TO NIL IN LUA, ITS A USERDATA POINTING TO NULL IN C
+
+- vararg lua log

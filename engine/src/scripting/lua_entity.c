@@ -22,18 +22,11 @@
 
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/lua_api.h>
+#include <yoyoengine/logging.h>
 
-int ye_lua_ent_set_active(lua_State *L) {
-    struct ye_entity *entity = lua_touserdata(L, 1);
-    bool active = lua_toboolean(L, 2);
-    
-    if(entity == NULL) {
-        lua_pushstring(L, "entity is null"); // consider if keeping this, its vague in stdout
-        lua_error(L);
-    }
-    entity->active = active;
-    return 0;
-}
+/*
+    CONSTRUCT
+*/
 
 int ye_lua_ent_get_entity_named(lua_State *L) {
     const char *name = lua_tostring(L, 1);
@@ -46,8 +39,111 @@ int ye_lua_ent_get_entity_named(lua_State *L) {
     return 1;
 }
 
+////////////
+
+
+
+/*
+    ACTIVE
+*/
+
+int ye_lua_ent_set_active(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+    bool active = lua_toboolean(L, 2);
+    
+    if(entity == NULL) {
+        ye_logf(error, "could not set active state: entity is null\n");
+        return 0;
+    }
+
+    entity->active = active;
+    return 0;
+}
+
+int ye_lua_ent_get_active(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+
+    if(entity == NULL) {
+        ye_logf(error, "could not get active state: entity is null\n");
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    lua_pushboolean(L, entity->active);
+    return 1;
+}
+
+////////////
+
+
+
+/*
+    ID
+*/
+
+int ye_lua_ent_get_id(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+
+    if(entity == NULL) {
+        ye_logf(error, "could not get entity ID: entity is null\n");
+        lua_pushinteger(L, -1);
+        return 1;
+    }
+
+    lua_pushinteger(L, entity->id);
+    return 1;
+}
+
+//////////
+
+
+
+/*
+    NAME
+*/
+
+int ye_lua_ent_get_name(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+
+    if(entity == NULL) {
+        ye_logf(error, "could not get entity name: entity is null\n");
+        lua_pushstring(L, "ERROR");
+        return 1;
+    }
+
+    lua_pushstring(L, entity->name);
+    return 1;
+}
+
+int ye_lua_ent_set_name(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+    const char *name = lua_tostring(L, 2);
+
+    if(entity == NULL) {
+        ye_logf(error, "could not set entity name: entity is null\n");
+        return 0;
+    }
+
+    ye_rename_entity(entity, name);
+    return 0;
+}
+
+//////////
+
+
+
 void ye_lua_entity_register(lua_State *L) {
+    // init
     lua_register(L, "ye_lua_ent_get_entity_named", ye_lua_ent_get_entity_named);
 
+    // active
+    lua_register(L, "ye_lua_ent_get_active", ye_lua_ent_set_active);
     lua_register(L, "ye_lua_ent_set_active", ye_lua_ent_set_active);
+
+    // id
+    lua_register(L, "ye_lua_ent_get_id", ye_lua_ent_get_id);
+
+    // name
+    lua_register(L, "ye_lua_ent_get_name", ye_lua_ent_get_name);
+    lua_register(L, "ye_lua_ent_set_name", ye_lua_ent_set_name);
 }

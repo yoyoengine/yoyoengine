@@ -29,31 +29,29 @@ function log(level, message) end
 -- Entity API --
 ----------------
 
--- NOTE: this is the lower level bridge api, that is abstracted by methods in Entity class
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean state The active state
+function ye_lua_ent_get_active(entity) end
 
+---@param entity lightuserdata The pointer to the C entity
+---@param state boolean The desired active state
 function ye_lua_ent_set_active(entity, state) end
 
+---@param entity lightuserdata The pointer to the C entity
+---@return integer ID The ECS ID number of the entity (-1 for failure)
+function ye_lua_ent_get_id(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return string name The name of the entity
+function ye_lua_ent_get_name(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param name string The desired name of the entity
+function ye_lua_ent_set_name(entity, name) end
+
+---@param name string The name of the entity
+---@return lightuserdata entity The pointer to the C entity
 function ye_lua_ent_get_entity_named(name) end
-
-
-
--- ---@class Entity
--- Entity = {}
-
--- --- Setup a new entity
--- function Entity:new() end
-
--- ----------------
-
--- --- Initialize the entity to an existing entity using name
--- --- @param name string The name of the entity
--- --- @return boolean True if the entity was found, false otherwise
--- function Entity:get_entity_by_name(name) end
-
--- --- Initialize the entity to an existing entity using id
--- --- @param id number The id of the entity
--- --- @return boolean True if the entity was found, false otherwise
--- function Entity:get_entity_by_id(id) end
 
 
 

@@ -26,30 +26,76 @@
     +--------------------------------------------------------------------------------+
 --]]
 
--- define NULL to be a void pointer to nil (used to check for NULL C pointers)
--- local NULL = ffi.new("void *", nil)
+-------------- HELPER FUNCTIONS --------------
+
+--- helper function that ensures _c_entity is not nil
+---@param self table The entity object
+---@return boolean True if the entity is valid, false otherwise
+local function validateEntity(self)
+    if self._c_entity == nil then
+        log("error", "Entity method called for nil entity\n")
+        return false
+    end
+    return true
+end
+
+----------------------------------------------
+
+
+
+---------------- ENTITY TABLE ----------------
 
 -- define the Entity class
 Entity = {
-    -- reference to the C pointer
+    --- reference to the C pointer
+    ---@type lightuserdata
     _c_entity = nil,
-
+    
     -- references to the components
+    ---@type lightuserdata
     Transform = nil, 
 
+
+
+
+
+    ---**Get the active state of the entity.**
+    ---
+    ---@return boolean state The active state of the entity
+    ---
+    ---example:
+    ---```lua
+    ---local prop_box = Entity:newEntity("BOX")
+    ---print("box is active: ", prop_box:getActive())
+    ---```
+    getActive = function(self)
+        if not validateEntity(self) then
+            log("error", "Entity:getActive called for nil entity, returning false!\n")
+            return false
+        end
+
+        return ye_lua_ent_get_active(self._c_entity)
+    end,
+
+
+
+
+
+    ---**Set the active state of the entity.**
+    ---
+    ---@param state boolean The desired active state
+    ---
+    ---example:
+    ---```lua
+    ---local prop_box = Entity:newEntity("BOX")
+    ---prop_box:setActive(true)
+    ---```
     setActive = function(self, state)
         -- log("info", "Entity:setActive called\n")
 
-        -- log the self._c_entity pointer
-        -- log("info", "self._c_entity is " .. tostring(self._c_entity) .. "\n")
-
-        -- check if entity is nil
-        if self._c_entity == nil then
-            log("error", "Entity:setActive called on nil entity\n")
+        if not validateEntity(self) then
             return
         end
-
-        -- log("info", "cleared nil check\n")
 
         -- check if state is not boolean
         if type(state) ~= "boolean" then
@@ -57,32 +103,78 @@ Entity = {
             return
         end
 
-        -- log("info", "cleared bool check\n")
-
         ye_lua_ent_set_active(self._c_entity, state)
     end,
+
+
+
+
+
+    ---**Get the ECS ID number of the entity.**
+    ---
+    ---@return integer ID The ECS ID number of the entity (-1 for failure)
+    ---
+    ---example:
+    ---```lua
+    ---local prop_box = Entity:newEntity("BOX")
+    ---print("box ID: ", prop_box:getID())
+    ---```
+    getID = function(self)
+        if not validateEntity(self) then
+            return -1
+        end
+
+        return ye_lua_ent_get_id(self._c_entity)
+    end,
+
+
+
+
+
+    ---**Set the name of the entity.**
+    ---
+    ---@param name string The desired name of the entity
+    ---
+    ---example:
+    ---```lua
+    ---local prop_box = Entity:newEntity("BOX")
+    ---prop_box:setName("BOX")
+    ---```
+    setName = function(self, name)
+        if not validateEntity(self) then
+            return
+        end
+
+        -- check if name is not string
+        if type(name) ~= "string" then
+            log("error", "Entity:setName called with non-string name\n")
+            return
+        end
+
+        ye_lua_ent_set_name(self._c_entity, name)
+    end,
+
+
+
+
+
+    getName = function(self)
+        if not validateEntity(self) then
+            return
+        end
+
+        return ye_lua_ent_get_name(self._c_entity)
+    end,
 }
+
+
 
 -- define the entity metatable
 Entity_mt = {
     __index = Entity
 }
 
--- define the Transform class
-Transform = {
-    -- reference to the C pointer
-    _c_component = nil,
 
-    setPosition = function(self, x, y)
-        log("info", "Transform:setPosition called\n")
-        -- TODO : call the C API to set the position
-    end,
-}
-
--- define the transform metatable
-Transform_mt = {
-    __index = Transform
-}
 
 ---**Create a new entity.**
 ---
@@ -111,6 +203,8 @@ function Entity:new(name)
     
     return entity
 end
+
+
 
 ---**Get a scene entity by name.**
 ---
@@ -144,8 +238,38 @@ function Entity:getEntityNamed(name)
     return entity
 end
 
+----------------------------------------------
+
+
+
+-------------- TRANSFORM TABLE ---------------
+
+-- define the Transform class
+Transform = {
+    -- reference to the C pointer
+    _c_component = nil,
+
+    setPosition = function(self, x, y)
+        log("info", "Transform:setPosition called\n")
+        -- TODO : call the C API to set the position
+    end,
+}
+
+-- define the transform metatable
+Transform_mt = {
+    __index = Transform
+}
+
+----------------------------------------------
+
+
+
+-------------- SETUP / CLEANUP ---------------
+
 -- Make Entity and Transform global
 _G["Entity"] = Entity
 _G["Transform"] = Transform
 
 log("debug", "bootstrapped runtime.lua onto new VM\n")
+
+----------------------------------------------
