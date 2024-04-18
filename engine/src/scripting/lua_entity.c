@@ -39,6 +39,27 @@ int ye_lua_ent_get_entity_named(lua_State *L) {
     return 1;
 }
 
+int ye_lua_create_entity(lua_State *L) {
+    int nargs = lua_gettop(L);
+
+    struct ye_entity * ent = NULL;
+
+    if(nargs == 0) {
+        ent = ye_create_entity();
+    }
+    else if(nargs == 1) {
+        const char *name = lua_tostring(L, 1);
+        ent = ye_create_entity_named(name);
+    }
+
+    if(ent != NULL)
+        lua_pushlightuserdata(L, ent);
+    else
+        lua_pushnil(L);
+
+    return 1;
+}
+
 ////////////
 
 
@@ -135,6 +156,7 @@ int ye_lua_ent_set_name(lua_State *L) {
 void ye_lua_entity_register(lua_State *L) {
     // init
     lua_register(L, "ye_lua_ent_get_entity_named", ye_lua_ent_get_entity_named);
+    lua_register(L, "ye_lua_create_entity", ye_lua_create_entity);
 
     // active
     lua_register(L, "ye_lua_ent_get_active", ye_lua_ent_set_active);

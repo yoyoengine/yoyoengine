@@ -53,6 +53,10 @@ function ye_lua_ent_set_name(entity, name) end
 ---@return lightuserdata entity The pointer to the C entity
 function ye_lua_ent_get_entity_named(name) end
 
+---@param name? string (optional) The name of the entity to create
+---@return lightuserdata entity The pointer to the C entity
+function ye_lua_create_entity(name) end
+
 
 
 ----------------

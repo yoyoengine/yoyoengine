@@ -45,14 +45,16 @@ end
 
 ---------------- ENTITY TABLE ----------------
 
--- define the Entity class
+---@class Entity
+---@field _c_entity lightuserdata
+---@field Transform Transform
 Entity = {
     --- reference to the C pointer
     ---@type lightuserdata
     _c_entity = nil,
     
     -- references to the components
-    ---@type lightuserdata
+    ---@type Transform
     Transform = nil, 
 
 
@@ -158,9 +160,18 @@ Entity = {
 
 
 
+    ---**Get the name of the entity.**
+    ---
+    ---@return string name The name of the entity
+    ---
+    ---example:
+    ---```lua
+    ---local prop_box = Entity:newEntity("BOX")
+    ---print("box name: ", prop_box:getName())
+    ---```
     getName = function(self)
         if not validateEntity(self) then
-            return
+            return "ERROR"
         end
 
         return ye_lua_ent_get_name(self._c_entity)
@@ -178,8 +189,8 @@ Entity_mt = {
 
 ---**Create a new entity.**
 ---
----@param name string The name of the entity to create (optional)
----@return table entity The lua entity object
+---@param name? string The name of the entity to create (optional)
+---@return Entity entity The lua entity object
 ---If this function fails, you will get errors as well as an entity
 ---object with a nil _c_entity pointer.
 ---
@@ -199,8 +210,12 @@ function Entity:new(name)
     setmetatable(entity.Transform, Transform_mt)
 
     -- get the _c_entity pointer
-    
-    
+    if name then
+        entity._c_entity = ye_lua_create_entity(name)
+    else
+        entity._c_entity = ye_lua_create_entity()
+    end
+
     return entity
 end
 
@@ -209,7 +224,7 @@ end
 ---**Get a scene entity by name.**
 ---
 ---@param name string The name of the entity to get
----@return table entity The lua entity object
+---@return Entity entity The lua entity object
 ---If this function fails, you will get errors as well as an entity
 ---object with a nil _c_entity pointer.
 ---
@@ -244,9 +259,10 @@ end
 
 -------------- TRANSFORM TABLE ---------------
 
--- define the Transform class
+---@class Transform
+---@field _c_component lightuserdata
 Transform = {
-    -- reference to the C pointer
+    ---@type lightuserdata
     _c_component = nil,
 
     setPosition = function(self, x, y)
