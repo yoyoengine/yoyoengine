@@ -25,6 +25,13 @@
     | yoyoengine lua runtime version 0 - Ryan Zmuda, 2024                            |
     +--------------------------------------------------------------------------------+
 --]]
+YE_LUA_RUNTIME_VERSION = 0
+YE_LUA_RUNTIME_AUTHOR  = "Ryan Zmuda"
+
+--[[
+    NOTES:
+    - could mark some vars as private but then we cant access them across components...
+]]
 
 -------------- HELPER FUNCTIONS --------------
 
@@ -205,10 +212,6 @@ function Entity:new(name)
     local entity = {}
     setmetatable(entity, Entity_mt)
 
-    -- create the transform component
-    entity.Transform = {}
-    setmetatable(entity.Transform, Transform_mt)
-
     -- get the _c_entity pointer
     if name then
         entity._c_entity = ye_lua_create_entity(name)
@@ -246,10 +249,6 @@ function Entity:getEntityNamed(name)
         -- better chance of recovery
     end
 
-    -- create the transform component
-    entity.Transform = {}
-    setmetatable(entity.Transform, Transform_mt)
-
     return entity
 end
 
@@ -260,21 +259,205 @@ end
 -------------- TRANSFORM TABLE ---------------
 
 ---@class Transform
+---@field parent Entity
 ---@field _c_component lightuserdata
 Transform = {
+    ---@type Entity
+    parent = nil,
+
     ---@type lightuserdata
     _c_component = nil,
 
+
+
+
+
+    ---**Set the x position of a transform.**
+    ---
+    ---@param x number The x position
+    ---
+    ---Will create a new transform component if one does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---player.Transform:setPosition(100, 200)
+    ---```
+    setPositionX = function(self, x)
+        if not validateEntity(self.parent) then
+            return
+        end
+
+        -- check if x is not a number
+        if type(x) ~= "number" then
+            log("error", "Transform:setPositionX called with non-number x\n")
+            return
+        end
+
+        ye_lua_transform_set_position_x(self.parent._c_entity, x)
+    end,
+
+
+
+
+
+    ---**Set the y position of a transform.**
+    ---
+    ---@param y number The y position
+    ---
+    ---Will create a new transform component if one does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---player.Transform:setPosition(100, 200)
+    ---```
+    setPositionY = function(self, y)
+        if not validateEntity(self.parent) then
+            return
+        end
+
+        -- check if y is not a number
+        if type(y) ~= "number" then
+            log("error", "Transform:setPositionY called with non-number y\n")
+            return
+        end
+
+        ye_lua_transform_set_position_y(self.parent._c_entity, y)
+    end,
+
+
+
+
+    
+    ---**Set the position of a transform.**
+    ---
+    ---@param x number The x position
+    ---@param y number The y position
+    ---
+    ---Will create a new transform component if one does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---player.Transform:setPosition(100, 200)
+    ---```
     setPosition = function(self, x, y)
-        log("info", "Transform:setPosition called\n")
-        -- TODO : call the C API to set the position
+        -- omit sanity check, as both functions do it
+        self.setPositionX(self, x)
+        self.setPositionY(self, y)
+    end,
+
+
+
+
+
+    ---**Get the x position of the transform.**
+    ---
+    ---@return number x The x position
+    ---
+    ---Will return 0 if the transform component does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---local pos_x = player.Transform:getPositionX()
+    ---```
+    getPositionX = function(self)
+        if not validateEntity(self.parent) then
+            return 0
+        end
+
+        return ye_lua_transform_get_position_x(self.parent._c_entity)
+    end,
+
+
+
+
+
+    ---**Get the y position of the transform.**
+    ---
+    ---@return number y The y position
+    ---
+    ---Will return 0 if the transform component does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---local pos_y = player.Transform:getPositionY()
+    ---```
+    getPositionY = function(self)
+        if not validateEntity(self.parent) then
+            return 0
+        end
+
+        return ye_lua_transform_get_position_y(self.parent._c_entity)
+    end,
+
+
+
+
+
+    ---**Get the position of the transform.**
+    ---
+    ---@return number x The x position
+    ---@return number y The y position
+    ---
+    ---Will return 0, 0 if the transform component does not exist.
+    ---
+    ---example:
+    ---```lua
+    ---local player = Entity:getEntityNamed("PLAYER")
+    ---local pos_x, pos_y = player.Transform:getPosition()
+    ---```
+    getPosition = function(self)
+        return self.getPositionX(self), self.getPositionY(self)
     end,
 }
+
+
 
 -- define the transform metatable
 Transform_mt = {
     __index = Transform
 }
+
+
+
+---**Create a new transform component.**
+---
+---@param entity Entity The entity to attach the transform to
+---@param x? number The initial x position (optional)
+---@param y? number The initial y position (optional)
+---
+---@return Transform transform The lua transform object
+---If this function fails, you will get errors as well as a transform object with a nil _c_component pointer.
+---If unspecified, the initial position will be (0, 0).
+---
+---example:
+---```lua
+---local player = Entity:getEntityNamed("PLAYER")
+---player.Transform = Transform:new(player)
+---player.Transform = Transform:new(player, 100, 200)
+---```
+function Transform:addTransform(entity, x, y)
+    -- create the transform itself
+    local transform = {}
+    setmetatable(transform, Transform_mt)
+
+    -- track onto its parent
+    transform.parent = entity
+
+    if x and y then
+        transform._c_component = ye_lua_create_transform(entity._c_entity, x, y)
+    else
+        transform._c_component = ye_lua_create_transform(entity._c_entity, 0, 0)
+    end
+
+    entity.Transform = transform
+
+    return transform
+end
 
 ----------------------------------------------
 
@@ -287,5 +470,6 @@ _G["Entity"] = Entity
 _G["Transform"] = Transform
 
 log("debug", "bootstrapped runtime.lua onto new VM\n")
+-- print("runtime version:",YE_LUA_RUNTIME_VERSION)
 
 ----------------------------------------------

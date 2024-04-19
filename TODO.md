@@ -603,3 +603,8 @@ wishlist:
 - WHEN C REPORTS A NUL VALUE YOU NEED TO PUSHNIL INSTEAD OF A VOID * AS USERDATA, BECAUSE A VOID * USERDATA IS NOT EQUAL TO NIL IN LUA, ITS A USERDATA POINTING TO NULL IN C
 
 - vararg lua log
+
+- potentially because of this abstraction we can hook transform components onto other entities references of them... that way we track entities together like groups
+  - probably not actually, thats only on the lua object, doesnt affect root ECS
+
+- its probably better to not create (did this for transform) a component for getter functions when one does not exist, since it is justifyable for transform but not much for others that done have sane defaults

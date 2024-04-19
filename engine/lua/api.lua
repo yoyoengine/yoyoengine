@@ -59,6 +59,33 @@ function ye_lua_create_entity(name) end
 
 
 
+-------------------
+-- Transform API --
+-------------------
+
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The x position to create the transform at
+---@param y number The y position to create the transform at
+function ye_lua_create_transform(entity,x,y) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return number x The x position of the transform
+function ye_lua_transform_get_position_x(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return number y The y position of the transform
+function ye_lua_transform_get_position_y(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The new x position of the transform
+function ye_lua_transform_set_position_x(entity,x) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param y number The new y position of the transform
+function ye_lua_transform_set_position_y(entity,y) end
+
+
+
 ----------------
 -- Scene API  --
 ----------------

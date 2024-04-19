@@ -107,4 +107,9 @@ void ye_register_lua_scripting_api(lua_State *state){
         Entity
     */
     ye_lua_entity_register(state);
+
+    /*
+        Transform
+    */
+    ye_lua_transform_register(state);
 }
