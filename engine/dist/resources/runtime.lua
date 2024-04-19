@@ -55,14 +55,19 @@ end
 ---@class Entity
 ---@field _c_entity lightuserdata
 ---@field Transform Transform
+---@field Camera Camera
 Entity = {
     --- reference to the C pointer
     ---@type lightuserdata
     _c_entity = nil,
     
     -- references to the components
+    
     ---@type Transform
     Transform = nil, 
+
+    ---@type Camera
+    Camera = nil,
 
 
 
@@ -463,11 +468,146 @@ end
 
 
 
+--------------- CAMERA TABLE -----------------
+
+---@class Camera
+---@field parent Entity
+---@field _c_component lightuserdata
+---@field isActive boolean Controls whether the camera is active
+---@field isRelative boolean Controls whether the position of the camera is relative to a root transform
+---@field z number The z index
+---@field x number The x position
+---@field y number The y position
+---@field w number The width
+---@field h number The height
+Camera = {
+    ---@type Entity
+    parent = nil,
+
+    ---@type lightuserdata
+    _c_component = nil,
+
+    -- The "fields" dont need listed here
+    -- because they are actually stored in
+    -- C, and just abstracted through metatable
+    -- methods
+}
+
+
+
+-- define the camera metatable
+Camera_mt = {
+    __index = function(self, key)
+        print("trying to get Camera key:", key)
+
+        print(self)
+
+        local parent = rawget(self, "parent")
+
+        print(parent)
+        print(parent._c_entity)
+
+        if not validateEntity(parent) then
+            log("error", "Camera field accessed on nil/null entity\n")
+            return nil
+        end
+
+        -- TODO: IF YOU ADD THIS TYPE OF ACCESS TO ENTITY CLASS THIS WILL OVERFLOW
+        local isActive, isRelative, z, x, y, w, h = ye_lua_camera_query(parent._c_entity)
+
+        if key == "isActive" then
+            return isActive
+        elseif key == "isRelative" then
+            return isRelative
+        elseif key == "z" then
+            return z
+        elseif key == "x" then
+            return x
+        elseif key == "y" then
+            return y
+        elseif key == "w" then
+            return w
+        elseif key == "h" then
+            return h
+        else
+            log("error", "Camera field accessed with invalid key\n")
+            return nil
+        end
+    end,
+
+    __newindex = function(self, key, value)
+        if not validateEntity(self.parent) then
+            log("error", "Camera field accessed on nil/null entity\n")
+            return
+        end
+
+        if key == "isActive" then
+            ye_lua_camera_modify(self.parent._c_entity, value, nil, nil, nil, nil, nil, nil)
+        elseif key == "isRelative" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, value, nil, nil, nil, nil, nil)
+        elseif key == "z" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, nil, value, nil, nil, nil, nil)
+        elseif key == "x" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, value, nil, nil, nil)
+        elseif key == "y" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, value, nil, nil)
+        elseif key == "w" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, nil, value, nil)
+        elseif key == "h" then
+            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, nil, nil, value)
+        else
+            log("error", "Camera field accessed with invalid key\n")
+            return
+        end
+    end,
+}
+
+
+
+---**Create a new camera component.**
+---
+---@param entity Entity The entity to attach the camera to
+---@param x number The x position of the camera
+---@param y number The y position of the camera
+---@param w number The width of the camera
+---@param h number The height of the camera
+---@param z number The z index of the camera
+---
+---@return Camera camera The lua camera object
+function Camera:addCamera(entity, x, y, w, h, z)
+    -- create the camera itself
+    local camera = {}
+    setmetatable(camera, Camera_mt)
+
+    -- track onto its parent
+    -- camera.parent = entity
+    rawset(camera, "parent", entity)
+
+    if x and y and w and h and z then
+        ye_lua_create_camera(entity._c_entity, x, y, w, h, z)
+    else
+        log("error", "Camera:addCamera called with missing parameters\n")
+        return nil
+    end
+
+    entity.Camera = camera
+    -- TODO: rawset
+
+    return camera
+end
+
+
+
+----------------------------------------------
+
+
+
 -------------- SETUP / CLEANUP ---------------
 
 -- Make Entity and Transform global
 _G["Entity"] = Entity
 _G["Transform"] = Transform
+_G["Camera"] = Camera
 
 log("debug", "bootstrapped runtime.lua onto new VM\n")
 -- print("runtime version:",YE_LUA_RUNTIME_VERSION)

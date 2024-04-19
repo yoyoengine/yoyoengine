@@ -86,6 +86,44 @@ function ye_lua_transform_set_position_y(entity,y) end
 
 
 
+-------------------
+--  Camera API   --
+-------------------
+
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The x position to create the camera at
+---@param y number The y position to create the camera at
+---@param w number The width of the camera
+---@param h number The height of the camera
+---@param z number The z index of the camera
+function ye_lua_create_camera(entity,x,y,w,h,z) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean  isActive The active state
+---@return boolean  isRelative The relative state
+---@return number   z The z index of the camera
+---@return number   x The x position of the camera
+---@return number   y The y position of the camera
+---@return number   w The width of the camera
+---@return number   h The height of the camera
+function ye_lua_camera_query(entity) end
+
+---**Modify a camera by handle**
+---
+---Any parameters passed as nil will be left untouched
+---
+---@param entity        lightuserdata   The pointer to the C entity
+---@param isActive      boolean | nil   The desired active state
+---@param isRelative    boolean | nil   The desired relative state
+---@param z             number | nil    The desired z index
+---@param x             number | nil    The desired x position
+---@param y             number | nil    The desired y position
+---@param w             number | nil    The desired width
+---@param h             number | nil    The desired height
+function ye_lua_camera_modify(entity,isActive,isRelative,z,x,y,w,h) end
+
+
+
 ----------------
 -- Scene API  --
 ----------------

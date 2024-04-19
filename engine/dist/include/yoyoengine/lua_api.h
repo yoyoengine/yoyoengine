@@ -50,6 +50,11 @@ void ye_lua_entity_register(lua_State *L);
 */
 void ye_lua_transform_register(lua_State *L);
 
+/*
+    Camera
+*/
+void ye_lua_camera_register(lua_State *L);
+
 //////////////////////////////////////////////////////////////////////////////
 
 #endif

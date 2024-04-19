@@ -112,4 +112,9 @@ void ye_register_lua_scripting_api(lua_State *state){
         Transform
     */
     ye_lua_transform_register(state);
+
+    /*
+        Camera
+    */
+    ye_lua_camera_register(state);
 }
