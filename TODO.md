@@ -615,3 +615,7 @@ wishlist:
   - or delete entitity
 
 - is there a way to split this into many files?
+
+## new intro
+
+- fade in and out, mix the sound better to fit, redesign a lot

@@ -349,8 +349,8 @@ void setup_splash_screen(){
 
     if(!YE_STATE.editor.editor_mode){
         // because play sound looks in resources pack, we need to pre cache the engine one
-        _ye_mixer_engine_cache("startup.mp3");
-        ye_play_sound("startup.mp3",0,1); // play startup sound
+        _ye_mixer_engine_cache("startup.wav");
+        ye_play_sound("startup.wav",0,1); // play startup sound
     }
 
     struct ye_entity * splash_cam = ye_create_entity();
@@ -406,7 +406,7 @@ void setup_splash_screen(){
     struct ye_timer * splash_timer = malloc(sizeof(struct ye_timer));
     splash_timer->start_ticks = -1;
     splash_timer->loops = 0;
-    splash_timer->length_ms = 3000;
+    splash_timer->length_ms = 5000;
     splash_timer->callback = teardown_splash_screen;
     ye_register_timer(splash_timer);
 }
