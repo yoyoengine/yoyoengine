@@ -55,6 +55,11 @@ void ye_lua_transform_register(lua_State *L);
 */
 void ye_lua_camera_register(lua_State *L);
 
+/*
+    Renderer
+*/
+void ye_lua_renderer_register(lua_State *L);
+
 //////////////////////////////////////////////////////////////////////////////
 
 #endif

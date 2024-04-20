@@ -608,3 +608,10 @@ wishlist:
   - probably not actually, thats only on the lua object, doesnt affect root ECS
 
 - its probably better to not create (did this for transform) a component for getter functions when one does not exist, since it is justifyable for transform but not much for others that done have sane defaults
+
+- remove _c_component references in lua?
+
+- dont have the facilities to remove any comps yet...
+  - or delete entitity
+
+- is there a way to split this into many files?

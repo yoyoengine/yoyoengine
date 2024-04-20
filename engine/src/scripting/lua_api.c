@@ -117,4 +117,9 @@ void ye_register_lua_scripting_api(lua_State *state){
         Camera
     */
     ye_lua_camera_register(state);
+
+    /*
+        Renderer
+    */
+    ye_lua_renderer_register(state);
 }

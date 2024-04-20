@@ -1,3 +1,21 @@
+--[[
+    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    Copyright (C) 2024  Ryan Zmuda
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+]]
+
 ---@meta
 
 ---**called once when the script is mounted in engine**
@@ -121,6 +139,58 @@ function ye_lua_camera_query(entity) end
 ---@param w             number | nil    The desired width
 ---@param h             number | nil    The desired height
 function ye_lua_camera_modify(entity,isActive,isRelative,z,x,y,w,h) end
+
+
+
+-------------------
+-- Renderer API  --
+-------------------
+
+---@param entity lightuserdata The pointer to the C entity
+---@param handle string The path to the image to render relative to resources/
+---@param z number The z index of the renderer
+function ye_lua_create_image_renderer(entity,handle,z) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean  isActive The active state
+---@return boolean  isRelative The relative state
+---@return number   alpha The alpha value of the renderer
+---@return number   z The z index of the renderer
+---@return number   x The x position of the renderer
+---@return number   y The y position of the renderer
+---@return number   w The width of the renderer
+---@return number   h The height of the renderer
+---@return number   alignment The alignment of the renderer
+---@return number   rotation The clockwise rotation in degrees to render at
+---@return boolean  flipX Flip the renderer on the x axis
+---@return boolean  flipY Flip the renderer on the y axis
+---@return boolean  preserveOriginalSize Controls whether the texture grows/shrinks or stays the same size when aligining in bounds
+---@return RendererType type The current type of the renderer_impl
+function ye_lua_renderer_query(entity) end
+
+---@param entity lightuserdata | nil The pointer to the C entity
+---@param isActive boolean | nil The desired active state
+---@param isRelative boolean | nil The desired relative state
+---@param alpha number | nil The desired alpha value
+---@param z number | nil The desired z index
+---@param x number | nil The desired x position
+---@param y number | nil The desired y position
+---@param w number | nil The desired width
+---@param h number | nil The desired height
+---@param alignment number | nil The desired alignment
+---@param rotation number | nil The desired clockwise rotation in degrees
+---@param flipX boolean | nil The desired flip on the x axis
+---@param flipY boolean | nil The desired flip on the y axis
+---@param preserveOriginalSize boolean | nil The desired preserveOriginalSize state
+function ye_lua_renderer_modify(entity,isActive,isRelative,alpha,z,x,y,w,h,alignment,rotation,flipX,flipY,preserveOriginalSize) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return string src
+function ye_lua_image_renderer_query(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param src string The path to the image to render relative to resources/
+function ye_lua_image_renderer_modify(entity,src) end
 
 
 
