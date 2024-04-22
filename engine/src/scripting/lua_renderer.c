@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <string.h>
+
 #include <lua.h>
 
 #include <yoyoengine/ecs/renderer.h>
@@ -49,6 +51,213 @@ int ye_lua_create_image_renderer(lua_State *L) {
 
     ye_logf(debug, "adding image renderer comp\n");
     ye_add_image_renderer_component(ent, z, path);
+
+    return 0;
+}
+
+
+
+int ye_lua_create_text_renderer(lua_State *L) {
+    ye_logf(debug, "creating text renderer\n");
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not create renderer: entity is null\n");
+        return 0;
+    }
+
+    // text, font_name, font size, color name (wrap with can be set afterwards or: TODO: overload later)
+    const char * text = luaL_checkstring(L, 2);
+    const char * font_name = luaL_checkstring(L, 3);
+    int font_size = luaL_checknumber(L, 4);
+    const char * color_name = luaL_checkstring(L, 5);
+    int z = luaL_checknumber(L, 6);
+
+    ye_logf(debug, "adding text renderer comp\n");
+    ye_add_text_renderer_component(ent, z, text, font_name, font_size, color_name, /*no wrap*/0);
+
+    return 0;
+}
+
+
+
+int ye_lua_text_renderer_query(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not query renderer: entity is null\n");
+        return 0;
+    }
+
+    lua_pushstring(L, ent->renderer->renderer_impl.text->text);
+    lua_pushstring(L, ent->renderer->renderer_impl.text->font_name);
+    lua_pushnumber(L, ent->renderer->renderer_impl.text->font_size);
+    lua_pushstring(L, ent->renderer->renderer_impl.text->color_name);
+    lua_pushnumber(L, ent->renderer->renderer_impl.text->wrap_width);
+
+    return 5;
+}
+
+
+
+int ye_lua_text_renderer_modify(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not modify renderer: entity is null\n");
+        return 0;
+    }
+
+    // text
+    if(lua_isstring(L, 2)){
+        const char * text = luaL_checkstring(L, 2);
+        free(ent->renderer->renderer_impl.text->text);
+        ent->renderer->renderer_impl.text->text = malloc(strlen(text) + 1);
+        strcpy(ent->renderer->renderer_impl.text->text, text);
+    }
+
+    // font name
+    if(lua_isstring(L, 3)){
+        const char * font_name = luaL_checkstring(L, 3);
+        free(ent->renderer->renderer_impl.text->font_name);
+        ent->renderer->renderer_impl.text->font_name = malloc(strlen(font_name) + 1);
+        strcpy(ent->renderer->renderer_impl.text->font_name, font_name);
+    }
+
+    // font size
+    if(lua_isnumber(L, 4)){
+        ent->renderer->renderer_impl.text->font_size = luaL_checknumber(L, 4);
+    }
+
+    // color name
+    if(lua_isstring(L, 5)){
+        const char * color_name = luaL_checkstring(L, 5);
+        free(ent->renderer->renderer_impl.text->color_name);
+        ent->renderer->renderer_impl.text->color_name = malloc(strlen(color_name) + 1);
+        strcpy(ent->renderer->renderer_impl.text->color_name, color_name);
+    }
+
+    // wrap width
+    if(lua_isnumber(L, 6)){
+        ent->renderer->renderer_impl.text->wrap_width = luaL_checknumber(L, 6);
+    }
+
+    // reflect any changes made
+    ye_update_renderer_component(ent);
+
+    return 0;
+}
+
+
+
+int ye_lua_create_text_outlined_renderer(lua_State *L) {
+    ye_logf(debug, "creating text renderer\n");
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not create renderer: entity is null\n");
+        return 0;
+    }
+
+    // text, font_name, font size, color name, outlineSize, outlineColorName (wrap with can be set afterwards or: TODO: overload later)
+    const char * text = luaL_checkstring(L, 2);
+    const char * font_name = luaL_checkstring(L, 3);
+    int font_size = luaL_checknumber(L, 4);
+    const char * color_name = luaL_checkstring(L, 5);
+    int outline_size = luaL_checknumber(L, 6);
+    const char * outline_color_name = luaL_checkstring(L, 7);
+    int z = luaL_checknumber(L, 8);
+
+    ye_logf(debug, "adding text renderer comp\n");
+    ye_add_text_outlined_renderer_component(ent, z, text, font_name, font_size, color_name, outline_color_name, outline_size, /*no wrap*/0);
+
+    return 0;
+}
+
+
+
+int ye_lua_create_tile_renderer(lua_State *L) {
+    ye_logf(debug, "creating tile renderer\n");
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not create renderer: entity is null\n");
+        return 0;
+    }
+
+    // tileset, tile, z, srcX, srcY, srcW, srcH
+    const char * tileset = luaL_checkstring(L, 2);
+    int srcX = luaL_checknumber(L, 3);
+    int srcY = luaL_checknumber(L, 4);
+    int srcW = luaL_checknumber(L, 5);
+    int srcH = luaL_checknumber(L, 6);
+    int z = luaL_checknumber(L, 7);
+
+    ye_logf(debug, "adding tile renderer comp\n");
+    ye_add_tilemap_renderer_component(ent, z, tileset, (SDL_Rect){srcX, srcY, srcW, srcH});
+
+    return 0;
+}
+
+
+
+int ye_lua_tile_renderer_query(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not query renderer: entity is null\n");
+        return 0;
+    }
+
+    lua_pushstring(L, ent->renderer->renderer_impl.tile->handle);
+    lua_pushnumber(L, ent->renderer->renderer_impl.tile->src.x);
+    lua_pushnumber(L, ent->renderer->renderer_impl.tile->src.y);
+    lua_pushnumber(L, ent->renderer->renderer_impl.tile->src.w);
+    lua_pushnumber(L, ent->renderer->renderer_impl.tile->src.h);
+
+    return 5;
+}
+
+
+
+int ye_lua_tile_renderer_modify(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not modify renderer: entity is null\n");
+        return 0;
+    }
+
+    // tileset
+    if(lua_isstring(L, 2)){
+        const char * tileset = luaL_checkstring(L, 2);
+        free(ent->renderer->renderer_impl.tile->handle);
+        ent->renderer->renderer_impl.tile->handle = malloc(strlen(tileset) + 1);
+        strcpy(ent->renderer->renderer_impl.tile->handle, tileset);
+    }
+
+    // srcX
+    if(lua_isnumber(L, 3)){
+        ent->renderer->renderer_impl.tile->src.x = luaL_checknumber(L, 3);
+    }
+
+    // srcY
+    if(lua_isnumber(L, 4)){
+        ent->renderer->renderer_impl.tile->src.y = luaL_checknumber(L, 4);
+    }
+
+    // srcW
+    if(lua_isnumber(L, 5)){
+        ent->renderer->renderer_impl.tile->src.w = luaL_checknumber(L, 5);
+    }
+
+    // srcH
+    if(lua_isnumber(L, 6)){
+        ent->renderer->renderer_impl.tile->src.h = luaL_checknumber(L, 6);
+    }
+
+    // reflect any changes made
+    ye_update_renderer_component(ent);
 
     return 0;
 }
@@ -199,14 +408,27 @@ int ye_lua_image_renderer_modify(lua_State *L){
 
 
 void ye_lua_renderer_register(lua_State *L) {
-    // init
-    lua_register(L, "ye_lua_create_image_renderer", ye_lua_create_image_renderer);
-
-    // query
+    // renderer
     lua_register(L, "ye_lua_renderer_query", ye_lua_renderer_query);
-    lua_register(L, "ye_lua_image_renderer_query", ye_lua_image_renderer_query);
-
-    // modify
     lua_register(L, "ye_lua_renderer_modify", ye_lua_renderer_modify);
+
+    // image
+    lua_register(L, "ye_lua_create_image_renderer", ye_lua_create_image_renderer);
+    lua_register(L, "ye_lua_image_renderer_query", ye_lua_image_renderer_query);
     lua_register(L, "ye_lua_image_renderer_modify", ye_lua_image_renderer_modify);
+
+    // text
+    lua_register(L, "ye_lua_create_text_renderer", ye_lua_create_text_renderer);
+    lua_register(L, "ye_lua_text_renderer_query", ye_lua_text_renderer_query);
+    lua_register(L, "ye_lua_text_renderer_modify", ye_lua_text_renderer_modify);
+
+    // text outlined
+    lua_register(L, "ye_lua_create_text_outlined_renderer", ye_lua_create_text_outlined_renderer);
+    lua_register(L, "ye_lua_text_outlined_renderer_query", ye_lua_text_renderer_query);
+    lua_register(L, "ye_lua_text_outlined_renderer_modify", ye_lua_text_renderer_modify);
+
+    // tile
+    lua_register(L, "ye_lua_create_tile_renderer", ye_lua_create_tile_renderer);
+    lua_register(L, "ye_lua_tile_renderer_query", ye_lua_tile_renderer_query);
+    lua_register(L, "ye_lua_tile_renderer_modify", ye_lua_tile_renderer_modify);
 }

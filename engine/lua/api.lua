@@ -152,6 +152,33 @@ function ye_lua_camera_modify(entity,isActive,isRelative,z,x,y,w,h) end
 function ye_lua_create_image_renderer(entity,handle,z) end
 
 ---@param entity lightuserdata The pointer to the C entity
+---@param text string The text to render
+---@param font_name string The name of the (cached) font to use
+---@param font_size number The size of the font to use
+---@param color_name string The name of the (cached) color to use
+---@param z number The z index of the renderer
+function ye_lua_create_text_renderer(entity, text, font_name, font_size, color_name, z) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param text string The text to render
+---@param fontName string The name of the (cached) font to use
+---@param fontSize number The size of the font to use
+---@param colorName string The name of the (cached) color to use
+---@param outlineSize number The size of the outline to render (pixels i think?)
+---@param outlineColorName string The name of the (cached) color to use for the outline
+---@param z number The z index of the renderer
+function ye_lua_create_text_outlined_renderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param handle string The path to the source image relative to resources/
+---@param srcX number The x position of the tile to render
+---@param srcY number The y position of the tile to render
+---@param srcW number The width of the tile to render
+---@param srcH number The height of the tile to render
+---@param z number The z index of the renderer
+function ye_lua_create_tile_renderer(entity,handle,srcX,srcY,srcW,srcH,z) end
+
+---@param entity lightuserdata The pointer to the C entity
 ---@return boolean  isActive The active state
 ---@return boolean  isRelative The relative state
 ---@return number   alpha The alpha value of the renderer
@@ -191,6 +218,58 @@ function ye_lua_image_renderer_query(entity) end
 ---@param entity lightuserdata The pointer to the C entity
 ---@param src string The path to the image to render relative to resources/
 function ye_lua_image_renderer_modify(entity,src) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return string text
+---@return string fontName
+---@return number fontSize
+---@return string colorName
+---@return number wrapWidth
+function ye_lua_text_renderer_query(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param text string | nil The text to render
+---@param fontName string | nil The name of the (cached) font to use
+---@param fontSize number | nil The size of the font to use
+---@param colorName string | nil The name of the (cached) color to use
+---@param wrapWidth number | nil The width to wrap the text at
+function ye_lua_text_renderer_modify(entity,text,fontName,fontSize,colorName,wrapWidth) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return string text
+---@return string fontName
+---@return number fontSize
+---@return string colorName
+---@return number wrapWidth
+---@return number outlineSize
+---@return string outlineColorName
+function ye_lua_text_outlined_renderer_query(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param text string | nil The text to render
+---@param fontName string | nil The name of the (cached) font to use
+---@param fontSize number | nil The size of the font to use
+---@param colorName string | nil The name of the (cached) color to use
+---@param wrapWidth number | nil The width to wrap the text at
+---@param outlineSize number | nil The size of the outline to render (pixels i think?)
+---@param outlineColorName string | nil The name of the (cached) color to use for the outline
+function ye_lua_text_outlined_renderer_modify(entity,text,fontName,fontSize,colorName,wrapWidth,outlineSize,outlineColorName) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return string handle
+---@return number srcX
+---@return number srcY
+---@return number srcW
+---@return number srcH
+function ye_lua_tile_renderer_query(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param handle string | nil The path to the source image relative to resources/
+---@param srcX number | nil The x position of the tile to render
+---@param srcY number | nil The y position of the tile to render
+---@param srcW number | nil The width of the tile to render
+---@param srcH number | nil The height of the tile to render
+function ye_lua_tile_renderer_modify(entity,handle,srcX,srcY,srcW,srcH) end
 
 
 

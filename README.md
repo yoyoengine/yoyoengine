@@ -135,8 +135,8 @@ These plans are currently sorted in order of my anticipated completion.
 - [X] Implement native C scripting
 - [X] Lua Scripting API
 - [X] Collision detection
-- [ ] emscripten build target
-- [ ] Stabilize the core framework API
+- [X] emscripten build target
+- [X] Stabilize the core framework API
 - [ ] Overhaul the Project Manager
 - [ ] Example projects and tutorials
 - [ ] Documentation website
@@ -145,9 +145,24 @@ Some features that aren't planned but I would like to implement eventually:
 
 - [ ] Networking (Stretch for after 1.0)
 - [ ] Implement a Cpython wrapper
-- [ ] Bundling assets into production data files
+- [X] Bundling assets into production data files
 - [ ] 3D rendering
 - [ ] Mac support
+
+## Path to 1.0
+
+Seeing as I'm reaching 12 months of development, and more or less wrapping up the most important stuff: im going to write a little bit about whats left before a prerelease or 1.0.
+
+### Major Milestones
+
+- [ ] Finish a stable lua API (in progress)
+- [ ] Rework and fix audio (audiosource) subsystem
+- [ ] Try to take a pass at UX and cleanup loose ends
+
+### Minor things (could be left out of a 1.0)
+
+- [ ] potential animation system rework (behavior trees / state machines)
+- [ ] Turn tilemap system into something more fleshed-out
 
 ## C scripting
 

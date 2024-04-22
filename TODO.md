@@ -619,3 +619,22 @@ wishlist:
 ## new intro
 
 - fade in and out, mix the sound better to fit, redesign a lot
+
+## back to lua shit
+
+representing colors seems so fucking annoying. how many tables am i gonna fucking make
+
+- re-order a bunch of args in function calls, im kinda just doing a rough pass now, i expect everything small like this to get ironed out
+
+- should probably use rawset on entity in anticipation now rather than switch eveything later
+
+should split runtime into multiple files... this is not awesome to work with
+
+- could do nuklear thing where its split and assembles itself into one file at configuration time
+
+vararg for packing, add other directories (manage dup keys?)
+
+TOMORROW: do the animation render type and then
+work on splitting LUA API source, we can put it in its own pack if need be. that or vararg the engine pack, since it maybe makes sense to put it in there. (or another build step to place it in there but that would be cancer)
+
+also tomorrow clean up the API. I feel like there is a good amount of shitty code repetition that could be overcame, as well as we should fix the preemptive rawset stuff now on the entity table

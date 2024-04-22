@@ -466,7 +466,7 @@ Camera_mt = {
 ---@param h number The height of the camera
 ---@param z number The z index of the camera
 ---
----@return Camera camera The lua camera object
+---@return Camera | nil camera The lua camera object
 function Camera:addCamera(entity, x, y, w, h, z)
     -- create the camera itself
     local camera = {}
@@ -566,6 +566,224 @@ Image_mt = {
     end,
 }
 
+---@class Text The text renderer impl
+---@field parent Entity
+---@field text string
+---@field fontName string
+---@field colorName string
+---@field fontSize number
+---@field wrapWidth number
+Text = {
+    ---@type Entity
+    parent = nil,
+}
+
+Text_mt = {
+    __index = function(self, key)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "Text field accessed on nil/null entity\n")
+            return nil
+        end
+
+        local text, fontName, fontSize, colorName, wrapWidth = ye_lua_text_renderer_query(parent._c_entity)
+
+        if key == "text" then
+            return text
+        elseif key == "fontName" then
+            return fontName
+        elseif key == "fontSize" then
+            return fontSize
+        elseif key == "colorName" then
+            return colorName
+        elseif key == "wrapWidth" then
+            return wrapWidth
+        else
+            log("error", "Text field accessed with invalid key\n")
+            return nil
+        end
+    end,
+
+    __newindex = function(self, key, value)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "Text field accessed on nil/null entity\n")
+            return
+        end
+
+        -- -- check if the parent is even of type Text renderer
+        -- if parent.Renderer.type ~= RendererType.TEXT then
+        --     log("error", "Text field accessed on non-text renderer entity\n")
+        --     return nil
+        -- end
+        -- REDUNDANT BECAUSE METATABLE ON RENDERER FILTERS INVALID ACCESS IN FIRST PLACE
+
+        if key == "text" then
+            ye_lua_text_renderer_modify(parent._c_entity, value, nil, nil, nil, nil)
+        elseif key == "fontName" then
+            ye_lua_text_renderer_modify(parent._c_entity, nil, value, nil, nil, nil)
+        elseif key == "fontSize" then
+            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, value, nil, nil)
+        elseif key == "colorName" then
+            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, nil, value, nil)
+        elseif key == "wrapWidth" then
+            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, nil, nil, value)
+        else
+            log("error", "Text field accessed with invalid key\n")
+            return
+        end
+    end,
+}
+
+---@class TextOutlined
+---@field parent Entity
+---@field text string
+---@field fontName string
+---@field colorName string
+---@field fontSize number
+---@field wrapWidth number
+---@field outlineSize number
+---@field outlineColorName string
+TextOutlined = {
+    ---@type Entity
+    parent = nil,
+}
+
+TextOutlined_mt = {
+    __index = function(self, key)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "TextOutlined field accessed on nil/null entity\n")
+            return nil
+        end
+
+        local text, fontName, fontSize, colorName, wrapWidth, outlineSize, outlineColorName = ye_lua_text_outlined_renderer_query(parent._c_entity)
+
+        if key == "text" then
+            return text
+        elseif key == "fontName" then
+            return fontName
+        elseif key == "fontSize" then
+            return fontSize
+        elseif key == "colorName" then
+            return colorName
+        elseif key == "wrapWidth" then
+            return wrapWidth
+        elseif key == "outlineSize" then
+            return outlineSize
+        elseif key == "outlineColorName" then
+            return outlineColorName
+        else
+            log("error", "TextOutlined field accessed with invalid key\n")
+            return nil
+        end
+    end,
+
+    __newindex = function(self, key, value)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "TextOutlined field accessed on nil/null entity\n")
+            return
+        end
+
+        if key == "text" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, value, nil, nil, nil, nil, nil, nil)
+        elseif key == "fontName" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, value, nil, nil, nil, nil, nil)
+        elseif key == "fontSize" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, value, nil, nil, nil, nil)
+        elseif key == "colorName" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, value, nil, nil, nil)
+        elseif key == "wrapWidth" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, value, nil, nil)
+        elseif key == "outlineSize" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, value, nil)
+        elseif key == "outlineColorName" then
+            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, value)
+        else
+            log("error", "TextOutlined field accessed with invalid key\n")
+            return
+        end
+    end,
+}
+
+---@class Tile
+---
+---The origin (0,0) of the tilemap is in the top left, and x increases to the right, y increases down.
+---
+---@field parent Entity
+---@field handle string
+---@field srcX number The (pixel) offset of the x position of the tile in the tileset
+---@field srcY number The (pixel) offset of the y position of the tile in the tileset
+---@field srcW number The width of the tile in the tileset
+---@field srcH number The height of the tile in the tileset
+Tile = {
+    ---@type Entity
+    parent = nil,
+}
+
+Tile_mt = {
+    __index = function(self, key)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "Tile field accessed on nil/null entity\n")
+            return nil
+        end
+
+        local handle, srcX, srcY, srcW, srcH = ye_lua_tile_renderer_query(parent._c_entity)
+
+        if key == "handle" then
+            return handle
+        elseif key == "srcX" then
+            return srcX
+        elseif key == "srcY" then
+            return srcY
+        elseif key == "srcW" then
+            return srcW
+        elseif key == "srcH" then
+            return srcH
+        else
+            log("error", "Tile field accessed with invalid key\n")
+            return nil
+        end
+    end,
+
+    __newindex = function(self, key, value)
+
+        local parent = rawget(self, "parent")
+
+        if not validateEntity(parent) then
+            log("error", "Tile field accessed on nil/null entity\n")
+            return
+        end
+
+        if key == "handle" then
+            ye_lua_tile_renderer_modify(parent._c_entity, value, nil, nil, nil, nil)
+        elseif key == "srcX" then
+            ye_lua_tile_renderer_modify(parent._c_entity, nil, value, nil, nil, nil)
+        elseif key == "srcY" then
+            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, value, nil, nil)
+        elseif key == "srcW" then
+            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, nil, value, nil)
+        elseif key == "srcH" then
+            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, nil, nil, value)
+        else
+            log("error", "Tile field accessed with invalid key\n")
+            return
+        end
+    end,
+}
+
 ---@class Renderer
 ---@field parent Entity
 ---@field _c_component lightuserdata
@@ -577,7 +795,7 @@ Image_mt = {
 ---@field y number The y position
 ---@field w number The width
 ---@field h number The height
----@field alignment RendererAlignment The alignment of the renderer
+---@field alignment integer The alignment of the renderer
 ---@field rotation number The clockwise rotation in degrees to render at
 ---@field flipX boolean Flip the renderer on the x axis
 ---@field flipY boolean Flip the renderer on the y axis
@@ -640,7 +858,8 @@ Renderer_mt = {
         elseif key == "type" then
             return type
         else
-            log("error", "Renderer field accessed with invalid key\n")
+            local msg = "Renderer field access with invalid key \"" .. key .. "\". Double check the renderer type.\n"
+            log("error", msg)
             return nil
         end
     end,
@@ -716,6 +935,126 @@ function Renderer:addImageRenderer(entity, handle, z)
 
     -- set impl type
     rawset(renderer, "type", RendererType.IMAGE)
+
+    return renderer
+end
+
+---**Create a new text renderer component.**
+---
+---This text will create a width and height based on its point size,
+---which can be modified through its table fields afterwards and will
+---resize itself following its aligment rules in the renderer component
+---
+---@param entity Entity The entity to attach the renderer to
+---@param text string The text to render
+---@param fontName string The name of the (cached) font to use
+---@param fontSize number The size of the font to use
+---@param colorName string The name of the (cached) color to use
+---@param z number The z index of the renderer
+---
+---@return Renderer renderer The lua renderer object
+function Renderer:addTextRenderer(entity, text, fontName, fontSize, colorName, z)
+    -- create the renderer itself
+    local renderer = {}
+    setmetatable(renderer, Renderer_mt)
+
+    -- track onto its parent
+    rawset(renderer, "parent", entity)
+
+    -- create the C renderer
+    ye_lua_create_text_renderer(entity._c_entity, text, fontName, fontSize, colorName, z)
+
+    entity.Renderer = renderer -- TODO stack overflow in future, rawset
+
+    -- create the impl and track it with rawset
+    local Text = {}
+    setmetatable(Text, Text_mt)
+
+    rawset(Text, "parent", entity)
+
+    rawset(renderer, "Text", Text)
+
+    -- set impl type
+    rawset(renderer, "type", RendererType.TEXT)
+
+    return renderer
+end
+
+---**Create a new text outlined renderer component.**
+---
+---This text will create a width and height based on its point size,
+---which can be modified through its table fields afterwards and will
+---resize itself following its aligment rules in the renderer component
+---
+---@param entity Entity The entity to attach the renderer to
+---@param text string The text to render
+---@param fontName string The name of the (cached) font to use
+---@param fontSize number The size of the font to use
+---@param colorName string The name of the (cached) color to use
+---@param outlineSize number The size of the outline
+---@param outlineColorName string The name of the (cached) color to use for the outline
+---@param z number The z index of the renderer
+---
+---@return Renderer renderer The lua renderer object
+function Renderer:addTextOutlinedRenderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+    -- create the renderer itself
+    local renderer = {}
+    setmetatable(renderer, Renderer_mt)
+
+    -- track onto its parent
+    rawset(renderer, "parent", entity)
+
+    -- create the C renderer
+    ye_lua_create_text_outlined_renderer(entity._c_entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+
+    entity.Renderer = renderer -- TODO stack overflow in future, rawset
+
+    -- create the impl and track it with rawset
+    local TextOutlined = {}
+    setmetatable(TextOutlined, TextOutlined_mt)
+
+    rawset(TextOutlined, "parent", entity)
+
+    rawset(renderer, "TextOutlined", TextOutlined)
+
+    -- set impl type
+    rawset(renderer, "type", RendererType.TEXT_OUTLINED)
+
+    return renderer
+end
+
+---**Create a new tile renderer component.**
+---
+---@param entity Entity The entity to attach the renderer to
+---@param handle string The path to the tileset to use
+---@param srcX number The (pixel) offset of the x position of the tile in the tileset
+---@param srcY number The (pixel) offset of the y position of the tile in the tileset
+---@param srcW number The width of the tile in the tileset
+---@param srcH number The height of the tile in the tileset
+---@param z number The z index of the renderer
+function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
+    -- create the renderer itself
+    local renderer = {}
+    setmetatable(renderer, Renderer_mt)
+
+    -- track onto its parent
+    rawset(renderer, "parent", entity)
+
+    -- create the C renderer
+    ye_lua_create_tile_renderer(entity._c_entity, handle, srcX, srcY, srcW, srcH, z)
+
+    entity.Renderer = renderer -- TODO stack overflow in future, rawset
+
+    -- create the impl and track it with rawset
+    local Tile = {}
+    setmetatable(Tile, Tile_mt)
+
+    rawset(Tile, "parent", entity)
+
+    rawset(renderer, "Tile", Tile)
+
+    -- set impl type
+    rawset(renderer, "type", RendererType.TILE)
 
     return renderer
 end
