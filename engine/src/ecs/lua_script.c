@@ -71,8 +71,7 @@ void _extract_signature(struct ye_component_lua_script *script, const char *func
     lua_pop(L, 1); // Pop the function or nil value from the stack
 }
 
-// really shitty and weird utility function to grab some lua script into a buffer
-char* _retrieve_script(const char* handle, bool is_resources_yep) {
+char * _get_script_buffer(const char *handle, bool is_in_resources_yep) {
     char *data = NULL;
     if(YE_STATE.editor.editor_mode){
         char *full_path = ye_path_resources(handle);
@@ -92,7 +91,7 @@ char* _retrieve_script(const char* handle, bool is_resources_yep) {
     else{
         struct yep_data_info d;
 
-        if(is_resources_yep)
+        if(is_in_resources_yep)
             d = yep_resource_misc(handle);
         else
             d = yep_engine_resource_misc(handle);
@@ -106,7 +105,71 @@ char* _retrieve_script(const char* handle, bool is_resources_yep) {
         data[d.size] = '\0';
         free(d.data);
     }
+    // ye_logf(debug,"Loaded script data from %s\n", handle);
     return data;
+}
+
+void _cleanup_script_comp(struct ye_entity *target) {
+    if(target->lua_script->state != NULL){
+        lua_close(target->lua_script->state);
+        target->lua_script->state = NULL;
+    }
+    if(target->lua_script != NULL){
+        free(target->lua_script);
+        target->lua_script = NULL;
+    }
+}
+
+bool _initialize_scripting_runtime(struct ye_entity *target) {
+    char *runtime = _get_script_buffer("lua_runtime/runtime.lua", false);
+    char *entity = _get_script_buffer("lua_runtime/entity.lua", false);
+    char *transform = _get_script_buffer("lua_runtime/transform.lua", false);
+    char *camera = _get_script_buffer("lua_runtime/camera.lua", false);
+    char *renderer = _get_script_buffer("lua_runtime/renderer.lua", false);
+
+    if(runtime == NULL || entity == NULL || transform == NULL || camera == NULL || renderer == NULL){
+        ye_logf(error,"Failed to load runtime lua scripts\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    if(!_run_script(target->lua_script->state, runtime)){
+        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    if(!_run_script(target->lua_script->state, entity)){
+        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    if(!_run_script(target->lua_script->state, transform)){
+        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    if(!_run_script(target->lua_script->state, camera)){
+        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    if(!_run_script(target->lua_script->state, renderer)){
+        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+        _cleanup_script_comp(target);
+        return false;
+    }
+
+    free(runtime);
+    free(entity);
+    free(transform);
+    free(camera);
+    free(renderer);
+
+    return true;
 }
 
 bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
@@ -147,22 +210,8 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
     if(!YE_STATE.editor.editor_mode){
         /*
             Load our engine lua runtime abstractions and run them
-            (from engine.yep/runtime.lua)
         */
-        char *runtime = _retrieve_script("runtime.lua", false);
-        if(runtime == NULL){
-            entity->lua_script->active = false;
-            free(entity->lua_script);
-            entity->lua_script = NULL;
-            return false;
-        }
-
-        if(!_run_script(entity->lua_script->state, runtime)){
-            lua_close(entity->lua_script->state);
-            entity->lua_script->active = false;
-            entity->lua_script->state = NULL;
-            free(entity->lua_script);
-            entity->lua_script = NULL;
+        if(!_initialize_scripting_runtime(entity)) {
             return false;
         }
 
@@ -171,7 +220,7 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
         /*
             Load the script data into a string
         */
-        char *script_data = _retrieve_script(handle, true);
+        char *script_data = _get_script_buffer(handle, true);
         if(script_data == NULL){
             entity->lua_script->active = false;
             free(entity->lua_script);
@@ -193,6 +242,9 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
             entity->lua_script = NULL;
             return false;
         }
+
+        // TODO: good? or bad?
+        free(script_data);
 
         /*
             Look through the file and interpret what functions exist in this script

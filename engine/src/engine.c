@@ -349,8 +349,8 @@ void setup_splash_screen(){
 
     if(!YE_STATE.editor.editor_mode){
         // because play sound looks in resources pack, we need to pre cache the engine one
-        _ye_mixer_engine_cache("startup.wav");
-        ye_play_sound("startup.wav",0,1); // play startup sound
+        _ye_mixer_engine_cache("startup/startup.wav");
+        ye_play_sound("startup/startup.wav",0,1); // play startup sound
     }
 
     struct ye_entity * splash_cam = ye_create_entity();
@@ -361,24 +361,24 @@ void setup_splash_screen(){
     // background for splash
     struct ye_entity * splash_bg = ye_create_entity();
     ye_add_transform_component(splash_bg, 0,0);
-    SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_bg.png"));
-    ye_cache_texture_manual(splash_bg_tex, "splash_bg.png");
+    SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_bg.png"));
+    ye_cache_texture_manual(splash_bg_tex, "startup/splash_bg.png");
     ye_add_image_renderer_component_preloaded(splash_bg, 1, splash_bg_tex);
     splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
 
     // foreground logo for splash
     struct ye_entity * splash_y = ye_create_entity();
     ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
-    SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_y.png"));
-    ye_cache_texture_manual(splash_y_tex, "splash_y.png");
+    SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_y.png"));
+    ye_cache_texture_manual(splash_y_tex, "startup/splash_y.png");
     ye_add_image_renderer_component_preloaded(splash_y, 1, splash_y_tex);
     splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
 
     // gear spinning below logo
     struct ye_entity * splash_gear = ye_create_entity();
     ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
-    SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("splash_gear.png"));
-    ye_cache_texture_manual(splash_gear_tex, "splash_gear.png");
+    SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_gear.png"));
+    ye_cache_texture_manual(splash_gear_tex, "startup/splash_gear.png");
     ye_add_image_renderer_component_preloaded(splash_gear, 1, splash_gear_tex);
     splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
     ye_add_physics_component(splash_gear,0,0);
@@ -389,7 +389,7 @@ void setup_splash_screen(){
     ye_add_transform_component(splash_version, 0, 0);
     SDL_Color white = {255, 255, 255, 255};
     ye_cache_color("white", white);
-    TTF_Font *orbitron = yep_engine_resource_font("Orbitron-Regular.ttf");
+    TTF_Font *orbitron = yep_engine_resource_font("fonts/Orbitron-Regular.ttf");
     ye_cache_font_manual("orbitron", orbitron);
     ye_add_text_renderer_component(splash_version, 1, YE_ENGINE_VERSION, "orbitron", 64, "white",0);
     splash_version->renderer->rect = (struct ye_rectf){
@@ -495,7 +495,7 @@ void ye_init_engine() {
         YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"));
     }
     else{
-        YE_STATE.engine.pEngineFont = yep_engine_resource_font("RobotoMono-Light.ttf");
+        YE_STATE.engine.pEngineFont = yep_engine_resource_font("fonts/RobotoMono-Light.ttf");
     }
     // since we are bypassing the cache to do this, we need to customly resize this
     TTF_SetFontSize(YE_STATE.engine.pEngineFont, 128); // high enough to be readable where-ever (I think)

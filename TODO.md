@@ -638,3 +638,9 @@ TOMORROW: do the animation render type and then
 work on splitting LUA API source, we can put it in its own pack if need be. that or vararg the engine pack, since it maybe makes sense to put it in there. (or another build step to place it in there but that would be cancer)
 
 also tomorrow clean up the API. I feel like there is a good amount of shitty code repetition that could be overcame, as well as we should fix the preemptive rawset stuff now on the entity table
+
+## random
+
+i think editor is bundling its edicons into prod engine.yep's lol
+
+cleanup lua_script.c its so gross
