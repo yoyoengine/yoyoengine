@@ -264,6 +264,111 @@ int ye_lua_tile_renderer_modify(lua_State *L){
 
 
 
+int ye_lua_create_animation_renderer(lua_State *L) {
+    ye_logf(debug, "creating animation renderer\n");
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not create renderer: entity is null\n");
+        return 0;
+    }
+
+    // animation, z
+    const char * animation = luaL_checkstring(L, 2);
+    int z = luaL_checknumber(L, 3);
+
+    ye_logf(debug, "adding animation renderer comp\n");
+    ye_add_animation_renderer_component(ent, z, animation);
+
+    return 0;
+}
+
+
+
+int ye_lua_animation_renderer_query(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not query renderer: entity is null\n");
+        return 0;
+    }
+
+    lua_pushboolean(L, ent->renderer->renderer_impl.animation->paused);
+    lua_pushstring(L, ent->renderer->renderer_impl.animation->meta_file);
+    lua_pushnumber(L, ent->renderer->renderer_impl.animation->frame_delay);
+    lua_pushnumber(L, ent->renderer->renderer_impl.animation->current_frame_index);
+    lua_pushnumber(L, ent->renderer->renderer_impl.animation->frame_count);
+    lua_pushnumber(L, ent->renderer->renderer_impl.animation->frame_width);
+    lua_pushnumber(L, ent->renderer->renderer_impl.animation->frame_height);
+    lua_pushstring(L, ent->renderer->renderer_impl.animation->animation_handle);
+
+    return 8;
+}
+
+
+
+int ye_lua_animation_renderer_modify(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not modify renderer: entity is null\n");
+        return 0;
+    }
+
+    // paused
+    if(lua_isboolean(L, 2)){
+        ent->renderer->renderer_impl.animation->paused = lua_toboolean(L, 2);
+    }
+
+    // meta file
+    if(lua_isstring(L, 3)){
+        const char * meta_file = luaL_checkstring(L, 3);
+        free(ent->renderer->renderer_impl.animation->meta_file);
+        ent->renderer->renderer_impl.animation->meta_file = malloc(strlen(meta_file) + 1);
+        strcpy(ent->renderer->renderer_impl.animation->meta_file, meta_file);
+    }
+
+    // frame delay
+    if(lua_isnumber(L, 4)){
+        ent->renderer->renderer_impl.animation->frame_delay = luaL_checknumber(L, 4);
+    }
+
+    // current frame index
+    if(lua_isnumber(L, 5)){
+        ent->renderer->renderer_impl.animation->current_frame_index = luaL_checknumber(L, 5);
+    }
+
+    // frame count
+    if(lua_isnumber(L, 6)){
+        ent->renderer->renderer_impl.animation->frame_count = luaL_checknumber(L, 6);
+    }
+
+    // frame width
+    if(lua_isnumber(L, 7)){
+        ent->renderer->renderer_impl.animation->frame_width = luaL_checknumber(L, 7);
+    }
+
+    // frame height
+    if(lua_isnumber(L, 8)){
+        ent->renderer->renderer_impl.animation->frame_height = luaL_checknumber(L, 8);
+    }
+
+    // animation handle
+    if(lua_isstring(L, 9)){
+        const char * animation_handle = luaL_checkstring(L, 9);
+        free(ent->renderer->renderer_impl.animation->animation_handle);
+        ent->renderer->renderer_impl.animation->animation_handle = malloc(strlen(animation_handle) + 1);
+        strcpy(ent->renderer->renderer_impl.animation->animation_handle, animation_handle);
+    }
+
+    // reflect any changes made
+    ye_update_renderer_component(ent);
+
+    return 0;
+}
+
+
+
 /*
     Pushes to stack (in order):
     - isActive
@@ -407,6 +512,21 @@ int ye_lua_image_renderer_modify(lua_State *L){
 
 
 
+int ye_lua_force_refresh_renderer(lua_State *L){
+    struct ye_entity * ent = lua_touserdata(L, 1);
+
+    if(ent == NULL) {
+        ye_logf(error, "could not force refresh renderer: entity is null\n");
+        return 0;
+    }
+
+    ye_update_renderer_component(ent);
+
+    return 0;
+}
+
+
+
 void ye_lua_renderer_register(lua_State *L) {
     // renderer
     lua_register(L, "ye_lua_renderer_query", ye_lua_renderer_query);
@@ -431,4 +551,12 @@ void ye_lua_renderer_register(lua_State *L) {
     lua_register(L, "ye_lua_create_tile_renderer", ye_lua_create_tile_renderer);
     lua_register(L, "ye_lua_tile_renderer_query", ye_lua_tile_renderer_query);
     lua_register(L, "ye_lua_tile_renderer_modify", ye_lua_tile_renderer_modify);
+
+    // animation
+    lua_register(L, "ye_lua_create_animation_renderer", ye_lua_create_animation_renderer);
+    lua_register(L, "ye_lua_animation_renderer_query", ye_lua_animation_renderer_query);
+    lua_register(L, "ye_lua_animation_renderer_modify", ye_lua_animation_renderer_modify);
+
+    // misc
+    lua_register(L, "ye_lua_force_refresh_renderer", ye_lua_force_refresh_renderer);
 }

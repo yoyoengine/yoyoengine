@@ -644,3 +644,11 @@ also tomorrow clean up the API. I feel like there is a good amount of shitty cod
 i think editor is bundling its edicons into prod engine.yep's lol
 
 cleanup lua_script.c its so gross
+
+## todo when you read this
+
+go through existing lua api stuff and do some cleanup if possible
+
+start adding the rest of the components
+
+consider if we want oop abstraction for things like scene control. any advantage?

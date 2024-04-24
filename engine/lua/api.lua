@@ -179,6 +179,11 @@ function ye_lua_create_text_outlined_renderer(entity, text, fontName, fontSize, 
 function ye_lua_create_tile_renderer(entity,handle,srcX,srcY,srcW,srcH,z) end
 
 ---@param entity lightuserdata The pointer to the C entity
+---@param metaFile string The path to the animation meta file relative to resources/
+---@param z number The z index of the renderer
+function ye_lua_create_animation_renderer(entity,metaFile,z) end
+
+---@param entity lightuserdata The pointer to the C entity
 ---@return boolean  isActive The active state
 ---@return boolean  isRelative The relative state
 ---@return number   alpha The alpha value of the renderer
@@ -270,6 +275,33 @@ function ye_lua_tile_renderer_query(entity) end
 ---@param srcW number | nil The width of the tile to render
 ---@param srcH number | nil The height of the tile to render
 function ye_lua_tile_renderer_modify(entity,handle,srcX,srcY,srcW,srcH) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean paused
+---@return string metaFile
+---@return number frameDelay
+---@return number currentFrame
+---@return number frameCount
+---@return number frameWidth 
+---@return number frameHeight
+---@return string imageHandle
+function ye_lua_animation_renderer_query(entity) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@param paused boolean | nil
+---@param metaFile string | nil
+---@param frameDelay number | nil
+---@param currentFrame number | nil
+---@param frameCount number | nil
+---@param frameWidth number | nil
+---@param frameHeight number | nil
+---@param imageHandle string | nil
+function ye_lua_animation_renderer_modify(entity,paused,metaFile,frameDelay,currentFrame,frameCount,frameWidth,frameHeight,imageHandle) end
+
+---**Forces the renderer to update and reconstruct itself**
+---
+---@param entity lightuserdata The pointer to the C entity
+function ye_lua_force_refresh_renderer(entity) end
 
 
 

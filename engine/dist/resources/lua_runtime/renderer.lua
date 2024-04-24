@@ -303,6 +303,89 @@ Tile_mt = {
     end,
 }
 
+--- ik ur ass is coming back to overhaul this later, so hi lol
+
+---@class Animation
+---@field parent Entity
+---@field paused boolean
+---@field metaFile string
+---@field frameDelay number
+---@field currentFrame number
+---@field frameCount number Should probably not be changed directly, unless you know what youre doing
+---@field frameWidth number Should probably not be changed directly, unless you know what youre doing
+---@field frameHeight number Should probably not be changed directly, unless you know what youre doing
+---@field imageHandle string Should probably not be changed directly, unless you know what youre doing
+Animation = {
+    ---@type Entity
+    parent = nil,
+}
+
+Animation_mt = {
+    __index = function(self, key)
+
+        local parent = rawget(self, "parent")
+
+        if not ValidateEntity(parent) then
+            log("error", "Animation field accessed on nil/null entity\n")
+            return nil
+        end
+
+        local paused, metaFile, frameDelay, currentFrame, frameCount, frameWidth, frameHeight, imageHandle = ye_lua_animation_renderer_query(parent._c_entity)
+
+        if key == "paused" then
+            return paused
+        elseif key == "metaFile" then
+            return metaFile
+        elseif key == "frameDelay" then
+            return frameDelay
+        elseif key == "currentFrame" then
+            return currentFrame
+        elseif key == "frameCount" then
+            return frameCount
+        elseif key == "frameWidth" then
+            return frameWidth
+        elseif key == "frameHeight" then
+            return frameHeight
+        elseif key == "imageHandle" then
+            return imageHandle
+        else
+            log("error", "Animation field accessed with invalid key\n")
+            return nil
+        end
+    end,
+
+    __newindex = function(self, key, value)
+
+        local parent = rawget(self, "parent")
+
+        if not ValidateEntity(parent) then
+            log("error", "Animation field accessed on nil/null entity\n")
+            return
+        end
+
+        if key == "paused" then
+            ye_lua_animation_renderer_modify(parent._c_entity, value, nil, nil, nil, nil, nil, nil, nil)
+        elseif key == "metaFile" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, value, nil, nil, nil, nil, nil, nil)
+        elseif key == "frameDelay" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, value, nil, nil, nil, nil, nil)
+        elseif key == "currentFrame" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, value, nil, nil, nil, nil)
+        elseif key == "frameCount" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, value, nil, nil, nil)
+        elseif key == "frameWidth" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, value, nil, nil)
+        elseif key == "frameHeight" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, value, nil)
+        elseif key == "imageHandle" then
+            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, value)
+        else
+            log("error", "Animation field accessed with invalid key\n")
+            return
+        end
+    end,
+}
+
 ---@class Renderer
 ---@field parent Entity
 ---@field _c_component lightuserdata
@@ -574,6 +657,38 @@ function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
 
     -- set impl type
     rawset(renderer, "type", RendererType.TILE)
+
+    return renderer
+end
+
+---**Create a new animation renderer component.**
+---
+---@param entity Entity The entity to attach the renderer to
+---@param metaFile string The path to the animation meta file to use
+---@param z number The z index of the renderer
+function Renderer:addAnimationRenderer(entity, metaFile, z)
+    -- create the renderer itself
+    local renderer = {}
+    setmetatable(renderer, Renderer_mt)
+
+    -- track onto its parent
+    rawset(renderer, "parent", entity)
+
+    -- create the C renderer
+    ye_lua_create_animation_renderer(entity._c_entity, metaFile, z)
+
+    entity.Renderer = renderer -- TODO stack overflow in future, rawset
+
+    -- create the impl and track it with rawset
+    local Animation = {}
+    setmetatable(Animation, Animation_mt)
+
+    rawset(Animation, "parent", entity)
+
+    rawset(renderer, "Animation", Animation)
+
+    -- set impl type
+    rawset(renderer, "type", RendererType.ANIMATION)
 
     return renderer
 end
