@@ -39,6 +39,16 @@ Camera = {
     -- methods
 }
 
+local cameraIndexer = {
+    isActive = 1,
+    isRelative = 2,
+    z = 3,
+    x = 4,
+    y = 5,
+    w = 6,
+    h = 7,
+}
+
 -- define the camera metatable
 Camera_mt = {
     __index = function(self, key)
@@ -49,22 +59,10 @@ Camera_mt = {
         end
 
         -- TODO: IF YOU ADD THIS TYPE OF ACCESS TO ENTITY CLASS THIS WILL OVERFLOW
-        local isActive, isRelative, z, x, y, w, h = ye_lua_camera_query(parent._c_entity)
+        local queryResult = {ye_lua_camera_query(parent._c_entity)}
 
-        if key == "isActive" then
-            return isActive
-        elseif key == "isRelative" then
-            return isRelative
-        elseif key == "z" then
-            return z
-        elseif key == "x" then
-            return x
-        elseif key == "y" then
-            return y
-        elseif key == "w" then
-            return w
-        elseif key == "h" then
-            return h
+        if cameraIndexer[key] then
+            return queryResult[cameraIndexer[key]]
         else
             log("error", "Camera field accessed with invalid key\n")
             return nil
@@ -77,20 +75,12 @@ Camera_mt = {
             return
         end
 
-        if key == "isActive" then
-            ye_lua_camera_modify(self.parent._c_entity, value, nil, nil, nil, nil, nil, nil)
-        elseif key == "isRelative" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, value, nil, nil, nil, nil, nil)
-        elseif key == "z" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, nil, value, nil, nil, nil, nil)
-        elseif key == "x" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, value, nil, nil, nil)
-        elseif key == "y" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, value, nil, nil)
-        elseif key == "w" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, nil, value, nil)
-        elseif key == "h" then
-            ye_lua_camera_modify(self.parent._c_entity, nil, nil, nil, nil, nil, nil, value)
+        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil}
+
+        if cameraIndexer[key] then
+            args[cameraIndexer[key] + 1] = value
+            ye_lua_camera_modify(Yunpack(args))
+            return
         else
             log("error", "Camera field accessed with invalid key\n")
             return

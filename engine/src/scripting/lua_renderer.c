@@ -433,6 +433,20 @@ int ye_lua_renderer_modify(lua_State *L){
         return 0;
     }
 
+    // ye_logf(debug, "renderer active is a %s\n", luaL_typename(L, 2));
+    // ye_logf(debug, "renderer relative is a %s\n", luaL_typename(L, 3));
+    // ye_logf(debug, "renderer alpha is a %s\n", luaL_typename(L, 4));
+    // ye_logf(debug, "renderer z is a %s\n", luaL_typename(L, 5));
+    // ye_logf(debug, "renderer x is a %s\n", luaL_typename(L, 6));
+    // ye_logf(debug, "renderer y is a %s\n", luaL_typename(L, 7));
+    // ye_logf(debug, "renderer w is a %s\n", luaL_typename(L, 8));
+    // ye_logf(debug, "renderer h is a %s\n", luaL_typename(L, 9));
+    // ye_logf(debug, "renderer alignment is a %s\n", luaL_typename(L, 10));
+    // ye_logf(debug, "renderer rotation is a %s\n", luaL_typename(L, 11));
+    // ye_logf(debug, "renderer flipX is a %s\n", luaL_typename(L, 12));
+    // ye_logf(debug, "renderer flipY is a %s\n", luaL_typename(L, 13));
+    // ye_logf(debug, "renderer preserveOriginalSize is a %s\n", luaL_typename(L, 14));
+
     if(lua_isboolean(L, 2)){
         ent->renderer->active = lua_toboolean(L, 2);
     }
@@ -484,6 +498,8 @@ int ye_lua_renderer_modify(lua_State *L){
     if(lua_isboolean(L, 14)){
         ent->renderer->preserve_original_size = lua_toboolean(L, 14);
     }
+
+    // ye_update_renderer_component(ent);
 
     return 0;
 }

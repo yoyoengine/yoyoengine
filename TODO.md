@@ -652,3 +652,7 @@ go through existing lua api stuff and do some cleanup if possible
 start adding the rest of the components
 
 consider if we want oop abstraction for things like scene control. any advantage?
+
+## jdfglkjfdlgkjdflkg
+
+feels like the lua getter setter abstraction could be simplified even further, since we do a lot of the same operations as far as repeated code goes

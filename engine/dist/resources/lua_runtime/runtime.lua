@@ -46,15 +46,43 @@ function ValidateEntity(self)
     return true
 end
 
-----------------------------------------------
+--- Helper function to get the highest integer key in a table
+---@param t table The table
+---@return number The highest integer key
+local function highestKey(t)
+    local max = 0
+    for k in pairs(t) do
+        if type(k) == "number" and k > max then
+            max = k
+        end
+    end
+    return max
+end
 
+--- Custom unpack function which does not truncate nil values
+---@param t table The table to unpack
+---@param i number The starting index
+---@param n number The ending index
+---@return any The unpacked values
+function Yunpack(t, i, n)
 
+    -- print the table thats going to be unpacked for debug purposes
+    print("unpacking table")
+    for k, v in pairs(t) do
+        print(k, v)
+    end
+    
+    i = i or 1
+    n = n or highestKey(t)
+    
+    print("i:", i)
+    print("n:", n)
+    print("----------")
 
-
-
-
-
-
+    if i <= n then
+        return t[i], Yunpack(t, i + 1, n)
+    end
+end
 
 ----------------------------------------------
 

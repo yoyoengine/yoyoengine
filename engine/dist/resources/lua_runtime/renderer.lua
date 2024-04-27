@@ -97,6 +97,14 @@ Text = {
     parent = nil,
 }
 
+local TextIndexer = {
+    text = 1,
+    fontName = 2,
+    fontSize = 3,
+    colorName = 4,
+    wrapWidth = 5,
+}
+
 Text_mt = {
     __index = function(self, key)
 
@@ -107,18 +115,10 @@ Text_mt = {
             return nil
         end
 
-        local text, fontName, fontSize, colorName, wrapWidth = ye_lua_text_renderer_query(parent._c_entity)
+        local queryResult = {ye_lua_text_renderer_query(parent._c_entity)}
 
-        if key == "text" then
-            return text
-        elseif key == "fontName" then
-            return fontName
-        elseif key == "fontSize" then
-            return fontSize
-        elseif key == "colorName" then
-            return colorName
-        elseif key == "wrapWidth" then
-            return wrapWidth
+        if TextIndexer[key] then
+            return queryResult[TextIndexer[key]]
         else
             log("error", "Text field accessed with invalid key\n")
             return nil
@@ -141,16 +141,12 @@ Text_mt = {
         -- end
         -- REDUNDANT BECAUSE METATABLE ON RENDERER FILTERS INVALID ACCESS IN FIRST PLACE
 
-        if key == "text" then
-            ye_lua_text_renderer_modify(parent._c_entity, value, nil, nil, nil, nil)
-        elseif key == "fontName" then
-            ye_lua_text_renderer_modify(parent._c_entity, nil, value, nil, nil, nil)
-        elseif key == "fontSize" then
-            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, value, nil, nil)
-        elseif key == "colorName" then
-            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, nil, value, nil)
-        elseif key == "wrapWidth" then
-            ye_lua_text_renderer_modify(parent._c_entity, nil, nil, nil, nil, value)
+        local args = {self.parent._c_entity, nil, nil, nil, nil, nil}
+
+        if TextIndexer[key] then
+            args[TextIndexer[key] + 1] = value
+            ye_lua_text_renderer_modify(Yunpack(args))
+            return
         else
             log("error", "Text field accessed with invalid key\n")
             return
@@ -172,6 +168,16 @@ TextOutlined = {
     parent = nil,
 }
 
+local TextOutlinedIndexer = {
+    text = 1,
+    fontName = 2,
+    fontSize = 3,
+    colorName = 4,
+    wrapWidth = 5,
+    outlineSize = 6,
+    outlineColorName = 7,
+}
+
 TextOutlined_mt = {
     __index = function(self, key)
 
@@ -182,22 +188,10 @@ TextOutlined_mt = {
             return nil
         end
 
-        local text, fontName, fontSize, colorName, wrapWidth, outlineSize, outlineColorName = ye_lua_text_outlined_renderer_query(parent._c_entity)
+        local queryResult = {ye_lua_text_outlined_renderer_query(parent._c_entity)}
 
-        if key == "text" then
-            return text
-        elseif key == "fontName" then
-            return fontName
-        elseif key == "fontSize" then
-            return fontSize
-        elseif key == "colorName" then
-            return colorName
-        elseif key == "wrapWidth" then
-            return wrapWidth
-        elseif key == "outlineSize" then
-            return outlineSize
-        elseif key == "outlineColorName" then
-            return outlineColorName
+        if TextOutlinedIndexer[key] then
+            return queryResult[TextOutlinedIndexer[key]]
         else
             log("error", "TextOutlined field accessed with invalid key\n")
             return nil
@@ -213,20 +207,12 @@ TextOutlined_mt = {
             return
         end
 
-        if key == "text" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, value, nil, nil, nil, nil, nil, nil)
-        elseif key == "fontName" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, value, nil, nil, nil, nil, nil)
-        elseif key == "fontSize" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, value, nil, nil, nil, nil)
-        elseif key == "colorName" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, value, nil, nil, nil)
-        elseif key == "wrapWidth" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, value, nil, nil)
-        elseif key == "outlineSize" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, value, nil)
-        elseif key == "outlineColorName" then
-            ye_lua_text_outlined_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, value)
+        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil}
+
+        if TextOutlinedIndexer[key] then
+            args[TextOutlinedIndexer[key] + 1] = value
+            ye_lua_text_outlined_renderer_modify(Yunpack(args))
+            return
         else
             log("error", "TextOutlined field accessed with invalid key\n")
             return
@@ -249,6 +235,14 @@ Tile = {
     parent = nil,
 }
 
+local TileIndexer = {
+    handle = 1,
+    srcX = 2,
+    srcY = 3,
+    srcW = 4,
+    srcH = 5,
+}
+
 Tile_mt = {
     __index = function(self, key)
 
@@ -259,18 +253,10 @@ Tile_mt = {
             return nil
         end
 
-        local handle, srcX, srcY, srcW, srcH = ye_lua_tile_renderer_query(parent._c_entity)
+        local queryResult = {ye_lua_tile_renderer_query(parent._c_entity)}
 
-        if key == "handle" then
-            return handle
-        elseif key == "srcX" then
-            return srcX
-        elseif key == "srcY" then
-            return srcY
-        elseif key == "srcW" then
-            return srcW
-        elseif key == "srcH" then
-            return srcH
+        if TileIndexer[key] then
+            return queryResult[TileIndexer[key]]
         else
             log("error", "Tile field accessed with invalid key\n")
             return nil
@@ -286,16 +272,12 @@ Tile_mt = {
             return
         end
 
-        if key == "handle" then
-            ye_lua_tile_renderer_modify(parent._c_entity, value, nil, nil, nil, nil)
-        elseif key == "srcX" then
-            ye_lua_tile_renderer_modify(parent._c_entity, nil, value, nil, nil, nil)
-        elseif key == "srcY" then
-            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, value, nil, nil)
-        elseif key == "srcW" then
-            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, nil, value, nil)
-        elseif key == "srcH" then
-            ye_lua_tile_renderer_modify(parent._c_entity, nil, nil, nil, nil, value)
+        local args = {self.parent._c_entity, nil, nil, nil, nil, nil}
+
+        if TileIndexer[key] then
+            args[TileIndexer[key] + 1] = value
+            ye_lua_tile_renderer_modify(Yunpack(args))
+            return
         else
             log("error", "Tile field accessed with invalid key\n")
             return
@@ -320,6 +302,17 @@ Animation = {
     parent = nil,
 }
 
+local AnimationIndexer = {
+    paused = 1,
+    metaFile = 2,
+    frameDelay = 3,
+    currentFrame = 4,
+    frameCount = 5,
+    frameWidth = 6,
+    frameHeight = 7,
+    imageHandle = 8
+}
+
 Animation_mt = {
     __index = function(self, key)
 
@@ -330,24 +323,10 @@ Animation_mt = {
             return nil
         end
 
-        local paused, metaFile, frameDelay, currentFrame, frameCount, frameWidth, frameHeight, imageHandle = ye_lua_animation_renderer_query(parent._c_entity)
+        local queryResult = {ye_lua_animation_renderer_query(parent._c_entity)}
 
-        if key == "paused" then
-            return paused
-        elseif key == "metaFile" then
-            return metaFile
-        elseif key == "frameDelay" then
-            return frameDelay
-        elseif key == "currentFrame" then
-            return currentFrame
-        elseif key == "frameCount" then
-            return frameCount
-        elseif key == "frameWidth" then
-            return frameWidth
-        elseif key == "frameHeight" then
-            return frameHeight
-        elseif key == "imageHandle" then
-            return imageHandle
+        if AnimationIndexer[key] then
+            return queryResult[AnimationIndexer[key]]
         else
             log("error", "Animation field accessed with invalid key\n")
             return nil
@@ -363,22 +342,12 @@ Animation_mt = {
             return
         end
 
-        if key == "paused" then
-            ye_lua_animation_renderer_modify(parent._c_entity, value, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "metaFile" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, value, nil, nil, nil, nil, nil, nil)
-        elseif key == "frameDelay" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, value, nil, nil, nil, nil, nil)
-        elseif key == "currentFrame" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, value, nil, nil, nil, nil)
-        elseif key == "frameCount" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, value, nil, nil, nil)
-        elseif key == "frameWidth" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, value, nil, nil)
-        elseif key == "frameHeight" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, value, nil)
-        elseif key == "imageHandle" then
-            ye_lua_animation_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, value)
+        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil}
+
+        if AnimationIndexer[key] then
+            args[AnimationIndexer[key] + 1] = value
+            ye_lua_animation_renderer_modify(Yunpack(args))
+            return
         else
             log("error", "Animation field accessed with invalid key\n")
             return
@@ -420,6 +389,23 @@ Renderer = {
     alignment = nil,
 }
 
+local RendererIndexer = {
+    isActive = 1,
+    isRelative = 2,
+    alpha = 3,
+    z = 4,
+    x = 5,
+    y = 6,
+    w = 7,
+    h = 8,
+    alignment = 9,
+    rotation = 10,
+    flipX = 11,
+    flipY = 12,
+    preserveOriginalSize = 13,
+    type = 14
+}
+
 Renderer_mt = {
     __index = function(self, key)
         local parent = rawget(self, "parent")
@@ -429,36 +415,10 @@ Renderer_mt = {
         end
 
         -- do all the base access on renderer fields (not impl)
-        local isActive, isRelative, alpha, z, x, y, w, h, alignment, rotation, flipX, flipY, preserveOriginalSize, type = ye_lua_renderer_query(parent._c_entity)
+        local queryResult = {ye_lua_renderer_query(parent._c_entity)}
     
-        if key == "isActive" then
-            return isActive
-        elseif key == "isRelative" then
-            return isRelative
-        elseif key == "alpha" then
-            return alpha
-        elseif key == "z" then
-            return z
-        elseif key == "x" then
-            return x
-        elseif key == "y" then
-            return y
-        elseif key == "w" then
-            return w
-        elseif key == "h" then
-            return h
-        elseif key == "alignment" then
-            return alignment
-        elseif key == "rotation" then
-            return rotation
-        elseif key == "flipX" then
-            return flipX
-        elseif key == "flipY" then
-            return flipY
-        elseif key == "preserveOriginalSize" then
-            return preserveOriginalSize
-        elseif key == "type" then
-            return type
+        if RendererIndexer[key] then
+            return queryResult[RendererIndexer[key]]
         else
             local msg = "Renderer field access with invalid key \"" .. key .. "\". Double check the renderer type.\n"
             log("error", msg)
@@ -473,32 +433,20 @@ Renderer_mt = {
             return
         end
 
-        if key == "isActive" then
-            ye_lua_renderer_modify(parent._c_entity, value, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "isRelative" then
-            ye_lua_renderer_modify(parent._c_entity, nil, value, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "alpha" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, value, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "z" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, value, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "x" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, value, nil, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "y" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, value, nil, nil, nil, nil, nil, nil, nil)
-        elseif key == "w" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, value, nil, nil, nil, nil, nil, nil)
-        elseif key == "h" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, value, nil, nil, nil, nil, nil)
-        elseif key == "alignment" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, value, nil, nil, nil, nil)
-        elseif key == "rotation" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, value, nil, nil, nil)
-        elseif key == "flipX" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, value, nil, nil)
-        elseif key == "flipY" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, value, nil)
-        elseif key == "preserveOriginalSize" then
-            ye_lua_renderer_modify(parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, value)
+        print("setting", key, "to", value)
+
+        local args = {parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+        -- local fake_args = {parent._c_entity, 1, 2, nil, 4, 5, 6}
+
+        -- print("fake args", Yunpack(fake_args))
+        
+        if RendererIndexer[key] then
+            -- print("got arg index",RendererIndexer[key])
+            args[RendererIndexer[key] + 1] = value
+            -- print("args", Yunpack(args), "length of args:", #args)
+            -- print("SET ARG:",args[RendererIndexer[key] + 1])
+            ye_lua_renderer_modify(Yunpack(args))
+            return
         else
             log("error", "Renderer field accessed with invalid key\n")
             return
