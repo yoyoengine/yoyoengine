@@ -656,3 +656,11 @@ consider if we want oop abstraction for things like scene control. any advantage
 ## jdfglkjfdlgkjdflkg
 
 feels like the lua getter setter abstraction could be simplified even further, since we do a lot of the same operations as far as repeated code goes
+
+## getting back into it
+
+entity needs to be modernized, use the metafuncitons (and hope you dont break too much, still need rawsets all over the place)
+
+also i just left transform as what it was since its so basic. idek
+
+straggling "error calling function: attempt to call nil value" when exiting engine

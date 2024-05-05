@@ -200,3 +200,31 @@ function Entity:getEntityNamed(name)
 
     return entity
 end
+
+--- Generic Component Addition
+---
+--- This function will create and assign a component of given
+--- componentType, as well as pass varags to the constructer in C
+---
+---@param entity Entity The entity to attach the component to
+---@param componentType string The type of component to add
+---@param componentMetaTable table The metatable for the component
+---@param cComponentCreationFunc function The function to create the component in C
+---@vararg ... The arguments to pass to the C component creation function
+function Entity:addComponent(entity, componentType, componentMetaTable, cComponentCreationFunc, ...)
+    
+    -- create the component itself
+    local component = {}
+    setmetatable(component, componentMetaTable)
+
+    -- set the components "parent" to this entity
+    rawset(component, "parent", entity)
+
+    -- create the component in the engine
+    cComponentCreationFunc(entity._c_entity, ...)
+
+    -- set the component on the entity
+    entity[componentType] = component
+
+    return component
+end

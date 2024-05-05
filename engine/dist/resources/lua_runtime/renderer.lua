@@ -48,40 +48,14 @@ Image = {
 }
 
 Image_mt = {
+    -- there is only one field, so just inline it rather than with a table/enum/indexer
+
     __index = function(self, key)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Image field accessed on nil/null entity\n")
-            return nil
-        end
-
-        local src = ye_lua_image_renderer_query(parent._c_entity)
-
-        if key == "src" then
-            return src
-        else
-            log("error", "Image field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, { src = 1 }, ye_lua_image_renderer_query, "Image")
     end,
 
     __newindex = function(self, key, value)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Image field accessed on nil/null entity\n")
-            return
-        end
-
-        if key == "src" then
-            ye_lua_image_renderer_modify(self.parent._c_entity, value)
-        else
-            log("error", "Image field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, { src = 1 }, ye_lua_image_renderer_modify, "Image")
     end,
 }
 
@@ -107,50 +81,11 @@ local TextIndexer = {
 
 Text_mt = {
     __index = function(self, key)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Text field accessed on nil/null entity\n")
-            return nil
-        end
-
-        local queryResult = {ye_lua_text_renderer_query(parent._c_entity)}
-
-        if TextIndexer[key] then
-            return queryResult[TextIndexer[key]]
-        else
-            log("error", "Text field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, TextIndexer, ye_lua_text_renderer_query, "Text")
     end,
 
     __newindex = function(self, key, value)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Text field accessed on nil/null entity\n")
-            return
-        end
-
-        -- -- check if the parent is even of type Text renderer
-        -- if parent.Renderer.type ~= RendererType.TEXT then
-        --     log("error", "Text field accessed on non-text renderer entity\n")
-        --     return nil
-        -- end
-        -- REDUNDANT BECAUSE METATABLE ON RENDERER FILTERS INVALID ACCESS IN FIRST PLACE
-
-        local args = {self.parent._c_entity, nil, nil, nil, nil, nil}
-
-        if TextIndexer[key] then
-            args[TextIndexer[key] + 1] = value
-            ye_lua_text_renderer_modify(Yunpack(args))
-            return
-        else
-            log("error", "Text field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, TextIndexer, ye_lua_text_renderer_modify, "Text")
     end,
 }
 
@@ -180,43 +115,11 @@ local TextOutlinedIndexer = {
 
 TextOutlined_mt = {
     __index = function(self, key)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "TextOutlined field accessed on nil/null entity\n")
-            return nil
-        end
-
-        local queryResult = {ye_lua_text_outlined_renderer_query(parent._c_entity)}
-
-        if TextOutlinedIndexer[key] then
-            return queryResult[TextOutlinedIndexer[key]]
-        else
-            log("error", "TextOutlined field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, TextOutlinedIndexer, ye_lua_text_outlined_renderer_query, "TextOutlined")
     end,
 
     __newindex = function(self, key, value)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "TextOutlined field accessed on nil/null entity\n")
-            return
-        end
-
-        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil}
-
-        if TextOutlinedIndexer[key] then
-            args[TextOutlinedIndexer[key] + 1] = value
-            ye_lua_text_outlined_renderer_modify(Yunpack(args))
-            return
-        else
-            log("error", "TextOutlined field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, TextOutlinedIndexer, ye_lua_text_outlined_renderer_modify, "TextOutlined")
     end,
 }
 
@@ -245,43 +148,11 @@ local TileIndexer = {
 
 Tile_mt = {
     __index = function(self, key)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Tile field accessed on nil/null entity\n")
-            return nil
-        end
-
-        local queryResult = {ye_lua_tile_renderer_query(parent._c_entity)}
-
-        if TileIndexer[key] then
-            return queryResult[TileIndexer[key]]
-        else
-            log("error", "Tile field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, TileIndexer, ye_lua_tile_renderer_query, "Tile")
     end,
 
     __newindex = function(self, key, value)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Tile field accessed on nil/null entity\n")
-            return
-        end
-
-        local args = {self.parent._c_entity, nil, nil, nil, nil, nil}
-
-        if TileIndexer[key] then
-            args[TileIndexer[key] + 1] = value
-            ye_lua_tile_renderer_modify(Yunpack(args))
-            return
-        else
-            log("error", "Tile field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, TileIndexer, ye_lua_tile_renderer_modify, "Tile")
     end,
 }
 
@@ -315,43 +186,11 @@ local AnimationIndexer = {
 
 Animation_mt = {
     __index = function(self, key)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Animation field accessed on nil/null entity\n")
-            return nil
-        end
-
-        local queryResult = {ye_lua_animation_renderer_query(parent._c_entity)}
-
-        if AnimationIndexer[key] then
-            return queryResult[AnimationIndexer[key]]
-        else
-            log("error", "Animation field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, AnimationIndexer, ye_lua_animation_renderer_query, "Animation")
     end,
 
     __newindex = function(self, key, value)
-
-        local parent = rawget(self, "parent")
-
-        if not ValidateEntity(parent) then
-            log("error", "Animation field accessed on nil/null entity\n")
-            return
-        end
-
-        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil}
-
-        if AnimationIndexer[key] then
-            args[AnimationIndexer[key] + 1] = value
-            ye_lua_animation_renderer_modify(Yunpack(args))
-            return
-        else
-            log("error", "Animation field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, AnimationIndexer, ye_lua_animation_renderer_modify, "Animation")
     end,
 }
 
@@ -408,51 +247,39 @@ local RendererIndexer = {
 
 Renderer_mt = {
     __index = function(self, key)
-        local parent = rawget(self, "parent")
-        if not ValidateEntity(parent) then
-            log("error", "Renderer field accessed on nil/null entity\n")
-            return nil
-        end
-
-        -- do all the base access on renderer fields (not impl)
-        local queryResult = {ye_lua_renderer_query(parent._c_entity)}
-    
-        if RendererIndexer[key] then
-            return queryResult[RendererIndexer[key]]
-        else
-            local msg = "Renderer field access with invalid key \"" .. key .. "\". Double check the renderer type.\n"
-            log("error", msg)
-            return nil
-        end
+        return ValidateAndQuery(self, key, RendererIndexer, ye_lua_renderer_query, "Renderer")
     end,
 
     __newindex = function(self, key, value)
-        local parent = rawget(self, "parent")
-        if not ValidateEntity(parent) then
-            log("error", "Renderer field accessed on nil/null entity\n")
-            return
-        end
-
-        print("setting", key, "to", value)
-
-        local args = {parent._c_entity, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
-        -- local fake_args = {parent._c_entity, 1, 2, nil, 4, 5, 6}
-
-        -- print("fake args", Yunpack(fake_args))
-        
-        if RendererIndexer[key] then
-            -- print("got arg index",RendererIndexer[key])
-            args[RendererIndexer[key] + 1] = value
-            -- print("args", Yunpack(args), "length of args:", #args)
-            -- print("SET ARG:",args[RendererIndexer[key] + 1])
-            ye_lua_renderer_modify(Yunpack(args))
-            return
-        else
-            log("error", "Renderer field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, RendererIndexer, ye_lua_renderer_modify, "Renderer")
     end,
 }
+
+--- The underlying lua renderer creation function, all routes lead here
+---
+---@param entity Entity The entity to attach the renderer to
+---@param rendererType RendererType The type of the renderer
+---@param cRendererCreationFunction function The C function to create the renderer
+---@param implType table The impl type to create
+---@vararg any The arguments to pass to the C creation function (check api.lua)
+function Renderer:addRenderer(entity, rendererType, cRendererCreationFunction, implType, ...)
+
+    local comp = Entity:addComponent(entity, "Renderer", Renderer_mt, cRendererCreationFunction, ...)
+
+    -- create the impl
+    local impl = {}
+    setmetatable(impl, implType)
+    rawset(impl, "parent", entity)
+
+    -- track the impl into our renderer
+    rawset(comp, implType, impl)
+
+    -- set impl type (in a renderer field)
+    rawset(comp, "type", rendererType)
+
+    return comp
+
+end
 
 -- TODO: im mirroring the C constructer, in the future provide overload params that are optional
 ---**Create a new image renderer component.**
@@ -463,30 +290,7 @@ Renderer_mt = {
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addImageRenderer(entity, handle, z)
-    -- create the renderer itself
-    local renderer = {}
-    setmetatable(renderer, Renderer_mt)
-
-    -- track onto its parent
-    rawset(renderer, "parent", entity)
-
-    -- create the C renderer
-    ye_lua_create_image_renderer(entity._c_entity, handle, z)
-
-    entity.Renderer = renderer -- TODO stack overflow in future, rawset
-
-    -- create the impl and track it with rawset
-    local Image = {}
-    setmetatable(Image, Image_mt)
-
-    rawset(Image, "parent", entity)
-
-    rawset(renderer, "Image", Image)
-
-    -- set impl type
-    rawset(renderer, "type", RendererType.IMAGE)
-
-    return renderer
+    return self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image, handle, z)
 end
 
 ---**Create a new text renderer component.**
@@ -504,30 +308,7 @@ end
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addTextRenderer(entity, text, fontName, fontSize, colorName, z)
-    -- create the renderer itself
-    local renderer = {}
-    setmetatable(renderer, Renderer_mt)
-
-    -- track onto its parent
-    rawset(renderer, "parent", entity)
-
-    -- create the C renderer
-    ye_lua_create_text_renderer(entity._c_entity, text, fontName, fontSize, colorName, z)
-
-    entity.Renderer = renderer -- TODO stack overflow in future, rawset
-
-    -- create the impl and track it with rawset
-    local Text = {}
-    setmetatable(Text, Text_mt)
-
-    rawset(Text, "parent", entity)
-
-    rawset(renderer, "Text", Text)
-
-    -- set impl type
-    rawset(renderer, "type", RendererType.TEXT)
-
-    return renderer
+    return self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text, text, fontName, fontSize, colorName, z)
 end
 
 ---**Create a new text outlined renderer component.**
@@ -547,30 +328,7 @@ end
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addTextOutlinedRenderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
-    -- create the renderer itself
-    local renderer = {}
-    setmetatable(renderer, Renderer_mt)
-
-    -- track onto its parent
-    rawset(renderer, "parent", entity)
-
-    -- create the C renderer
-    ye_lua_create_text_outlined_renderer(entity._c_entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
-
-    entity.Renderer = renderer -- TODO stack overflow in future, rawset
-
-    -- create the impl and track it with rawset
-    local TextOutlined = {}
-    setmetatable(TextOutlined, TextOutlined_mt)
-
-    rawset(TextOutlined, "parent", entity)
-
-    rawset(renderer, "TextOutlined", TextOutlined)
-
-    -- set impl type
-    rawset(renderer, "type", RendererType.TEXT_OUTLINED)
-
-    return renderer
+    return self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
 end
 
 ---**Create a new tile renderer component.**
@@ -583,30 +341,7 @@ end
 ---@param srcH number The height of the tile in the tileset
 ---@param z number The z index of the renderer
 function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
-    -- create the renderer itself
-    local renderer = {}
-    setmetatable(renderer, Renderer_mt)
-
-    -- track onto its parent
-    rawset(renderer, "parent", entity)
-
-    -- create the C renderer
-    ye_lua_create_tile_renderer(entity._c_entity, handle, srcX, srcY, srcW, srcH, z)
-
-    entity.Renderer = renderer -- TODO stack overflow in future, rawset
-
-    -- create the impl and track it with rawset
-    local Tile = {}
-    setmetatable(Tile, Tile_mt)
-
-    rawset(Tile, "parent", entity)
-
-    rawset(renderer, "Tile", Tile)
-
-    -- set impl type
-    rawset(renderer, "type", RendererType.TILE)
-
-    return renderer
+    return self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile, handle, srcX, srcY, srcW, srcH, z)
 end
 
 ---**Create a new animation renderer component.**
@@ -615,28 +350,5 @@ end
 ---@param metaFile string The path to the animation meta file to use
 ---@param z number The z index of the renderer
 function Renderer:addAnimationRenderer(entity, metaFile, z)
-    -- create the renderer itself
-    local renderer = {}
-    setmetatable(renderer, Renderer_mt)
-
-    -- track onto its parent
-    rawset(renderer, "parent", entity)
-
-    -- create the C renderer
-    ye_lua_create_animation_renderer(entity._c_entity, metaFile, z)
-
-    entity.Renderer = renderer -- TODO stack overflow in future, rawset
-
-    -- create the impl and track it with rawset
-    local Animation = {}
-    setmetatable(Animation, Animation_mt)
-
-    rawset(Animation, "parent", entity)
-
-    rawset(renderer, "Animation", Animation)
-
-    -- set impl type
-    rawset(renderer, "type", RendererType.ANIMATION)
-
-    return renderer
+    return self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation, metaFile, z)
 end

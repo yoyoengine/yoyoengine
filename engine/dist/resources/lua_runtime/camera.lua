@@ -52,39 +52,11 @@ local cameraIndexer = {
 -- define the camera metatable
 Camera_mt = {
     __index = function(self, key)
-        local parent = rawget(self, "parent")
-        if not ValidateEntity(parent) then
-            log("error", "Camera field accessed on nil/null entity\n")
-            return nil
-        end
-
-        -- TODO: IF YOU ADD THIS TYPE OF ACCESS TO ENTITY CLASS THIS WILL OVERFLOW
-        local queryResult = {ye_lua_camera_query(parent._c_entity)}
-
-        if cameraIndexer[key] then
-            return queryResult[cameraIndexer[key]]
-        else
-            log("error", "Camera field accessed with invalid key\n")
-            return nil
-        end
+        return ValidateAndQuery(self, key, cameraIndexer, ye_lua_camera_query, "Camera")
     end,
 
     __newindex = function(self, key, value)
-        if not ValidateEntity(self.parent) then
-            log("error", "Camera field accessed on nil/null entity\n")
-            return
-        end
-
-        local args = {self.parent._c_entity, nil, nil, nil, nil, nil, nil, nil}
-
-        if cameraIndexer[key] then
-            args[cameraIndexer[key] + 1] = value
-            ye_lua_camera_modify(Yunpack(args))
-            return
-        else
-            log("error", "Camera field accessed with invalid key\n")
-            return
-        end
+        return ValidateAndModify(self, key, value, cameraIndexer, ye_lua_camera_modify, "Camera")
     end,
 }
 
@@ -99,23 +71,10 @@ Camera_mt = {
 ---
 ---@return Camera | nil camera The lua camera object
 function Camera:addCamera(entity, x, y, w, h, z)
-    -- create the camera itself
-    local camera = {}
-    setmetatable(camera, Camera_mt)
-
-    -- track onto its parent
-    -- camera.parent = entity
-    rawset(camera, "parent", entity)
-
     if x and y and w and h and z then
-        ye_lua_create_camera(entity._c_entity, x, y, w, h, z)
+        return Entity:addComponent("Camera", Camera_mt, ye_lua_create_camera, x, y, w, h, z)
     else
         log("error", "Camera:addCamera called with missing parameters\n")
         return nil
     end
-
-    entity.Camera = camera
-    -- TODO: rawset
-
-    return camera
 end

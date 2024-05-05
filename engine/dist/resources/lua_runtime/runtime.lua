@@ -61,26 +61,88 @@ end
 
 --- Custom unpack function which does not truncate nil values
 ---@param t table The table to unpack
----@param i number The starting index
----@param n number The ending index
+---@param i? number The starting index
+---@param n? number The ending index
 ---@return any The unpacked values
 function Yunpack(t, i, n)
 
     -- print the table thats going to be unpacked for debug purposes
-    print("unpacking table")
-    for k, v in pairs(t) do
-        print(k, v)
-    end
+    -- print("unpacking table")
+    -- for k, v in pairs(t) do
+        -- print(k, v)
+    -- end
     
     i = i or 1
     n = n or highestKey(t)
     
-    print("i:", i)
-    print("n:", n)
-    print("----------")
+    -- print("i:", i)
+    -- print("n:", n)
+    -- print("----------")
 
     if i <= n then
         return t[i], Yunpack(t, i + 1, n)
+    end
+end
+
+--- Generic Query Function
+---@param self table The entity object
+---@param key any The key to query
+---@param indexer table The indexer (enum) to match values with
+---@param queryFunction function The function to query with
+---@param name string The name of the field
+function ValidateAndQuery(self, key, indexer, queryFunction, name)
+    -- get the parent entity
+    local parent = rawget(self, "parent")
+    
+    -- validate the parent entity exists
+    if not ValidateEntity(parent) then
+        log("error", "Failed to access " .. name .. " field on nil/null entity\n")
+        return nil
+    end
+
+    -- get the query result (converted to table)
+    local result = {queryFunction(parent._c_entity)}
+
+    -- return the indexed result
+    if indexer[key] then
+        return result[indexer[key]]
+    else
+        log("error", "\"" .. name .. "\" field accessed with invalid key \"" .. key .. "\". Double check the type.\n")
+        return nil
+    end
+end
+
+--- Generic Modify Function
+---@param self table The entity object
+---@param key any The key to modify
+---@param value any The value to set
+---@param indexer table The indexer (enum) to match values with
+---@param modifyFunction function The function to modify with
+---@param name string The name of the root field (not the key)
+function ValidateAndModify(self, key, value, indexer, modifyFunction, name)
+    -- get the parent entity
+    local parent = rawget(self, "parent")
+
+    -- validate the parent entity exists
+    if not ValidateEntity(parent) then
+        log("error", "Failed to access " .. name .. " field on nil/null entity\n")
+        return
+    end
+
+    -- create the args table
+    local args = {parent._c_entity}
+    for i = 1, #indexer do
+        table.insert(args, nil) -- initialize nil args
+    end
+
+    -- set the arg value
+    if indexer[key] then
+        args[indexer[key] + 1] = value
+        modifyFunction(Yunpack(args))
+        return
+    else
+        log("error", "\"" .. name .. "\" field accessed with invalid key \"" .. key .. "\". Double check the type.\n")
+        return
     end
 end
 
