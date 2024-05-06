@@ -664,3 +664,21 @@ entity needs to be modernized, use the metafuncitons (and hope you dont break to
 also i just left transform as what it was since its so basic. idek
 
 straggling "error calling function: attempt to call nil value" when exiting engine
+
+remaining api stuff
+
+- ECS components
+  - lua_script
+  - button
+  - physics
+  - collider
+  - tag
+  - audiosource
+- Systems
+  - Audio
+  - Scene
+  - Debug Renderer
+  - (maybe) Underlying graphics/windowing
+  - (maybe) tricks
+
+impl type is cooked

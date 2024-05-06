@@ -260,22 +260,32 @@ Renderer_mt = {
 ---@param entity Entity The entity to attach the renderer to
 ---@param rendererType RendererType The type of the renderer
 ---@param cRendererCreationFunction function The C function to create the renderer
----@param implType table The impl type to create
+---@param implMetatable metatable The metatable of the impl
 ---@vararg any The arguments to pass to the C creation function (check api.lua)
-function Renderer:addRenderer(entity, rendererType, cRendererCreationFunction, implType, ...)
+function Renderer:addRenderer(entity, rendererType, cRendererCreationFunction, implMetatable, ...)
+
+    -- create the renderer component --
 
     local comp = Entity:addComponent(entity, "Renderer", Renderer_mt, cRendererCreationFunction, ...)
+    rawset(comp, "type", rendererType)
 
-    -- create the impl
+    -- impl specifics --
+
     local impl = {}
-    setmetatable(impl, implType)
+    setmetatable(impl, implMetatable)
     rawset(impl, "parent", entity)
 
-    -- track the impl into our renderer
-    rawset(comp, implType, impl)
-
-    -- set impl type (in a renderer field)
-    rawset(comp, "type", rendererType)
+    if rendererType == RendererType.TEXT then
+        rawset(comp, "Text", impl)
+    elseif rendererType == RendererType.TEXT_OUTLINED then
+        rawset(comp, "TextOutlined", impl)
+    elseif rendererType == RendererType.IMAGE then
+        rawset(comp, "Image", impl)
+    elseif rendererType == RendererType.ANIMATION then
+        rawset(comp, "Animation", impl)
+    elseif rendererType == RendererType.TILE then
+        rawset(comp, "Tile", impl)
+    end
 
     return comp
 
@@ -290,7 +300,7 @@ end
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addImageRenderer(entity, handle, z)
-    return self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image, handle, z)
+    return self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image_mt, handle, z)
 end
 
 ---**Create a new text renderer component.**
@@ -308,7 +318,7 @@ end
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addTextRenderer(entity, text, fontName, fontSize, colorName, z)
-    return self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text, text, fontName, fontSize, colorName, z)
+    return self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text_mt, text, fontName, fontSize, colorName, z)
 end
 
 ---**Create a new text outlined renderer component.**
@@ -328,7 +338,7 @@ end
 ---
 ---@return Renderer renderer The lua renderer object
 function Renderer:addTextOutlinedRenderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
-    return self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+    return self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined_mt, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
 end
 
 ---**Create a new tile renderer component.**
@@ -341,7 +351,7 @@ end
 ---@param srcH number The height of the tile in the tileset
 ---@param z number The z index of the renderer
 function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
-    return self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile, handle, srcX, srcY, srcW, srcH, z)
+    return self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile_mt, handle, srcX, srcY, srcW, srcH, z)
 end
 
 ---**Create a new animation renderer component.**
@@ -350,5 +360,5 @@ end
 ---@param metaFile string The path to the animation meta file to use
 ---@param z number The z index of the renderer
 function Renderer:addAnimationRenderer(entity, metaFile, z)
-    return self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation, metaFile, z)
+    return self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation_mt, metaFile, z)
 end
