@@ -131,15 +131,15 @@ void ye_logf(enum logLevel level, const char *format, ...){
             break;
         case warning:
             fprintf(logFile, "[%s] [WARNING]: %s", ye_get_timestamp(), text);
-            printf("%s[%s] [%sWARNING%s]: %s", YELLOW, ye_get_timestamp(), YELLOW, RESET, text);
+            printf("%s[%s] [WARNING]%s: %s", YELLOW, ye_get_timestamp(), RESET, text);
             break;
         case error:
             fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), text);
-            printf("%s[%s] [%sERROR%s]: %s", RED, ye_get_timestamp(), RED, RESET, text);
+            printf("%s[%s] [ERROR]%s: %s", RED, ye_get_timestamp(), RESET, text);
             break;
         default:
             fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), "Invalid log level\n");
-            printf("%s[%s] [%sERROR%s]: %s", RED, ye_get_timestamp(), RED, RESET, "Invalid log level\n");
+            printf("%s[%s] [LOG ERROR]%s: %s", RED, ye_get_timestamp(), RESET, "Invalid log level\n");
             break;
     }
     YE_STATE.runtime.log_line_count++;
