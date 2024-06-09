@@ -492,7 +492,7 @@ void ye_init_engine() {
 
     // load a font for use in engine (value of global in engine.h modified) this will be used to return working fonts if a user specified one cannot be loaded
     if(YE_STATE.editor.editor_mode){
-        YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("RobotoMono-Light.ttf"));
+        YE_STATE.engine.pEngineFont = ye_load_font(ye_get_engine_resource_static("fonts/RobotoMono-Light.ttf"));
     }
     else{
         YE_STATE.engine.pEngineFont = yep_engine_resource_font("fonts/RobotoMono-Light.ttf");

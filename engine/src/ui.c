@@ -326,11 +326,11 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         If in editor mode, we load from engine resource file. If at runtime load from the packed engine resource yep
     */
     if(YE_STATE.editor.editor_mode){
-        font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+        font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 20 * font_scale, &config);
     }
     else{
         // get font binary data from engine resources
-        struct yep_data_info font_data = yep_engine_resource_misc("RobotoMono-Regular.ttf");
+        struct yep_data_info font_data = yep_engine_resource_misc("fonts/RobotoMono-Regular.ttf");
         font = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 20 * font_scale, &config);
         free(font_data.data); // GUESSING: nuklear seems to make its own copy of atlas when supplied this buffer so we are ok to free it
     }
