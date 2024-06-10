@@ -159,7 +159,7 @@ void ye_lua_entity_register(lua_State *L) {
     lua_register(L, "ye_lua_create_entity", ye_lua_create_entity);
 
     // active
-    lua_register(L, "ye_lua_ent_get_active", ye_lua_ent_set_active);
+    lua_register(L, "ye_lua_ent_get_active", ye_lua_ent_get_active);
     lua_register(L, "ye_lua_ent_set_active", ye_lua_ent_set_active);
 
     // id

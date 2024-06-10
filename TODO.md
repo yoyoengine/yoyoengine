@@ -682,3 +682,48 @@ remaining api stuff
   - (maybe) tricks
 
 impl type is cooked
+
+## blah blah blah blah
+
+`lua_script.c` is pretty rancid... weird functions and logic encapsulation
+
+ye_run_console_command() api?
+
+## ent scripting
+
+There needs to be deep implicit synchronization between C and lua runtime interfaces to the engine
+ex: lua should automatically know what components are valid on entities without manually tracking them itself
+
+we should make onMount run after all entities are created so we can use getters... will still cause problems for user scripts using getters on objects created on mount by other user scripts but thats kinda on them...
+
+if we can, component access should be automatically abstracted through the entity tracking. The api is already deeply rooted in passing entity references around, rather than components
+
+## tldr when you come back
+
+restructure:
+fucking destroy the entire entity system
+new system:
+- an entity tracks the C entity...
+  - how do we keep in sync if a C script destroys that entity?
+    - on unmount is called which destroys it. what about for other entities tracking it?
+- an entity;s components are automatically accessed through .Component
+  - we check if they exist when we call query or mofify and reject if not (or create)
+this way we arent trying to track a bunch of state in seperate places
+
+## akjshgfdkjshd
+
+build step to make all the lua files into one concatenated minified runtime.lua? that way we move it into source tree and have build step depend on it... no more copying files
+
+## shaping for new lua workflow
+
+the goal is to automatically assign each component Mt to every entity, even if it doesnt have one so it can query the engine for
+
+```lua
+if(entity.Renderer) then
+  entity.Renderer.field = someValue
+end
+```
+
+we can have the root field of components do a C api bridge call to query if it exists, return nin | false if not, true if so.
+
+This way we dont track things that dont need tracked, since component classes are just taking in a reference to the parent entity anyways

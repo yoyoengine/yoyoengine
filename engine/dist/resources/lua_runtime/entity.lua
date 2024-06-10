@@ -18,129 +18,93 @@
 
 ---@class Entity
 ---@field _c_entity lightuserdata
+---
 ---@field Transform Transform
 ---@field Camera Camera
 ---@field Renderer Renderer
+---
+---@field isActive boolean
+---@field ID integer
+---@field name string
 Entity = {
     --- reference to the C pointer
     ---@type lightuserdata
     _c_entity = nil,
     
-    -- references to the components
-    
-    ---@type Transform
-    Transform = nil, 
-
-    ---@type Camera
-    Camera = nil,
-
-    ---@type Renderer
-    Renderer = nil,
-
-    ---**Get the active state of the entity.**
-    ---
-    ---@return boolean state The active state of the entity
-    ---
-    ---example:
-    ---```lua
-    ---local prop_box = Entity:newEntity("BOX")
-    ---print("box is active: ", prop_box:getActive())
-    ---```
-    getActive = function(self)
-        if not ValidateEntity(self) then
-            log("error", "Entity:getActive called for nil entity, returning false!\n")
-            return false
-        end
-
-        return ye_lua_ent_get_active(self._c_entity)
-    end,
-
-    ---**Set the active state of the entity.**
-    ---
-    ---@param state boolean The desired active state
-    ---
-    ---example:
-    ---```lua
-    ---local prop_box = Entity:newEntity("BOX")
-    ---prop_box:setActive(true)
-    ---```
-    setActive = function(self, state)
-        -- log("info", "Entity:setActive called\n")
-
-        if not ValidateEntity(self) then
-            return
-        end
-
-        -- check if state is not boolean
-        if type(state) ~= "boolean" then
-            log("error", "Entity:setActive called with non-boolean state\n")
-            return
-        end
-
-        ye_lua_ent_set_active(self._c_entity, state)
-    end,
-
-    ---**Get the ECS ID number of the entity.**
-    ---
-    ---@return integer ID The ECS ID number of the entity (-1 for failure)
-    ---
-    ---example:
-    ---```lua
-    ---local prop_box = Entity:newEntity("BOX")
-    ---print("box ID: ", prop_box:getID())
-    ---```
-    getID = function(self)
-        if not ValidateEntity(self) then
-            return -1
-        end
-
-        return ye_lua_ent_get_id(self._c_entity)
-    end,
-
-    ---**Set the name of the entity.**
-    ---
-    ---@param name string The desired name of the entity
-    ---
-    ---example:
-    ---```lua
-    ---local prop_box = Entity:newEntity("BOX")
-    ---prop_box:setName("BOX")
-    ---```
-    setName = function(self, name)
-        if not ValidateEntity(self) then
-            return
-        end
-
-        -- check if name is not string
-        if type(name) ~= "string" then
-            log("error", "Entity:setName called with non-string name\n")
-            return
-        end
-
-        ye_lua_ent_set_name(self._c_entity, name)
-    end,
-
-    ---**Get the name of the entity.**
-    ---
-    ---@return string name The name of the entity
-    ---
-    ---example:
-    ---```lua
-    ---local prop_box = Entity:newEntity("BOX")
-    ---print("box name: ", prop_box:getName())
-    ---```
-    getName = function(self)
-        if not ValidateEntity(self) then
-            return "ERROR"
-        end
-
-        return ye_lua_ent_get_name(self._c_entity)
-    end,
+    -- COMPONENTS ARE "VIRTUAL" FIELDS intercepted by
+    -- the Entity metatable. We redirect them into api
+    -- bridge calls to be validated, which is inefficient
+    -- for non existant components but we can optimize later...
 }
 
 -- define the entity metatable
 Entity_mt = {
-    __index = Entity
+    __index = function(self, key)
+        local _c_entity = rawget(self, "_c_entity")
+
+        -- if we are accessing _c_entity, return it
+        if key == "_c_entity" then
+            return _c_entity
+        end
+
+        -- Entity Component Fields:
+
+        -- Entity fields:
+
+        if _c_entity == nil then
+            log("error", "Entity field read on nil entity\n")
+            return nil
+        end
+
+        if key == "isActive" then
+            return ye_lua_ent_get_active(_c_entity) 
+        end
+
+        if key == "ID" then
+            return ye_lua_ent_get_id(_c_entity)
+        end
+
+        if key == "name" then
+            return ye_lua_ent_get_name(_c_entity)
+        end
+
+        log("error", "Entity field accessed with invalid key\n")
+    end,
+
+    __newindex = function(self, key, value)
+        local _c_entity = rawget(self, "_c_entity")
+
+        if _c_entity == nil then
+            log("error", "Attempted to modify field on nil entity\n")
+            return nil
+        end
+
+        if key == "isActive" then
+            -- check if state is not boolean
+            if type(value) ~= "boolean" then
+                log("error", "Tried to modify entity.isActive with non-boolean state\n")
+                return
+            end
+            
+            ye_lua_ent_set_active(_c_entity, value)
+            return
+        end
+
+        if key == "name" then
+            -- check if name is not string
+            if type(value) ~= "string" then
+                log("error", "Tried to modify entity.name with non-string name\n")
+                return
+            end
+            
+            ye_lua_ent_set_name(_c_entity, value)
+            return
+        end
+
+        -- we arent allowed to modify ID.
+
+        log("error", "Entity field modified with invalid key\n")
+    end,
 }
 
 ---**Create a new entity.**
@@ -163,9 +127,9 @@ function Entity:new(name)
 
     -- get the _c_entity pointer
     if name then
-        entity._c_entity = ye_lua_create_entity(name)
+        rawset(entity, "_c_entity", ye_lua_create_entity(name))
     else
-        entity._c_entity = ye_lua_create_entity()
+        rawset(entity, "_c_entity", ye_lua_create_entity())
     end
 
     return entity
@@ -188,7 +152,7 @@ function Entity:getEntityNamed(name)
     setmetatable(entity, Entity_mt)
 
     -- get the _c_entity pointer
-    entity._c_entity = ye_lua_ent_get_entity_named(name)
+    rawset(entity, "_c_entity", ye_lua_ent_get_entity_named(name))
     if entity._c_entity == nil then
         log("error", "Entity:getEntityNamed failed to find entity\n")
         -- for now lets keep initializing because its better to create meta for
@@ -228,3 +192,8 @@ function Entity:addComponent(entity, componentType, componentMetaTable, cCompone
 
     return component
 end
+
+--- Generic Component Getter
+---
+--- This function will get a component of given type from the engine ECS
+--- and return it so we can set our LUA abstraction

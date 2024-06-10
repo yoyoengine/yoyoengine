@@ -54,6 +54,7 @@ This section is temporary and will be used to denote any important facts I need 
 - for buttons, their state is updated on input events, meaning that a "clicked" button would only stop being clicked on the next event NOT the next frame. We could fix this with a iteration and reset at the beginning of each frame, but for now its reset when polled. So a button will only be "clicked" for the first access of the state after the click event.
 - There is a limitation in detection of the screen size. Moving games to be fullscreen on your non primary monitor will mess with the mouse position detection, as the size of your primary monitor is used to calculate fullscreen letterboxing
 - We can only guarantee one timer executing its callback per frame, which is usually more than good enough unless at extremely low framerates and for time sensitive tasks. There is already a bit of loss due to CPU scheduling, so the timer system wouldnt be ideal for hyper accurate timing anyways.
+- The `onMount()` lua function incrementally as the entities in the scene are created, so if you try to `Entity:getEntityNamed()` for an entity that isnt created yet you will not find it.
 
 ### editor
 

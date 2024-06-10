@@ -120,54 +120,39 @@ void _cleanup_script_comp(struct ye_entity *target) {
     }
 }
 
+/*
+    Takes in a target entity, and will load the lua runtime
+    scripts for each component / system onto its state.
+*/
 bool _initialize_scripting_runtime(struct ye_entity *target) {
-    char *runtime = _get_script_buffer("lua_runtime/runtime.lua", false);
-    char *entity = _get_script_buffer("lua_runtime/entity.lua", false);
-    char *transform = _get_script_buffer("lua_runtime/transform.lua", false);
-    char *camera = _get_script_buffer("lua_runtime/camera.lua", false);
-    char *renderer = _get_script_buffer("lua_runtime/renderer.lua", false);
+    const char *scripts[] = {
+        "lua_runtime/runtime.lua",
+        "lua_runtime/entity.lua",
+        "lua_runtime/transform.lua",
+        "lua_runtime/camera.lua",
+        "lua_runtime/renderer.lua",
+        "lua_runtime/button.lua"
+    };
+    const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
 
-    if(runtime == NULL || entity == NULL || transform == NULL || camera == NULL || renderer == NULL){
-        ye_logf(error,"Failed to load runtime lua scripts\n");
-        _cleanup_script_comp(target);
-        return false;
+    char *buffers[scripts_count];
+
+    for(int i = 0; i < scripts_count; i++) {
+        buffers[i] = _get_script_buffer(scripts[i], false);
+        if(buffers[i] == NULL) {
+            ye_logf(error,"Failed to load runtime lua scripts\n");
+            _cleanup_script_comp(target);
+            return false;
+        }
+
+        if(!_run_script(target->lua_script->state, buffers[i])){
+            ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
+            _cleanup_script_comp(target);
+            return false;
+        }
+
+        free(buffers[i]);
     }
-
-    if(!_run_script(target->lua_script->state, runtime)){
-        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
-        _cleanup_script_comp(target);
-        return false;
-    }
-
-    if(!_run_script(target->lua_script->state, entity)){
-        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
-        _cleanup_script_comp(target);
-        return false;
-    }
-
-    if(!_run_script(target->lua_script->state, transform)){
-        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
-        _cleanup_script_comp(target);
-        return false;
-    }
-
-    if(!_run_script(target->lua_script->state, camera)){
-        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
-        _cleanup_script_comp(target);
-        return false;
-    }
-
-    if(!_run_script(target->lua_script->state, renderer)){
-        ye_logf(error,"Failed to bootstrap API files onto lua VM! Cleaning up.\n");
-        _cleanup_script_comp(target);
-        return false;
-    }
-
-    free(runtime);
-    free(entity);
-    free(transform);
-    free(camera);
-    free(renderer);
 
     return true;
 }
