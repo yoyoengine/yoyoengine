@@ -22,25 +22,22 @@
 ---@field x number The x position
 ---@field y number The y position
 Transform = {
-    ---@type Entity
-    parent = nil,
-
-    ---@type lightuserdata
-    _c_component = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 -- define the transform metatable
 Transform_mt = {
     __index = function(self, key) 
-        local parent = rawget(self, "parent")
+        local parent_ptr = rawget(self, "parent_ptr")
 
-        if not ValidateEntity(parent) then
-            log("error", "Transform field accessed on nil/null entity\n")
-            return nil
-        end
+        -- if not ValidateEntity(parent) then
+        --     log("error", "Transform field accessed on nil/null entity\n")
+        --     return nil
+        -- end
 
-        local x = ye_lua_transform_get_position_x(parent._c_entity)
-        local y = ye_lua_transform_get_position_y(parent._c_entity)
+        local x = ye_lua_transform_get_position_x(parent_ptr)
+        local y = ye_lua_transform_get_position_y(parent_ptr)
 
         if key == "x" then
             return x
@@ -53,17 +50,17 @@ Transform_mt = {
     end,
 
     __newindex = function(self, key, value)
-        local parent = rawget(self, "parent")
+        local parent_ptr = rawget(self, "parent_ptr")
 
-        if not ValidateEntity(parent) then
-            log("error", "Transform field accessed on nil/null entity\n")
-            return
-        end
+        -- if not ValidateEntity(parent) then
+        --     log("error", "Transform field accessed on nil/null entity\n")
+        --     return
+        -- end
 
         if key == "x" then
-            ye_lua_transform_set_position_x(parent._c_entity, value)
+            ye_lua_transform_set_position_x(parent_ptr, value)
         elseif key == "y" then
-            ye_lua_transform_set_position_y(parent._c_entity, value)
+            ye_lua_transform_set_position_y(parent_ptr, value)
         else
             log("error", "Transform field accessed with invalid key\n")
             return
@@ -77,7 +74,6 @@ Transform_mt = {
 ---@param x? number The initial x position (optional)
 ---@param y? number The initial y position (optional)
 ---
----@return Transform transform The lua transform object
 ---If this function fails, you will get errors as well as a transform object with a nil _c_component pointer.
 ---If unspecified, the initial position will be (0, 0).
 ---
@@ -88,13 +84,6 @@ Transform_mt = {
 ---player.Transform = Transform:new(player, 100, 200)
 ---```
 function Transform:addTransform(entity, x, y)
-    -- create the transform itself
-    local transform = {}
-    setmetatable(transform, Transform_mt)
-
-    -- track onto its parent
-    rawset(transform, "parent", entity)
-
     if x and y then
         --transform._c_component = 
         ye_lua_create_transform(entity._c_entity, x, y)
@@ -102,8 +91,4 @@ function Transform:addTransform(entity, x, y)
         --transform._c_component = 
         ye_lua_create_transform(entity._c_entity, 0, 0)
     end
-
-    entity.Transform = transform
-
-    return transform
 end

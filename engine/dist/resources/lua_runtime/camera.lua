@@ -27,16 +27,8 @@
 ---@field w number The width
 ---@field h number The height
 Camera = {
-    ---@type Entity
-    parent = nil,
-
-    ---@type lightuserdata
-    _c_component = nil,
-
-    -- The "fields" dont need listed here
-    -- because they are actually stored in
-    -- C, and just abstracted through metatable
-    -- methods
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local cameraIndexer = {

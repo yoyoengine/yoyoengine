@@ -43,8 +43,8 @@ RendererType = {
 ---@field parent Entity
 ---@field src string
 Image = {
-    ---@type Entity
-    parent = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 Image_mt = {
@@ -67,8 +67,8 @@ Image_mt = {
 ---@field fontSize number
 ---@field wrapWidth number
 Text = {
-    ---@type Entity
-    parent = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local TextIndexer = {
@@ -99,8 +99,8 @@ Text_mt = {
 ---@field outlineSize number
 ---@field outlineColorName string
 TextOutlined = {
-    ---@type Entity
-    parent = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local TextOutlinedIndexer = {
@@ -134,8 +134,8 @@ TextOutlined_mt = {
 ---@field srcW number The width of the tile in the tileset
 ---@field srcH number The height of the tile in the tileset
 Tile = {
-    ---@type Entity
-    parent = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local TileIndexer = {
@@ -169,8 +169,8 @@ Tile_mt = {
 ---@field frameHeight number Should probably not be changed directly, unless you know what youre doing
 ---@field imageHandle string Should probably not be changed directly, unless you know what youre doing
 Animation = {
-    ---@type Entity
-    parent = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local AnimationIndexer = {
@@ -217,15 +217,8 @@ Animation_mt = {
 ---@field Animation Animation The animation renderer impl
 ---@field Tile Tile The tile renderer impl
 Renderer = {
-    ---@type Entity
-    parent = nil,
-
-    ---@type lightuserdata
-    _c_component = nil,
-
-    -- TODO: REMOVEME?
-    ---@type RendererAligmment
-    alignment = nil,
+    -- no **real** fields.
+    -- This exists purely for intellisense
 }
 
 local RendererIndexer = {
@@ -247,10 +240,38 @@ local RendererIndexer = {
 
 Renderer_mt = {
     __index = function(self, key)
+        -- check if we are accessing an impl field
+        if key == "Image" then
+            return CreateProxyToComponent(self, Image_mt)
+        elseif key == "Text" then
+            return CreateProxyToComponent(self, Text_mt)
+        elseif key == "TextOutlined" then
+            return CreateProxyToComponent(self, TextOutlined_mt)
+        elseif key == "Animation" then
+            return CreateProxyToComponent(self, Animation_mt)
+        elseif key == "Tile" then
+            return CreateProxyToComponent(self, Tile_mt)
+        end
+
+        -- fallback: this is a field on renderer itself
         return ValidateAndQuery(self, key, RendererIndexer, ye_lua_renderer_query, "Renderer")
     end,
-
+        
     __newindex = function(self, key, value)
+        -- check if we are accessing an impl field
+        if key == "Image" then
+            return CreateProxyToComponent(self, Image_mt)
+        elseif key == "Text" then
+            return CreateProxyToComponent(self, Text_mt)
+        elseif key == "TextOutlined" then
+            return CreateProxyToComponent(self, TextOutlined_mt)
+        elseif key == "Animation" then
+            return CreateProxyToComponent(self, Animation_mt)
+        elseif key == "Tile" then
+            return CreateProxyToComponent(self, Tile_mt)
+        end
+
+        -- fallback: this is a field on renderer itself
         return ValidateAndModify(self, key, value, RendererIndexer, ye_lua_renderer_modify, "Renderer")
     end,
 }
@@ -263,32 +284,7 @@ Renderer_mt = {
 ---@param implMetatable metatable The metatable of the impl
 ---@vararg any The arguments to pass to the C creation function (check api.lua)
 function Renderer:addRenderer(entity, rendererType, cRendererCreationFunction, implMetatable, ...)
-
-    -- create the renderer component --
-
-    local comp = Entity:addComponent(entity, "Renderer", Renderer_mt, cRendererCreationFunction, ...)
-    rawset(comp, "type", rendererType)
-
-    -- impl specifics --
-
-    local impl = {}
-    setmetatable(impl, implMetatable)
-    rawset(impl, "parent", entity)
-
-    if rendererType == RendererType.TEXT then
-        rawset(comp, "Text", impl)
-    elseif rendererType == RendererType.TEXT_OUTLINED then
-        rawset(comp, "TextOutlined", impl)
-    elseif rendererType == RendererType.IMAGE then
-        rawset(comp, "Image", impl)
-    elseif rendererType == RendererType.ANIMATION then
-        rawset(comp, "Animation", impl)
-    elseif rendererType == RendererType.TILE then
-        rawset(comp, "Tile", impl)
-    end
-
-    return comp
-
+    Entity:addComponent(entity, "Renderer", Renderer_mt, cRendererCreationFunction, ...)
 end
 
 -- TODO: im mirroring the C constructer, in the future provide overload params that are optional
@@ -297,10 +293,8 @@ end
 ---@param entity Entity The entity to attach the renderer to
 ---@param handle string The path to the image to render relative to resources/
 ---@param z number The z index of the renderer
----
----@return Renderer renderer The lua renderer object
 function Renderer:addImageRenderer(entity, handle, z)
-    return self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image_mt, handle, z)
+    self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image_mt, handle, z)
 end
 
 ---**Create a new text renderer component.**
@@ -315,10 +309,8 @@ end
 ---@param fontSize number The size of the font to use
 ---@param colorName string The name of the (cached) color to use
 ---@param z number The z index of the renderer
----
----@return Renderer renderer The lua renderer object
 function Renderer:addTextRenderer(entity, text, fontName, fontSize, colorName, z)
-    return self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text_mt, text, fontName, fontSize, colorName, z)
+    self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text_mt, text, fontName, fontSize, colorName, z)
 end
 
 ---**Create a new text outlined renderer component.**
@@ -335,10 +327,8 @@ end
 ---@param outlineSize number The size of the outline
 ---@param outlineColorName string The name of the (cached) color to use for the outline
 ---@param z number The z index of the renderer
----
----@return Renderer renderer The lua renderer object
 function Renderer:addTextOutlinedRenderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
-    return self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined_mt, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+    self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined_mt, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
 end
 
 ---**Create a new tile renderer component.**
@@ -351,7 +341,7 @@ end
 ---@param srcH number The height of the tile in the tileset
 ---@param z number The z index of the renderer
 function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
-    return self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile_mt, handle, srcX, srcY, srcW, srcH, z)
+    self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile_mt, handle, srcX, srcY, srcW, srcH, z)
 end
 
 ---**Create a new animation renderer component.**
@@ -360,5 +350,5 @@ end
 ---@param metaFile string The path to the animation meta file to use
 ---@param z number The z index of the renderer
 function Renderer:addAnimationRenderer(entity, metaFile, z)
-    return self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation_mt, metaFile, z)
+    self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation_mt, metaFile, z)
 end

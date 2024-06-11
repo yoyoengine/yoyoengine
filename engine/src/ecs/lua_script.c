@@ -127,11 +127,10 @@ void _cleanup_script_comp(struct ye_entity *target) {
 bool _initialize_scripting_runtime(struct ye_entity *target) {
     const char *scripts[] = {
         "lua_runtime/runtime.lua",
-        "lua_runtime/entity.lua",
         "lua_runtime/transform.lua",
         "lua_runtime/camera.lua",
         "lua_runtime/renderer.lua",
-        "lua_runtime/button.lua"
+        "lua_runtime/entity.lua", // entity last because it depends on components
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
 

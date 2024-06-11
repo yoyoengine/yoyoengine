@@ -727,3 +727,24 @@ end
 we can have the root field of components do a C api bridge call to query if it exists, return nin | false if not, true if so.
 
 This way we dont track things that dont need tracked, since component classes are just taking in a reference to the parent entity anyways
+
+## more luaalualaulalualua
+
+update docs for all functions.. im messing things up :3
+
+all the stuff like Transform:addComponent
+should be a method on entities.
+
+```lua
+entity:addComponent() -- or some other variation
+```
+
+we need some kinda lua unit testing for the API to make sure we dont break anything... can automatically exercise every component and API call
+
+## todo 999999
+
+re insert validity checks? or not because its enforced engine C fn side
+
+add button component
+
+look for simplifications and refactoring of interface to make easy moving forwards to the other components. every single component we add produces more code to maintain and refactor in the future when we inevitably change it

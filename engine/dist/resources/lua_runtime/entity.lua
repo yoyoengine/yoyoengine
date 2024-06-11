@@ -47,14 +47,26 @@ Entity_mt = {
             return _c_entity
         end
 
-        -- Entity Component Fields:
-
-        -- Entity fields:
-
         if _c_entity == nil then
             log("error", "Entity field read on nil entity\n")
             return nil
         end
+
+        -- Entity Component Fields:
+
+        if key == "Transform" then
+            return CreateProxyToComponent(_c_entity, Transform_mt)
+        end
+
+        if key == "Camera" then
+            return CreateProxyToComponent(_c_entity, Camera_mt)
+        end
+
+        if key == "Renderer" then
+            return CreateProxyToComponent(_c_entity, Renderer_mt)
+        end
+
+        -- Entity fields:
 
         if key == "isActive" then
             return ye_lua_ent_get_active(_c_entity) 
@@ -176,21 +188,8 @@ end
 ---@param cComponentCreationFunc function The function to create the component in C
 ---@vararg ... The arguments to pass to the C component creation function
 function Entity:addComponent(entity, componentType, componentMetaTable, cComponentCreationFunc, ...)
-    
-    -- create the component itself
-    local component = {}
-    setmetatable(component, componentMetaTable)
-
-    -- set the components "parent" to this entity
-    rawset(component, "parent", entity)
-
     -- create the component in the engine
     cComponentCreationFunc(entity._c_entity, ...)
-
-    -- set the component on the entity
-    entity[componentType] = component
-
-    return component
 end
 
 --- Generic Component Getter

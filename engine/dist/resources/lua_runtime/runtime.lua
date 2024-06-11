@@ -92,16 +92,16 @@ end
 ---@param name string The name of the field
 function ValidateAndQuery(self, key, indexer, queryFunction, name)
     -- get the parent entity
-    local parent = rawget(self, "parent")
+    local parent_ptr = rawget(self, "parent_ptr")
     
     -- validate the parent entity exists
-    if not ValidateEntity(parent) then
-        log("error", "Failed to access " .. name .. " field on nil/null entity\n")
-        return nil
-    end
+    -- if not ValidateEntity(parent_ptr) then
+    --     log("error", "Failed to access " .. name .. " field on nil/null entity\n")
+    --     return nil
+    -- end
 
     -- get the query result (converted to table)
-    local result = {queryFunction(parent._c_entity)}
+    local result = {queryFunction(parent_ptr)}
 
     -- return the indexed result
     if indexer[key] then
@@ -121,16 +121,16 @@ end
 ---@param name string The name of the root field (not the key)
 function ValidateAndModify(self, key, value, indexer, modifyFunction, name)
     -- get the parent entity
-    local parent = rawget(self, "parent")
+    local parent_ptr = rawget(self, "parent_ptr")
 
-    -- validate the parent entity exists
-    if not ValidateEntity(parent) then
-        log("error", "Failed to access " .. name .. " field on nil/null entity\n")
-        return
-    end
+    -- -- validate the parent entity exists
+    -- if not ValidateEntity(parent) then
+    --     log("error", "Failed to access " .. name .. " field on nil/null entity\n")
+    --     return
+    -- end
 
     -- create the args table
-    local args = {parent._c_entity}
+    local args = {parent_ptr}
     for i = 1, #indexer do
         table.insert(args, nil) -- initialize nil args
     end
@@ -144,6 +144,23 @@ function ValidateAndModify(self, key, value, indexer, modifyFunction, name)
         log("error", "\"" .. name .. "\" field accessed with invalid key \"" .. key .. "\". Double check the type.\n")
         return
     end
+end
+
+--- Create proxy to component
+--- This allows us total dispatch component field calls
+--- through a component metatable while preserving the parent entity pointer
+--- TODO: maybe this only needs to be called once per component to make a
+---       global proxy to bypass all the overhead to do this per field
+---@param parent_ptr lightuserdata The parent entity pointer
+---@param metatable table The component metatable to proxy
+---@return table The new proxy table
+function CreateProxyToComponent(parent_ptr, metatable)
+    local proxy = {}
+    setmetatable(proxy, metatable)
+
+    rawset(proxy, "parent_ptr", parent_ptr)
+
+    return proxy
 end
 
 ----------------------------------------------
