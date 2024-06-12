@@ -16,55 +16,55 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
----@class Camera
+---@class Button
 ---@field parent Entity
 ---@field _c_component lightuserdata
 ---@field isActive boolean Controls whether the camera is active
 ---@field isRelative boolean Controls whether the position of the camera is relative to a root transform
----@field z number The z index
 ---@field x number The x position
 ---@field y number The y position
 ---@field w number The width
 ---@field h number The height
-Camera = {
+---@field isHovered boolean Whether the button is hovered or not
+---@field isPressed boolean Whether the button is pressed down
+---@field isClicked boolean Whether the button was released after a press for a "click"
+Button = {
     -- no **real** fields.
     -- This exists purely for intellisense
 }
 
-local cameraIndexer = {
+local buttonIndexer = {
     isActive = 1,
     isRelative = 2,
-    z = 3,
-    x = 4,
-    y = 5,
-    w = 6,
-    h = 7,
+    x = 3,
+    y = 4,
+    w = 5,
+    h = 6,
+    -- isHovered = 7,
+    -- isPressed = 8,
+    -- isClicked = 9,
 }
 
--- define the camera metatable
-Camera_mt = {
+Button_mt = {
     __index = function(self, key)
-        return ValidateAndQuery(self, key, cameraIndexer, ye_lua_camera_query, "Camera")
+
+        local parent_ptr = rawget(self, "parent_ptr")
+
+        -- intercept isHovered, isPressed, and isClicked
+        if key == "isHovered" then
+            return ye_lua_button_check_state(parent_ptr, 1)
+        elseif key == "isPressed" then
+            return ye_lua_button_check_state(parent_ptr, 2)
+        elseif key == "isClicked" then
+            return ye_lua_button_check_state(parent_ptr, 3)
+        end
+
+        return ValidateAndQuery(self, key, buttonIndexer, ye_lua_button_query, "Button")
     end,
 
     __newindex = function(self, key, value)
-        return ValidateAndModify(self, key, value, cameraIndexer, ye_lua_camera_modify, "Camera")
+        -- modifying isXXXX is illegal, at least for now.
+        
+        return ValidateAndModify(self, key, value, buttonIndexer, ye_lua_button_modify, "Button")
     end,
 }
-
----**Create a new camera component.**
----
----@param entity Entity The entity to attach the camera to
----@param x number The x position of the camera
----@param y number The y position of the camera
----@param w number The width of the camera
----@param h number The height of the camera
----@param z number The z index of the camera
-function Camera:addCamera(entity, x, y, w, h, z)
-    if x and y and w and h and z then
-        return Entity:addComponent("Camera", Camera_mt, ye_lua_create_camera, x, y, w, h, z)
-    else
-        log("error", "Camera:addCamera called with missing parameters\n")
-        return nil
-    end
-end

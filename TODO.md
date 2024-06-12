@@ -745,6 +745,8 @@ we need some kinda lua unit testing for the API to make sure we dont break anyth
 
 re insert validity checks? or not because its enforced engine C fn side
 
-add button component
-
 look for simplifications and refactoring of interface to make easy moving forwards to the other components. every single component we add produces more code to maintain and refactor in the future when we inevitably change it
+
+## tododododododododododoododododod
+
+the dynamic field dispatching to the C api is good, but we need to worka round the fact that functions like :addButtonComponent are being sent through the metatable. Maybe we just tank the syntax debuff and do Entity:addButtonComponent(actualObject, ...) instead of actualObject:addButtonComponent(...)

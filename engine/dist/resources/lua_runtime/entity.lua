@@ -22,6 +22,7 @@
 ---@field Transform Transform
 ---@field Camera Camera
 ---@field Renderer Renderer
+---@field Button Button
 ---
 ---@field isActive boolean
 ---@field ID integer
@@ -66,6 +67,10 @@ Entity_mt = {
             return CreateProxyToComponent(_c_entity, Renderer_mt)
         end
 
+        if key == "Button" then
+            return CreateProxyToComponent(_c_entity, Button_mt)
+        end
+
         -- Entity fields:
 
         if key == "isActive" then
@@ -79,8 +84,7 @@ Entity_mt = {
         if key == "name" then
             return ye_lua_ent_get_name(_c_entity)
         end
-
-        log("error", "Entity field accessed with invalid key\n")
+        log("error", "Entity field accessed with invalid key \"" .. key .. "\"\n")
     end,
 
     __newindex = function(self, key, value)
@@ -183,16 +187,32 @@ end
 --- componentType, as well as pass varags to the constructer in C
 ---
 ---@param entity Entity The entity to attach the component to
----@param componentType string The type of component to add
----@param componentMetaTable table The metatable for the component
 ---@param cComponentCreationFunc function The function to create the component in C
 ---@vararg ... The arguments to pass to the C component creation function
-function Entity:addComponent(entity, componentType, componentMetaTable, cComponentCreationFunc, ...)
+function Entity:addComponent(entity, cComponentCreationFunc, ...)
+    -- rawget the entity pointer (to avoid metatable)
+    print("about to add component")
+    local _c_entity = rawget(entity, "_c_entity")
+    
     -- create the component in the engine
-    cComponentCreationFunc(entity._c_entity, ...)
+    cComponentCreationFunc(_c_entity, ...)
 end
 
 --- Generic Component Getter
 ---
 --- This function will get a component of given type from the engine ECS
 --- and return it so we can set our LUA abstraction
+
+
+
+-- ---**Create a new button component.**
+-- ---
+-- ---@param x number The x position of the button
+-- ---@param y number The y position of the button
+-- ---@param w number The width of the button
+-- ---@param h number The height of the button
+-- function Entity:addButtonComponent(x, y, w, h)
+--     if x and y and w and h then
+--         self:addComponent(ye_lua_create_button, x, y, w, h)
+--     end
+-- end

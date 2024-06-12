@@ -60,6 +60,11 @@ void ye_lua_camera_register(lua_State *L);
 */
 void ye_lua_renderer_register(lua_State *L);
 
+/*
+    Button
+*/
+void ye_lua_button_register(lua_State *L);
+
 //////////////////////////////////////////////////////////////////////////////
 
 #endif

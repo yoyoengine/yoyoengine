@@ -305,6 +305,51 @@ function ye_lua_force_refresh_renderer(entity) end
 
 
 
+-------------------
+--  Button API   --
+-------------------
+
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The x position to create the button at
+---@param y number The y position to create the button at
+---@param w number The width of the button
+---@param h number The height of the button
+function ye_lua_create_button(entity,x,y,w,h) end
+
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean  isActive The active state
+---@return boolean  isRelative The relative state
+---@return number   x The x position of the button
+---@return number   y The y position of the button
+---@return number   w The width of the button
+---@return number   h The height of the button
+---@return boolean  isHovered Whether the button is hovered or not
+---@return boolean  isPressed Whether the button is pressed down
+---@return boolean  isClicked Whether the button was released after a press for a "click"
+function ye_lua_button_query(entity) end
+
+---**Modify a button by handle**
+---
+---Any parameters passed as nil will be left untouched
+---
+---@param entity        lightuserdata   The pointer to the C entity
+---@param isActive      boolean | nil   The desired active state
+---@param isRelative    boolean | nil   The desired relative state
+---@param x             number | nil    The desired x position
+---@param y             number | nil    The desired y position
+---@param w             number | nil    The desired width
+---@param h             number | nil    The desired height
+function ye_lua_button_modify(entity,isActive,isRelative,x,y,w,h) end
+
+---**Check the state of the button component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param queryType number The type of query to perform (1 = isHovered, 2 = isPressed, 3 = isClicked)
+---@return boolean state The state of the button (true = yes, false = no)
+function ye_lua_button_check_state(entity, queryType) end
+
+
+
 ----------------
 -- Scene API  --
 ----------------

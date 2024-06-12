@@ -130,6 +130,7 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
         "lua_runtime/transform.lua",
         "lua_runtime/camera.lua",
         "lua_runtime/renderer.lua",
+        "lua_runtime/button.lua",
         "lua_runtime/entity.lua", // entity last because it depends on components
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
@@ -151,6 +152,8 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
         }
 
         free(buffers[i]);
+
+        ye_logf(debug,"Loaded %s into VM\n", scripts[i]);
     }
 
     return true;
