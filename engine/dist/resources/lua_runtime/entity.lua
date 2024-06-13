@@ -53,6 +53,19 @@ Entity_mt = {
             return nil
         end
 
+        -- Entity Methods
+        if key == "addButtonComponent" then
+            return AddButtonComponent
+        end
+
+        -- if key == "addCameraComponent" then
+        --     return AddCameraComponent
+        -- end
+
+        if key == "addTransformComponent" then
+            return AddTransformComponent
+        end
+
         -- Entity Component Fields:
 
         if key == "Transform" then
@@ -202,17 +215,3 @@ end
 ---
 --- This function will get a component of given type from the engine ECS
 --- and return it so we can set our LUA abstraction
-
-
-
--- ---**Create a new button component.**
--- ---
--- ---@param x number The x position of the button
--- ---@param y number The y position of the button
--- ---@param w number The width of the button
--- ---@param h number The height of the button
--- function Entity:addButtonComponent(x, y, w, h)
---     if x and y and w and h then
---         self:addComponent(ye_lua_create_button, x, y, w, h)
---     end
--- end

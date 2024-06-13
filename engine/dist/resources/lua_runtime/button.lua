@@ -68,3 +68,16 @@ Button_mt = {
         return ValidateAndModify(self, key, value, buttonIndexer, ye_lua_button_modify, "Button")
     end,
 }
+
+---**Create a new button component.**
+---
+---@param x number The x position of the button
+---@param y number The y position of the button
+---@param w number The width of the button
+---@param h number The height of the button
+function Entity:AddButtonComponent(x, y, w, h) end -- fake prototype for intellisense
+function AddButtonComponent(self, x, y, w, h)
+    if x and y and w and h then
+        Entity:addComponent(self, ye_lua_create_button, x, y, w, h)
+    end
+end

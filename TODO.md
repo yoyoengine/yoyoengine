@@ -747,6 +747,14 @@ re insert validity checks? or not because its enforced engine C fn side
 
 look for simplifications and refactoring of interface to make easy moving forwards to the other components. every single component we add produces more code to maintain and refactor in the future when we inevitably change it
 
-## tododododododododododoododododod
+## ajklhgdfskjhgkjdfgh
 
-the dynamic field dispatching to the C api is good, but we need to worka round the fact that functions like :addButtonComponent are being sent through the metatable. Maybe we just tank the syntax debuff and do Entity:addButtonComponent(actualObject, ...) instead of actualObject:addButtonComponent(...)
+we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
+
+i left renderer field method OOP constructor for later. itll prolly be changed eventually its so jank rn
+
+## todo when you read this x2
+
+please see if we can simplify things. the entity add component api is just weird.
+
+also add camera field method constuctor

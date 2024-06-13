@@ -352,3 +352,5 @@ end
 function Renderer:addAnimationRenderer(entity, metaFile, z)
     self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation_mt, metaFile, z)
 end
+
+-- TODO: write a sensible OOP "field method" function for adding renderer

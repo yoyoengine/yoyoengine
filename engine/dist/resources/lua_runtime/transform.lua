@@ -68,27 +68,17 @@ Transform_mt = {
     end,
 }
 
----**Create a new transform component.**
+---**Create a new Transform component.**
 ---
----@param entity Entity The entity to attach the transform to
----@param x? number The initial x position (optional)
----@param y? number The initial y position (optional)
+--- You must pass either x AND y or neither.
 ---
----If this function fails, you will get errors as well as a transform object with a nil _c_component pointer.
----If unspecified, the initial position will be (0, 0).
----
----example:
----```lua
----local player = Entity:getEntityNamed("PLAYER")
----player.Transform = Transform:new(player)
----player.Transform = Transform:new(player, 100, 200)
----```
-function Transform:addTransform(entity, x, y)
+---@param x? number The x position of the Transform
+---@param y? number The y position of the Transform
+function Entity:AddTransformComponent(x, y) end -- fake prototype for intellisense
+function AddTransformComponent(self, x, y)
     if x and y then
-        --transform._c_component = 
-        ye_lua_create_transform(entity._c_entity, x, y)
+        Entity:addComponent(self, ye_lua_create_transform, x, y)
     else
-        --transform._c_component = 
-        ye_lua_create_transform(entity._c_entity, 0, 0)
+        Entity:addComponent(self, ye_lua_create_transform, 0, 0)
     end
 end
