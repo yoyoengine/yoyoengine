@@ -276,25 +276,14 @@ Renderer_mt = {
     end,
 }
 
---- The underlying lua renderer creation function, all routes lead here
----
----@param entity Entity The entity to attach the renderer to
----@param rendererType RendererType The type of the renderer
----@param cRendererCreationFunction function The C function to create the renderer
----@param implMetatable metatable The metatable of the impl
----@vararg any The arguments to pass to the C creation function (check api.lua)
-function Renderer:addRenderer(entity, rendererType, cRendererCreationFunction, implMetatable, ...)
-    Entity:addComponent(entity, "Renderer", Renderer_mt, cRendererCreationFunction, ...)
-end
-
 -- TODO: im mirroring the C constructer, in the future provide overload params that are optional
 ---**Create a new image renderer component.**
 ---
----@param entity Entity The entity to attach the renderer to
 ---@param handle string The path to the image to render relative to resources/
 ---@param z number The z index of the renderer
-function Renderer:addImageRenderer(entity, handle, z)
-    self:addRenderer(entity, RendererType.IMAGE, ye_lua_create_image_renderer, Image_mt, handle, z)
+function Entity:AddImageRendererComponent(handle, z) end -- fake prototype for intellisense
+function AddImageRendererComponent(self, handle, z)
+    Entity:addComponent(self, ye_lua_create_image_renderer, handle, z)
 end
 
 ---**Create a new text renderer component.**
@@ -303,14 +292,14 @@ end
 ---which can be modified through its table fields afterwards and will
 ---resize itself following its aligment rules in the renderer component
 ---
----@param entity Entity The entity to attach the renderer to
 ---@param text string The text to render
 ---@param fontName string The name of the (cached) font to use
 ---@param fontSize number The size of the font to use
 ---@param colorName string The name of the (cached) color to use
 ---@param z number The z index of the renderer
-function Renderer:addTextRenderer(entity, text, fontName, fontSize, colorName, z)
-    self:addRenderer(entity, RendererType.TEXT, ye_lua_create_text_renderer, Text_mt, text, fontName, fontSize, colorName, z)
+function Entity:AddTextRendererComponent(text, fontName, fontSize, colorName, z) end -- fake prototype for intellisense
+function AddTextRendererComponent(self, text, fontName, fontSize, colorName, z)
+    Entity:addComponent(self, ye_lua_create_text_renderer, text, fontName, fontSize, colorName, z)
 end
 
 ---**Create a new text outlined renderer component.**
@@ -319,7 +308,6 @@ end
 ---which can be modified through its table fields afterwards and will
 ---resize itself following its aligment rules in the renderer component
 ---
----@param entity Entity The entity to attach the renderer to
 ---@param text string The text to render
 ---@param fontName string The name of the (cached) font to use
 ---@param fontSize number The size of the font to use
@@ -327,30 +315,29 @@ end
 ---@param outlineSize number The size of the outline
 ---@param outlineColorName string The name of the (cached) color to use for the outline
 ---@param z number The z index of the renderer
-function Renderer:addTextOutlinedRenderer(entity, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
-    self:addRenderer(entity, RendererType.TEXT_OUTLINED, ye_lua_create_text_outlined_renderer, TextOutlined_mt, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+function Entity:AddTextOutlinedRendererComponent(text, fontName, fontSize, colorName, outlineSize, outlineColorName, z) end -- fake prototype for intellisense
+function AddTextOutlinedRendererComponent(self, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
+    Entity:addComponent(self, ye_lua_create_text_outlined_renderer, text, fontName, fontSize, colorName, outlineSize, outlineColorName, z)
 end
 
 ---**Create a new tile renderer component.**
 ---
----@param entity Entity The entity to attach the renderer to
 ---@param handle string The path to the tileset to use
 ---@param srcX number The (pixel) offset of the x position of the tile in the tileset
 ---@param srcY number The (pixel) offset of the y position of the tile in the tileset
 ---@param srcW number The width of the tile in the tileset
 ---@param srcH number The height of the tile in the tileset
 ---@param z number The z index of the renderer
-function Renderer:addTileRenderer(entity, handle, srcX, srcY, srcW, srcH, z)
-    self:addRenderer(entity, RendererType.TILE, ye_lua_create_tile_renderer, Tile_mt, handle, srcX, srcY, srcW, srcH, z)
+function Entity:AddTileRendererComponent(handle, srcX, srcY, srcW, srcH, z) end -- fake prototype for intellisense
+function AddTileRendererComponent(self, handle, srcX, srcY, srcW, srcH, z)
+    Entity:addComponent(self, ye_lua_create_tile_renderer, handle, srcX, srcY, srcW, srcH, z)
 end
 
 ---**Create a new animation renderer component.**
 ---
----@param entity Entity The entity to attach the renderer to
 ---@param metaFile string The path to the animation meta file to use
 ---@param z number The z index of the renderer
-function Renderer:addAnimationRenderer(entity, metaFile, z)
-    self:addRenderer(entity, RendererType.ANIMATION, ye_lua_create_animation_renderer, Animation_mt, metaFile, z)
+function Entity:AddAnimationRendererComponent(metaFile, z) end -- fake prototype for intellisense
+function AddAnimationRendererComponent(self, metaFile, z)
+    Entity:addComponent(self, ye_lua_create_animation_renderer, metaFile, z)
 end
-
--- TODO: write a sensible OOP "field method" function for adding renderer

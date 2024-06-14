@@ -714,16 +714,6 @@ this way we arent trying to track a bunch of state in seperate places
 
 build step to make all the lua files into one concatenated minified runtime.lua? that way we move it into source tree and have build step depend on it... no more copying files
 
-## shaping for new lua workflow
-
-the goal is to automatically assign each component Mt to every entity, even if it doesnt have one so it can query the engine for
-
-```lua
-if(entity.Renderer) then
-  entity.Renderer.field = someValue
-end
-```
-
 we can have the root field of components do a C api bridge call to query if it exists, return nin | false if not, true if so.
 
 This way we dont track things that dont need tracked, since component classes are just taking in a reference to the parent entity anyways
@@ -731,13 +721,6 @@ This way we dont track things that dont need tracked, since component classes ar
 ## more luaalualaulalualua
 
 update docs for all functions.. im messing things up :3
-
-all the stuff like Transform:addComponent
-should be a method on entities.
-
-```lua
-entity:addComponent() -- or some other variation
-```
 
 we need some kinda lua unit testing for the API to make sure we dont break anything... can automatically exercise every component and API call
 
@@ -751,10 +734,17 @@ look for simplifications and refactoring of interface to make easy moving forwar
 
 we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
 
-i left renderer field method OOP constructor for later. itll prolly be changed eventually its so jank rn
+## brub brubsrbusrbuusbr
 
-## todo when you read this x2
+make something that checks validity before returning proxies
 
-please see if we can simplify things. the entity add component api is just weird.
+ex:
 
-also add camera field method constuctor
+```lua
+entity.Renderer -- is a table value, even if it doesnt exist because we arent accessing
+-- a field in it, so Entity returns a proxy to a fake table we could use to query the C api...
+-- so basically insert a check before we return a proxy to check validity. dont pre-optimize too much
+-- but maybe think of a way to do this lightweight
+```
+
+then u can work on fun stuff like new components

@@ -54,17 +54,16 @@ Camera_mt = {
 
 ---**Create a new camera component.**
 ---
----@param entity Entity The entity to attach the camera to
 ---@param x number The x position of the camera
 ---@param y number The y position of the camera
 ---@param w number The width of the camera
 ---@param h number The height of the camera
 ---@param z number The z index of the camera
-function Camera:addCamera(entity, x, y, w, h, z)
+function Entity:AddCameraComponent(x, y, w, h, z) end -- fake prototype for intellisense
+function AddCameraComponent(self, x, y, w, h, z)
     if x and y and w and h and z then
-        return Entity:addComponent("Camera", Camera_mt, ye_lua_create_camera, x, y, w, h, z)
+        Entity:addComponent(self, ye_lua_create_camera, x, y, w, h, z)
     else
-        log("error", "Camera:addCamera called with missing parameters\n")
-        return nil
+        log("error", "AddCameraComponent called with missing parameters\n")
     end
 end

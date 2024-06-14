@@ -16,6 +16,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
+-- table to lookup Entity methods
+local EntityMethods = {
+    ["AddButtonComponent"] = AddButtonComponent,
+    ["AddCameraComponent"] = AddCameraComponent,
+    ["AddTransformComponent"] = AddTransformComponent,
+    ["AddImageRendererComponent"] = AddImageRendererComponent,
+    ["AddTextRendererComponent"] = AddTextRendererComponent,
+    ["AddTextOutlinedRendererComponent"] = AddTextOutlinedRendererComponent,
+    ["AddTileRendererComponent"] = AddTileRendererComponent,
+    ["AddAnimationRendererComponent"] = AddAnimationRendererComponent,
+}
+
 ---@class Entity
 ---@field _c_entity lightuserdata
 ---
@@ -53,17 +65,9 @@ Entity_mt = {
             return nil
         end
 
-        -- Entity Methods
-        if key == "addButtonComponent" then
-            return AddButtonComponent
-        end
-
-        -- if key == "addCameraComponent" then
-        --     return AddCameraComponent
-        -- end
-
-        if key == "addTransformComponent" then
-            return AddTransformComponent
+        -- Lookup key in method table, return method if found
+        if EntityMethods[key] then
+            return EntityMethods[key]
         end
 
         -- Entity Component Fields:
@@ -210,8 +214,3 @@ function Entity:addComponent(entity, cComponentCreationFunc, ...)
     -- create the component in the engine
     cComponentCreationFunc(_c_entity, ...)
 end
-
---- Generic Component Getter
----
---- This function will get a component of given type from the engine ECS
---- and return it so we can set our LUA abstraction

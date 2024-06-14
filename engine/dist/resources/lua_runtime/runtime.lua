@@ -33,6 +33,9 @@ YE_LUA_RUNTIME_AUTHOR  = "Ryan Zmuda"
     - could mark some vars as private but then we cant access them across components...
 ]]
 
+--- forward declare Entity for intellisense trickery
+Entity = {}
+
 -------------- HELPER FUNCTIONS --------------
 
 --- helper function that ensures _c_entity is not nil
