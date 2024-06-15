@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -247,6 +247,8 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
         _extract_signature(entity->lua_script, "onMount", &(entity->lua_script->has_on_mount));
         _extract_signature(entity->lua_script, "onUpdate", &(entity->lua_script->has_on_update));
         _extract_signature(entity->lua_script, "onUnmount", &(entity->lua_script->has_on_unmount));
+        _extract_signature(entity->lua_script, "onTriggerEnter", &(entity->lua_script->has_on_trigger_enter));
+        _extract_signature(entity->lua_script, "onCollision", &(entity->lua_script->has_on_collision));
     }
 
 
@@ -305,6 +307,26 @@ void ye_system_lua_scripting(){
         if(current->entity->lua_script->active){
             // run the update function
             ye_run_lua_on_update(current->entity->lua_script);
+        }
+        current = current->next;
+    }
+}
+
+void ye_lua_signal_collisions(struct ye_entity *entity1, struct ye_entity *entity2){
+    struct ye_entity_node *current = lua_script_list_head;
+    while(current != NULL){
+        if(current->entity->lua_script->active){
+            ye_run_lua_on_collision(current->entity->lua_script, entity1, entity2);
+        }
+        current = current->next;
+    }
+}
+
+void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *entity2){
+    struct ye_entity_node *current = lua_script_list_head;
+    while(current != NULL){
+        if(current->entity->lua_script->active){
+            ye_run_lua_on_trigger_enter(current->entity->lua_script, entity1, entity2);
         }
         current = current->next;
     }

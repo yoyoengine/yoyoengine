@@ -26,7 +26,8 @@ local EntityMethods = {
     ["AddTextOutlinedRendererComponent"] = AddTextOutlinedRendererComponent,
     ["AddTileRendererComponent"] = AddTileRendererComponent,
     ["AddAnimationRendererComponent"] = AddAnimationRendererComponent,
-    ["AddTagComponent"] = AddTagComponent
+    ["AddTagComponent"] = AddTagComponent,
+    ["AddColliderComponent"] = AddColliderComponent,
 }
 
 ---@class Entity
@@ -96,6 +97,10 @@ Entity_mt = {
             return wrapComponentAccess(_c_entity, 4, Button_mt)
         end
 
+        if key == "Collider" then
+            return wrapComponentAccess(_c_entity, 6, Collider_mt)
+        end
+
         if key == "Tag" then
             return wrapComponentAccess(_c_entity, 7, Tag_mt)
         end
@@ -150,6 +155,11 @@ Entity_mt = {
 
         log("error", "Entity field modified with invalid key\n")
     end,
+
+    -- compare the root C entity (since we can have any arbitrary Entity tables with the same _c_entity pointer)
+    __eq = function(self, other)
+        return rawget(self, "_c_entity") == rawget(other, "_c_entity")
+    end
 }
 
 ---**Create a new entity.**

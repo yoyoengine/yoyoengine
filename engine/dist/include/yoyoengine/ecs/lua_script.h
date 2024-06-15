@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,8 @@ struct ye_component_lua_script {
     bool has_on_mount;
     bool has_on_unmount;
     bool has_on_update;
+    bool has_on_collision;
+    bool has_on_trigger_enter;
     // ... etc
 };
 
@@ -69,5 +71,15 @@ void ye_remove_lua_script_component(struct ye_entity *entity);
  * @brief The system that controls the behavior of lua scripts
  */
 void ye_system_lua_scripting();
+
+/**
+ * @brief Send onCollision to all scripts that observe it
+ */
+void ye_lua_signal_collisions(struct ye_entity *entity1, struct ye_entity *entity2);
+
+/**
+ * @brief Send onTriggerEnter to all scripts that observe it
+ */
+void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *entity2);
 
 #endif

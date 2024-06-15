@@ -367,7 +367,7 @@ function ye_lua_tag_query(entity) end
 ---**Modify a tag component on an entity**
 ---
 ---@param entity lightuserdata The pointer to the C entity
----@param isActive boolean The desired active state
+---@param isActive boolean | nil The desired active state
 function ye_lua_tag_modify(entity, isActive) end
 
 ---**Check if a tag component has a specific tag**
@@ -388,6 +388,54 @@ function ye_lua_tag_add_tag(entity, tag) end
 ---@param entity lightuserdata The pointer to the C entity
 ---@param tag string The tag to remove
 function ye_lua_tag_remove_tag(entity, tag) end
+
+
+
+------------------
+-- Collider API --
+------------------
+
+---**Create a new static collider component.**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The x position of the collider
+---@param y number The y position of the collider
+---@param w number The width of the collider
+---@param h number The height of the collider
+function ye_lua_create_static_collider(entity, x, y, w, h) end
+
+---**Create a new trigger collider component.**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param x number The x position of the collider
+---@param y number The y position of the collider
+---@param w number The width of the collider
+---@param h number The height of the collider
+function ye_lua_create_trigger_collider(entity, x, y, w, h) end
+
+---**Query a collider component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean isActive The active state
+---@return boolean isRelative The relative state
+---@return number x The x position of the collider
+---@return number y The y position of the collider
+---@return number w The width of the collider
+---@return number h The height of the collider
+---@return boolean isTrigger Whether the collider is a trigger
+function ye_lua_collider_query(entity) end
+
+---**Modify a collider component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param isActive boolean | nil The desired active state
+---@param isRelative boolean | nil The desired relative state
+---@param x number | nil The desired x position of the collider
+---@param y number | nil The desired y position of the collider
+---@param w number | nil The desired width of the collider
+---@param h number | nil The desired height of the collider
+---@param isTrigger boolean | nil The desired trigger state
+function ye_lua_collider_modify(entity, isActive, isRelative, x, y, w, h, isTrigger) end
 
 
 

@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -64,6 +64,11 @@ void ye_lua_renderer_register(lua_State *L);
     Button
 */
 void ye_lua_button_register(lua_State *L);
+
+//////////////////////////////////////////////////////////////////////////////
+
+void ye_run_lua_on_collision(struct ye_component_lua_script *script, struct ye_entity *entity1, struct ye_entity *entity2);
+void ye_run_lua_on_trigger_enter(struct ye_component_lua_script *script, struct ye_entity *entity1, struct ye_entity *entity2);
 
 //////////////////////////////////////////////////////////////////////////////
 

@@ -707,3 +707,19 @@ look for simplifications and refactoring of interface to make easy moving forwar
 ## ajklhgdfskjhgkjdfgh
 
 we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
+
+## sjkldh kjsdfhgkjfdhg kjldglkj dfg
+
+we need to have a build step to compress everything in to one file
+
+## bruh
+
+none of the lua API have a removeComponent yet LOL
+
+## general editor enhancements
+
+when you have an entity selected, and are hovering like a component, you should actually see the bounds for stuff like collidesr without havinv to check the preview box for all of them
+
+## general engine enhancements
+
+we need actual ontriggerenter on triggerexit ontriggerstay

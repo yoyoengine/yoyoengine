@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/lua_script.h>
 
 /*
     Physics component
@@ -198,6 +199,8 @@ void ye_system_physics(){
 
                                 if(YE_STATE.engine.callbacks.collision != NULL)
                                     YE_STATE.engine.callbacks.collision(current->entity,current_collider->entity);
+                                
+                                ye_lua_signal_collisions(current->entity,current_collider->entity);
 
                                 /*
                                     Saving for later as it may be relevant to the future:
@@ -223,6 +226,8 @@ void ye_system_physics(){
                                 */
                                 if(YE_STATE.engine.callbacks.trigger_enter != NULL)
                                     YE_STATE.engine.callbacks.trigger_enter(current->entity,current_collider->entity);
+                                
+                                ye_lua_signal_trigger_enter(current->entity,current_collider->entity);
                             }
                         } // TODO: do we want to cancel rotational velocity here too?
                     }
