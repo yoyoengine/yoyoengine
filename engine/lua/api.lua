@@ -1,5 +1,5 @@
 --[[
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -347,6 +347,47 @@ function ye_lua_button_modify(entity,isActive,isRelative,x,y,w,h) end
 ---@param queryType number The type of query to perform (1 = isHovered, 2 = isPressed, 3 = isClicked)
 ---@return boolean state The state of the button (true = yes, false = no)
 function ye_lua_button_check_state(entity, queryType) end
+
+
+
+-------------------
+--    Tag API    --
+-------------------
+
+---Creates a new tag component
+---@param entity lightuserdata The pointer to the C entity
+function ye_lua_create_tag(entity) end
+
+---**Query a tag component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean isActive The active state
+function ye_lua_tag_query(entity) end
+
+---**Modify a tag component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param isActive boolean The desired active state
+function ye_lua_tag_modify(entity, isActive) end
+
+---**Check if a tag component has a specific tag**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param tag string The tag to check for
+---@return boolean hasTag Whether the tag exists on the entity or not
+function ye_lua_tag_has_tag(entity, tag) end
+
+---**Add a tag to a tag component**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param tag string The tag to add
+function ye_lua_tag_add_tag(entity, tag) end
+
+---**Remove a tag from a tag component**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param tag string The tag to remove
+function ye_lua_tag_remove_tag(entity, tag) end
 
 
 

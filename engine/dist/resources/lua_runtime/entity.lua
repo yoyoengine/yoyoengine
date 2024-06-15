@@ -1,5 +1,5 @@
 --[[
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ local EntityMethods = {
     ["AddTextOutlinedRendererComponent"] = AddTextOutlinedRendererComponent,
     ["AddTileRendererComponent"] = AddTileRendererComponent,
     ["AddAnimationRendererComponent"] = AddAnimationRendererComponent,
+    ["AddTagComponent"] = AddTagComponent
 }
 
 ---@class Entity
@@ -35,6 +36,9 @@ local EntityMethods = {
 ---@field Camera Camera
 ---@field Renderer Renderer
 ---@field Button Button
+---@field Tag Tag
+---@field Collider Collider
+---@field Physics Physics
 ---
 ---@field isActive boolean
 ---@field ID integer
@@ -80,17 +84,20 @@ Entity_mt = {
         if key == "Transform" then
             return wrapComponentAccess(_c_entity, 0, Transform_mt)
         end
+        if key == "Renderer" then
+            return wrapComponentAccess(_c_entity, 1, Renderer_mt)
+        end
 
         if key == "Camera" then
             return wrapComponentAccess(_c_entity, 2, Camera_mt)
         end
 
-        if key == "Renderer" then
-            return wrapComponentAccess(_c_entity, 1, Renderer_mt)
-        end
-
         if key == "Button" then
             return wrapComponentAccess(_c_entity, 4, Button_mt)
+        end
+
+        if key == "Tag" then
+            return wrapComponentAccess(_c_entity, 7, Tag_mt)
         end
 
         -- Entity fields:
@@ -213,7 +220,6 @@ end
 ---@vararg ... The arguments to pass to the C component creation function
 function Entity:addComponent(entity, cComponentCreationFunc, ...)
     -- rawget the entity pointer (to avoid metatable)
-    print("about to add component")
     local _c_entity = rawget(entity, "_c_entity")
     
     -- create the component in the engine

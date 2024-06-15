@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -187,6 +187,11 @@ void ye_register_lua_scripting_api(lua_State *state){
         Button
     */
     ye_lua_button_register(state);
+
+    /*
+        Tag
+    */
+    ye_lua_tag_register(state);
 
     // check if component exists
     lua_register(state, "ye_lua_check_component_exists", ye_lua_check_component_exists);

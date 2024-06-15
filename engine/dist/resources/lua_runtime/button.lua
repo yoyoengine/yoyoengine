@@ -1,5 +1,5 @@
 --[[
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,6 @@
 ]]
 
 ---@class Button
----@field parent Entity
----@field _c_component lightuserdata
 ---@field isActive boolean Controls whether the camera is active
 ---@field isRelative boolean Controls whether the position of the camera is relative to a root transform
 ---@field x number The x position

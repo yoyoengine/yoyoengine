@@ -1,5 +1,5 @@
 --[[
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -40,7 +40,6 @@ RendererType = {
 }
 
 ---@class Image The image renderer impl
----@field parent Entity
 ---@field src string
 Image = {
     -- no **real** fields.
@@ -60,7 +59,6 @@ Image_mt = {
 }
 
 ---@class Text The text renderer impl
----@field parent Entity
 ---@field text string
 ---@field fontName string
 ---@field colorName string
@@ -90,7 +88,6 @@ Text_mt = {
 }
 
 ---@class TextOutlined
----@field parent Entity
 ---@field text string
 ---@field fontName string
 ---@field colorName string
@@ -127,7 +124,6 @@ TextOutlined_mt = {
 ---
 ---The origin (0,0) of the tilemap is in the top left, and x increases to the right, y increases down.
 ---
----@field parent Entity
 ---@field handle string
 ---@field srcX number The (pixel) offset of the x position of the tile in the tileset
 ---@field srcY number The (pixel) offset of the y position of the tile in the tileset
@@ -159,7 +155,6 @@ Tile_mt = {
 --- ik ur ass is coming back to overhaul this later, so hi lol
 
 ---@class Animation
----@field parent Entity
 ---@field paused boolean
 ---@field metaFile string
 ---@field frameDelay number
@@ -195,8 +190,6 @@ Animation_mt = {
 }
 
 ---@class Renderer
----@field parent Entity
----@field _c_component lightuserdata
 ---@field isActive boolean Controls whether the camera is active
 ---@field isRelative boolean Controls whether the position of the camera is relative to a root transform
 ---@field alpha number The alpha to render at
