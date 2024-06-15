@@ -126,11 +126,18 @@ void _cleanup_script_comp(struct ye_entity *target) {
 */
 bool _initialize_scripting_runtime(struct ye_entity *target) {
     const char *scripts[] = {
+        // init
         "lua_runtime/runtime.lua",
+        // ECS/API
         "lua_runtime/transform.lua",
         "lua_runtime/camera.lua",
         "lua_runtime/renderer.lua",
         "lua_runtime/button.lua",
+        "lua_runtime/physics.lua",
+        "lua_runtime/collider.lua",
+        "lua_runtime/tag.lua",
+        "lua_runtime/audiosource.lua",
+        "lua_runtime/lua_script.lua",
         "lua_runtime/entity.lua", // entity last because it depends on components
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
@@ -274,8 +281,9 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
         return;
     }
 
-    // run the unmount function
-    ye_run_lua_on_unmount(entity->lua_script);
+    // run the unmount function if we aren't in editor
+    if(!YE_STATE.editor.editor_mode)
+        ye_run_lua_on_unmount(entity->lua_script);
 
     // shut down the state
     lua_close(entity->lua_script->state);
