@@ -24,6 +24,7 @@
 #include <yoyoengine/scene.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/lua_api.h>
+#include <yoyoengine/ecs/renderer.h>
 
 /*
     Bridge for lua talking to engine functions, its important that this
@@ -91,6 +92,65 @@ int lua_debug_quit(lua_State* L){ // TODO: removeme
     return 0;
 }
 
+int ye_lua_check_component_exists(lua_State* L){
+    struct ye_entity * entity = lua_touserdata(L, 1);
+
+    // check entity exists
+    if(entity == NULL){
+        ye_logf(error, "Tried to check validity of component on null entity.\n");
+        lua_pushboolean(L, 0);
+        return 1;
+    }
+
+    int comp_indx = lua_tointeger(L, 2);
+    void* components[] = {
+        entity->transform,
+        entity->renderer,
+        entity->camera,
+        entity->lua_script,
+        entity->button,
+        entity->physics,
+        entity->collider,
+        entity->tag,
+        entity->audiosource
+    };
+    int num_components = sizeof(components) / sizeof(components[0]);
+
+    if(comp_indx >= 0 && comp_indx < num_components){
+        lua_pushboolean(L, components[comp_indx] != NULL);
+    } else {
+        lua_pushboolean(L, 0);
+    }
+    return 1;
+}
+
+int ye_lua_check_renderer_component_type_exists(lua_State* L){
+    struct ye_entity * entity = lua_touserdata(L, 1);
+
+    // check entity exists
+    if(entity == NULL){
+        ye_logf(error, "Tried to check existance of renderer type on null entity.\n");
+        lua_pushboolean(L, 0);
+        return 1;
+    }
+
+    int type_indx = lua_tointeger(L, 2);
+
+    if(entity->renderer == NULL){
+        lua_pushboolean(L, 0);
+        ye_logf(error, "Tried to check validity of renderer component on entity with no renderer.\n");
+        return 1;
+    }
+
+    if(entity->renderer->type == type_indx){
+        lua_pushboolean(L, 1);
+    } else {
+        lua_pushboolean(L, 0);
+    }
+
+    return 1;
+}
+
 
 
 /*
@@ -127,4 +187,10 @@ void ye_register_lua_scripting_api(lua_State *state){
         Button
     */
     ye_lua_button_register(state);
+
+    // check if component exists
+    lua_register(state, "ye_lua_check_component_exists", ye_lua_check_component_exists);
+
+    // check if renderer component type exists
+    lua_register(state, "ye_lua_check_renderer_component_type_exists", ye_lua_check_renderer_component_type_exists);
 }

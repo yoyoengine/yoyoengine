@@ -238,19 +238,25 @@ local RendererIndexer = {
     type = 14
 }
 
+local function wrapRendererTypeAccess(self, indx, mt)
+    local parent_ptr = rawget(self, "parent_ptr")
+    if not ye_lua_check_renderer_component_type_exists(parent_ptr, indx) then return nil end
+    return CreateProxyToComponent(self, mt)
+end
+
 Renderer_mt = {
     __index = function(self, key)
         -- check if we are accessing an impl field
-        if key == "Image" then
-            return CreateProxyToComponent(self, Image_mt)
-        elseif key == "Text" then
-            return CreateProxyToComponent(self, Text_mt)
+        if key == "Text" then
+            return wrapRendererTypeAccess(self, 0, Image_mt)
         elseif key == "TextOutlined" then
-            return CreateProxyToComponent(self, TextOutlined_mt)
+            return wrapRendererTypeAccess(self, 1, Text_mt)
+        elseif key == "Image" then
+            return wrapRendererTypeAccess(self, 2, TextOutlined_mt)
         elseif key == "Animation" then
-            return CreateProxyToComponent(self, Animation_mt)
+            return wrapRendererTypeAccess(self, 3, Animation_mt)
         elseif key == "Tile" then
-            return CreateProxyToComponent(self, Tile_mt)
+            return wrapRendererTypeAccess(self, 4, Tile_mt)
         end
 
         -- fallback: this is a field on renderer itself
@@ -259,16 +265,16 @@ Renderer_mt = {
         
     __newindex = function(self, key, value)
         -- check if we are accessing an impl field
-        if key == "Image" then
-            return CreateProxyToComponent(self, Image_mt)
-        elseif key == "Text" then
-            return CreateProxyToComponent(self, Text_mt)
+        if key == "Text" then
+            return wrapRendererTypeAccess(self, 0, Image_mt)
         elseif key == "TextOutlined" then
-            return CreateProxyToComponent(self, TextOutlined_mt)
+            return wrapRendererTypeAccess(self, 1, Text_mt)
+        elseif key == "Image" then
+            return wrapRendererTypeAccess(self, 2, TextOutlined_mt)
         elseif key == "Animation" then
-            return CreateProxyToComponent(self, Animation_mt)
+            return wrapRendererTypeAccess(self, 3, Animation_mt)
         elseif key == "Tile" then
-            return CreateProxyToComponent(self, Tile_mt)
+            return wrapRendererTypeAccess(self, 4, Tile_mt)
         end
 
         -- fallback: this is a field on renderer itself

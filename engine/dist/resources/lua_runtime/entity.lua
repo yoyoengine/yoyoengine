@@ -50,6 +50,11 @@ Entity = {
     -- for non existant components but we can optimize later...
 }
 
+local function wrapComponentAccess(_c_entity, compIdx, mt)
+    if not ye_lua_check_component_exists(_c_entity, compIdx) then return nil end
+    return CreateProxyToComponent(_c_entity, mt)
+end
+
 -- define the entity metatable
 Entity_mt = {
     __index = function(self, key)
@@ -73,19 +78,19 @@ Entity_mt = {
         -- Entity Component Fields:
 
         if key == "Transform" then
-            return CreateProxyToComponent(_c_entity, Transform_mt)
+            return wrapComponentAccess(_c_entity, 0, Transform_mt)
         end
 
         if key == "Camera" then
-            return CreateProxyToComponent(_c_entity, Camera_mt)
+            return wrapComponentAccess(_c_entity, 2, Camera_mt)
         end
 
         if key == "Renderer" then
-            return CreateProxyToComponent(_c_entity, Renderer_mt)
+            return wrapComponentAccess(_c_entity, 1, Renderer_mt)
         end
 
         if key == "Button" then
-            return CreateProxyToComponent(_c_entity, Button_mt)
+            return wrapComponentAccess(_c_entity, 4, Button_mt)
         end
 
         -- Entity fields:

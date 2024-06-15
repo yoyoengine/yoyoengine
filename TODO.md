@@ -657,19 +657,12 @@ consider if we want oop abstraction for things like scene control. any advantage
 
 feels like the lua getter setter abstraction could be simplified even further, since we do a lot of the same operations as far as repeated code goes
 
-## getting back into it
-
-entity needs to be modernized, use the metafuncitons (and hope you dont break too much, still need rawsets all over the place)
-
-also i just left transform as what it was since its so basic. idek
-
 straggling "error calling function: attempt to call nil value" when exiting engine
 
 remaining api stuff
 
 - ECS components
   - lua_script
-  - button
   - physics
   - collider
   - tag
@@ -689,26 +682,7 @@ impl type is cooked
 
 ye_run_console_command() api?
 
-## ent scripting
-
-There needs to be deep implicit synchronization between C and lua runtime interfaces to the engine
-ex: lua should automatically know what components are valid on entities without manually tracking them itself
-
 we should make onMount run after all entities are created so we can use getters... will still cause problems for user scripts using getters on objects created on mount by other user scripts but thats kinda on them...
-
-if we can, component access should be automatically abstracted through the entity tracking. The api is already deeply rooted in passing entity references around, rather than components
-
-## tldr when you come back
-
-restructure:
-fucking destroy the entire entity system
-new system:
-- an entity tracks the C entity...
-  - how do we keep in sync if a C script destroys that entity?
-    - on unmount is called which destroys it. what about for other entities tracking it?
-- an entity;s components are automatically accessed through .Component
-  - we check if they exist when we call query or mofify and reject if not (or create)
-this way we arent trying to track a bunch of state in seperate places
 
 ## akjshgfdkjshd
 
@@ -733,18 +707,3 @@ look for simplifications and refactoring of interface to make easy moving forwar
 ## ajklhgdfskjhgkjdfgh
 
 we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
-
-## brub brubsrbusrbuusbr
-
-make something that checks validity before returning proxies
-
-ex:
-
-```lua
-entity.Renderer -- is a table value, even if it doesnt exist because we arent accessing
--- a field in it, so Entity returns a proxy to a fake table we could use to query the C api...
--- so basically insert a check before we return a proxy to check validity. dont pre-optimize too much
--- but maybe think of a way to do this lightweight
-```
-
-then u can work on fun stuff like new components

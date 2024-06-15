@@ -374,3 +374,31 @@ function loadScene(handle) end
 ---
 ---@return nil
 function exitGame() end
+
+---**Check if a component exists on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param comp_indx number The index of the component to check for
+--- 0: Transform
+--- 1: Renderer
+--- 2: Camera
+--- 3: Script
+--- 4: Button
+--- 5: Physics
+--- 6: Collider
+--- 7: Tag
+--- 8: Audiosource
+---@return boolean exists Whether the component exists or not
+function ye_lua_check_component_exists(entity, comp_indx) end
+
+---**Check if a renderer component type exists on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param type_indx number The index of the renderer component type to check for
+--- 0: text
+--- 1: text outlined
+--- 2: image
+--- 3: animation
+--- 4: tile
+---@return boolean exists Whether the renderer component type exists or not
+function ye_lua_check_renderer_component_type_exists(entity, type_indx) end
