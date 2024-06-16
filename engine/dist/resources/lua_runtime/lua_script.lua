@@ -97,3 +97,9 @@ function AddLuaScriptComponent(self, handle)
         log("error", "AddLuaScriptComponent called with missing parameters\n")
     end
 end
+
+---**Remove the LuaScript component from the entity.**
+function Entity:RemoveLuaScriptComponent() end -- fake prototype for intellisense
+function RemoveLuaScriptComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), LUASCRIPT_COMPONENT)
+end

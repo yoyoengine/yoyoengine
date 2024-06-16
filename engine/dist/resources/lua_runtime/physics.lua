@@ -51,3 +51,9 @@ function Entity:AddPhysicsComponent(xVelocity, yVelocity) end -- fake prototype 
 function AddPhysicsComponent(self, xVelocity, yVelocity)
         Entity:addComponent(self, ye_lua_create_physics_component, xVelocity, yVelocity)
 end
+
+---**Remove the physics component.**
+function Entity:RemovePhysicsComponent() end -- fake prototype for intellisense
+function RemovePhysicsComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), PHYSICS_COMPONENT)
+end

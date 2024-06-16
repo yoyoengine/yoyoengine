@@ -340,3 +340,9 @@ function Entity:AddAnimationRendererComponent(metaFile, z) end -- fake prototype
 function AddAnimationRendererComponent(self, metaFile, z)
     Entity:addComponent(self, ye_lua_create_animation_renderer, metaFile, z)
 end
+
+---**Remove the renderer component from the entity.**
+function Entity:RemoveRendererComponent() end -- fake prototype for intellisense
+function RemoveRendererComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), RENDERER_COMPONENT)
+end

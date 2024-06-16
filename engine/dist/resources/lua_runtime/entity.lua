@@ -18,6 +18,7 @@
 
 -- table to lookup Entity methods
 local EntityMethods = {
+    --- ADDITION FUNCTIONS
     ["AddButtonComponent"] = AddButtonComponent,
     ["AddCameraComponent"] = AddCameraComponent,
     ["AddTransformComponent"] = AddTransformComponent,
@@ -30,6 +31,16 @@ local EntityMethods = {
     ["AddColliderComponent"] = AddColliderComponent,
     ["AddPhysicsComponent"] = AddPhysicsComponent,
     ["AddLuaScriptComponent"] = AddLuaScriptComponent,
+
+    --- REMOVAL FUNCTIONS
+    ["RemoveButtonComponent"] = RemoveButtonComponent,
+    ["RemoveCameraComponent"] = RemoveCameraComponent,
+    ["RemoveTransformComponent"] = RemoveTransformComponent,
+    ["RemoveRendererComponent"] = RemoveRendererComponent,
+    ["RemoveTagComponent"] = RemoveTagComponent,
+    ["RemoveColliderComponent"] = RemoveColliderComponent,
+    ["RemovePhysicsComponent"] = RemovePhysicsComponent,
+    ["RemoveLuaScriptComponent"] = RemoveLuaScriptComponent,
 }
 
 ---@class Entity
@@ -86,34 +97,34 @@ Entity_mt = {
         -- Entity Component Fields:
 
         if key == "Transform" then
-            return wrapComponentAccess(_c_entity, 0, Transform_mt)
+            return wrapComponentAccess(_c_entity, TRANSFORM_COMPONENT, Transform_mt)
         end
         if key == "Renderer" then
-            return wrapComponentAccess(_c_entity, 1, Renderer_mt)
+            return wrapComponentAccess(_c_entity, RENDERER_COMPONENT, Renderer_mt)
         end
 
         if key == "Camera" then
-            return wrapComponentAccess(_c_entity, 2, Camera_mt)
+            return wrapComponentAccess(_c_entity, CAMERA_COMPONENT, Camera_mt)
         end
 
         if key == "LuaScript" then
-            return wrapComponentAccess(_c_entity, 3, LuaScript_mt)
+            return wrapComponentAccess(_c_entity, LUASCRIPT_COMPONENT, LuaScript_mt)
         end
 
         if key == "Button" then
-            return wrapComponentAccess(_c_entity, 4, Button_mt)
+            return wrapComponentAccess(_c_entity, BUTTON_COMPONENT, Button_mt)
         end
 
         if key == "Physics" then
-            return wrapComponentAccess(_c_entity, 5, Physics_mt)
+            return wrapComponentAccess(_c_entity, PHYSICS_COMPONENT, Physics_mt)
         end
 
         if key == "Collider" then
-            return wrapComponentAccess(_c_entity, 6, Collider_mt)
+            return wrapComponentAccess(_c_entity, COLLIDER_COMPONENT, Collider_mt)
         end
 
         if key == "Tag" then
-            return wrapComponentAccess(_c_entity, 7, Tag_mt)
+            return wrapComponentAccess(_c_entity, TAG_COMPONENT, Tag_mt)
         end
 
         -- Entity fields:

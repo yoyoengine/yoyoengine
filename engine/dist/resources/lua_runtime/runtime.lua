@@ -36,6 +36,17 @@ YE_LUA_RUNTIME_AUTHOR  = "Ryan Zmuda"
 --- forward declare Entity for intellisense trickery
 Entity = {}
 
+--- declare an "enum" of component types
+TRANSFORM_COMPONENT = 0
+RENDERER_COMPONENT = 1
+CAMERA_COMPONENT = 2
+LUASCRIPT_COMPONENT = 3
+BUTTON_COMPONENT = 4
+PHYSICS_COMPONENT = 5
+COLLIDER_COMPONENT = 6
+TAG_COMPONENT = 7
+AUDIOSOURCE_COMPONENT = 8
+
 -------------- HELPER FUNCTIONS --------------
 
 --- helper function that ensures _c_entity is not nil

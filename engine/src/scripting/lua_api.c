@@ -26,35 +26,16 @@
 #include <yoyoengine/lua_api.h>
 #include <yoyoengine/ecs/renderer.h>
 
-/*
-    Bridge for lua talking to engine functions, its important that this
-    is an int so lua can capture results onto its stack once this returns
-
-    arg1: string of the function to call
-    argX: variable based on what the function is
-*/
-// int lua_bridge_call(lua_State* L){
-//     // get the function name
-//     const char* func = lua_tostring(L, 1);
-
-//     // begin checks for functions
-//     if(strcmp(func, "square") == 0){
-//         // call the function
-//         int x = lua_tointeger(L, 2);
-//         int result = square(x);
-//         // printf("result: %d\n", result);
-//         // push the result to the lua stack
-//         lua_pushinteger(L, result);
-//         // printf("pushed result to lua stack\n");
-//         return 1;
-//     }
-//     // TODO: extend lua interface API to actual engine functions
-//     // this will require some thoughts on where the game loop lives... 
-//     // how do we let lua hook into the state, does engine handle game loop
-//     // and repeated rendering, and lua can modify its model at runtime?
-
-//     return 0; // no valid function was supplied
-// }
+// remove component
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ecs/lua_script.h>
+#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/ecs/collider.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/audiosource.h>
+#include <yoyoengine/ecs/tag.h>
 
 /*
     Function that allows lua to log using the engine logger
@@ -153,6 +134,55 @@ int ye_lua_check_renderer_component_type_exists(lua_State* L){
 
 
 
+int ye_lua_remove_component(lua_State* L){
+    struct ye_entity * entity = lua_touserdata(L, 1);
+
+    // check entity exists
+    if(entity == NULL){
+        ye_logf(error, "Tried to remove component on null entity.\n");
+        return 0;
+    }
+
+    int comp_indx = lua_tointeger(L, 2);
+    
+    switch(comp_indx){
+        case 0:
+            ye_remove_transform_component(entity);
+            break;
+        case 1:
+            ye_remove_renderer_component(entity);
+            break;
+        case 2:
+            ye_remove_camera_component(entity);
+            break;
+        case 3:
+            ye_remove_lua_script_component(entity);
+            break;
+        case 4:
+            ye_remove_button_component(entity);
+            break;
+        case 5:
+            ye_remove_physics_component(entity);
+            break;
+        case 6:
+            ye_remove_collider_component(entity);
+            break;
+        case 7:
+            ye_remove_tag_component(entity);
+            break;
+        case 8:
+            ye_remove_audiosource_component(entity);
+            break;
+        default:
+            ye_logf(error, "Tried to remove invalid component type.\n");
+            break;
+    }
+
+    return 0;
+}
+
+
+
 /*
     Reach out to all the decentralized api
     files and call their register functions
@@ -220,4 +250,7 @@ void ye_register_lua_scripting_api(lua_State *state){
     // cross state value
     lua_register(state, "ye_write_cross_state_value", ye_write_cross_state_value);
     lua_register(state, "ye_read_cross_state_value", ye_read_cross_state_value);
+
+    // remove component
+    lua_register(state, "ye_lua_remove_component", ye_lua_remove_component);
 }

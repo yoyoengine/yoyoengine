@@ -65,3 +65,9 @@ function AddColliderComponent(self, isTrigger,  x, y, w, h)
         Entity:addComponent(self, ye_lua_create_static_collider, x, y, w, h)
     end
 end
+
+---**Remove the collider component from the entity.**
+function Entity:RemoveColliderComponent() end -- fake prototype for intellisense
+function RemoveColliderComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), COLLIDER_COMPONENT)
+end

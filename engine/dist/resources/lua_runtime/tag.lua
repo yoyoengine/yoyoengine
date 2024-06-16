@@ -90,3 +90,9 @@ function Entity:AddTagComponent() end -- fake prototype for intellisense
 function AddTagComponent(self)
     Entity:addComponent(self, ye_lua_create_tag)
 end
+
+---**Remove the tag component from the entity.**
+function Entity:RemoveTagComponent() end -- fake prototype for intellisense
+function RemoveTagComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), TAG_COMPONENT)
+end

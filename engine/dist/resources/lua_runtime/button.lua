@@ -79,3 +79,9 @@ function AddButtonComponent(self, x, y, w, h)
         Entity:addComponent(self, ye_lua_create_button, x, y, w, h)
     end
 end
+
+---**Remove the button component.**
+function Entity:RemoveButtonComponent() end -- fake prototype for intellisense
+function RemoveButtonComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), BUTTON_COMPONENT)
+end

@@ -570,3 +570,18 @@ function ye_read_cross_state_value(entity, key) end
 ---@param key string The key of the global value to write
 ---@param value any The value to write to the global
 function ye_write_cross_state_value(entity, key, value) end
+
+---**Removes a component from an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param comp_indx number The index of the component to remove
+--- 0: Transform
+--- 1: Renderer
+--- 2: Camera
+--- 3: Script
+--- 4: Button
+--- 5: Physics
+--- 6: Collider
+--- 7: Tag
+--- 8: Audiosource
+function ye_lua_remove_component(entity, comp_indx) end

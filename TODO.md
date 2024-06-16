@@ -725,3 +725,29 @@ when you have an entity selected, and are hovering like a component, you should 
 ## general engine enhancements
 
 we need actual ontriggerenter on triggerexit ontriggerstay
+
+## lua wrapper roadmap
+
+- add removecomponent calls
+- add entity delete
+- add get entity by id and tag
+- audio system
+- scene system
+- debug renderer system? optional
+- add debug flags state wrap?
+
+## future wishlist
+
+a networking wrapper would be awesome.. lot of work though. major version increase for sure, or even a trick... depends how implemented
+
+nested entities / dynamically multiple components? -- probably never feasibly without MAJOR re architecting
+
+prefab system should have made it to 1.0, but oh well
+
+keyframed animation system (like rigging movements not just image animations)
+
+movie player component
+
+some deeper runtime in game UI integration toolkit (maybe not even nuklear)
+
+input system abstraction (needed for brainrot brawl)

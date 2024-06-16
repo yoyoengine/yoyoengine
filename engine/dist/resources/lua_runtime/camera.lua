@@ -65,3 +65,9 @@ function AddCameraComponent(self, x, y, w, h, z)
         log("error", "AddCameraComponent called with missing parameters\n")
     end
 end
+
+---**Remove the camera component from the entity.**
+function Entity:RemoveCameraComponent() end -- fake prototype for intellisense
+function RemoveCameraComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), CAMERA_COMPONENT)
+end

@@ -80,3 +80,9 @@ function AddTransformComponent(self, x, y)
         Entity:addComponent(self, ye_lua_create_transform, 0, 0)
     end
 end
+
+---**Remove the Transform component from the entity.**
+function Entity:RemoveTransformComponent() end -- fake prototype for intellisense
+function RemoveTransformComponent(self)
+    ye_lua_remove_component(rawget(self, "_c_entity"), TRANSFORM_COMPONENT)
+end
