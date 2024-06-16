@@ -198,6 +198,11 @@ void ye_register_lua_scripting_api(lua_State *state){
     */
     ye_lua_collider_register(state);
 
+    /*
+        Physics
+    */
+    ye_lua_physics_register(state);
+
     // check if component exists
     lua_register(state, "ye_lua_check_component_exists", ye_lua_check_component_exists);
 

@@ -68,7 +68,7 @@ int ye_lua_collider_query(lua_State *L){
     struct ye_entity * ent = lua_touserdata(L, 1);
 
     if(ent == NULL) {
-        ye_logf(error, "could not query tag: entity is null\n");
+        ye_logf(error, "could not query collider: entity is null\n");
         return 0;
     }
 

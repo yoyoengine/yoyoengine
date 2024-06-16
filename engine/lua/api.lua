@@ -439,6 +439,38 @@ function ye_lua_collider_modify(entity, isActive, isRelative, x, y, w, h, isTrig
 
 
 
+------------------
+-- Physics API  --
+------------------
+
+---**Create a new physics component.**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param xVelocity number The x velocity (in pixels per second)
+---@param yVelocity number The y velocity (in pixels per second)
+function ye_lua_create_physics_component(entity, xVelocity, yVelocity) end
+
+---**Query a physics component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean isActive The active state
+---@return number xVelocity The x velocity (in pixels per second)
+---@return number yVelocity The y velocity (in pixels per second)
+---@return number rotationalVelocity The rotational velocity (in degrees per second)
+function ye_lua_physics_query(entity) end
+
+---**Modify a physics component on an entity**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param isActive boolean | nil The desired active state
+---@param xVelocity number | nil The desired x velocity (in pixels per second)
+---@param yVelocity number | nil The desired y velocity (in pixels per second)
+---@param rotationalVelocity number | nil The desired rotational velocity (in degrees per second)
+function ye_lua_physics_modify(entity, isActive, xVelocity, yVelocity, rotationalVelocity) end
+
+
+
+
 ----------------
 -- Scene API  --
 ----------------

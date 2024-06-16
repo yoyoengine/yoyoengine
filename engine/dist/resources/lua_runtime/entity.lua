@@ -28,6 +28,7 @@ local EntityMethods = {
     ["AddAnimationRendererComponent"] = AddAnimationRendererComponent,
     ["AddTagComponent"] = AddTagComponent,
     ["AddColliderComponent"] = AddColliderComponent,
+    ["AddPhysicsComponent"] = AddPhysicsComponent,
 }
 
 ---@class Entity
@@ -95,6 +96,10 @@ Entity_mt = {
 
         if key == "Button" then
             return wrapComponentAccess(_c_entity, 4, Button_mt)
+        end
+
+        if key == "Physics" then
+            return wrapComponentAccess(_c_entity, 5, Physics_mt)
         end
 
         if key == "Collider" then

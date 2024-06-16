@@ -716,6 +716,8 @@ we need to have a build step to compress everything in to one file
 
 none of the lua API have a removeComponent yet LOL
 
+should also have delete entity
+
 ## general editor enhancements
 
 when you have an entity selected, and are hovering like a component, you should actually see the bounds for stuff like collidesr without havinv to check the preview box for all of them
