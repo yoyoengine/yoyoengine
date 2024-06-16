@@ -203,9 +203,21 @@ void ye_register_lua_scripting_api(lua_State *state){
     */
     ye_lua_physics_register(state);
 
+    /*
+        LuaScript
+    */
+    ye_lua_lua_script_register(state);
+
     // check if component exists
     lua_register(state, "ye_lua_check_component_exists", ye_lua_check_component_exists);
 
     // check if renderer component type exists
     lua_register(state, "ye_lua_check_renderer_component_type_exists", ye_lua_check_renderer_component_type_exists);
+
+    // cross state function
+    lua_register(state, "ye_invoke_cross_state_function", ye_invoke_cross_state_function);
+
+    // cross state value
+    lua_register(state, "ye_write_cross_state_value", ye_write_cross_state_value);
+    lua_register(state, "ye_read_cross_state_value", ye_read_cross_state_value);
 }

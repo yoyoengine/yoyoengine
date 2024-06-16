@@ -53,7 +53,8 @@ bool ye_run_lua_callback(struct ye_component_lua_script *script, int callback_re
 
 #define LUA_END_ARGS -2
 
-int callLuaFunction(lua_State* L, const char* functionName, ...) {
+// TODO; this guy is almost useless now, idk, reexamine this
+int ye_invoke_lua_function(lua_State* L, const char* functionName, ...) {
     va_list args;
     int nargs = 0;
 
@@ -85,9 +86,114 @@ int callLuaFunction(lua_State* L, const char* functionName, ...) {
     return 0;
 }
 
+int ye_invoke_cross_state_function(lua_State* L) {
+    
+    struct ye_entity * target = lua_touserdata(L, 1);
+
+    // validate target exists
+    if(target == NULL) {
+        ye_logf(error, "Attempting to invoke cross-state function on NULL entity.\n");
+        return 0;
+    }
+
+    const char* functionName = lua_tostring(L, 2);
+    lua_State* targetState = target->lua_script->state;
+
+    // validate the target function exists
+    if(!lua_getglobal(targetState, functionName)) {
+        ye_logf(error, "Attempting to invoke cross-state function whose signature does not exist.\n");
+        return 0;
+    }
+
+    // Number of arguments to pass
+    int numArgs = lua_gettop(L) - 2;
+
+    // Transfer arguments from the source state to the target state
+    for (int i = 0; i < numArgs; i++) {
+        lua_pushvalue(L, 3 + i);          // Push argument from source state
+        lua_xmove(L, targetState, 1);     // Move it to the target state
+    }
+
+    // Call the function on the target state with numArgs arguments and capture return values
+    int numRetVals = 0; // Number of return values to expect, can be customized
+    if (lua_pcall(targetState, numArgs, LUA_MULTRET, 0) != LUA_OK) {
+        // Handle the error
+        const char* errorMsg = lua_tostring(targetState, -1);
+        ye_logf(error, "Error invoking cross-state function: %s\n", errorMsg);
+        lua_pop(targetState, 1); // Remove error message from the stack
+        return 0;
+    }
+
+    // Get the number of return values
+    numRetVals = lua_gettop(targetState);
+
+    // Move the return values back to the source state
+    for (int i = 0; i < numRetVals; i++) {
+        lua_pushvalue(targetState, -(numRetVals - i)); // Push return value to the target stack
+        lua_xmove(targetState, L, 1);                  // Move it to the source state
+    }
+
+    // Cleanup the target state stack
+    lua_pop(targetState, numRetVals);
+
+    // Return the number of return values to the source Lua state
+    return numRetVals;
+}
+
+int ye_read_cross_state_value(lua_State* L) {
+    struct ye_entity * target = lua_touserdata(L, 1);
+
+    // validate target exists
+    if(target == NULL) {
+        ye_logf(error, "Attempting to read cross-state value on NULL entity.\n");
+        return 0;
+    }
+
+    const char* valueName = lua_tostring(L, 2);
+    lua_State* targetState = target->lua_script->state;
+
+    // validate the target value exists
+    if(!lua_getglobal(targetState, valueName)) {
+        ye_logf(error, "Attempting to read cross-state value that does not exist.\n");
+        return 0;
+    }
+
+    // Transfer the value from the target state to the source state
+    lua_xmove(targetState, L, 1);
+
+    // Return the number of return values to the source Lua state
+    return 1;
+}
+
+int ye_write_cross_state_value(lua_State* L) {
+    // Retrieve the target entity from the first argument
+    struct ye_entity *target = lua_touserdata(L, 1);
+
+    // Validate target exists
+    if (target == NULL) {
+        ye_logf(error, "Attempting to write cross-state variable on NULL entity.\n");
+        return 0;
+    }
+
+    // Retrieve the variable name from the second argument
+    const char* varName = lua_tostring(L, 2);
+
+    // Get the target Lua state from the entity
+    lua_State* targetState = target->lua_script->state;
+
+    // Move the new value from the source state to the target state
+    lua_pushvalue(L, 3);
+    lua_xmove(L, targetState, 1);
+
+    // Set the global variable in the target state
+    lua_setglobal(targetState, varName);
+
+    return 0;
+}
+
 void ye_run_lua_on_mount(struct ye_component_lua_script *script) {
     if(script->has_on_mount) {
-        callLuaFunction(script->state, "onMount", LUA_END_ARGS);
+        ye_invoke_lua_function(script->state, "onMount", LUA_END_ARGS);
     }
 }
 
@@ -98,13 +204,13 @@ void ye_run_lua_on_unmount(struct ye_component_lua_script *script) {
     }
     
     if(script->has_on_unmount) {
-        callLuaFunction(script->state, "onUnmount", LUA_END_ARGS);
+        ye_invoke_lua_function(script->state, "onUnmount", LUA_END_ARGS);
     }
 }
 
 void ye_run_lua_on_update(struct ye_component_lua_script *script) {
     if(script->has_on_update) {
-        callLuaFunction(script->state, "onUpdate", LUA_END_ARGS);
+        ye_invoke_lua_function(script->state, "onUpdate", LUA_END_ARGS);
     }
 }
 

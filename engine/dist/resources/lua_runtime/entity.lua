@@ -29,6 +29,7 @@ local EntityMethods = {
     ["AddTagComponent"] = AddTagComponent,
     ["AddColliderComponent"] = AddColliderComponent,
     ["AddPhysicsComponent"] = AddPhysicsComponent,
+    ["AddLuaScriptComponent"] = AddLuaScriptComponent,
 }
 
 ---@class Entity
@@ -41,6 +42,7 @@ local EntityMethods = {
 ---@field Tag Tag
 ---@field Collider Collider
 ---@field Physics Physics
+---@field LuaScript LuaScript
 ---
 ---@field isActive boolean
 ---@field ID integer
@@ -92,6 +94,10 @@ Entity_mt = {
 
         if key == "Camera" then
             return wrapComponentAccess(_c_entity, 2, Camera_mt)
+        end
+
+        if key == "LuaScript" then
+            return wrapComponentAccess(_c_entity, 3, LuaScript_mt)
         end
 
         if key == "Button" then

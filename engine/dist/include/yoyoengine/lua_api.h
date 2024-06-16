@@ -72,4 +72,10 @@ void ye_run_lua_on_trigger_enter(struct ye_component_lua_script *script, struct 
 
 //////////////////////////////////////////////////////////////////////////////
 
+int ye_invoke_cross_state_function(lua_State* L);
+int ye_write_cross_state_value(lua_State* L);
+int ye_read_cross_state_value(lua_State* L);
+
+//////////////////////////////////////////////////////////////////////////////
+
 #endif

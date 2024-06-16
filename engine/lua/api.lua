@@ -470,6 +470,31 @@ function ye_lua_physics_modify(entity, isActive, xVelocity, yVelocity, rotationa
 
 
 
+-------------------
+-- LuaScript API --
+-------------------
+
+---**Create a new LuaScript component.**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param handle string The resource handle of the script to load
+function ye_lua_create_lua_script(entity, handle) end
+
+---**Modify a LuaScript component**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean isActive The active state
+---@return string scriptHandle The resource handle the script was loaded from
+function ye_lua_lua_script_modify(entity, isActive, scriptHandle) end
+
+---**Query a LuaScript component**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@return boolean isActive The active state
+---@return string scriptHandle The resource handle the script was loaded from
+function ye_lua_lua_script_query(entity) end
+
+
 
 ----------------
 -- Scene API  --
@@ -523,3 +548,25 @@ function ye_lua_check_component_exists(entity, comp_indx) end
 --- 4: tile
 ---@return boolean exists Whether the renderer component type exists or not
 function ye_lua_check_renderer_component_type_exists(entity, type_indx) end
+
+---**Invoke a function on another state
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param sig string The signature of the function to call
+---@vararg any Arguments to pass to the function
+---@return any The return value(s) of the function
+function ye_invoke_cross_state_function(entity, sig, ...) end
+
+---**Read a global value from another state**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param key string The key of the global value to read
+---@return any The value of the global
+function ye_read_cross_state_value(entity, key) end
+
+---**Write a global value to another state**
+---
+---@param entity lightuserdata The pointer to the C entity
+---@param key string The key of the global value to write
+---@param value any The value to write to the global
+function ye_write_cross_state_value(entity, key, value) end
