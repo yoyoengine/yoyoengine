@@ -730,6 +730,7 @@ we need actual ontriggerenter on triggerexit ontriggerstay
 
 - audio system
 - scene system
+- timer system (maybe custom lua coroutine system)
 - debug renderer system? optional
 - add debug flags state wrap?
 
@@ -750,3 +751,11 @@ some deeper runtime in game UI integration toolkit (maybe not even nuklear)
 input system abstraction (needed for brainrot brawl)
 
 we should traverse creating entire scene when loading before proceeding to call ONMOUNT for each script component
+
+easy save data system exposed to lua (some kinda json abstraction)
+
+test suite for lua api
+
+## yap sesh commence
+
+could try to optimize size of lua runtime, but its only 70kb rn so not a huge deal

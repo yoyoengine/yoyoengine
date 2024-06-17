@@ -23,7 +23,7 @@ fi
 
 # Run make to build the project
 echo "Running make..."
-make
+make -j4
 if [ $? -eq 0 ]
 then
     echo "make build succeeded."
