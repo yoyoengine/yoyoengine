@@ -60,6 +60,52 @@ int ye_lua_create_entity(lua_State *L) {
     return 1;
 }
 
+int ye_lua_get_entity_by_id(lua_State *L) {
+    int id = lua_tointeger(L, 1);
+    struct ye_entity *entity = ye_get_entity_by_id(id);
+
+    if(entity != NULL)
+        lua_pushlightuserdata(L, entity);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int ye_lua_get_entity_by_tag(lua_State *L) {
+    const char *tag = lua_tostring(L, 1);
+    struct ye_entity *entity = ye_get_entity_by_tag(tag);
+
+    if(entity != NULL)
+        lua_pushlightuserdata(L, entity);
+    else
+        lua_pushnil(L);
+    return 1;
+}
+
+int ye_lua_delete_entity(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+
+    if(entity == NULL) {
+        ye_logf(error, "could not delete entity: entity is null\n");
+        return 0;
+    }
+
+    ye_destroy_entity(entity);
+    return 0;
+}
+
+int ye_lua_duplicate_entity(lua_State *L) {
+    struct ye_entity *entity = lua_touserdata(L, 1);
+    struct ye_entity *new_entity = ye_duplicate_entity(entity);
+
+    if(new_entity != NULL)
+        lua_pushlightuserdata(L, new_entity);
+    else
+        lua_pushnil(L);
+
+    return 1;
+}
+
 ////////////
 
 
@@ -156,6 +202,8 @@ int ye_lua_ent_set_name(lua_State *L) {
 void ye_lua_entity_register(lua_State *L) {
     // init
     lua_register(L, "ye_lua_ent_get_entity_named", ye_lua_ent_get_entity_named);
+    lua_register(L, "ye_lua_ent_get_entity_by_id", ye_lua_get_entity_by_id);
+    lua_register(L, "ye_lua_ent_get_entity_by_tag", ye_lua_get_entity_by_tag);
     lua_register(L, "ye_lua_create_entity", ye_lua_create_entity);
 
     // active
@@ -168,4 +216,8 @@ void ye_lua_entity_register(lua_State *L) {
     // name
     lua_register(L, "ye_lua_ent_get_name", ye_lua_ent_get_name);
     lua_register(L, "ye_lua_ent_set_name", ye_lua_ent_set_name);
+
+    // misc
+    lua_register(L, "ye_lua_delete_entity", ye_lua_delete_entity);
+    lua_register(L, "ye_lua_duplicate_entity", ye_lua_duplicate_entity);
 }

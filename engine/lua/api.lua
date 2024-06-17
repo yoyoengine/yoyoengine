@@ -71,9 +71,24 @@ function ye_lua_ent_set_name(entity, name) end
 ---@return lightuserdata entity The pointer to the C entity
 function ye_lua_ent_get_entity_named(name) end
 
+---@param id integer The ID of the entity to get
+---@return lightuserdata entity The pointer to the C entity
+function ye_lua_ent_get_entity_by_id(id) end
+
+---@param tag string The tag to search for
+---@return lightuserdata entity The pointer to the C entity
+function ye_lua_ent_get_entity_by_tag(tag) end
+
 ---@param name? string (optional) The name of the entity to create
 ---@return lightuserdata entity The pointer to the C entity
 function ye_lua_create_entity(name) end
+
+---@param entity lightuserdata The pointer to the C entity
+function ye_lua_delete_entity(entity) end
+
+---@param entity lightuserdata The pointer to the C entity to duplicate
+---@return lightuserdata newEntity The pointer to the new entity created
+function ye_lua_duplicate_entity(entity) end
 
 
 

@@ -84,6 +84,15 @@ Entity_mt = {
             return _c_entity
         end
 
+        -- I have actually zero idea why these cannot go in EntityMethods,
+        -- but it literally will not work if you do that lmao
+        if key == "destroy" then
+            return DeleteEntity
+        end
+        if key == "duplicate" then
+            return DuplicateEntity
+        end
+
         if _c_entity == nil then
             log("error", "Entity field read on nil entity\n")
             return nil
@@ -212,6 +221,56 @@ function Entity:new(name)
     return entity
 end
 
+---**Get an entity by ID.**
+---
+---@param id integer The ID of the entity to get
+---@return Entity entity The lua entity object
+---If this function fails, you will get errors as well as an entity
+---object with a nil _c_entity pointer.
+---
+---example:
+---```lua
+---local player = Entity:getEntityByID(1)
+---```
+function Entity:getEntityByID(id)
+    -- create the entity itself
+    local entity = {}
+    setmetatable(entity, Entity_mt)
+
+    -- get the _c_entity pointer
+    rawset(entity, "_c_entity", ye_lua_ent_get_entity_by_id(id))
+    if entity._c_entity == nil then
+        log("error", "Entity:getEntityByID failed to find entity\n")
+    end
+
+    return entity
+end
+
+---**Get an entity by tag.**
+---
+---@param tag string The tag of the entity to get
+---@return Entity entity The lua entity object
+---If this function fails, you will get errors as well as an entity
+---object with a nil _c_entity pointer.
+---
+---example:
+---```lua
+---local player = Entity:getEntityByTag("PLAYER")
+---```
+function Entity:getEntityByTag(tag)
+    -- create the entity itself
+    local entity = {}
+    setmetatable(entity, Entity_mt)
+
+    -- get the _c_entity pointer
+    rawset(entity, "_c_entity", ye_lua_ent_get_entity_by_tag(tag))
+    if entity._c_entity == nil then
+        log("error", "Entity:getEntityByTag failed to find entity\n")
+    end
+
+    return entity
+end
+
 ---**Get a scene entity by name.**
 ---
 ---@param name string The name of the entity to get
@@ -237,8 +296,6 @@ function Entity:getEntityNamed(name)
         -- better chance of recovery
     end
 
-    -- TODO: YOU SHOULD AUTOMATICALLY GET COMPONENTS AND SUCH HERE
-
     return entity
 end
 
@@ -256,4 +313,29 @@ function Entity:addComponent(entity, cComponentCreationFunc, ...)
     
     -- create the component in the engine
     cComponentCreationFunc(_c_entity, ...)
+end
+
+---**Destroy the entity.**
+function Entity:destroy() end -- intellisense
+function DeleteEntity(self)
+    -- rawget the entity pointer (to avoid metatable)
+    local _c_entity = rawget(self, "_c_entity")
+    ye_lua_delete_entity(_c_entity)
+end
+
+---**Duplicate the entity2.**
+---
+---@return Entity entity The new copy of the entity
+function Entity:duplicate() end -- intellisense
+function DuplicateEntity(self)
+    -- create the entity itself
+    local entity = {}
+    setmetatable(entity, Entity_mt)
+
+    -- rawget the entity pointer (to avoid metatable)
+    local _c_entity = rawget(self, "_c_entity")
+    local new_c_ent = ye_lua_duplicate_entity(_c_entity)
+    rawset(entity, "_c_entity", new_c_ent)
+
+    return entity
 end

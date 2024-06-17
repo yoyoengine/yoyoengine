@@ -728,9 +728,6 @@ we need actual ontriggerenter on triggerexit ontriggerstay
 
 ## lua wrapper roadmap
 
-- add removecomponent calls
-- add entity delete
-- add get entity by id and tag
 - audio system
 - scene system
 - debug renderer system? optional
@@ -751,3 +748,5 @@ movie player component
 some deeper runtime in game UI integration toolkit (maybe not even nuklear)
 
 input system abstraction (needed for brainrot brawl)
+
+we should traverse creating entire scene when loading before proceeding to call ONMOUNT for each script component
