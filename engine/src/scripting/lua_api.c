@@ -63,11 +63,6 @@ int lua_log(lua_State* L){
     return 0;
 }
 
-int lua_load_scene(lua_State* L){ // TODO: totally not working
-    const char* scene = lua_tostring(L, 1);
-    ye_load_scene_deferred(scene);
-}
-
 int lua_debug_quit(lua_State* L){ // TODO: removeme
     exit(0);
     return 0;
@@ -190,7 +185,6 @@ int ye_lua_remove_component(lua_State* L){
 void ye_register_lua_scripting_api(lua_State *state){
     // scattered fns
     lua_register(state, "log", lua_log);
-    lua_register(state, "loadScene", lua_load_scene);
     // lua_register(state, "ye_debug_quit", lua_debug_quit);
 
     /*
@@ -258,4 +252,5 @@ void ye_register_lua_scripting_api(lua_State *state){
         Subsystems
     */
     ye_lua_audio_register(state);
+    ye_lua_scene_register(state);
 }

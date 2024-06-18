@@ -518,12 +518,7 @@ function ye_lua_lua_script_query(entity) end
 ---**Load a scene by handle**
 ---
 ---@param handle string The path to the scene to load relative to resources/
----@return nil
----example:
----```lua
----ye_load_scene("scenes/game.yoyo")
----```
-function loadScene(handle) end
+function ye_load_scene(handle) end
 
 
 
