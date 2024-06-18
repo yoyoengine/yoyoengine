@@ -1,4 +1,4 @@
-# This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+# This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
 # Copyright (C) 2024  Ryan Zmuda
 
 # This program is free software: you can redistribute it and/or modify
@@ -14,16 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-######################################################################################
-#                                      PREAMBLE                                      #
-######################################################################################
-# You would never believe how much time I've spent on this file. I hate cmake more   #
-# then I think I've ever hated anything in my entire life. It was supposed to be an  #
-# easy, simple, and elegant to build and link things together. It was supposed to be.#
-# This file might as well be held together by 1 ply toilet paper. If you are even    #
-# attempting to read this, or god forbid, are me in the future come back to wrestle  #
-# yet again with this god forsaken file, I am so extremely sorry. Good luck.         #
-######################################################################################
+
 
 ###############
 #    notes    #
@@ -287,6 +278,80 @@ add_custom_command(
     # COMMENT "Copying libraries to platform-specific directory"
     COMMENT "Creating platform-specific bin directory"
 )
+
+# WIP: ability to concat all lua files into one runtime file
+# maybe in the future we have this as a seperate target, its
+# hard to combine this as a pre-step since we have such a convoluted
+# build process (especially for individual games)
+
+# ###############
+# # lua runtime #
+# ###############
+
+# # output runtime file
+# set(LUA_RUNTIME_OUTPUT
+#     ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/ye_runtime.lua
+# )
+
+# # variable to hold runtime source file location
+# set(LUA_RUNTIME_SRC
+#     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
+# )
+
+# # all the files that make up the runtime
+# set(LUA_RUNTIME_FILES
+#     # ${LUA_RUNTIME_SRC}/api.lua
+#     ${LUA_RUNTIME_SRC}/runtime.lua
+#     ${LUA_RUNTIME_SRC}/subsystems/audio.lua
+#     ${LUA_RUNTIME_SRC}/subsystems/scene.lua
+#     ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
+#     ${LUA_RUNTIME_SRC}/ecs/button.lua
+#     ${LUA_RUNTIME_SRC}/ecs/camera.lua
+#     ${LUA_RUNTIME_SRC}/ecs/collider.lua
+#     ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
+#     ${LUA_RUNTIME_SRC}/ecs/physics.lua
+#     ${LUA_RUNTIME_SRC}/ecs/renderer.lua
+#     ${LUA_RUNTIME_SRC}/ecs/tag.lua
+#     ${LUA_RUNTIME_SRC}/ecs/transform.lua
+#     ${LUA_RUNTIME_SRC}/ecs/entity.lua
+# )
+
+# # Concatenate all the runtime source into one file
+
+# # Clear the output file first
+# add_custom_command(
+#     OUTPUT ${LUA_RUNTIME_OUTPUT}
+#     COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
+#     COMMENT "Clearing Lua runtime output file..."
+# )
+
+# # Concatenate each Lua file with a newline after each
+# foreach(LUA_FILE ${LUA_RUNTIME_FILES})
+#     add_custom_command(
+#         OUTPUT ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
+#         COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
+#         DEPENDS ${LUA_FILE}
+#         APPEND
+#         COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
+#     )
+# endforeach()
+
+# # Final step to touch the output file and print a message
+# add_custom_command(
+#     OUTPUT ${LUA_RUNTIME_OUTPUT}
+#     COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
+#     COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
+#     APPEND
+#     COMMENT "Finalizing Lua runtime concatenation..."
+# )
+
+# # make our engine depend on this command
+# add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
+
+# # make yoyoengine target depend on the runtime
+# add_dependencies(yoyoengine lua_runtime)
 
 ###############
 #  resources  #

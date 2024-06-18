@@ -128,17 +128,21 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
     const char *scripts[] = {
         // init
         "lua_runtime/runtime.lua",
-        // ECS/API
-        "lua_runtime/transform.lua",
-        "lua_runtime/camera.lua",
-        "lua_runtime/renderer.lua",
-        "lua_runtime/button.lua",
-        "lua_runtime/physics.lua",
-        "lua_runtime/collider.lua",
-        "lua_runtime/tag.lua",
-        "lua_runtime/audiosource.lua",
-        "lua_runtime/lua_script.lua",
-        "lua_runtime/entity.lua", // entity last because it depends on components
+        // ECS
+        "lua_runtime/ecs/transform.lua",
+        "lua_runtime/ecs/camera.lua",
+        "lua_runtime/ecs/renderer.lua",
+        "lua_runtime/ecs/button.lua",
+        "lua_runtime/ecs/physics.lua",
+        "lua_runtime/ecs/collider.lua",
+        "lua_runtime/ecs/tag.lua",
+        "lua_runtime/ecs/audiosource.lua",
+        "lua_runtime/ecs/lua_script.lua",
+        "lua_runtime/ecs/entity.lua", // entity last because it depends on components
+        // subsystems
+        "lua_runtime/subsystems/input.lua",
+        "lua_runtime/subsystems/audio.lua",
+        "lua_runtime/subsystems/scene.lua",
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
 
