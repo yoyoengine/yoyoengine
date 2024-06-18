@@ -253,4 +253,9 @@ void ye_register_lua_scripting_api(lua_State *state){
 
     // remove component
     lua_register(state, "ye_lua_remove_component", ye_lua_remove_component);
+
+    /*
+        Subsystems
+    */
+    ye_lua_audio_register(state);
 }

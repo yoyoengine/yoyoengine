@@ -759,3 +759,9 @@ test suite for lua api
 ## yap sesh commence
 
 could try to optimize size of lua runtime, but its only 70kb rn so not a huge deal
+
+## things needing done before 1.0
+
+lol the audio system doesnt actually replay looping for sounds, fix this when you do a new audiosource pass...
+
+- potential solution is the audiosource and audio sounds get putup in a channel lookup table with meta (like loops) decremented

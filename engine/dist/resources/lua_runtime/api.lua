@@ -528,6 +528,32 @@ function loadScene(handle) end
 
 
 ----------------
+-- Audio API  --
+----------------
+
+---**Plays a sound effect**
+---
+---@param handle string The resource handle
+---@param loops number The number of times to loop the sound
+---@param volume_scale number The volume scale
+function ye_audio_play_sound(handle, loops, volume_scale) end
+
+---**Plays a music track**
+---
+---@param handle string The resource handle
+---@param loops number The number of times to loop the music
+---@param volume_scale number The volume scale
+function ye_audio_play_music(handle, loops, volume_scale) end
+
+---**Set the volume of the audio system**
+---
+---@param volume_scale number The volume scale
+function ye_audio_set_volume(volume_scale) end
+
+
+
+
+----------------
 --    misc    --
 ----------------
 

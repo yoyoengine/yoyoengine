@@ -41,36 +41,38 @@ void ye_run_lua_on_update(struct ye_component_lua_script *script);
 //////////////////////////////////////////////////////////////////////////////
 
 /*
-    Entity
+    ECS LUA INTERFACES
 */
+
+// Entity
 void ye_lua_entity_register(lua_State *L);
 
-/*
-    Transform
-*/
+// Transform
 void ye_lua_transform_register(lua_State *L);
 
-/*
-    Camera
-*/
+// Camera
 void ye_lua_camera_register(lua_State *L);
 
-/*
-    Renderer
-*/
+// Renderer
 void ye_lua_renderer_register(lua_State *L);
 
-/*
-    Button
-*/
+// Button
 void ye_lua_button_register(lua_State *L);
 
 //////////////////////////////////////////////////////////////////////////////
+
+/*
+    Events dispatched from engine
+*/
 
 void ye_run_lua_on_collision(struct ye_component_lua_script *script, struct ye_entity *entity1, struct ye_entity *entity2);
 void ye_run_lua_on_trigger_enter(struct ye_component_lua_script *script, struct ye_entity *entity1, struct ye_entity *entity2);
 
 //////////////////////////////////////////////////////////////////////////////
+
+/*
+    Cross state manipulation
+*/
 
 int ye_invoke_cross_state_function(lua_State* L);
 int ye_write_cross_state_value(lua_State* L);
@@ -78,7 +80,19 @@ int ye_read_cross_state_value(lua_State* L);
 
 //////////////////////////////////////////////////////////////////////////////
 
+/*
+    Misc lua operations
+*/
+
 int ye_lua_remove_component(lua_State* L);
+
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+    Subsystems
+*/
+
+int ye_lua_audio_register(lua_State *L);
 
 //////////////////////////////////////////////////////////////////////////////
 
