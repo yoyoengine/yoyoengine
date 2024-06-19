@@ -284,74 +284,83 @@ add_custom_command(
 # hard to combine this as a pre-step since we have such a convoluted
 # build process (especially for individual games)
 
-# ###############
-# # lua runtime #
-# ###############
+###############
+# lua runtime #
+###############
 
-# # output runtime file
-# set(LUA_RUNTIME_OUTPUT
-#     ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/ye_runtime.lua
-# )
+# Expose the option to build the lua runtime, which the editor will enable.
+# The editor creates packs for the games based off of its own engine_resources folder,
+# so we will have it build the lua runtime there.
 
-# # variable to hold runtime source file location
-# set(LUA_RUNTIME_SRC
-#     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
-# )
+option(BUILD_LUA_RUNTIME "Build the Lua runtime" OFF)
 
-# # all the files that make up the runtime
-# set(LUA_RUNTIME_FILES
-#     # ${LUA_RUNTIME_SRC}/api.lua
-#     ${LUA_RUNTIME_SRC}/runtime.lua
-#     ${LUA_RUNTIME_SRC}/subsystems/audio.lua
-#     ${LUA_RUNTIME_SRC}/subsystems/scene.lua
-#     ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
-#     ${LUA_RUNTIME_SRC}/ecs/button.lua
-#     ${LUA_RUNTIME_SRC}/ecs/camera.lua
-#     ${LUA_RUNTIME_SRC}/ecs/collider.lua
-#     ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
-#     ${LUA_RUNTIME_SRC}/ecs/physics.lua
-#     ${LUA_RUNTIME_SRC}/ecs/renderer.lua
-#     ${LUA_RUNTIME_SRC}/ecs/tag.lua
-#     ${LUA_RUNTIME_SRC}/ecs/transform.lua
-#     ${LUA_RUNTIME_SRC}/ecs/entity.lua
-# )
+message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
+message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
-# # Concatenate all the runtime source into one file
+if(BUILD_LUA_RUNTIME)
+    
+    # where we will output the runtime
+    option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/ye_runtime.lua)
 
-# # Clear the output file first
-# add_custom_command(
-#     OUTPUT ${LUA_RUNTIME_OUTPUT}
-#     COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
-#     COMMENT "Clearing Lua runtime output file..."
-# )
+    # variable to hold runtime source file location
+    set(LUA_RUNTIME_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
+        # ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/lua_runtime
+    )
 
-# # Concatenate each Lua file with a newline after each
-# foreach(LUA_FILE ${LUA_RUNTIME_FILES})
-#     add_custom_command(
-#         OUTPUT ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
-#         COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
-#         DEPENDS ${LUA_FILE}
-#         APPEND
-#         COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
-#     )
-# endforeach()
+    # all the files that make up the runtime
+    set(LUA_RUNTIME_FILES
+        # ${LUA_RUNTIME_SRC}/api.lua
+        ${LUA_RUNTIME_SRC}/runtime.lua
+        ${LUA_RUNTIME_SRC}/subsystems/audio.lua
+        ${LUA_RUNTIME_SRC}/subsystems/scene.lua
+        ${LUA_RUNTIME_SRC}/subsystems/timer.lua
+        ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
+        ${LUA_RUNTIME_SRC}/ecs/button.lua
+        ${LUA_RUNTIME_SRC}/ecs/camera.lua
+        ${LUA_RUNTIME_SRC}/ecs/collider.lua
+        ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
+        ${LUA_RUNTIME_SRC}/ecs/physics.lua
+        ${LUA_RUNTIME_SRC}/ecs/renderer.lua
+        ${LUA_RUNTIME_SRC}/ecs/tag.lua
+        ${LUA_RUNTIME_SRC}/ecs/transform.lua
+        ${LUA_RUNTIME_SRC}/ecs/entity.lua
+    )
 
-# # Final step to touch the output file and print a message
-# add_custom_command(
-#     OUTPUT ${LUA_RUNTIME_OUTPUT}
-#     COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
-#     COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
-#     APPEND
-#     COMMENT "Finalizing Lua runtime concatenation..."
-# )
+    # Concatenate all the runtime source into one file
 
-# # make our engine depend on this command
-# add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
+    # Clear the output file first
+    add_custom_command(
+        OUTPUT ${LUA_RUNTIME_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
+        COMMENT "Clearing Lua runtime output file..."
+    )
 
-# # make yoyoengine target depend on the runtime
-# add_dependencies(yoyoengine lua_runtime)
+    # Concatenate each Lua file with a newline after each
+    foreach(LUA_FILE ${LUA_RUNTIME_FILES})
+    add_custom_command(
+        OUTPUT ${LUA_RUNTIME_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
+        COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
+        DEPENDS ${LUA_FILE}
+        APPEND
+        COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
+    )
+    endforeach()
+
+    # Final step to touch the output file and print a message
+    add_custom_command(
+        OUTPUT ${LUA_RUNTIME_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
+        APPEND
+        COMMENT "Finalizing Lua runtime concatenation..."
+    )
+
+    # make our engine depend on this command
+    add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
+endif()
 
 ###############
 #  resources  #

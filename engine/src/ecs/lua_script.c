@@ -126,24 +126,8 @@ void _cleanup_script_comp(struct ye_entity *target) {
 */
 bool _initialize_scripting_runtime(struct ye_entity *target) {
     const char *scripts[] = {
-        // init
-        "lua_runtime/runtime.lua",
-        // ECS
-        "lua_runtime/ecs/transform.lua",
-        "lua_runtime/ecs/camera.lua",
-        "lua_runtime/ecs/renderer.lua",
-        "lua_runtime/ecs/button.lua",
-        "lua_runtime/ecs/physics.lua",
-        "lua_runtime/ecs/collider.lua",
-        "lua_runtime/ecs/tag.lua",
-        "lua_runtime/ecs/audiosource.lua",
-        "lua_runtime/ecs/lua_script.lua",
-        "lua_runtime/ecs/entity.lua", // entity last because it depends on components
-        // subsystems
-        "lua_runtime/subsystems/input.lua",
-        "lua_runtime/subsystems/audio.lua",
-        "lua_runtime/subsystems/scene.lua",
-        "lua_runtime/subsystems/timer.lua",
+        // only one script now, since we build runtime file :)
+        "ye_runtime.lua",
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
 

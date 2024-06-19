@@ -7,6 +7,10 @@ set(YOYO_CMAKE_COPY_ENGINE_RESOURCES true CACHE BOOL "Copy the engine resources 
 
 set(YOYO_ENGINE_BUILD_RELEASE off CACHE BOOL "Build engine for editor in debug mode")
 
+# configure building the lua API
+set(BUILD_LUA_RUNTIME ON CACHE BOOL "Build the Lua runtime for the editor")
+set(LUA_RUNTIME_OUTPUT ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/engine_resources/ye_runtime.lua CACHE STRING "The output path for the Lua runtime")
+
 # Include the engine project and directories for headers
 add_subdirectory(../engine engine_build)
 
