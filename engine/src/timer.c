@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <SDL.h>
 #include <Nuklear/nuklear.h>
@@ -37,9 +38,10 @@ int timers_checked_this_frame = 0;
     that gives info on timer system
 */
 void ye_timer_overlay(struct nk_context *ctx){
-    char num_reg[20]; sprintf(num_reg, "registered_timers:%d",num_registered_timers);
-    char checked[20]; sprintf(checked, "checked this frame:%d",timers_checked_this_frame);
-    char cur_ticks[200]; sprintf(cur_ticks, "current_ticks:%d",SDL_GetTicks());
+    char num_reg[40];   snprintf(num_reg, 40, "registered_timers:%d", num_registered_timers);
+    char checked[40];   snprintf(checked, 40, "checked this frame:%d", timers_checked_this_frame);
+    char cur_ticks[40]; snprintf(cur_ticks, 40, "current_ticks:%d", SDL_GetTicks());
+
     if (nk_begin(ctx, "timer debug", nk_rect(10, 10, 220, 200),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
         nk_layout_row_dynamic(ctx, 25, 1);
@@ -71,6 +73,7 @@ void ye_unregister_timer(struct ye_timer * timer){
             else {
                 prev->next = node->next;
             }
+            // we dont free user data, they should do that
             free(node->timer);
             free(node);
             num_registered_timers--;
@@ -85,6 +88,8 @@ void ye_unregister_all_timers(){
     struct ye_timer_node * node = timers;
     while(node != NULL){
         struct ye_timer_node * next = node->next;
+
+        // we dont free user data, they should do that
         free(node->timer);
         free(node);
         node = next;
@@ -110,16 +115,16 @@ void ye_update_timers(){
         // printf("    loops remaining: %d:\n",node->timer->loops);
 
         struct ye_timer * timer = node->timer;
-        if(timer->start_ticks == -1){
+        if(timer->start_ticks <= 0){
             timer->start_ticks = SDL_GetTicks();
         }
         int ticks = SDL_GetTicks();
         if(ticks - timer->start_ticks >= timer->length_ms){
-            timer->callback();
+            timer->callback(timer);
             if(timer->loops == -1){
                 timer->start_ticks = SDL_GetTicks();
             }
-            else if(timer->loops > 0){
+            else if(timer->loops > 1){
                 timer->loops--;
                 timer->start_ticks = SDL_GetTicks();
             }

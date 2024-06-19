@@ -728,9 +728,6 @@ we need actual ontriggerenter on triggerexit ontriggerstay
 
 ## lua wrapper roadmap
 
-- audio system
-- scene system
-- timer system (maybe custom lua coroutine system)
 - debug renderer system? optional
 - add debug flags state wrap?
 
@@ -756,6 +753,8 @@ easy save data system exposed to lua (some kinda json abstraction)
 
 test suite for lua api
 
+its totally doable to add gloval param overrides into the editor ui for scripts, using our own existing mechanisms. Similar to unity or unreal object field inspector
+
 ## yap sesh commence
 
 could try to optimize size of lua runtime, but its only 70kb rn so not a huge deal
@@ -765,3 +764,7 @@ could try to optimize size of lua runtime, but its only 70kb rn so not a huge de
 lol the audio system doesnt actually replay looping for sounds, fix this when you do a new audiosource pass...
 
 - potential solution is the audiosource and audio sounds get putup in a channel lookup table with meta (like loops) decremented
+
+## NOTICE
+
+YOU HAVE TO COPY AND OVERWRITE THE LUA RUNTIME FILES IN THE EDITOR FOLDER TOMAKE SURE THE GAME BUILD GETS THE NEWEST VERSION EACH TIME

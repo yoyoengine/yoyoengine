@@ -547,6 +547,25 @@ function ye_audio_set_volume(volume_scale) end
 
 
 
+----------------
+-- Timer API  --
+----------------
+
+---**Creates a new engine timer**
+---
+---@param duration_ms number The duration of the timer in milliseconds
+---@param callback_fn function The function to call when the timer expires
+---@param loops number The number of times to loop the timer. 0 means loop forever
+---@param start_ticks number The number of ticks to wait before starting the timer
+---@vararg any Additional arguments to pass to the callback function when resolved
+function ye_lua_timer_create_timer(duration_ms, callback_fn, loops, start_ticks, ...) end
+
+---**Gets the engine SDL_ticks**
+---
+---@return number ticks The current ticks of the engine
+function ye_lua_timer_get_ticks() end
+
+
 
 ----------------
 --    misc    --

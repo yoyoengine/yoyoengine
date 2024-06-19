@@ -143,6 +143,7 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
         "lua_runtime/subsystems/input.lua",
         "lua_runtime/subsystems/audio.lua",
         "lua_runtime/subsystems/scene.lua",
+        "lua_runtime/subsystems/timer.lua",
     };
     const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
 

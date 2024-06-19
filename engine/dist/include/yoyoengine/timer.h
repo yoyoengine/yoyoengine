@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -31,12 +31,20 @@
  * 
  * Will be called back as many times as it loops (or infinitely if loops is -1)
  * after length_ms milliseconds have passed.
+ * 
+ * The callback function recieves a pointer to the timer,
+ * where you can access its custom data as needed.
+ * 
+ * Loops is the total number of times you want the timer to run, including the first execution.
+ * ie: loops of 5 means the timer runs once, and then repeats
+ * 4 more iterations.
 */
 struct ye_timer {
     int start_ticks;
     int loops;
     int length_ms;
-    void (*callback)();
+    void * data;
+    void (*callback)(struct ye_timer * timer);
 };
 
 /**
