@@ -600,81 +600,13 @@ wishlist:
 
 - need to close editor and re open for runtime.lua to sync,,,
 
-- WHEN C REPORTS A NUL VALUE YOU NEED TO PUSHNIL INSTEAD OF A VOID * AS USERDATA, BECAUSE A VOID * USERDATA IS NOT EQUAL TO NIL IN LUA, ITS A USERDATA POINTING TO NULL IN C
-
-- vararg lua log
-
-- potentially because of this abstraction we can hook transform components onto other entities references of them... that way we track entities together like groups
-  - probably not actually, thats only on the lua object, doesnt affect root ECS
-
-- its probably better to not create (did this for transform) a component for getter functions when one does not exist, since it is justifyable for transform but not much for others that done have sane defaults
-
-- remove _c_component references in lua?
-
-- dont have the facilities to remove any comps yet...
-  - or delete entitity
-
-- is there a way to split this into many files?
-
 ## new intro
 
 - fade in and out, mix the sound better to fit, redesign a lot
 
-## back to lua shit
-
-representing colors seems so fucking annoying. how many tables am i gonna fucking make
-
-- re-order a bunch of args in function calls, im kinda just doing a rough pass now, i expect everything small like this to get ironed out
-
-- should probably use rawset on entity in anticipation now rather than switch eveything later
-
-should split runtime into multiple files... this is not awesome to work with
-
-- could do nuklear thing where its split and assembles itself into one file at configuration time
-
-vararg for packing, add other directories (manage dup keys?)
-
-TOMORROW: do the animation render type and then
-work on splitting LUA API source, we can put it in its own pack if need be. that or vararg the engine pack, since it maybe makes sense to put it in there. (or another build step to place it in there but that would be cancer)
-
-also tomorrow clean up the API. I feel like there is a good amount of shitty code repetition that could be overcame, as well as we should fix the preemptive rawset stuff now on the entity table
-
 ## random
 
 i think editor is bundling its edicons into prod engine.yep's lol
-
-cleanup lua_script.c its so gross
-
-## todo when you read this
-
-go through existing lua api stuff and do some cleanup if possible
-
-start adding the rest of the components
-
-consider if we want oop abstraction for things like scene control. any advantage?
-
-## jdfglkjfdlgkjdflkg
-
-feels like the lua getter setter abstraction could be simplified even further, since we do a lot of the same operations as far as repeated code goes
-
-straggling "error calling function: attempt to call nil value" when exiting engine
-
-remaining api stuff
-
-- ECS components
-  - lua_script
-  - physics
-  - collider
-  - tag
-  - audiosource
-- Systems
-  - Audio
-  - Scene
-  - Debug Renderer
-  - (maybe) Underlying graphics/windowing
-  - (maybe) tricks
-
-impl type is cooked
 
 ## blah blah blah blah
 
@@ -683,14 +615,6 @@ impl type is cooked
 ye_run_console_command() api?
 
 we should make onMount run after all entities are created so we can use getters... will still cause problems for user scripts using getters on objects created on mount by other user scripts but thats kinda on them...
-
-## akjshgfdkjshd
-
-build step to make all the lua files into one concatenated minified runtime.lua? that way we move it into source tree and have build step depend on it... no more copying files
-
-we can have the root field of components do a C api bridge call to query if it exists, return nin | false if not, true if so.
-
-This way we dont track things that dont need tracked, since component classes are just taking in a reference to the parent entity anyways
 
 ## more luaalualaulalualua
 
@@ -707,16 +631,6 @@ look for simplifications and refactoring of interface to make easy moving forwar
 ## ajklhgdfskjhgkjdfgh
 
 we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
-
-## sjkldh kjsdfhgkjfdhg kjldglkj dfg
-
-we need to have a build step to compress everything in to one file
-
-## bruh
-
-none of the lua API have a removeComponent yet LOL
-
-should also have delete entity
 
 ## general editor enhancements
 
@@ -764,10 +678,6 @@ could try to optimize size of lua runtime, but its only 70kb rn so not a huge de
 lol the audio system doesnt actually replay looping for sounds, fix this when you do a new audiosource pass...
 
 - potential solution is the audiosource and audio sounds get putup in a channel lookup table with meta (like loops) decremented
-
-## NOTICE
-
-YOU HAVE TO COPY AND OVERWRITE THE LUA RUNTIME FILES IN THE EDITOR FOLDER TOMAKE SURE THE GAME BUILD GETS THE NEWEST VERSION EACH TIME
 
 ## blah yap yap
 

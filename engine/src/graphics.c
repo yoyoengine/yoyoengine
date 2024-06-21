@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -389,7 +389,7 @@ void ye_recompute_boxing(){
 
 void ye_init_graphics(){
     // test for video init, alarm if failed
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
         ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
         exit(1);
     }

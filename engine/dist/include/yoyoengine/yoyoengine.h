@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -36,6 +36,7 @@
     defined the header and lib paths correctly.
 */
 #include "engine.h"         // init and core
+#include "input.h"
 #include "yep.h"            // custom binary format parser/packer
 #include "json.h"           // jansson wrapper
 #include "graphics.h"

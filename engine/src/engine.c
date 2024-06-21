@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 
 #include <yoyoengine/ui.h>
 #include <yoyoengine/yep.h>
+#include <yoyoengine/input.h>
 #include <yoyoengine/scene.h>
 #include <yoyoengine/json.h>
 #include <yoyoengine/audio.h>
@@ -110,15 +111,8 @@ char * ye_path_resources(const char * path){
 
 /* ============== end new paths ============== */
 
-// event polled for per frame
-SDL_Event e;
-
 int last_frame_time = 0;
-bool console_visible = false;
 void ye_process_frame(){
-    // bool to track resize events
-    bool resized = false;
-
     // update time delta
     YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks64();
@@ -138,81 +132,16 @@ void ye_process_frame(){
     }
 
     int input_time = SDL_GetTicks64();
-    ui_begin_input_checks();
-    while (SDL_PollEvent(&e)) {
-        ui_handle_input(&e);
+    
+    /*
+        Let the input system handle the following:
+        - Send events to Nuklear
+        - Handle engine input events (terminal, resizing)
+        - Send callback to game C code
+        - Lookup events in mapping table and inform C and Lua
+    */
+    ye_system_input();
 
-        // if resize event, set resized to true
-        // if(e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED){
-        //     resized = true;
-        // }
-
-        // switch is prob faster here
-        switch(e.type){
-            // check for any reserved engine buttons (console, etc)
-            case SDL_KEYDOWN:
-                // if freecam is on (rare) TODO: allow changing of freecam scale
-                if(YE_STATE.editor.freecam_enabled){
-                    switch(e.key.keysym.sym){     
-                        case SDLK_LEFT:
-                            YE_STATE.engine.target_camera->transform->x -= 100.0;
-                            break;
-                        case SDLK_RIGHT:
-                            YE_STATE.engine.target_camera->transform->x += 100.0;
-                            break;
-                        case SDLK_UP:
-                            YE_STATE.engine.target_camera->transform->y -= 100.0;
-                            break;
-                        case SDLK_DOWN:
-                            YE_STATE.engine.target_camera->transform->y += 100.0;
-                            break;
-                    }
-                }
-
-                switch(e.key.keysym.sym){
-
-                    // console toggle //
-
-                    case SDLK_BACKQUOTE:
-                        if(console_visible){
-                            console_visible = false;
-                            remove_ui_component("console");
-                        }
-                        else{
-                            console_visible = true;
-                            ui_register_component("console",ye_paint_console);
-                        }
-                        break;
-                    //default:
-                    //    break;
-                }
-                break; // breaks out of keydown
-
-            // window events //
-            case SDL_WINDOWEVENT:
-                switch(e.window.event){
-                    case SDL_WINDOWEVENT_RESIZED:
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
-                        resized = true;
-                        break;
-                }
-                break;
-
-            //default:
-            //    break;
-        }
-
-        // poll for entity button events
-        if(!YE_STATE.editor.editor_mode){
-            ye_system_button(e);
-        }
-
-        // send event to callback specified by game (if needed)
-        if(YE_STATE.engine.callbacks.input_handler != NULL){
-            YE_STATE.engine.callbacks.input_handler(e);
-        }
-    }
-    ui_end_input_checks();
     YE_STATE.runtime.input_time = SDL_GetTicks64() - input_time;
 
 
@@ -222,24 +151,6 @@ void ye_process_frame(){
         ye_system_physics(); // TODO: decouple from framerate
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
-
-    // if we resized, update all the meta that we need so we can render a new clean frame
-    if(resized){
-        int width, height;
-        SDL_GetWindowSize(YE_STATE.runtime.window, &width, &height);
-        
-        // log the new size
-        ye_logf(debug, "Window resized to %d, %d.\n", width, height);
-
-        // update the engine state
-        YE_STATE.engine.screen_width = width;
-        YE_STATE.engine.screen_height = height;
-
-        // editor camera update handled in editor_input.c
-
-        // recompute pillar or letter boxing
-        ye_recompute_boxing();
-    }
 
     // if we are in runtime, run callbacks
     if(!YE_STATE.editor.editor_mode){
@@ -512,6 +423,9 @@ void ye_init_engine() {
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
     ye_log_init(YE_STATE.engine.log_file_path);
+
+    // init the input system (and all controllers)
+    ye_init_input();
 
     if(YE_STATE.editor.editor_mode){
         ye_logf(info, "Detected editor mode.\n");
