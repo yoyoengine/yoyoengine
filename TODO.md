@@ -48,8 +48,6 @@ need some generic dialog popups as global state. functions can call like "input 
 - changing Z in editor only changes the value, it does not re sort the list.
   TODO: impl re sorting the list on z value change
 
-- TODO: actual duplicate button in editor
-
 - all #defines we should add a #ifndef before defining them so they can technically be set by user if they want to
 
 - CCD substepping should be calculated based on the framecap
@@ -439,8 +437,6 @@ DO NOT USE THE SCENE FILE CREATOR ITS TOTALLY BUGGED AND WILL WIPE YOUR SHIT
 
 easy way for registering lua from C. like a fn quit built in
 
-scene loading is cooked up somehow. trying to call through lua does not work because it attempts to call back into a nonexistant state (I think)
-
 logging should be totally disabled to file unless we are in debug mode, also shouldnt log things we dont need to in release
 
 add icons through cmake. make this go hand in hand with the current impl which is scuffy at best. we really only care about these icons on windows to lend credibility.
@@ -535,10 +531,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - save build additional c flags per platform, so switching to windows will stash previous ones and restore them correctly when target changed
 - maybe build.yoyo and settings.yoyo should merge into one settings.yoyo, feels weird that they are seperate
 
-## remaining large missing features
-
-- lua scripting API full
-
 ## other features from acerola jam that would be cool
 
 - color tint controller
@@ -547,7 +539,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - rounded colliders will be super important. probably also custom mesh colliders (could have made whole map out of one wall collider)
 - utility function to pin entities onto others to track
 - function to get transform locations but from the center of their renderer or collider or other utilities
-- ye_debug_line to register at some point during frame before render to draw a line from two points
 - allow setting rotation point through clicking world space in editor and converting that to relative to entity renderer
 - easier timer constructor, they are more common than anticipated
 - case insensitivity in search bar
@@ -570,11 +561,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - colliders are mega scuff, if more than one is touching things get weiiirdd
 - adding intro seemed to cause inconsistant loading into entry scene
 
-## things that might need done during acerola jam
-
-- trigger colliders
-  - trigger stay and trigger exit can come at a later date
-
 ## im back
 
 current
@@ -585,11 +571,6 @@ wishlist:
 
 - cpmake for caching downloads of deps
 - it is possible to detect unsaved for changes in internal variables, save before we let nuklear handle input and check against original
-
-## ignoring above: here is for tomorrow
-
-- detect items in selection and drags to place into selection collection
-- maybe shift is to select, where some other bind is to move things around with mouse? i j k l?
 
 ## stuff
 
@@ -669,6 +650,8 @@ test suite for lua api
 
 its totally doable to add gloval param overrides into the editor ui for scripts, using our own existing mechanisms. Similar to unity or unreal object field inspector
 
+aseprite deep compatibility (super easy workflow, custom imports drag and drop)
+
 ## yap sesh commence
 
 could try to optimize size of lua runtime, but its only 70kb rn so not a huge deal
@@ -682,3 +665,5 @@ lol the audio system doesnt actually replay looping for sounds, fix this when yo
 ## blah yap yap
 
 FIX THE REALLY LONG STANDING BUG WHERE YOU HAVE TO RECONFIGURE TO REFLECT CHANGES IN YEP
+
+editor heiarchy should paint bounds for components if the components tab is open by default

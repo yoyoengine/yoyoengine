@@ -46,8 +46,6 @@ SDL_Renderer *pRenderer = NULL;
 */
 SDL_Texture *missing_texture = NULL;
 
-// TODO: move most of engine runtime state into struct engine_data engine_state
-
 TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
     /*
         if(fontSize > 500){
@@ -225,9 +223,6 @@ int desired_frame_time = 0;
 int fpsUpdateTime = 0;
 int fps = 0;
 
-/*
-    TODO: Viewports are a blessing and should actually be used for dynamic screen sizing.
-*/
 void ye_render_all() {
     int frameStart = SDL_GetTicks();
 

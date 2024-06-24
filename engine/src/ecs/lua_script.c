@@ -226,7 +226,6 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
             return false;
         }
 
-        // TODO: good? or bad?
         free(script_data);
 
         /*

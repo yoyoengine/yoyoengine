@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -204,9 +204,6 @@ void ye_rename_entity(struct ye_entity *entity, char *new_name){
     strcpy(entity->name, new_name);
 }
 
-/*
-    TODO: JUST FYI THIS FUNCTION TOTALLY DOES NOT WORK AT ALL RIGHT NOW
-*/
 struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     // create a new entity named "(old name) (copy)"
     char *suffix = " copy";
@@ -437,7 +434,7 @@ void ye_shutdown_ecs(){
     YE_STATE.engine.target_camera = NULL;
     YE_STATE.editor.scene_default_camera = NULL;
 
-    eid = 0; // TODO: is this a good choice?
+    eid = 0;
 
     ye_logf(info, "Shut down ECS\n");
 }

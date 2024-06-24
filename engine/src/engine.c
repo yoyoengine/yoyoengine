@@ -392,7 +392,6 @@ void ye_init_engine() {
     // ----------------- Begin Setup -------------------
 
     // initialize graphics systems, creating window renderer, etc
-    // TODO: should this just take in engine state struct? would make things a lot easier tbh
     ye_init_graphics();
 
     // init timers
