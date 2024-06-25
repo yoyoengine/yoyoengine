@@ -95,6 +95,7 @@ int ye_lua_remove_component(lua_State* L);
 int ye_lua_audio_register(lua_State *L);
 int ye_lua_scene_register(lua_State *L);
 int ye_lua_timer_register(lua_State *L);
+int ye_lua_input_register(lua_State *L);
 
 //////////////////////////////////////////////////////////////////////////////
 

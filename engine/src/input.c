@@ -33,33 +33,20 @@
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/transform.h>
 
-/*
-    Arbitrary number for now. sue me :)
-*/
-#define YE_MAX_CONTROLLERS 4
-
-// struct ye_input_bind {
-//     Uint32 bind;
-// };
-
-// struct ye_input_bindings {
-// };
-
-SDL_GameController *controllers[YE_MAX_CONTROLLERS];
 void ye_init_input(){
     // if we are in editor mode, dont bother with controllers
     if(!YE_STATE.editor.editor_mode){
-        int num_controllers = 0;
+        YE_STATE.runtime.num_controllers = 0;
         for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
             if(SDL_IsGameController(i)){
-                controllers[i] = SDL_GameControllerOpen(i);
-                if(controllers[i] != NULL){
-                    num_controllers++;
-                    ye_logf(info, "Detected GameController %d: %s\n", i, SDL_GameControllerName(controllers[i]));
+                YE_STATE.runtime.controllers[i] = SDL_GameControllerOpen(i);
+                if(YE_STATE.runtime.controllers[i] != NULL){
+                    YE_STATE.runtime.num_controllers++;
+                    ye_logf(info, "Detected GameController %d: %s\n", i, SDL_GameControllerName(YE_STATE.runtime.controllers[i]));
                 }
             }
         }
-        ye_logf(info, "Detected %d controller(s).\n", num_controllers);
+        ye_logf(info, "Detected %d controller(s).\n", YE_STATE.runtime.num_controllers);
     }
     ye_logf(info, "Initialized Input Subsystem.\n");
 }
@@ -149,9 +136,9 @@ void ye_system_input() {
         }
 
         /*
-            Lookup this event in our mappings, and if its mapped to a binding let Lua and C know
+            Currently lua polls inputs through its own medium (direct query as needed),
+            so we don't need to do more here, unless we wanted to add a keybind layer later.
         */
-        // TODO
     }
 
     // end nuklear input feeding

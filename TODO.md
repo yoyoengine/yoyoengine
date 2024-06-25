@@ -667,3 +667,19 @@ lol the audio system doesnt actually replay looping for sounds, fix this when yo
 FIX THE REALLY LONG STANDING BUG WHERE YOU HAVE TO RECONFIGURE TO REFLECT CHANGES IN YEP
 
 editor heiarchy should paint bounds for components if the components tab is open by default
+
+## optimization and code qual
+
+dare i say, we could probably rewrite most of the lua api to implement the table returns in C
+
+## examples
+
+we need to make a bunch of examples to use yoyoengine before 1.0
+
+here are some ideas:
+
+- on screen keyboard visualizer, press keys and see them show up on screen (helps validate input system)
+
+## todo tomorrow afta work
+
+controller table to query controller state similar to mouse

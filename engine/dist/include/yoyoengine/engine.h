@@ -226,6 +226,8 @@ struct ye_editor_config {
     struct ye_entity *scene_default_camera;
 };
 
+#define YE_MAX_CONTROLLERS 4
+
 /**
  * @brief The struct that defines the runtime data of the engine.
  */
@@ -252,6 +254,12 @@ struct ye_runtime_data {
 
     int error_count;            // tracks the number of error level logs that have occurred
     int warning_count;          // same but for warnings
+
+    /*
+        Meta on opened controllers
+    */
+    SDL_GameController *controllers[YE_MAX_CONTROLLERS];
+    int num_controllers;
 
     /*
         References to the current SDL window and renderer

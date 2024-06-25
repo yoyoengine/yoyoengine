@@ -565,6 +565,28 @@ function ye_lua_timer_create_timer(duration_ms, callback_fn, loops, start_ticks,
 ---@return number ticks The current ticks of the engine
 function ye_lua_timer_get_ticks() end
 
+----------------
+-- Input API  --
+----------------
+
+---**Retrieves the state of the mouse**
+---
+---@return any mouse_state The state of the mouse (table)
+function ye_lua_input_query_mouse() end
+
+---**Retrieves the state of a key**
+---
+---@param isKeycode boolean Whether the key is a keycode or not (false = scancode)
+---@param code number The code of the key to query
+---@return boolean state The state of the key
+function ye_lua_input_query_key(isKeycode, code) end
+
+---**Retrieves the state of a mod**
+---
+---@param mod number The mod to query
+---@return boolean state The state of the mod
+function ye_lua_input_query_mod(mod) end
+
 
 
 ----------------

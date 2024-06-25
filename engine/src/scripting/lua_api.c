@@ -254,4 +254,5 @@ void ye_register_lua_scripting_api(lua_State *state){
     ye_lua_audio_register(state);
     ye_lua_scene_register(state);
     ye_lua_timer_register(state);
+    ye_lua_input_register(state);
 }

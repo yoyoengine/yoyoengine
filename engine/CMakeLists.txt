@@ -312,8 +312,10 @@ if(BUILD_LUA_RUNTIME)
     set(LUA_RUNTIME_FILES
         # ${LUA_RUNTIME_SRC}/api.lua
         ${LUA_RUNTIME_SRC}/runtime.lua
+        ${LUA_RUNTIME_SRC}/definitions/input_codes.lua
         ${LUA_RUNTIME_SRC}/subsystems/audio.lua
         ${LUA_RUNTIME_SRC}/subsystems/scene.lua
+        ${LUA_RUNTIME_SRC}/subsystems/input.lua
         ${LUA_RUNTIME_SRC}/subsystems/timer.lua
         ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
         ${LUA_RUNTIME_SRC}/ecs/button.lua
