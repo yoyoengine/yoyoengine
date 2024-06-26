@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -159,15 +159,25 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
 SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type);
 
 /**
+ * Draws a "thick point" (a filled square) centered on the given coordinates.
+ * 
+ * @param renderer The SDL_Renderer to use for drawing.
+ * @param x The x-coordinate of the center of the thick point.
+ * @param y The y-coordinate of the center of the thick point.
+ * @param thickness The side length of the square, which determines the "thickness" of the point.
+ */
+void ye_draw_thick_point(SDL_Renderer *renderer, int x, int y, int thickness);
+
+/**
  * @brief Draws a circle using SDL_RenderDrawPoint.
  * 
  * @param renderer The renderer to draw the circle on.
  * @param center_x The x position of the center of the circle.
  * @param center_y The y position of the center of the circle.
  * @param radius The radius of the circle.
+ * @param thickness The thickness of the circle.
  */
-void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius);
-
+void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius, int thickness);
 
 /**
  * @brief Returns the world coordinates of a click on the window.

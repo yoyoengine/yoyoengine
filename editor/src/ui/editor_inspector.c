@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -403,6 +403,9 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                 editor_unsaved();
             }
 
+            struct SDL_Rect bounds = ye_get_position_rect(ent, YE_COMPONENT_RENDERER);
+            ye_debug_render_rect(bounds.x, bounds.y, bounds.w, bounds.h, (SDL_Color){0, 255, 0, 128}, 8);
+
             nk_tree_pop(ctx);
         }
     }
@@ -509,7 +512,7 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
             nk_property_int(ctx, "#h", -1000000, &ent->camera->view_field.h, 1000000, 1, 5);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_property_int(ctx, "#z", -1000000, &ent->camera->z, 1000000, 1, 5);
-            
+
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
@@ -517,6 +520,9 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
                 editor_unsaved();
             }
             
+            SDL_Rect bounds = ye_get_position_rect(ent, YE_COMPONENT_CAMERA);
+            ye_debug_render_rect(bounds.x, bounds.y, bounds.w, bounds.h, (SDL_Color){0, 255, 0, 128}, 8);
+
             nk_tree_pop(ctx);
         }
     }
@@ -554,6 +560,9 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
                 editor_unsaved();
             }
             
+            SDL_Rect bounds = ye_get_position_rect(ent, YE_COMPONENT_COLLIDER);
+            ye_debug_render_rect(bounds.x, bounds.y, bounds.w, bounds.h, (SDL_Color){0, 255, 0, 128}, 8);
+
             nk_tree_pop(ctx);
         }
     }
@@ -771,6 +780,9 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
                 editor_unsaved();
             }
             
+            SDL_Rect circ = ye_get_position_rect(ent, YE_COMPONENT_AUDIOSOURCE);
+            ye_debug_render_circle(circ.x + (circ.w / 2), circ.y + (circ.h / 2), circ.w / 2, (SDL_Color){0, 255, 0, 128}, 8);
+
             nk_tree_pop(ctx);
         }
     }
@@ -806,6 +818,9 @@ void _paint_button(struct nk_context *ctx, struct ye_entity *ent){
                 ye_remove_button_component(ent);
                 editor_unsaved();
             }
+
+            SDL_Rect bounds = ye_get_position_rect(ent, YE_COMPONENT_BUTTON);
+            ye_debug_render_rect(bounds.x, bounds.y, bounds.w, bounds.h, (SDL_Color){0, 255, 0, 128}, 8);
             
             nk_tree_pop(ctx);
         }

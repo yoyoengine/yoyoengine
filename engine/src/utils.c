@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -265,10 +265,22 @@ SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type t
     return rect;
 }
 
+void ye_draw_thick_point(SDL_Renderer* renderer, int x, int y, int thickness) {
+    int half_thickness = thickness / 2;
+    SDL_Rect rect = {
+        x - half_thickness,
+        y - half_thickness,
+        thickness,
+        thickness
+    };
+
+    SDL_RenderFillRect(renderer, &rect);
+}
+
 /*
     credit: https://stackoverflow.com/questions/38334081/how-to-draw-circles-arcs-and-vector-graphics-in-sdl
 */
-void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius)
+void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius, int thickness)
 {
     const int32_t diameter = (radius * 2);
 
@@ -281,14 +293,14 @@ void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y,
     while (x >= y)
     {
         //  Each of the following renders an octant of the circle
-        SDL_RenderDrawPoint(renderer, center_x + x, center_y - y);
-        SDL_RenderDrawPoint(renderer, center_x + x, center_y + y);
-        SDL_RenderDrawPoint(renderer, center_x - x, center_y - y);
-        SDL_RenderDrawPoint(renderer, center_x - x, center_y + y);
-        SDL_RenderDrawPoint(renderer, center_x + y, center_y - x);
-        SDL_RenderDrawPoint(renderer, center_x + y, center_y + x);
-        SDL_RenderDrawPoint(renderer, center_x - y, center_y - x);
-        SDL_RenderDrawPoint(renderer, center_x - y, center_y + x);
+        ye_draw_thick_point(renderer, center_x + x, center_y - y, thickness);
+        ye_draw_thick_point(renderer, center_x + x, center_y + y, thickness);
+        ye_draw_thick_point(renderer, center_x - x, center_y - y, thickness);
+        ye_draw_thick_point(renderer, center_x - x, center_y + y, thickness);
+        ye_draw_thick_point(renderer, center_x + y, center_y - x, thickness);
+        ye_draw_thick_point(renderer, center_x + y, center_y + x, thickness);
+        ye_draw_thick_point(renderer, center_x - y, center_y - x, thickness);
+        ye_draw_thick_point(renderer, center_x - y, center_y + x, thickness);
 
         if (error <= 0)
         {
@@ -390,12 +402,15 @@ bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, fl
 }
 
 void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color){
+    // get half the thickness of the line, to calculate the adjusted draw positions
+    float half_thickness = thickness / 2.0f;
+    
     // draw top
-    ye_draw_thick_line(renderer, x, y, x + w, y, thickness, color);
+    ye_draw_thick_line(renderer, x - half_thickness, y, x + w + half_thickness, y, thickness, color);
     // draw right
-    ye_draw_thick_line(renderer, x + w, y, x + w, y + h, thickness, color);
+    ye_draw_thick_line(renderer, x + w, y - half_thickness, x + w, y + h + half_thickness, thickness, color);
     // draw bottom
-    ye_draw_thick_line(renderer, x, y + h, x + w, y + h, thickness, color);
+    ye_draw_thick_line(renderer, x - half_thickness, y + h, x + w + half_thickness, y + h, thickness, color);
     // draw left
-    ye_draw_thick_line(renderer, x, y, x, y + h, thickness, color);
+    ye_draw_thick_line(renderer, x, y - half_thickness, x, y + h + half_thickness, thickness, color);
 }

@@ -51,6 +51,7 @@ struct ye_debug_render_immediate_node {
             int radius;
         } circle;
     } data;
+    int width;
     struct ye_debug_render_immediate_node * next;
 };
 
@@ -73,8 +74,9 @@ struct ye_additional_render_callback_node {
  * @param x2 The x coordinate of the end of the line
  * @param y2 The y coordinate of the end of the line
  * @param color The color of the line
+ * @param width The width of the line
 */
-void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color);
+void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a rectangle at (x, y) with width w and height h with the specified color
@@ -84,8 +86,9 @@ void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color);
  * @param w The width of the rectangle
  * @param h The height of the rectangle
  * @param color The color of the rectangle
+ * @param width The width of the line
 */
-void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color);
+void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a circle at (x, y) with the specified radius and color
@@ -94,8 +97,9 @@ void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color);
  * @param y The y coordinate of the center of the circle
  * @param radius The radius of the circle
  * @param color The color of the circle
+ * @param width The width of the line
 */
-void ye_debug_render_circle(int x, int y, int radius, SDL_Color color);
+void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a point at (x, y) with the specified color
@@ -103,8 +107,9 @@ void ye_debug_render_circle(int x, int y, int radius, SDL_Color color);
  * @param x The x coordinate of the point
  * @param y The y coordinate of the point
  * @param color The color of the point
+ * @param width The width of the line
 */
-void ye_debug_render_point(int x, int y, SDL_Color color);
+void ye_debug_render_point(int x, int y, SDL_Color color, int width);
 
 /*
     additional render callback API

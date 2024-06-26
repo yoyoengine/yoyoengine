@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -626,16 +626,16 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             }
             if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) {
                 #ifdef _WIN32
-                    system("start https://yoyolick.github.io/yoyoengine") 
+                    system("start https://zoogies.github.io/yoyoengine") 
                 #else
-                    system("xdg-open https://yoyolick.github.io/yoyoengine");
+                    system("xdg-open https://zoogies.github.io/yoyoengine");
                 #endif
             }
             if (nk_menu_item_label(ctx, "Source Code", NK_TEXT_LEFT)) {
                 #ifdef _WIN32
-                    system("start https://github.com/yoyolick/yoyoengine") 
+                    system("start https://github.com/zoogies/yoyoengine") 
                 #else
-                    system("xdg-open https://github.com/yoyolick/yoyoengine");
+                    system("xdg-open https://github.com/zoogies/yoyoengine");
                 #endif
             }
             if(nk_menu_item_label(ctx, "Credits", NK_TEXT_LEFT)) {

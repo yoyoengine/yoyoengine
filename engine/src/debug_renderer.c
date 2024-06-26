@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -26,43 +26,51 @@ struct ye_additional_render_callback_node * additional_render_head = NULL;
 struct ye_debug_render_immediate_node * immediate_render_head = NULL;
 
 /*
+    TODO: malloc every frame is not ideal, but it's fine for now. Probably not even worth optimizing.
+*/
+
+/*
     immediate API
 */
 
-void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color){
+void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color, int width){
     struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
     new_node->type = YE_DEBUG_RENDER_LINE;
     new_node->color = color;
     new_node->data.line.start = (SDL_Point){x1, y1};
     new_node->data.line.end = (SDL_Point){x2, y2};
+    new_node->width = width;
     new_node->next = immediate_render_head;
     immediate_render_head = new_node;
 }
 
-void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color){
+void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width){
     struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
     new_node->type = YE_DEBUG_RENDER_RECT;
     new_node->color = color;
     new_node->data.rect = (SDL_Rect){x, y, w, h};
+    new_node->width = width;
     new_node->next = immediate_render_head;
     immediate_render_head = new_node;
 }
 
-void ye_debug_render_circle(int x, int y, int radius, SDL_Color color){
+void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width){
     struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
     new_node->type = YE_DEBUG_RENDER_CIRCLE;
     new_node->color = color;
     new_node->data.circle.center = (SDL_Point){x, y};
     new_node->data.circle.radius = radius;
+    new_node->width = width;
     new_node->next = immediate_render_head;
     immediate_render_head = new_node;
 }
 
-void ye_debug_render_point(int x, int y, SDL_Color color){
+void ye_debug_render_point(int x, int y, SDL_Color color, int width){
     struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
     new_node->type = YE_DEBUG_RENDER_POINT;
     new_node->color = color;
     new_node->data.point = (SDL_Point){x, y};
+    new_node->width = width;
     new_node->next = immediate_render_head;
     immediate_render_head = new_node;
 }
@@ -100,22 +108,21 @@ void ye_debug_renderer_render(){
         switch (itr->type) {
             case YE_DEBUG_RENDER_LINE:
                 // SDL_RenderDrawLine(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y);
-                ye_draw_thick_line(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y, 10, itr->color);
+                ye_draw_thick_line(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y, itr->width, itr->color);
                 break;
             case YE_DEBUG_RENDER_RECT:
                 SDL_Rect rect = itr->data.rect;
                 rect.x -= camera_rect.x;
                 rect.y -= camera_rect.y;
                 // SDL_RenderDrawRect(renderer, &rect);
-                ye_draw_thick_rect(renderer, rect.x, rect.y, rect.w, rect.h, 10, itr->color);
+                ye_draw_thick_rect(renderer, rect.x, rect.y, rect.w, rect.h, itr->width, itr->color);
                 break;
             case YE_DEBUG_RENDER_CIRCLE:
-                ye_draw_circle(renderer, itr->data.circle.center.x - camera_rect.x, itr->data.circle.center.y - camera_rect.y, itr->data.circle.radius);
+                ye_draw_circle(renderer, itr->data.circle.center.x - camera_rect.x, itr->data.circle.center.y - camera_rect.y, itr->data.circle.radius, itr->width);
                 break;
             case YE_DEBUG_RENDER_POINT:
-                // for points, we draw a 10x10 pixel rect filled in
-                SDL_Rect center_rect = {itr->data.point.x - 5 - camera_rect.x, itr->data.point.y - 5 - camera_rect.y, 10, 10};
-                SDL_RenderFillRect(renderer, &center_rect);
+                // for points, we draw a pixel rect filled in
+                ye_draw_thick_point(renderer, itr->data.point.x - camera_rect.x, itr->data.point.y - camera_rect.y, itr->width);
                 break;
             default:
                 break;

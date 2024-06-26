@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -722,7 +722,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
                         // use ye_draw_circle to draw the audio range, the width is the radius
-                        ye_draw_circle(renderer, audio_range_rect.x + (audio_range_rect.w / 2), audio_range_rect.y + (audio_range_rect.h / 2), audio_range_rect.w / 2);
+                        ye_draw_circle(renderer, audio_range_rect.x + (audio_range_rect.w / 2), audio_range_rect.y + (audio_range_rect.h / 2), audio_range_rect.w / 2, 5);
 
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                     }

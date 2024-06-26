@@ -682,3 +682,16 @@ here are some ideas:
 
 - we could add touchpad support (why)
 - do not handle deadzone, thats for the game to do bruh
+
+## finishing engine
+
+I'm planning to do a bunch of small tweaks to bring QOL I couldn't do before
+
+- Small tolerance when beginning editor selection drag
+- re-evaluate all the debug paint toggles?
+- ram, cpu usage, vram usage in metrics panel
+- erase the muscle memory problem of constantly repacking and reconfiguring
+  - really dig deep, we should not have to reconfigure.
+  - for repacking just auto repack when changes detected, you already have timestamp infrastructure
+- tricks update detection git, also just streamline that whole thing. pretty sure the code is dogshit
+- scene info note and beautification (should make most editor panels not look like trash)

@@ -97,7 +97,7 @@ void editor_selection_handler(SDL_Event event){
     my = ((my / scaleY) + campos.y);
 
     if(is_dragging){
-        ye_debug_render_rect(drag_start.x , drag_start.y, mx - drag_start.x, my - drag_start.y, (SDL_Color){255, 0, 0, 255});
+        ye_debug_render_rect(drag_start.x , drag_start.y, mx - drag_start.x, my - drag_start.y, (SDL_Color){255, 0, 0, 255}, 8);
     }
     
     // ye_get_mouse_world_position(&mx, &my);
@@ -212,23 +212,23 @@ void editor_render_selection_rects(){
 
         if(ye_component_exists(ent, YE_COMPONENT_RENDERER)){
             struct ye_rectf pos = ye_get_position(ent, YE_COMPONENT_RENDERER);
-            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color);
+            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color, 8);
         }
         else if(ye_component_exists(ent, YE_COMPONENT_COLLIDER)){
             struct ye_rectf pos = ye_get_position(ent, YE_COMPONENT_COLLIDER);
-            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color);
+            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color, 8);
         }
         else if(ye_component_exists(ent, YE_COMPONENT_AUDIOSOURCE)){
             struct ye_rectf pos = ye_get_position(ent, YE_COMPONENT_AUDIOSOURCE);
-            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color);
+            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color, 8);
         }
         else if(ye_component_exists(ent, YE_COMPONENT_CAMERA)){
             struct ye_rectf pos = ye_get_position(ent, YE_COMPONENT_CAMERA);
-            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color);
+            ye_debug_render_rect(pos.x, pos.y, pos.w, pos.h, select_color, 8);
         }
         else if(ye_component_exists(ent, YE_COMPONENT_TRANSFORM)){
             struct ye_rectf pos = ye_get_position(ent, YE_COMPONENT_TRANSFORM);
-            ye_debug_render_rect(pos.x - 5, pos.y - 5, 10, 10, select_color);
+            ye_debug_render_rect(pos.x - 5, pos.y - 5, 10, 10, select_color, 8);
         }
 
         itr = itr->next;
