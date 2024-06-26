@@ -90,3 +90,14 @@ end
 function Input:controller(controllerNum)
     return ye_lua_input_query_controller(controllerNum)
 end
+
+---**Get the number of connected controllers**
+---
+---@return number
+---example:
+---```lua
+---print("number of connected controllers:" .. Input:controllerCount())
+---```
+function Input:controllerCount()
+    return ye_lua_input_number_of_controllers()
+end

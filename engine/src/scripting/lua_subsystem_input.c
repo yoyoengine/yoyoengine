@@ -127,29 +127,29 @@ int ye_lua_query_controller_state(lua_State *L) {
         lua_settable(L, -3);
     }
 
-    // get the axis values
+    // get the axis values (normalize each by sint16 max to get a -1.0 to 1.0 scale)
     lua_pushstring(L, "leftStickX");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX) / 32767.0f);
     lua_settable(L, -3);
 
     lua_pushstring(L, "leftStickY");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY) / 32767.0f);
     lua_settable(L, -3);
 
     lua_pushstring(L, "rightStickX");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX) / 32767.0f);
     lua_settable(L, -3);
 
     lua_pushstring(L, "rightStickY");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY) / 32767.0f);
     lua_settable(L, -3);
 
     lua_pushstring(L, "leftTrigger");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT) / 32767.0f);
     lua_settable(L, -3);
 
     lua_pushstring(L, "rightTrigger");
-    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+    lua_pushnumber(L, SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / 32767.0f);
     lua_settable(L, -3);
 
     // info on vendor, model, misc
@@ -168,11 +168,17 @@ int ye_lua_query_controller_state(lua_State *L) {
     return 1;
 }
 
+int ye_get_number_of_controllers(lua_State *L) {
+    lua_pushinteger(L, YE_STATE.runtime.num_controllers);
+    return 1;
+}
+
 int ye_lua_input_register(lua_State *L) {
     lua_register(L, "ye_lua_input_query_mouse", ye_lua_query_mouse_state);
     lua_register(L, "ye_lua_input_query_key", ye_lua_query_key_state);
     lua_register(L, "ye_lua_input_query_mod", ye_lua_input_query_key_mod);
     lua_register(L, "ye_lua_input_query_controller", ye_lua_query_controller_state);
+    lua_register(L, "ye_lua_input_number_of_controllers", ye_get_number_of_controllers);
 
     return 0;
 }

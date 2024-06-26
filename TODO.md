@@ -640,8 +640,6 @@ movie player component
 
 some deeper runtime in game UI integration toolkit (maybe not even nuklear)
 
-input system abstraction (needed for brainrot brawl)
-
 we should traverse creating entire scene when loading before proceeding to call ONMOUNT for each script component
 
 easy save data system exposed to lua (some kinda json abstraction)
@@ -680,6 +678,7 @@ here are some ideas:
 
 - on screen keyboard visualizer, press keys and see them show up on screen (helps validate input system)
 
-## todo tomorrow afta work
+## my head is exploding
 
-controller table to query controller state similar to mouse
+- we could add touchpad support (why)
+- do not handle deadzone, thats for the game to do bruh

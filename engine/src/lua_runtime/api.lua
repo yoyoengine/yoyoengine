@@ -593,6 +593,11 @@ function ye_lua_input_query_mod(mod) end
 ---@return any controller_state The state of the controller (table)
 function ye_lua_input_query_controller(controllerNum) end
 
+---**Retrieves the number of controllers connected**
+---
+---@return integer numControllers The number of controllers connected
+function ye_lua_input_number_of_controllers() end
+
 
 
 ----------------
