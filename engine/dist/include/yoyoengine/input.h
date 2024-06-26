@@ -26,3 +26,5 @@
 void ye_init_input();
 
 void ye_system_input();
+
+void ye_shutdown_input();

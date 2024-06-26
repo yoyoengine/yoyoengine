@@ -587,6 +587,12 @@ function ye_lua_input_query_key(isKeycode, code) end
 ---@return boolean state The state of the mod
 function ye_lua_input_query_mod(mod) end
 
+---**Retrieves the state of a controller**
+---
+---@param controllerNum number The number of the controller to query
+---@return any controller_state The state of the controller (table)
+function ye_lua_input_query_controller(controllerNum) end
+
 
 
 ----------------

@@ -513,6 +513,9 @@ void ye_shutdown_engine(){
     ye_shutdown_audio();
     ye_logf(info, "Shut down audio.\n");
 
+    // shutdown input
+    ye_shutdown_input();
+
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();

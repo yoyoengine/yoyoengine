@@ -162,3 +162,17 @@ void ye_system_input() {
         ye_recompute_boxing();
     }
 }
+
+void ye_shutdown_input(){
+    // close all controllers
+    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+        if(YE_STATE.runtime.controllers[i] != NULL){
+            SDL_GameControllerClose(YE_STATE.runtime.controllers[i]);
+        }
+    }
+
+    // might not be needed but whatever
+    YE_STATE.runtime.num_controllers = 0;
+
+    ye_logf(info, "Shut down input.\n");
+}
