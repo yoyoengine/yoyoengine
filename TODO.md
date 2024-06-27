@@ -1,44 +1,5 @@
 # TODO
 
-## confirmation pop ups notes
-
-```c
-  SDL_MessageBoxButtonData buttons[] = {
-      { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
-      { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
-  };
-
-  SDL_MessageBoxData messagebox;
-  messagebox.flags = SDL_MESSAGEBOX_INFORMATION;
-  messagebox.window = NULL; // Use NULL to create a simple message box
-  messagebox.title = "Confirmation";
-  messagebox.message = "Do you want to continue?";
-  messagebox.numbuttons = SDL_arraysize(buttons);
-  messagebox.buttons = buttons;
-
-  int buttonid;
-  if (SDL_ShowMessageBox(&messagebox, &buttonid) < 0) {
-      SDL_Log("error displaying message box");
-      return;
-  }
-
-  if(buttonid == 0){
-      printf("yes\n");
-  }
-  else {
-      printf("no\n");
-  }
-  exit(0);
-```
-
-## cut content
-
-- it would be fun to make stuff like a file browser but at the end of the day im only one person and i would like to get a basic engine done, and then i can enhance it later on with fun stuff like that, it will be easier then as well ebcause my knowledge of nuklear will be better
-
-need more robust way to know when errors happen in editor for things that might be hard or a lot of work to visually show- ie: scene file already exists but trying to create a new one of the same name
-
-need some generic dialog popups as global state. functions can call like "input submitted" and get the result of the popup dialog if they were waiting for it, something like save or discard when loading a new scene
-
 ## Misc bugs
 
 - we dont check if a tag already exists before adding currently
@@ -357,8 +318,6 @@ bumped nuklear ver for disabled feature, check what else has been added and if w
 
 check your style impl because with disabled widgets the checkbox does not fade color
 
-if renderer is not on/disabled we cant preview colliders or audio range
-
 editor needs scene configureation/settings panel, add shortcut + menu bar + button in bottom maybe
 
 prefabs would be nice but not sure how to best integrate that system
@@ -399,12 +358,6 @@ It is technically possible to represent a grid logically in the editor, and make
 audio chunk count removed or reworked
 
 ## slk fjlkgjh dfk gjhlk
-
-collider add
-
-trigger colliders
-
-actual click selection and drag selection and other sensible controls, cant really click to cycle objects in order
 
 should make a just normal run button for non rebuild conf changes
 
@@ -448,8 +401,6 @@ better error reporting for neccessary components - highlight the objects and com
 Debugging web apps is a mixed bag. You should compile and link with -gsource-map, which embeds a ton of source-level debugging information into the build, and make sure the app source code is available on the web server, which is often a scary proposition for various reasons.
 
 NO PLUGINS for emscripten (test later)
-
-speed up builds with -j
 
 force zlib and other examples to not build
 
@@ -613,10 +564,6 @@ look for simplifications and refactoring of interface to make easy moving forwar
 
 we need some entity functions to be private, check intellisense and make sure we start to hide any fields that are a no-no
 
-## general editor enhancements
-
-when you have an entity selected, and are hovering like a component, you should actually see the bounds for stuff like collidesr without havinv to check the preview box for all of them
-
 ## general engine enhancements
 
 we need actual ontriggerenter on triggerexit ontriggerstay
@@ -695,3 +642,10 @@ I'm planning to do a bunch of small tweaks to bring QOL I couldn't do before
   - for repacking just auto repack when changes detected, you already have timestamp infrastructure
 - tricks update detection git, also just streamline that whole thing. pretty sure the code is dogshit
 - scene info note and beautification (should make most editor panels not look like trash)
+
+## improvements
+
+- we should be able to manipulate entities when we have many selected
+- scene transition effects
+- non blocking sockets for networking
+- editor combo boxes for colors and fonts
