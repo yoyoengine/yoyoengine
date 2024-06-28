@@ -402,6 +402,10 @@ bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, fl
 }
 
 void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color){
+    // normalize for negative values (editor selection can have negative w,h)
+    if (w < 0) { x += w; w = -w; }
+    if (h < 0) { y += h; h = -h; }
+
     // get half the thickness of the line, to calculate the adjusted draw positions
     float half_thickness = thickness / 2.0f;
     

@@ -33,6 +33,11 @@ char proposed_script_path[1024] = "";
 char proposed_animation_meta_path[1024] = "";
 char proposed_tilemap_meta_path[1024] = "";
 
+float editor_selection_group_x = 0;
+float editor_selection_group_y = 0;
+float editor_selection_last_group_x = 0;
+float editor_selection_last_group_y = 0;
+
 /*
     Takes in the bounds we are going to paint into, and returns
     the pt (int) that the font needs loaded in to maximize its quality
@@ -884,17 +889,107 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
     }
 
     struct ye_entity *ent = editor_current_selection;
-    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 3, screenWidth - screenWidth/1.5, screenHeight - screenHeight/3),
+    if (nk_begin(ctx, "Entity", nk_rect(screenWidth/1.5, screenHeight / 2.5, screenWidth - screenWidth/1.5, screenHeight - screenHeight/2.5),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             if (num_editor_selections > 1){
                 nk_layout_row_dynamic(ctx, 25, 1);
-                nk_label_colored(ctx, "Multiple entities selected", NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
+
+                char buffer[50];
+                snprintf(buffer, 50, "Multiple (%d) entities selected", num_editor_selections);
+                nk_label_colored(ctx, buffer, NK_TEXT_CENTERED, nk_rgb(255, 255, 255));
                 
+                nk_label(ctx, "Actions:", NK_TEXT_LEFT);
+                nk_layout_row_dynamic(ctx, 25, 3);
+
+                if(nk_button_label(ctx, "Toggle Active")){
+                    struct editor_selection_node *current = editor_selections;
+
+                    while(current != NULL){
+                        current->ent->active = !current->ent->active;
+                        current = current->next;
+                    }
+
+                    editor_unsaved();
+                }
+
+                if(nk_button_label(ctx, "Delete All")){
+                    struct editor_selection_node *current = editor_selections;
+
+                    while(current != NULL){
+                        ye_destroy_entity(current->ent);
+                        current = current->next;
+                    }
+
+                    editor_deselect_all();
+                    editor_unsaved();
+                }
+
+                if(nk_button_label(ctx, "Duplicate All")){
+                    /*
+                        Will duplicate all selected entities,
+                        and change the selection list to be only the
+                        newly created entities
+                    */
+
+                    struct editor_selection_node *cur = editor_selections;
+                    struct editor_selection_node *new = NULL;
+                    int new_selections = 0;
+
+                    while(cur != NULL) {
+                        struct editor_selection_node *new_node = malloc(sizeof(struct editor_selection_node));
+                        new_node->ent = ye_duplicate_entity(cur->ent);
+                        new_node->next = new;
+                        new_selections++;
+
+                        new = new_node;
+
+                        cur = cur->next;
+                    }
+                    editor_deselect_all();
+                    editor_selections = new;
+                    num_editor_selections = new_selections; 
+
+                    editor_unsaved();
+                }
+
+                // TODO: could have an option to generate a prefab or new scene based on selections
+
                 /*
-                    TODO:
-                    Provide actions for multiple selected entities
-                    like delete, duplicate, scale/move, etc
+                    Provide X and Y transformation for groups.
+                    Every entity without a transform component will recieve one, and
+                    we store a zerod offset variable for the group x and y, as well as a "last_updated" copy.
+                    Each time we move the global offset, we will add the difference from the last updated and update accordingly.
                 */
+
+                if( editor_selection_group_x != editor_selection_last_group_x ||
+                    editor_selection_group_y != editor_selection_last_group_y    ) {
+                    
+                    struct editor_selection_node *current = editor_selections;
+
+                    while(current != NULL){
+                        // make sure every selection has a transform
+                        if(current->ent->transform == NULL){
+                            ye_add_transform_component(current->ent, 0, 0);
+                        }
+
+                        current->ent->transform->x += editor_selection_group_x - editor_selection_last_group_x;
+                        current->ent->transform->y += editor_selection_group_y - editor_selection_last_group_y;
+
+                        current = current->next;
+                    }
+
+                    editor_selection_last_group_x = editor_selection_group_x;
+                    editor_selection_last_group_y = editor_selection_group_y;
+
+                }
+
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_layout_row_dynamic(ctx, 25, 1);
+                nk_label(ctx, "Transform Group:", NK_TEXT_LEFT);
+
+                nk_layout_row_dynamic(ctx, 25, 2);
+                nk_property_float(ctx, "#Group X", -1000000, &editor_selection_group_x, 1000000, 1, 5);
+                nk_property_float(ctx, "#Group Y", -1000000, &editor_selection_group_y, 1000000, 1, 5);
                 
                 nk_end(ctx);
                 return;

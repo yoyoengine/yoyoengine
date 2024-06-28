@@ -645,7 +645,22 @@ I'm planning to do a bunch of small tweaks to bring QOL I couldn't do before
 
 ## improvements
 
-- we should be able to manipulate entities when we have many selected
 - scene transition effects
 - non blocking sockets for networking
 - editor combo boxes for colors and fonts
+
+## weird stuff
+
+valgrind somehow runs with editor camera and origin as entities listed?
+it also GP faults when scrolling or selecting in editor
+
+youre an amateur developer if you cant fix the viewport jank (scrolling nuklear when not desired)
+
+## bruh bruh bruh bruh
+
+- dump all editor settings to file and load on init, put in editor state
+  - stuff like drag tolerance before beginning selection
+
+provide prefs to auto scale ratio of panels in editor
+fix scrollbar reset when selecting entity in heiarchy, super annoying for selecting multiple
+shift ctrl select entity to do range in heiarchy?

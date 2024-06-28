@@ -40,6 +40,7 @@
 #include "editor_panels.h"
 #include "editor.h"
 #include "editor_input.h"
+#include "editor_selection.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <Nuklear/style.h>
@@ -73,7 +74,6 @@ int mouse_world_y = 0;
 
 // selecting info
 SDL_Rect editor_selecting_rect;
-bool editor_selecting = false;
 
 // panning info
 SDL_Point pan_start;
@@ -372,7 +372,7 @@ int main(int argc, char **argv) {
     ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
 
     while(!quit) {
-        if(editor_selecting)
+        if(editor_draw_drag_rect)
             ye_debug_render_rect(editor_selecting_rect.x, editor_selecting_rect.y, editor_selecting_rect.w, editor_selecting_rect.h, (SDL_Color){255, 0, 0, 255}, 10);
         if(editor_panning)
             ye_debug_render_line(pan_start.x, pan_start.y, pan_end.x, pan_end.y, (SDL_Color){255, 255, 255, 255}, 10);

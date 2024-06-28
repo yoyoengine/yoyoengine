@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,8 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+extern bool editor_draw_drag_rect;
+
 struct editor_selection_node{
     struct ye_entity * ent;
     struct editor_selection_node * next;
@@ -53,6 +55,11 @@ void editor_selection_handler(SDL_Event event);
  * @brief Renders the selection rectangles for all selected entities
 */
 void editor_render_selection_rects();
+
+/**
+ * @brief Deselects all selected entities in the editor
+ */
+void editor_deselect_all();
 
 /**
  * @brief Checks if an entity is selected in the editor

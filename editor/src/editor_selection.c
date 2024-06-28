@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2024  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -24,15 +24,23 @@
 
 #include "editor.h"
 #include "editor_input.h"
+#include "editor_ui.h"
 #include "editor_selection.h"
 
 bool is_dragging = false;
 SDL_Point drag_start;
 
+bool editor_draw_drag_rect = false;
+
 struct editor_selection_node * editor_selections = NULL;
 int num_editor_selections = 0;
 
-void clear_selections(){
+int selection_min_x = 25;
+int selection_min_y = 25;
+
+void editor_deselect_all(){
+    ye_reset_editor_selection_group();
+
     struct editor_selection_node * itr = editor_selections;
     while(itr != NULL){
         struct editor_selection_node * temp = itr;
@@ -55,6 +63,8 @@ bool already_selected(struct ye_entity * ent){
 void add_selection(struct ye_entity * ent){
     if(already_selected(ent)) return;
 
+    ye_reset_editor_selection_group();
+
     // discard selections of editor entities, like editor camera, origin, etc
     if(ent == editor_camera || ent == origin) return;
 
@@ -69,6 +79,21 @@ void add_selection(struct ye_entity * ent){
     Only works with entities having transform components
 */
 void select_within(SDL_Rect zone){
+
+    /*
+        Check if editor selection rect is big
+        enough to be considered a selection
+    */
+    if(abs(zone.w) < selection_min_x && abs(zone.h) < selection_min_y){
+        return;
+    }
+
+    /*
+        If w or h is negative, we need to normalize the rect
+    */
+    if(zone.w < 0){ zone.x += zone.w; zone.w = abs(zone.w); }
+    if(zone.h < 0){ zone.y += zone.h; zone.h = abs(zone.h); }
+
     struct ye_entity_node * itr = transform_list_head;
     while(itr != NULL){
         struct ye_entity * ent = itr->entity;
@@ -83,9 +108,19 @@ void select_within(SDL_Rect zone){
 }
 
 void editor_selection_handler(SDL_Event event){
+    // check if mouse left window
+    if(event.type == SDL_WINDOWEVENT){
+        if (event.window.event == SDL_WINDOWEVENT_LEAVE) {
+            is_dragging = false; editor_draw_drag_rect = false;
+        }
+    }
+
     // if we arent hovering editor ignore
     int mx, my; SDL_GetMouseState(&mx, &my);
-    if(!is_hovering_editor(mx, my) || lock_viewport_interaction) return;
+    if(!is_hovering_editor(mx, my) || lock_viewport_interaction) {
+        is_dragging = false; editor_draw_drag_rect = false;
+        return;
+    }
 
     // update mx and my to be world positions
     // my = my - 35; // account for the menu bar
@@ -96,20 +131,16 @@ void editor_selection_handler(SDL_Event event){
     mx = ((mx / scaleX) + campos.x);
     my = ((my / scaleY) + campos.y);
 
-    if(is_dragging){
-        ye_debug_render_rect(drag_start.x , drag_start.y, mx - drag_start.x, my - drag_start.y, (SDL_Color){255, 0, 0, 255}, 8);
-    }
+    if(is_dragging)
+        editor_draw_drag_rect = !(abs(mx - drag_start.x) < selection_min_x && abs(my - drag_start.y) < selection_min_y);
     
-    // ye_get_mouse_world_position(&mx, &my);
-
-    // printf("location: %d, %d\n", mx, my);
 
     switch (event.type) {
         case SDL_MOUSEBUTTONDOWN:
             if (event.button.button == SDL_BUTTON_LEFT) {
                 // if we clicked at all and werent holding ctrl, clear selections
                 if (!(SDL_GetModState() & KMOD_CTRL)) {
-                    clear_selections();
+                    editor_deselect_all();
                 }
                 
                 /*
@@ -160,7 +191,7 @@ void editor_selection_handler(SDL_Event event){
             if (event.button.button == SDL_BUTTON_LEFT) {
                 if (is_dragging) {
                     is_dragging = false;
-                    editor_selecting = false;
+                    editor_draw_drag_rect = false;
 
                     // attempt to select all items within the drag rectangle
                     select_within(editor_selecting_rect);
@@ -172,7 +203,6 @@ void editor_selection_handler(SDL_Event event){
                 if (!is_dragging) {
                     // Start dragging if not already dragging
                     is_dragging = true;
-                    editor_selecting = true;
 
                     // Set the start point of the drag rectangle
                     drag_start = (SDL_Point){mx, my};
@@ -245,6 +275,8 @@ bool editor_is_selected(struct ye_entity * ent){
 }
 
 void editor_deselect(struct ye_entity * ent){
+    ye_reset_editor_selection_group();
+    
     struct editor_selection_node * itr = editor_selections;
     struct editor_selection_node * prev = NULL;
     while(itr != NULL){
@@ -265,9 +297,11 @@ void editor_deselect(struct ye_entity * ent){
 }
 
 void editor_select(struct ye_entity * ent){
+    ye_reset_editor_selection_group();
+
     // check if keyboard is currently pressing ctrl
     if(!(SDL_GetModState() & KMOD_CTRL)){
-        clear_selections();
+        editor_deselect_all();
     }
     add_selection(ent);
 }

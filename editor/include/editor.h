@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,6 @@ extern int mouse_world_y;
 
 // selecting info
 extern SDL_Rect editor_selecting_rect;
-extern bool editor_selecting;
 
 // panning info
 extern SDL_Point pan_start;

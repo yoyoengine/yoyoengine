@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -18,6 +18,12 @@
 
 #ifndef YE_EDITOR_UI_H
 #define YE_EDITOR_UI_H
+
+extern float editor_selection_group_x;
+extern float editor_selection_group_y;
+extern float editor_selection_last_group_x;
+extern float editor_selection_last_group_y;
+#define ye_reset_editor_selection_group() editor_selection_group_x = 0; editor_selection_group_y = 0; editor_selection_last_group_x = 0; editor_selection_last_group_y = 0
 
 void ye_editor_paint_hiearchy(struct nk_context *ctx);
 

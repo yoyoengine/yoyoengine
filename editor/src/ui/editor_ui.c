@@ -32,7 +32,7 @@ int matching_results = 0;
 const float ratio[] = {0.03f, 0.85f, /* up and down arrows: 0.05, 0.05, */ 0.06, 0.06};
 void ye_editor_paint_hiearchy(struct nk_context *ctx){
     // if no selected entity its height will be full height, else its half
-    int height = num_editor_selections == 0 ? screenHeight : screenHeight / 3;
+    int height = num_editor_selections == 0 ? screenHeight : screenHeight / 2.5;
     if (nk_begin(ctx, "Heiarchy", nk_rect(screenWidth/1.5, 0, screenWidth - screenWidth/1.5, height),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER)) {
             nk_layout_row_dynamic(ctx, 25, 1);

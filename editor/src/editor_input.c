@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -70,6 +70,8 @@ void editor_input_panning(SDL_Event event){
     // get mouse world pos
     update_mx_my();
 
+    int win_mx, win_my; SDL_GetMouseState(&win_mx, &win_my);
+
     // if middle mouse clicked down, initialize panning
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_MIDDLE) {
@@ -109,7 +111,7 @@ void editor_input_panning(SDL_Event event){
             last_pan_y = my;
         }
     }
-    else if (event.type == SDL_MOUSEWHEEL /*&& is_hovering_editor(mx, my)*/ && !lock_viewport_interaction) // this broke something and idk why
+    else if (event.type == SDL_MOUSEWHEEL && is_hovering_editor(win_mx, win_my) && !lock_viewport_interaction)
     {
         float dt = ye_delta_time();
         float zoom_factor = 0.1f; // Adjust this value to control the zoom speed

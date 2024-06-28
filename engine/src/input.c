@@ -160,6 +160,9 @@ void ye_system_input() {
 
         // recompute pillar or letter boxing
         ye_recompute_boxing();
+
+        // reset the flag
+        resized = false;
     }
 }
 
