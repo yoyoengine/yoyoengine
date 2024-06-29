@@ -109,6 +109,7 @@ void ye_system_input() {
                         else{
                             console_visible = true;
                             ui_register_component("console",ye_paint_console);
+                            should_reset_console_log_scroll = true;
                         }
                         break;
                 }

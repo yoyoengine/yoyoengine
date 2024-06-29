@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,10 @@
 #define ye_nk
 #include <Nuklear/nuklear.h>
 #endif
+
+#include <stdbool.h>
+
+extern bool should_reset_console_log_scroll;
 
 /**
  * @brief Describes the level of a log message

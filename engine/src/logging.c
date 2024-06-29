@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     This program is free software: you can redistribute it and/or modify
@@ -262,6 +262,8 @@ char userInput[MAX_INPUT_LENGTH];
 
 bool color_code = true;
 
+bool should_reset_console_log_scroll = false;
+
 /*
     in the future to save window bounds:
         nk_window_get_bounds(ctx);
@@ -297,10 +299,7 @@ void ye_paint_console(struct nk_context *ctx){
 
         // Calculate available space for log and input field
         float inputHeight = 35.0f; // Height of the input field
-        float logHeight =  500.0f; // ctx->current->layout->row.height - inputHeight;
-
-        // TODO: allow resizing again and auto calculate size of log panel
-        // printf("height: %f\n",ctx->current->bounds.h);
+        float logHeight =  nk_window_get_height(ctx) - inputHeight - 100; // 100 is a random magic number offset that seems to work
 
         // struct nk_scroll horizontal_scroll; TODO add horizontal scrolling
         // nk_zero(&horizontal_scroll, sizeof(struct nk_scroll));
@@ -340,6 +339,13 @@ void ye_paint_console(struct nk_context *ctx){
         }
 
         nk_group_end(ctx);
+
+        // scroll to bottom of group when console first opened
+        if(should_reset_console_log_scroll){
+            nk_group_set_scroll(YE_STATE.engine.ctx, "Log", 0, 10000);
+            should_reset_console_log_scroll = false;
+        }
+
         // Input command section
         static char userInput[MAX_INPUT_LENGTH];
         nk_layout_row_dynamic(ctx, inputHeight, 1);
@@ -401,6 +407,8 @@ void ye_paint_console(struct nk_context *ctx){
                 // Clear the input buffer
                 memset(userInput, 0, sizeof(userInput));
             }
+            // reset to bottom of log
+            nk_group_set_scroll(ctx, "Log", 0, 10000);
         }
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, userInput, sizeof(userInput), nk_filter_ascii);
         // nk_edit_focus(ctx, NK_EDIT_FIELD); TODO: really wish i could focus this auto
