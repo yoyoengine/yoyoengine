@@ -32,6 +32,16 @@
 #define editor_saved() unsaved = saving = false;
 #define editor_saving() saving = true
 
+// editor preferences
+struct editor_prefs {
+    int color_scheme_index;
+
+    // selection settings
+    int min_select_px;
+};
+
+extern struct editor_prefs PREFS;
+
 // global variables
 extern bool unsaved;
 extern bool saving;

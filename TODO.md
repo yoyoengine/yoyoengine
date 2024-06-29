@@ -526,7 +526,7 @@ wishlist:
 ## stuff
 
 - SDL has a file drop event, could use it to auto import files into resources
-  - https://wiki.libsdl.org/SDL2/SDL_DropEvent
+  - <https://wiki.libsdl.org/SDL2/SDL_DropEvent>
 
 ## uhhh actually doing lua api
 
@@ -664,3 +664,20 @@ youre an amateur developer if you cant fix the viewport jank (scrolling nuklear 
 provide prefs to auto scale ratio of panels in editor
 fix scrollbar reset when selecting entity in heiarchy, super annoying for selecting multiple
 shift ctrl select entity to do range in heiarchy?
+
+## fun
+
+make better custom color themes, you should do a lookup table thing and port over the hard coded dark background stuff. plus also should have a parameter controlling the tint color of icons (black for light themes)
+
+you probably need a whole parameter pass for reading from config files for editor... you did something for engine so check that out and see if its reusable potentially.
+
+when we open settings:
+
+- dump json to struct modeling settings
+- once we click save serialize model and apply
+
+allow ratio changing for height of panels (serialize)
+
+## polish
+
+get rid of annoying warnings and errors on init, like default font lookup... default should be a reserved font name

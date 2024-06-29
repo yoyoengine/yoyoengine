@@ -52,6 +52,8 @@
 /*
     INITIALIZE ALL
 */
+struct editor_prefs PREFS = {0};
+
 bool unsaved;
 bool saving; // in the process of saving
 bool quit;
@@ -267,39 +269,51 @@ int main(int argc, char **argv) {
     yoyo_loading_refresh("Reading editor settings...");
 
     /*
-        Open the editor settings and get "preferences":"theme"
+        Open the editor settings config.
+
+        TODO: maybe nest fields to make it more
+        readible from text editor later on.
     */
     json_t *EDITOR_SETTINGS = ye_json_read(editor_settings_path);
-    json_t *theme;
-    if (!ye_json_object(EDITOR_SETTINGS, "preferences", &theme))
-    {
-        ye_logf(error, "editor settings file is missing preferences object. Please provide a preferences object with a theme string.");
-        return 1;
+    if(EDITOR_SETTINGS == NULL){
+        ye_logf(warning, "editor config file not found. It will be created with defaults.\n");
+        EDITOR_SETTINGS = json_object();
     }
-    const char *theme_string;
-    if (!ye_json_string(theme, "theme", &theme_string))
-    {
-        ye_logf(error, "editor settings file is missing theme string. Please provide a preferences object with a theme string.");
-        return 1;
-    }
-    if(strcmp(theme_string, "dark") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_DARK);
-    else if(strcmp(theme_string, "red") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_RED);
-    else if(strcmp(theme_string, "black") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_BLACK);
-    else if(strcmp(theme_string, "white") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_WHITE);
-    else if(strcmp(theme_string, "blue") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_BLUE);
-    else if(strcmp(theme_string, "amoled") == 0)
-        set_style(YE_STATE.engine.ctx, THEME_AMOLED);
-    // if else do nothing, this will result in default style
 
-    set_style(YE_STATE.engine.ctx, THEME_AMOLED);
+    /*
+        Read the editor config into the state struct,
+        setting defaults as needed
+    */
+    PREFS.color_scheme_index = ye_config_int(EDITOR_SETTINGS, "color_scheme_index", 5); // amoled by default
+    PREFS.min_select_px = ye_config_int(EDITOR_SETTINGS, "min_select_px", 10); // 10px by default
 
     // close the editor settings file
     json_decref(EDITOR_SETTINGS);
+    
+    /*
+        Actually handle the picked pref initialization
+    */
+    switch(PREFS.color_scheme_index){
+        case 0:
+            set_style(YE_STATE.engine.ctx, THEME_BLACK);
+            break;
+        case 1:
+            set_style(YE_STATE.engine.ctx, THEME_DARK);
+            break;
+        case 2:
+            set_style(YE_STATE.engine.ctx, THEME_BLUE);
+            break;
+        case 3:
+            set_style(YE_STATE.engine.ctx, THEME_RED);
+            break;
+        case 4:
+            set_style(YE_STATE.engine.ctx, THEME_WHITE);
+            break;
+        case 5:
+        default:
+            set_style(YE_STATE.engine.ctx, THEME_AMOLED);
+            break;
+    }
 
     yoyo_loading_refresh("Constructing editor...");
 
@@ -379,6 +393,18 @@ int main(int argc, char **argv) {
         editor_render_selection_rects();
         ye_process_frame();
     }
+
+    /*
+        Before we shutdown the editor, lets re-serialize
+        the preferences we initially loaded
+    */
+    EDITOR_SETTINGS = ye_json_read(editor_settings_path);
+    
+    json_object_set_new(EDITOR_SETTINGS, "color_scheme_index", json_integer(PREFS.color_scheme_index));
+    json_object_set_new(EDITOR_SETTINGS, "min_select_px", json_integer(PREFS.min_select_px));    
+
+    ye_json_write(editor_settings_path, EDITOR_SETTINGS);
+    json_decref(EDITOR_SETTINGS);
 
     // free editor icons
     SDL_DestroyTexture(style);

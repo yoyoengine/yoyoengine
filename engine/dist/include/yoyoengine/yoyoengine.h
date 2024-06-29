@@ -36,6 +36,7 @@
     defined the header and lib paths correctly.
 */
 #include "engine.h"         // init and core
+#include "config.h"         // jansson wrapper for config files
 #include "input.h"
 #include "yep.h"            // custom binary format parser/packer
 #include "json.h"           // jansson wrapper

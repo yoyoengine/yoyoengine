@@ -35,9 +35,6 @@ bool editor_draw_drag_rect = false;
 struct editor_selection_node * editor_selections = NULL;
 int num_editor_selections = 0;
 
-int selection_min_x = 25;
-int selection_min_y = 25;
-
 void editor_deselect_all(){
     ye_reset_editor_selection_group();
 
@@ -84,7 +81,7 @@ void select_within(SDL_Rect zone){
         Check if editor selection rect is big
         enough to be considered a selection
     */
-    if(abs(zone.w) < selection_min_x && abs(zone.h) < selection_min_y){
+    if(abs(zone.w) < PREFS.min_select_px && abs(zone.h) < PREFS.min_select_px){
         return;
     }
 
@@ -132,7 +129,7 @@ void editor_selection_handler(SDL_Event event){
     my = ((my / scaleY) + campos.y);
 
     if(is_dragging)
-        editor_draw_drag_rect = !(abs(mx - drag_start.x) < selection_min_x && abs(my - drag_start.y) < selection_min_y);
+        editor_draw_drag_rect = !(abs(mx - drag_start.x) < PREFS.min_select_px && abs(my - drag_start.y) < PREFS.min_select_px);
     
 
     switch (event.type) {

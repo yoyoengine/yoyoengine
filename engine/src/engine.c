@@ -35,6 +35,7 @@
 #include <yoyoengine/audio.h>
 #include <yoyoengine/timer.h>
 #include <yoyoengine/cache.h>
+#include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/tricks.h>
 #include <yoyoengine/logging.h>
@@ -180,45 +181,6 @@ float ye_delta_time(){
     return YE_STATE.runtime.delta_time;
 }
 
-void set_setting_string(char* key, char** value, json_t* settings) {
-    const char * json_value;
-    if (ye_json_string(settings, key, &json_value)) {
-
-        // if the value is empty, we don't want to set it
-        if(strcmp(json_value, "") == 0)
-            return;
-
-        /*
-            The existing value already exists as a default, so we need to free it
-        */
-        free(*value);
-
-        // set the value to the new one
-        *value = strdup(json_value);
-    }
-}
-
-void set_setting_int(char* key, int* value, json_t* settings) {
-    int json_value;
-    if (ye_json_int(settings, key, &json_value)) {
-        *value = json_value;
-    }
-}
-
-void set_setting_bool(char* key, bool* value, json_t* settings) {
-    bool json_value;
-    if (ye_json_bool(settings, key, &json_value)) {
-        *value = json_value;
-    }
-}
-
-void set_setting_float(char* key, float* value, json_t* settings) {
-    float json_value;
-    if (ye_json_float(settings, key, &json_value)) {
-        *value = json_value;
-    }
-}
-
 void ye_update_base_path(char *path){
     // update the engine state
     free(executable_path);
@@ -338,53 +300,32 @@ void ye_init_engine() {
     snprintf(game_default_path, sizeof(game_default_path), "%sresources", executable_path);
     snprintf(log_default_path, sizeof(log_default_path), "%sdebug.log", executable_path);
 
-    // set defaults for engine state
-    YE_STATE.engine.framecap = -1;
-    YE_STATE.engine.screen_width = 1920;
-    YE_STATE.engine.screen_height = 1080;
-    YE_STATE.engine.window_mode = 0;
-    YE_STATE.engine.volume = 64;
-    YE_STATE.engine.window_title = strdup("Yoyo Engine Window");
-    YE_STATE.engine.sdl_quality_hint = 1; // linear by default
-
-    // set default paths, if we have an override we can change them later
-    YE_STATE.engine.engine_resources_path = strdup(engine_default_path);
-    YE_STATE.engine.game_resources_path = strdup(game_default_path);
-    YE_STATE.engine.log_file_path = strdup(log_default_path);
-    YE_STATE.engine.icon_path = strdup("enginelogo.png"); // we by default take the engine logo out of the engine resources pack
-
-    YE_STATE.engine.log_level = 4;
-
     // check if ./settings.yoyo exists (if not, use defaults)
     json_t *SETTINGS = ye_json_read(ye_path("settings.yoyo"));
     if (SETTINGS == NULL) {
-        ye_logf(warning, "No settings.yoyo file found, using defaults.\n");
+        ye_logf(warning, "No settings.yoyo file found, it will be created using default values.\n");
+        json_t *SETTINGS = json_object();
     }
-    else{
-        ye_logf(info, "Found settings.yoyo file, using values from it.\n");
 
-        set_setting_string("engine_resources_path", &YE_STATE.engine.engine_resources_path, SETTINGS);
-        set_setting_string("game_resources_path", &YE_STATE.engine.game_resources_path, SETTINGS);
-        set_setting_string("log_file_path", &YE_STATE.engine.log_file_path, SETTINGS);
-        set_setting_string("icon_path", &YE_STATE.engine.icon_path, SETTINGS);
-        set_setting_string("window_title", &YE_STATE.engine.window_title, SETTINGS);
+    // config strings all need freed later
+    YE_STATE.engine.engine_resources_path   = ye_config_string(SETTINGS, "engine_resources_path", engine_default_path);
+    YE_STATE.engine.game_resources_path     = ye_config_string(SETTINGS, "game_resources_path", game_default_path);
+    YE_STATE.engine.log_file_path           = ye_config_string(SETTINGS, "log_file_path", log_default_path);
+    YE_STATE.engine.icon_path               = ye_config_string(SETTINGS, "icon_path", "enginelogo.png");
+    YE_STATE.engine.window_title            = ye_config_string(SETTINGS, "window_title", "Yoyo Engine Window");
 
-        set_setting_int("window_mode", &YE_STATE.engine.window_mode, SETTINGS);
-        set_setting_int("volume", &YE_STATE.engine.volume, SETTINGS);
-        set_setting_int("log_level", &YE_STATE.engine.log_level, SETTINGS);
-        set_setting_int("screen_width", &YE_STATE.engine.screen_width, SETTINGS);
-        set_setting_int("screen_height", &YE_STATE.engine.screen_height, SETTINGS);
-        set_setting_int("framecap", &YE_STATE.engine.framecap, SETTINGS);
-        set_setting_int("sdl_quality_hint", &YE_STATE.engine.sdl_quality_hint, SETTINGS);
+    YE_STATE.engine.window_mode             = ye_config_int(SETTINGS, "window_mode", 0);
+    YE_STATE.engine.volume                  = ye_config_int(SETTINGS, "volume", 64);
+    YE_STATE.engine.log_level               = ye_config_int(SETTINGS, "log_level", 4);
+    YE_STATE.engine.screen_width            = ye_config_int(SETTINGS, "screen_width", 1920);
+    YE_STATE.engine.screen_height           = ye_config_int(SETTINGS, "screen_height", 1080);
+    YE_STATE.engine.framecap                = ye_config_int(SETTINGS, "framecap", -1);
+    YE_STATE.engine.sdl_quality_hint        = ye_config_int(SETTINGS, "sdl_quality_hint", 1); // linear
 
-        set_setting_bool("debug_mode", &YE_STATE.engine.debug_mode, SETTINGS);
-        set_setting_bool("skip_intro", &YE_STATE.engine.skipintro, SETTINGS);
-        set_setting_bool("editor_mode", &YE_STATE.editor.editor_mode, SETTINGS);
-
-        set_setting_bool("stretch_resolution", &YE_STATE.engine.stretch_resolution, SETTINGS);
-
-        // we will decref settings later on after we load the scene, so the path to the entry scene still exists
-    }
+    YE_STATE.engine.debug_mode              = ye_config_bool(SETTINGS, "debug_mode", false);
+    YE_STATE.engine.skipintro               = ye_config_bool(SETTINGS, "skip_intro", false);
+    YE_STATE.editor.editor_mode             = ye_config_bool(SETTINGS, "editor_mode", false);
+    YE_STATE.engine.stretch_resolution      = ye_config_bool(SETTINGS, "stretch_resolution", false);
 
     // initialize some editor state
     YE_STATE.editor.scene_default_camera = NULL;
@@ -475,9 +416,11 @@ void ye_init_engine() {
     // debug output
     ye_logf(info, "Engine Fully Initialized.\n");
 
-    // free the settings json as needed
-    if(SETTINGS != NULL)
+    // dump settings in case we created defaults, then close
+    if(SETTINGS != NULL){
+        ye_json_write(ye_path("settings.yoyo"), SETTINGS);
         json_decref(SETTINGS);
+    }
 } // control is now resumed by the game
 
 void ye_shutdown_engine(){

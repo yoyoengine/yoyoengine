@@ -308,9 +308,8 @@ void ye_editor_paint_options(struct nk_context *ctx){
 /*
     Editor settings window
 */
-int editor_ui_color_selection = 0; // TODO: this should default have selected what we loaded from json
 void ye_editor_paint_editor_settings(struct nk_context *ctx){
-    if (nk_begin(ctx, "Editor Settings", nk_rect(screenWidth/2 - 250, screenHeight/2 - 100, 500,200),
+    if (nk_begin(ctx, "Editor Settings", nk_rect(screenWidth/2 - 250, screenHeight/2 - 100, 500,300),
         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE)) {
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, "Yoyo Editor Settings", NK_TEXT_CENTERED);
@@ -320,7 +319,12 @@ void ye_editor_paint_editor_settings(struct nk_context *ctx){
 
         // combo box with color theme choices
         static const char *color_schemes[] = {"black", "dark", "blue", "red", "white", "amoled"};
-        nk_combobox(ctx, color_schemes, NK_LEN(color_schemes), &editor_ui_color_selection, 25, nk_vec2(200,200));
+        nk_combobox(ctx, color_schemes, NK_LEN(color_schemes), &PREFS.color_scheme_index, 25, nk_vec2(200,200));
+
+        nk_label(ctx, "", NK_TEXT_CENTERED);
+        nk_layout_row_dynamic(ctx, 25, 2);
+        nk_label(ctx, "Min select threshold (px):", NK_TEXT_CENTERED);
+        nk_property_int(ctx, "px", 0, &PREFS.min_select_px, 10000, 1, 5);
 
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, "", NK_TEXT_CENTERED);
@@ -336,21 +340,21 @@ void ye_editor_paint_editor_settings(struct nk_context *ctx){
                 Load the editor settings file, and change "preferences":"theme" to the name of the scheme
             */
             json_t *settings = ye_json_read(editor_settings_path);
-            json_object_set_new(json_object_get(settings, "preferences"), "theme", json_string(color_schemes[editor_ui_color_selection]));
+            json_object_set_new(json_object_get(settings, "preferences"), "theme", json_string(color_schemes[PREFS.color_scheme_index]));
             ye_json_write(editor_settings_path, settings);
             json_decref(settings);
 
-            if(strcmp(color_schemes[editor_ui_color_selection], "dark") == 0)
+            if(strcmp(color_schemes[PREFS.color_scheme_index], "dark") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_DARK);
-            else if(strcmp(color_schemes[editor_ui_color_selection], "red") == 0)
+            else if(strcmp(color_schemes[PREFS.color_scheme_index], "red") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_RED);
-            else if(strcmp(color_schemes[editor_ui_color_selection], "black") == 0)
+            else if(strcmp(color_schemes[PREFS.color_scheme_index], "black") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_BLACK);
-            else if(strcmp(color_schemes[editor_ui_color_selection], "white") == 0)
+            else if(strcmp(color_schemes[PREFS.color_scheme_index], "white") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_WHITE);
-            else if(strcmp(color_schemes[editor_ui_color_selection], "blue") == 0)
+            else if(strcmp(color_schemes[PREFS.color_scheme_index], "blue") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_BLUE);
-            else if(strcmp(color_schemes[editor_ui_color_selection], "amoled") == 0)
+            else if(strcmp(color_schemes[PREFS.color_scheme_index], "amoled") == 0)
                 set_style(YE_STATE.engine.ctx, THEME_AMOLED);
             remove_ui_component("editor_settings");
             lock_viewport_interaction = !lock_viewport_interaction;
