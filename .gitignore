@@ -7,3 +7,5 @@ engine/docs
 yep/resources
 examples/splash
 examples/throwaway
+
+.cache

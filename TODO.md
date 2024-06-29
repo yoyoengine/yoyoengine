@@ -681,3 +681,9 @@ allow ratio changing for height of panels (serialize)
 ## polish
 
 get rid of annoying warnings and errors on init, like default font lookup... default should be a reserved font name
+
+## docs
+
+add a section on manually building doxygen locally for advanced devs, since they are the only ones who should care about deep C docs
+
+i copied over old readme stuff as slop into docs page. work on that in later commits

@@ -1,27 +1,43 @@
-name: Generate docs and push to gitHub pages
-
+name: Generate and push mkdocs-material
 on:
-  push:
-    tags:        
-      - '**' # Push events to all tags
+    push:
+        tags:        
+            - '**' # Push events to all tags
 
+permissions:
+    contents: write
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: mattnotmitt/doxygen-action@v1.9.5
+      - uses: actions/checkout@v4
         with:
-          working-directory: 'engine'
+            fetch-depth: 0
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - uses: actions/setup-python@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./engine/docs/html
+          python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: install dependencies
+        run: pip install \
+            mike \
+            mkdocs-material \
+            mkdocs-git-committers-plugin-2 \
+            mkdocs-git-revision-date-localized-plugin \
+
+      - name: deploy
+        run: mike deploy --push --update-aliases ${{ github.event.release.tag_name }} latest
