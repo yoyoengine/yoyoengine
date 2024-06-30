@@ -6,9 +6,8 @@
         "random": "c",
         "*.yoyo": "json"
     },
-    "cmake.sourceDirectory": "/home/ryan/repos/yoyoengine/engine",
+    "cmake.sourceDirectory": "${workspaceFolder}/engine",
     "Lua.workspace.library": [
-        "/home/ryan/repos/yoyoengine/engine/lua/api.lua",
-        "/home/ryan/repos/yoyoengine/engine/dist/resources/runtime.lua"
+        "${workspaceFolder}/editor/build/bin/Linux/engine_resources/ye_runtime.lua",
     ],
 }

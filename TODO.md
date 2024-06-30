@@ -687,3 +687,13 @@ get rid of annoying warnings and errors on init, like default font lookup... def
 add a section on manually building doxygen locally for advanced devs, since they are the only ones who should care about deep C docs
 
 i copied over old readme stuff as slop into docs page. work on that in later commits
+
+## todo
+
+mouse world position needed in lua api
+
+lua docs highlighting class annotations needs syntax highlighting, even if you havea to do it manually
+
+## eventually todo
+
+start using conventional commits and add the github action to create releases from tags with patch notes.

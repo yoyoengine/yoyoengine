@@ -108,10 +108,11 @@ nav:
   - Getting Started/getting_started.md
   - Feature Overview:
     - Plugins: Feature Overview/plugins.md
-  # - Scripting:
+  - Scripting:
   #   - Scripting/C Scripting/c_scripting.md
-  #   - C Scripting:
-  #     - Scripting/C Scripting/c_scripting.md
-  #   - Lua Scripting:
-  #     - Scripting/C Scripting/c_scripting.md
+    - Lua Scripting:
+      - Scripting/Lua Scripting/overview.md
+      - Scripting/Lua Scripting/systems.md
+    - C Scripting:
+      - Scripting/C Scripting/c_scripting.md
   #     # - Scripting/Lua Scripting/c_scripting.md
