@@ -12,7 +12,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
+      primary: black
       accent: indigo
       toggle:
         icon: material/brightness-7
@@ -21,7 +21,7 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
+      primary: black
       accent: indigo
       toggle:
         icon: material/brightness-4
@@ -106,6 +106,7 @@ nav:
   # - Getting Started:
   - index.md
   - Getting Started/getting_started.md
+  - Getting Started/general_knowledge.md
   - Feature Overview:
     - Plugins: Feature Overview/plugins.md
   - Scripting:

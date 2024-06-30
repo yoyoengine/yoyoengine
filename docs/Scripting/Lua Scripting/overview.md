@@ -1,3 +1,8 @@
+---
+tags:
+  - lua
+---
+
 # Lua scripting overview
 
 Lua scripting is the easiest way to get into making games with yoyoengine.
@@ -39,7 +44,7 @@ Once you have created a script file (it can be empty), you can enter the path re
 
 For example, if you created a script file at `game/resources/scripts/my_script.lua`, you would enter `scripts/my_script.lua` into the text input.
 
-Press the "Add Script Component" button, then save the project with `Ctrl+S` or `Cmd+S`, and the script will be created when you run the game.
+Press the "Add Script Component" button, then save the project with `Ctrl+S`, and the script will be created when you run the game.
 
 ## Callbacks
 
@@ -64,6 +69,9 @@ Save the file, rebuild and run the game. You should see in the console output:
 `onMount` is a callback function that runs once when the script is attached to an entity.
 
 yoyoengine will automatically detect the signature of this function, and call it as needed. How nice!
+
+!!! note
+    Callbacks are the main method of executing lua script code, but it's important to note that any code you put outside of a callback function ***is*** still executed, but only when the file is first loaded. This is useful for things like declaring global variables.
 
 ## Callbacks List
 
@@ -161,6 +169,8 @@ function LuaScript:Get(key) end
 function LuaScript:Set(key, value) end
 ```
 
+These prototypes are linked to the `LuaScript` field of the `Entity` table, so they are actual invokable methods on any entity object.
+
 ### Example
 
 Imagine a script `script1.lua`, attatched to an entity named `script1`:
@@ -175,7 +185,7 @@ function GlobalPlusAmount(amount)
 end
 ```
 
-If we were to make any new script in the same scene, we could run something like such:
+If we were to make any new script in the same scene, we could run something like this:
 
 ```lua
 -- Any other script in same scene

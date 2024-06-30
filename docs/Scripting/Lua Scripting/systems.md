@@ -1,3 +1,8 @@
+---
+tags:
+  - lua
+---
+
 # Lua API Systems
 
 The lua API provides wrappers over top of the C based yoyoengine systems, like the timer and input systems.
@@ -50,7 +55,7 @@ log("info", "One minute from now: " .. oneMinuteFromNow .. "\n")
 
 - a duration in milliseconds
 - a Lua callback function
-- the number of times to loop the timer
+- "loops" ie: the number of times to run the timer (which can be a little deceptive if you imagine the first execution to be outside of the loop)
 - the number of ticks to wait before starting the timer
 - any additional arguments to pass to the callback function.
 
@@ -64,9 +69,6 @@ local function myCallback(arg1, arg2)
     log("info", "Callback called with args: " .. arg1 .. ", " .. arg2 .. "\n")
     log("info", "It is currently " .. Timer:getTicks() .. "\n")
 end
-
--- obviously, you would put the blow inside some
--- kind of yoyoengine callback (onMount, etc)
 
 log("info", "It is currently " .. Timer:getTicks() .. "\n")
 
@@ -88,6 +90,9 @@ would output:
 [2024-06-30 09:56:39] [INFO] [LUA]:  Callback called with args: Hello, World
 [2024-06-30 09:56:39] [INFO] [LUA]:  It is currently 5000
 ```
+
+!!! warning
+    Because the timer system is reliant on operating system scheduling, the timer will not be 100% accurate (like it is in this example output). It will usually be within a few dozen millis of the desired time, but if you need more accurate timing you should pursue writing your own timer system via the C scripting API. 
 
 ## Scene
 
@@ -234,6 +239,11 @@ if Input:controller(0).dPadUp then
 end
 ```
 
+The stick and trigger related fields are returned as floats between -1 and 1, with 0 being the center position.
+
+!!! tip
+    A lot of controllers experience drift, so you might want to add a deadzone tolerance to your games controller input handling.
+
 ## Audio
 
 The audio system is super simple, and provides 3 basic functions:
@@ -267,4 +277,4 @@ would play the `resources/sounds/boop.wav` file once at maximum volume.
 
 !!! note
     The audio system is configured to only accept `wav` and `mp3` files currently.
-    If you want to hack in more format support, it should be pretty trivial by changing the compilation flags for `SDL_Mixer()` in `yoyoengine/engine/CMakeLists.txt`
+    If you want to hack in more format support, it should be pretty trivial by changing the compilation flags for `SDL_Mixer` in `yoyoengine/engine/CMakeLists.txt`
