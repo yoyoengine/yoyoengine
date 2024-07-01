@@ -1,19 +1,8 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyolick/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #include <yoyoengine/yoyoengine.h>
@@ -40,7 +29,7 @@ void editor_panel_credits(struct nk_context *ctx){
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_label(ctx, "License:", NK_TEXT_CENTERED);
-        nk_label_colored(ctx, "GNU GENERAL PUBLIC LICENSE Version 3", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
+        nk_label_colored(ctx, "MIT", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
         
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);
@@ -53,6 +42,10 @@ void editor_panel_credits(struct nk_context *ctx){
         nk_layout_row_dynamic(ctx, 20, 2);
         nk_label(ctx, "Editor Icons:", NK_TEXT_CENTERED);
         nk_label(ctx, "Ben Mathes", NK_TEXT_LEFT);
+
+        nk_layout_row_dynamic(ctx, 20, 2);
+        nk_label(ctx, "Startup SFX:", NK_TEXT_CENTERED);
+        nk_label(ctx, "Kaidiak", NK_TEXT_LEFT);
 
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);
@@ -113,6 +106,14 @@ void editor_panel_credits(struct nk_context *ctx){
                 system("start https://github.com/akheron/jansson") 
             #else
                 system("xdg-open https://github.com/akheron/jansson");
+            #endif
+        }
+
+        if(nk_button_label(ctx, "zlib")){
+            #ifdef _WIN32
+                system("start https://zlib.net/") 
+            #else
+                system("xdg-open https://zlib.net/");
             #endif
         }
 
