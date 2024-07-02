@@ -9,6 +9,7 @@
 #include "editor_ui.h"
 #include "editor_build.h"
 #include "editor_panels.h"
+#include "editor_utils.h"
 #include <yoyoengine/yoyoengine.h>
 #include <unistd.h>
 
@@ -596,11 +597,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                 }
             }
             if(nk_button_image_label(ctx, editor_icons.folder, "Browse Project Files", NK_TEXT_CENTERED)){
-                char command[256];
-                snprintf(command, sizeof(command), "xdg-open \"%s\"", project_path); // NOTCROSSPLATFORM
-
-                // Execute the command.
-                system(command);
+                editor_open_in_system(project_path);
             }
             if(nk_button_image_label(ctx, editor_icons.style, "Edit styles.yoyo", NK_TEXT_CENTERED)){
                 /*

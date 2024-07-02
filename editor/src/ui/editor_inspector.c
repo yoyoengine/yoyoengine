@@ -14,6 +14,7 @@
 #include "editor_serialize.h"
 #include "editor_panels.h"
 #include "editor_selection.h"
+#include "editor_utils.h"
 
 /*
     Some variables used globally
@@ -656,8 +657,21 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
             strncpy(temp_buffer, ent->lua_script->script_handle, sizeof(temp_buffer));
             temp_buffer[sizeof(temp_buffer) - 1] = '\0';  // Ensure null-termination
 
+            // layout a Nuklear row with 80% for entry and 20% for open button
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 2);
+            nk_layout_row_push(ctx, 0.77);
+
             // Allow the user to edit the text in the temporary buffer
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer, sizeof(temp_buffer), nk_filter_default);
+
+            // gap
+            nk_layout_row_push(ctx, 0.02);
+            nk_label(ctx, "", NK_TEXT_CENTERED);
+
+            // layout a Nuklear row with 20% for open button
+            nk_layout_row_push(ctx, 0.21);
+            if(nk_button_label(ctx, "Open"))
+                editor_open_in_system(ye_path_resources(temp_buffer));
 
             // If the text has been changed, replace the old text with the new one
             if (strcmp(temp_buffer, ent->lua_script->script_handle) != 0) {

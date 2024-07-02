@@ -618,18 +618,10 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                 }
             }
             if (nk_menu_item_label(ctx, "Documentation", NK_TEXT_LEFT)) {
-                #ifdef _WIN32
-                    system("start https://zoogies.github.io/yoyoengine") 
-                #else
-                    system("xdg-open https://zoogies.github.io/yoyoengine");
-                #endif
+                editor_open_in_system("https://zoogies.github.io/yoyoengine");
             }
             if (nk_menu_item_label(ctx, "Source Code", NK_TEXT_LEFT)) {
-                #ifdef _WIN32
-                    system("start https://github.com/zoogies/yoyoengine") 
-                #else
-                    system("xdg-open https://github.com/zoogies/yoyoengine");
-                #endif
+                editor_open_in_system("https://github.com/zoogies/yoyoengine");
             }
             if(nk_menu_item_label(ctx, "Credits", NK_TEXT_LEFT)) {
                 if(!ui_component_exists("credits")){

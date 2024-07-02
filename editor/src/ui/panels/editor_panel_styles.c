@@ -17,6 +17,7 @@
 
 #include "editor.h"
 #include "editor_panels.h"
+#include "editor_utils.h"
 
 json_t * style_data = NULL;
 
@@ -264,11 +265,7 @@ void editor_panel_styles(struct nk_context *ctx)
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Open in text editor")){
             ye_logf(debug, "Opening: %s", ye_path_resources("styles.yoyo"));
-
-            // open the resource
-            char command[256];
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_path_resources("styles.yoyo"));
-            system(command);  // NOTCROSSPLATFORM
+            editor_open_in_system(ye_path_resources("styles.yoyo"));
         }
 
         nk_layout_row_dynamic(ctx, 25, 1);

@@ -697,3 +697,9 @@ lua docs highlighting class annotations needs syntax highlighting, even if you h
 ## eventually todo
 
 start using conventional commits and add the github action to create releases from tags with patch notes.
+
+add custom tinting and blend more per entity
+
+filter search by entities that have components
+
+known bug where debug bool ticks need renderer object on entity to display stuff like collider or audiosource bounds

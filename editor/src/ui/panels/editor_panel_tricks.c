@@ -15,6 +15,7 @@
 */
 
 #include "editor.h"
+#include "editor_utils.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -203,11 +204,7 @@ void editor_panel_tricks(struct nk_context *ctx){
             ye_logf(debug, "Removed cached tricks_editor_cache.yoyo file\n");
         }
         if(nk_button_label(ctx, "open tricks folder")){
-            char command[256];
-            snprintf(command, sizeof(command), "xdg-open \"%s\"", ye_path("tricks/")); // NOTCROSSPLATFORM
-
-            // Execute the command.
-            system(command);
+            editor_open_in_system(ye_path("tricks/"));
         }
         if(nk_button_label(ctx, "install from git")){
             popup_open = !popup_open;

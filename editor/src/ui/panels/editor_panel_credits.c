@@ -9,6 +9,7 @@
 
 #include "editor.h"
 #include "editor_panels.h"
+#include "editor_utils.h"
 
 void editor_panel_credits(struct nk_context *ctx){
     if(nk_begin(ctx, "Credits", nk_rect((screenWidth / 2) - 200, (screenHeight / 2) - 200, 400, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|NK_WINDOW_TITLE)){
@@ -54,67 +55,35 @@ void editor_panel_credits(struct nk_context *ctx){
         nk_layout_row_dynamic(ctx, 20, 2);
 
         if(nk_button_label(ctx, "SDL")){
-            #ifdef _WIN32
-                system("start https://www.libsdl.org/") 
-            #else
-                system("xdg-open https://www.libsdl.org/");
-            #endif
+            editor_open_in_system("https://www.libsdl.org/");
         }
 
         if(nk_button_label(ctx, "SDL_Mixer")){
-            #ifdef _WIN32
-                system("start https://www.libsdl.org/projects/SDL_mixer/") 
-            #else
-                system("xdg-open https://www.libsdl.org/projects/SDL_mixer/");
-            #endif
+            editor_open_in_system("https://www.libsdl.org/projects/SDL_mixer/");
         }
 
         if(nk_button_label(ctx, "SDL_IMG")){
-            #ifdef _WIN32
-                system("start https://www.libsdl.org/projects/SDL_image/") 
-            #else
-                system("xdg-open https://www.libsdl.org/projects/SDL_image/");
-            #endif
+            editor_open_in_system("https://www.libsdl.org/projects/SDL_image/");
         }
 
         if(nk_button_label(ctx, "SDL_TTF")){
-            #ifdef _WIN32
-                system("start https://www.libsdl.org/projects/SDL_ttf/") 
-            #else
-                system("xdg-open https://www.libsdl.org/projects/SDL_ttf/");
-            #endif
+            editor_open_in_system("https://www.libsdl.org/projects/SDL_ttf/");
         }
 
         if(nk_button_label(ctx, "uthash")){
-            #ifdef _WIN32
-                system("start https://github.com/troydhanson/uthash") 
-            #else
-                system("xdg-open https://github.com/troydhanson/uthash");
-            #endif
+            editor_open_in_system("https://github.com/troydhanson/uthash");
         }
 
         if(nk_button_label(ctx, "Nuklear")){
-            #ifdef _WIN32
-                system("start https://github.com/Immediate-Mode-UI/Nuklear") 
-            #else
-                system("xdg-open https://github.com/Immediate-Mode-UI/Nuklear");
-            #endif
+            editor_open_in_system("https://github.com/Immediate-Mode-UI/Nuklear");
         }
 
         if(nk_button_label(ctx, "jansson")){
-            #ifdef _WIN32
-                system("start https://github.com/akheron/jansson") 
-            #else
-                system("xdg-open https://github.com/akheron/jansson");
-            #endif
+            editor_open_in_system("https://github.com/akheron/jansson");
         }
 
         if(nk_button_label(ctx, "zlib")){
-            #ifdef _WIN32
-                system("start https://zlib.net/") 
-            #else
-                system("xdg-open https://zlib.net/");
-            #endif
+            editor_open_in_system("https://zlib.net/");
         }
 
         // empty label to take space (odd number of items for even layouting)
