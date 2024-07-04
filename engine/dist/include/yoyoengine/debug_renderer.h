@@ -10,7 +10,7 @@
 
 #include <stdbool.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 enum ye_debug_render_type {
     YE_DEBUG_RENDER_FUNCTION,

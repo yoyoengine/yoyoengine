@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include <SDL_ttf.h>
 #include <jansson.h>
 
 #include <yoyoengine/yep.h>
@@ -719,11 +720,21 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                     if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
                         // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
                         SDL_Color color = {255, 255, 255, 255};
+
+                        // get the current engine font size
+                        int og_size = TTF_FontHeight(YE_STATE.engine.pEngineFont);
+
+                        // set the size to something way less for performance reasons
+                        TTF_SetFontSize(YE_STATE.engine.pEngineFont, 32);
+
                         SDL_Texture *text_texture = createTextTexture(current->entity->name, YE_STATE.engine.pEngineFont, &color);
                         SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
                         SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
                         SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
-                        SDL_DestroyTexture(text_texture);
+                        SDL_DestroyTexture(text_texture); // TODO: cache for reusability somewhere and invalidate when name changes?
+
+                        // set the font size back to the original size
+                        TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
                     }
 
                     if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){

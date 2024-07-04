@@ -10,6 +10,15 @@
 #include <stdio.h>
 
 #include <SDL.h>
+
+/*
+    On windows, we need nk fixed types to avoid errors...
+    not sure why but it originated in theriac era
+*/
+#ifdef _WIN32
+    #define NK_INCLUDE_FIXED_TYPES
+#endif
+
 #include <Nuklear/nuklear.h>
 
 #include <yoyoengine/timer.h>

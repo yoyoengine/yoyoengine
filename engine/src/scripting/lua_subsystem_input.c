@@ -7,7 +7,7 @@
 
 #include <stdbool.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <lua.h>
 
 #include <yoyoengine/engine.h>

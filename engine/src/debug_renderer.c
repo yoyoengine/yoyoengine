@@ -5,6 +5,8 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include <SDL.h>
+
 #include <stdlib.h>
 
 #include <yoyoengine/utils.h>
@@ -99,13 +101,14 @@ void ye_debug_renderer_render(){
                 // SDL_RenderDrawLine(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y);
                 ye_draw_thick_line(renderer, itr->data.line.start.x - camera_rect.x, itr->data.line.start.y - camera_rect.y, itr->data.line.end.x - camera_rect.x, itr->data.line.end.y - camera_rect.y, itr->width, itr->color);
                 break;
-            case YE_DEBUG_RENDER_RECT:
+            case YE_DEBUG_RENDER_RECT: {
                 SDL_Rect rect = itr->data.rect;
                 rect.x -= camera_rect.x;
                 rect.y -= camera_rect.y;
                 // SDL_RenderDrawRect(renderer, &rect);
                 ye_draw_thick_rect(renderer, rect.x, rect.y, rect.w, rect.h, itr->width, itr->color);
                 break;
+            }
             case YE_DEBUG_RENDER_CIRCLE:
                 ye_draw_circle(renderer, itr->data.circle.center.x - camera_rect.x, itr->data.circle.center.y - camera_rect.y, itr->data.circle.radius, itr->width);
                 break;

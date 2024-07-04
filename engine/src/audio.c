@@ -200,19 +200,25 @@ void ye_init_audio(){
     ye_logf(info, "Initialized audio.\n");
 }
 
+/*
+    TODO: better way to do this? we have to make sure we dont
+    free chunks and let audiosource system tentatively reschedule
+    them without knowledge that we are done with those sources
+*/
+bool mid_audio_shutdown = false;
+
 // stop playing and clear mixer cache, shutdown mixer
 void ye_shutdown_audio(){
+    mid_audio_shutdown = true;
+
     // Halt all playing channels
     Mix_HaltChannel(-1);
     // ye_logf(debug, "Halted playing all channels.\n");
 
-    /*
-        TODO: THE BELOW CAUSES A PAGE FAULT ON WINDOWS - why?
-    */
     // free all chunks
-    // ye_shutdown_mixer_cache();
+    ye_shutdown_mixer_cache();
     // free music
-    // Mix_FreeMusic(music);
+    Mix_FreeMusic(music);
 
     // reset channel counts
     audio_mix_allocated_channels = 0;
@@ -221,6 +227,8 @@ void ye_shutdown_audio(){
     // Close the audio mixer
     Mix_CloseAudio();
     ye_logf(info, "Shut down audio.\n");
+
+    mid_audio_shutdown = false;
 }
 
 /*
@@ -229,11 +237,18 @@ void ye_shutdown_audio(){
 void ye_finished_channel(int channel){
     audio_mix_busy_channels--;
 
-    // reach out to audiosource manager and let it know a channel finished,
-    // it can go through and re-request a repeat sound if it wants to
-    ye_audiosource_channel_finished(channel);
+    /*
+        if we are about to load a new scene, we actually DO NOT
+        want audiosource to begin scheduling new sounds, since
+        this callback simulates a natural channel end
+    */
+    if(!mid_audio_shutdown){
+        // reach out to audiosource manager and let it know a channel finished,
+        // it can go through and re-request a repeat sound if it wants to
+        ye_audiosource_channel_finished(channel);
+    }
 
-    // SDL_Mixer will free channels later as needed
+    // SDL_Mixer will free the empty channels later as needed
 }
 
 /*
@@ -264,7 +279,7 @@ int ye_play_sound(const char *handle, int loops, float volume_scale){ // loops w
     Mix_ChannelFinished(ye_finished_channel);
 
     // play the chunk on the channel
-    channel = Mix_PlayChannel(-1, chunk, 0);
+    channel = Mix_PlayChannel(-1, chunk, loops);
 
     totalChunks = audio_mix_busy_channels++;
 

@@ -1,3 +1,10 @@
+--[[
+    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
+    Copyright (C) 2024  Ryan Zmuda
+
+    Licensed under the MIT license. See LICENSE file in the project root for details.
+]]
+
 -- Define direct aliases for SDL2 keycodes
 KEY_UNKNOWN = 0
 KEY_BACKSPACE = 8

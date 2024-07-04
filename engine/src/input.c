@@ -13,7 +13,7 @@
     use the manual C callback for more control. 
 */
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/ui.h>
 #include <yoyoengine/input.h>

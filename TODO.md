@@ -330,10 +330,6 @@ it might be smart to use the height as the falloff start range, because unity do
 
 audio emitters are constantly playing, and just muted if outside range
 
-BUG
-
-- check memory leaks mix chunks
-
 ## otha
 
 fading in and out scene loader transitions
@@ -457,10 +453,6 @@ multi select and duplicate and transform many at once
 nuklear preview the .rc icon? could eventually be a cool addition
 allow linking custom user libs without modifying build.py directly - maybe this ends up being some way to let them add cmake commands themselves
 
-## audio shutdown and reinit is cooked
-
-it calls the callback for each channel on shutdown which might actually cause rescheduling chunks after we shutdown
-
 keepalive macro embedded in engine timer system
 
 ## skjhfgkjdfgkljflkjhdflkg hfdkljh
@@ -507,7 +499,6 @@ issues with compiler optimization is probably casts. go through and fix them all
 - copying entities fails if the name gets too long
 - serialize or expose center of rotation in editor
 - for missing assets, we used to have missing thing for images but yep will exit(1) if a header does not exist, so wrap this for images to ensure we get missing back if needed
-- audiosource system is cooked beyond belief. trying to free memory that has alreayd been freed, or accessed idk its from setting volume of channels, check valgrind
 - crashes on scene reloads a lot
 - colliders are mega scuff, if more than one is touching things get weiiirdd
 - adding intro seemed to cause inconsistant loading into entry scene
@@ -600,12 +591,6 @@ aseprite deep compatibility (super easy workflow, custom imports drag and drop)
 ## yap sesh commence
 
 could try to optimize size of lua runtime, but its only 70kb rn so not a huge deal
-
-## things needing done before 1.0
-
-lol the audio system doesnt actually replay looping for sounds, fix this when you do a new audiosource pass...
-
-- potential solution is the audiosource and audio sounds get putup in a channel lookup table with meta (like loops) decremented
 
 ## blah yap yap
 
@@ -703,3 +688,10 @@ add custom tinting and blend more per entity
 filter search by entities that have components
 
 known bug where debug bool ticks need renderer object on entity to display stuff like collider or audiosource bounds
+
+## cross platform gripes
+
+- yep packing dir traversal
+- tricks deleting directory
+- macos UI scaling in Nuklear
+- thats it?
