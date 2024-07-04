@@ -46,11 +46,10 @@ if(UNIX)
     # Post build commands to copy files and create directories
     add_custom_command(
         TARGET ${EXECUTABLE_NAME} POST_BUILD
-        # defaults should be defined by engine rather than 
-        # COMMAND ${CMAKE_COMMAND} -E copy
-            # "${CMAKE_SOURCE_DIR}/settings.yoyo" "${EDITOR_BUILD_DIR}/settings.yoyo"
-        # COMMAND ${CMAKE_COMMAND} -E copy
-            # "${CMAKE_SOURCE_DIR}/editor.yoyo" "${EDITOR_BUILD_DIR}/editor.yoyo"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/settings.yoyo" "${EDITOR_BUILD_DIR}/settings.yoyo"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/editor.yoyo" "${EDITOR_BUILD_DIR}/editor.yoyo"
         COMMAND ${CMAKE_COMMAND} -E make_directory
             "${EDITOR_BUILD_DIR}/resources"
         COMMAND ${CMAKE_COMMAND} -E copy_directory

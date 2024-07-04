@@ -196,45 +196,46 @@ class YoyoEngineBuildSystem:
 
         tricks_data = {"WARNING":"THIS FILE IS AUTO-GENERATED! DO NOT TAMPER!","tricks": []}
 
-        # Lets start by looping through each trick in the tricks folder, and invoking add_subdirectory to its path
-        for trick in os.listdir("./tricks"):
-            # if this is not a directory, skip it
-            if not os.path.isdir("./tricks/" + trick):
-                continue
+        if os.path.exists("./tricks"):
+            # Lets start by looping through each trick in the tricks folder, and invoking add_subdirectory to its path
+            for trick in os.listdir("./tricks"):
+                # if this is not a directory, skip it
+                if not os.path.isdir("./tricks/" + trick):
+                    continue
 
-            # write the name
-            cmake_file.write(f"        # {trick}\n")
-            # write the add_subdirectory command
-            cmake_file.write(f"        add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
-            # include a default path in that trick
-            cmake_file.write(f"        target_include_directories({self.game_name} PRIVATE {self.script_location}/tricks/{trick}/include)\n")
-            # make sure this happens after the game is built
-            cmake_file.write(f"        add_dependencies({trick} yoyoengine)\n")
-            # link the trick to the game
-            cmake_file.write(f"        target_link_libraries({self.game_name} PRIVATE {trick})\n\n")
+                # write the name
+                cmake_file.write(f"        # {trick}\n")
+                # write the add_subdirectory command
+                cmake_file.write(f"        add_subdirectory({self.script_location}/tricks/{trick} trick_builds/{trick})\n")
+                # include a default path in that trick
+                cmake_file.write(f"        target_include_directories({self.game_name} PRIVATE {self.script_location}/tricks/{trick}/include)\n")
+                # make sure this happens after the game is built
+                cmake_file.write(f"        add_dependencies({trick} yoyoengine)\n")
+                # link the trick to the game
+                cmake_file.write(f"        target_link_libraries({self.game_name} PRIVATE {trick})\n\n")
 
-            # look at its trick.yoyo file and get the name of the trick
-            trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
-            trick_data = json.load(trick_file)
-            trick_file.close()
+                # look at its trick.yoyo file and get the name of the trick
+                trick_file = open("./tricks/" + trick + "/trick.yoyo", "r")
+                trick_data = json.load(trick_file)
+                trick_file.close()
 
-            trick_name = trick_data["name"]
-            trick_description = trick_data["description"]
-            trick_author = trick_data["author"]
-            trick_version = trick_data["version"]
+                trick_name = trick_data["name"]
+                trick_description = trick_data["description"]
+                trick_author = trick_data["author"]
+                trick_version = trick_data["version"]
 
-            # Add the trick data to the tricks_data dictionary
-            tricks_data["tricks"].append({
-                "name": trick_name,
-                "description": trick_description,
-                "author": trick_author,
-                "version": trick_version
-            })
+                # Add the trick data to the tricks_data dictionary
+                tricks_data["tricks"].append({
+                    "name": trick_name,
+                    "description": trick_description,
+                    "author": trick_author,
+                    "version": trick_version
+                })
 
-        # Write the tricks_data to the tricks_file in JSON format
-        json.dump(tricks_data, tricks_file, indent=4)
+            # Write the tricks_data to the tricks_file in JSON format
+            json.dump(tricks_data, tricks_file, indent=4)
 
-        tricks_file.close()
+            tricks_file.close()
 
         cmake_file.write(f"""\n        # DONE BUILDING TRICKS\n""")
 

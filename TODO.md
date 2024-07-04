@@ -691,3 +691,5 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 ## alkapivo bugs
 
 - need to run reconfigure on first editor build
+- cmake is crazy weird, i think its lua target bricking stuff
+- you have to manually set the path to your engine build in the editor, super odd
