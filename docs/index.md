@@ -60,6 +60,7 @@ This section is temporary and will be used to denote any important facts I need 
 - [SDL2_image](https://www.libsdl.org/projects/SDL_image/)
 - [SDL2_ttf](https://www.libsdl.org/projects/SDL_ttf/)
 - [SDL2_mixer](https://www.libsdl.org/projects/SDL_mixer/)
+- [SDL2_net](https://www.libsdl.org/projects/SDL_net/)
 - [uthash](https://github.com/troydhanson/uthash)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
 - [jansson](https://github.com/akheron/jansson)

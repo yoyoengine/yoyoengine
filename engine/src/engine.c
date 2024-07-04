@@ -30,6 +30,7 @@
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/graphics.h>
+#include <yoyoengine/networking.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/physics.h>
@@ -374,6 +375,9 @@ void ye_init_engine() {
 
     // the audio initialization accesses YE_STATE.engine.volume to cap each channel by default
 
+    // initialize networking
+    ye_init_networking();
+
     // initialize and load tricks (modules/plugins)
     ye_init_tricks();
 
@@ -417,6 +421,9 @@ void ye_shutdown_engine(){
 
     // shut tricks down
     ye_shutdown_tricks();
+
+    // shutdown networking
+    ye_shutdown_networking();
 
     // purge debug renderer
     ye_debug_renderer_cleanup(true);

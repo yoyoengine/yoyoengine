@@ -26,6 +26,7 @@ Feature List:
 
 - Easy to use visual editor
 - Multi platform support (Windows, Linux, Web)
+- Basic Networking through **SDL_net**
 - Asset bundling by default, for optimized builds.
 - A plugin system, with a few premade plugins for things like Discord RPC (see [yoyo-rpc](https://github.com/zoogies/yoyo-rpc))
 - Generic Gamepad and Controller abstraction layer
@@ -33,7 +34,7 @@ Feature List:
 
 Tech Stack:
 
-- [SDL2](https://www.libsdl.org/) (windowing, rendering, audio, input, etc)
+- [SDL2](https://www.libsdl.org/) (windowing, rendering, audio, input, networking, etc)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) (UI)
 - [Uthash](https://github.com/troydhanson/uthash) (Hash tables)
 - [Jansson](https://github.com/akheron/jansson) (JSON parsing)

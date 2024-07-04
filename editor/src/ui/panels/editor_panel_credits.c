@@ -70,6 +70,10 @@ void editor_panel_credits(struct nk_context *ctx){
             editor_open_in_system("https://www.libsdl.org/projects/SDL_ttf/");
         }
 
+        if(nk_button_label(ctx, "SDL_Net")){
+            editor_open_in_system("https://www.libsdl.org/projects/SDL_net/");
+        }
+
         if(nk_button_label(ctx, "uthash")){
             editor_open_in_system("https://github.com/troydhanson/uthash");
         }

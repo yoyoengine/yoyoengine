@@ -32,7 +32,7 @@ SOFTWARE.
 This project would not have been possible without the following open-source projects,
 generously provided under their listed licenses:
 
-### SDL, SDL_image, SDL_mixer, and SDL_ttf:
+### SDL, SDL_image, SDL_mixer, SDL_ttf, and SDL_net:
 
 ```txt
 Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>

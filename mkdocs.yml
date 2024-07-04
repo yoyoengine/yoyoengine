@@ -117,3 +117,4 @@ nav:
     - C Scripting:
       - Scripting/C Scripting/c_scripting.md
   #     # - Scripting/Lua Scripting/c_scripting.md
+  - networking.md

@@ -687,3 +687,7 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 - tricks deleting directory
 - macos UI scaling in Nuklear
 - thats it?
+
+## alkapivo bugs
+
+- need to run reconfigure on first editor build
