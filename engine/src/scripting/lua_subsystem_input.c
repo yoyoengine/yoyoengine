@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <lua.h>
 
+#include <yoyoengine/utils.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/input.h>
 #include <yoyoengine/lua_api.h>
@@ -19,6 +20,8 @@
     Return a table with the mouse state
     .x: The x position of the mouse
     .y: The y position of the mouse
+    .worldX: The x position of the mouse in world coordinates
+    .worldY: The y position of the mouse in world coordinates
     .leftClicked: Whether the left mouse button is clicked
     .middleClicked: Whether the middle mouse button is clicked
     .rightClicked: Whether the right mouse button is clicked
@@ -27,6 +30,9 @@ int ye_lua_query_mouse_state(lua_State *L) {
     int x, y;
     int buttons = SDL_GetMouseState(&x, &y);
 
+    int wx = x; int wy = y;
+    ye_get_mouse_world_position(&wx, &wy);
+
     lua_newtable(L);
 
     // x
@@ -34,6 +40,12 @@ int ye_lua_query_mouse_state(lua_State *L) {
 
     // y
     lua_pushinteger(L, y); lua_setfield(L, -2, "y");
+
+    // world x
+    lua_pushinteger(L, wx); lua_setfield(L, -2, "worldX");
+
+    // world y
+    lua_pushinteger(L, wy); lua_setfield(L, -2, "worldY");
 
     // leftClicked
     lua_pushboolean(L, buttons & SDL_BUTTON(SDL_BUTTON_LEFT)); lua_setfield(L, -2, "leftClicked");

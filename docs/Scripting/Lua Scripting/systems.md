@@ -138,8 +138,10 @@ which will return a table `MouseState`:
 ```lua
 ---MouseState represents the state of the mouse.
 ---@class MouseState
----@field x number The x-coordinate of the mouse.
----@field y number The y-coordinate of the mouse.
+---@field x number The x-coordinate of the mouse in the window.
+---@field y number The y-coordinate of the mouse in the window.
+---@field worldX number The world x-coordinate of the mouse.
+---@field worldY number The world y-coordinate of the mouse.
 ---@field leftClicked boolean Whether the left mouse button is clicked.
 ---@field middleClicked boolean Whether the middle mouse button is clicked.
 ---@field rightClicked boolean Whether the right mouse button is clicked.
