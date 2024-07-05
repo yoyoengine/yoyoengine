@@ -705,6 +705,12 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Script Component")){
+
+            // if file does not exist, lets create it
+            if(!editor_file_exists(ye_path_resources(proposed_script_path))){
+                editor_touch_file(ye_path_resources(proposed_script_path), "-- Template yoyoengine Lua script,\n-- provided for your convenience! :)\n\nfunction onMount()\n\t\nend\n\nfunction onUpdate()\n\t\nend\n\nfunction onUnmount()\n\t\nend");
+            }
+
             ye_add_lua_script_component(ent, proposed_script_path); // TODO: lua system hasnt been updated for yep yet. we need to read from bytecode or just content
             editor_unsaved();
         }

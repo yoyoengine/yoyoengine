@@ -693,3 +693,9 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 - need to run reconfigure on first editor build
 - cmake is crazy weird, i think its lua target bricking stuff
 - you have to manually set the path to your engine build in the editor, super odd
+
+## BB/fighter stuff
+
+- physics gravity fall towards floor? would cause lot of collisions persistantly, how does unity do it?
+- lua scipting pass globals from editor panel.
+- lua scripting we should have an implicit SELF table pushed to script that represents the entity they are attached to, since this wont change during the lifecycle of that script's execution

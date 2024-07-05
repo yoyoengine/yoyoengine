@@ -437,7 +437,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
                         ye_logf(error, "Scene already exists.\n");
                     }
                     else{
-                        ye_json_write(new_scene_path, new_scene);
+                        ye_json_write(ye_path_resources(new_scene_path), new_scene);
                         new_scene_popup_open = false;
                         editor_load_scene(new_scene_path);
                         editor_saved();
