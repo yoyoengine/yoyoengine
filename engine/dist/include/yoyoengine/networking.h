@@ -8,6 +8,8 @@
 #ifndef YE_NETWORKING_H
 #define YE_NETWORKING_H
 
+#include <SDL_net.h>
+
 void ye_init_networking();
 
 void ye_shutdown_networking();

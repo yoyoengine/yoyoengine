@@ -241,6 +241,8 @@ target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include
 #   SDL2_net  #
 ###############
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
+
 FetchContent_Declare(
     SDL2_net
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
@@ -248,13 +250,24 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(SDL2_net)
-target_include_directories(yoyoengine PUBLIC ${SDL2_net_SOURCE_DIR}/include)
+target_include_directories(yoyoengine PUBLIC ${SDL2_net_SOURCE_DIR})
 
 ###############
 #   linking   #
 ###############
 
-target_link_libraries(yoyoengine PRIVATE jansson zlibstatic SDL2-static SDL2_ttf SDL2_image SDL2_mixer SDL2_net lua_static)
+target_link_libraries(yoyoengine PRIVATE
+    -Wl,--whole-archive
+    jansson
+    zlibstatic
+    SDL2-static
+    SDL2_ttf
+    SDL2_image
+    SDL2_mixer
+    SDL2_net
+    lua_static
+    -Wl,--no-whole-archive
+)
 
 # create an output dir based on platform
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)

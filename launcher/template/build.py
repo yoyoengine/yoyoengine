@@ -154,7 +154,7 @@ class YoyoEngineBuildSystem:
 
         set(SOURCES "{self.script_location}/entry.c")
 
-        file(GLOB CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
+        file(GLOB_RECURSE CUSTOM_SOURCES "{self.script_location}/custom/src/*.c")
 
         ## rpath on linux ##
         SET(CMAKE_SKIP_BUILD_RPATH  FALSE)

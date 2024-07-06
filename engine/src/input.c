@@ -24,19 +24,22 @@
 
 void ye_init_input(){
     // if we are in editor mode, dont bother with controllers
-    if(!YE_STATE.editor.editor_mode){
-        YE_STATE.runtime.num_controllers = 0;
-        for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
-            if(SDL_IsGameController(i)){
-                YE_STATE.runtime.controllers[i] = SDL_GameControllerOpen(i);
-                if(YE_STATE.runtime.controllers[i] != NULL){
-                    YE_STATE.runtime.num_controllers++;
-                    ye_logf(info, "Detected GameController %d: %s\n", i, SDL_GameControllerName(YE_STATE.runtime.controllers[i]));
-                }
-            }
-        }
-        ye_logf(info, "Detected %d controller(s).\n", YE_STATE.runtime.num_controllers);
-    }
+    // if(!YE_STATE.editor.editor_mode){
+    //     YE_STATE.runtime.num_controllers = 0;
+    //     for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+    //         if(SDL_IsGameController(i)){
+    //             YE_STATE.runtime.controllers[i] = SDL_GameControllerOpen(i);
+    //             if(YE_STATE.runtime.controllers[i] != NULL){
+    //                 YE_STATE.runtime.num_controllers++;
+    //                 ye_logf(info, "Detected GameController %d: %s\n", i, SDL_GameControllerName(YE_STATE.runtime.controllers[i]));
+    //             }
+    //         }
+    //     }
+    //     ye_logf(info, "Detected %d controller(s).\n", YE_STATE.runtime.num_controllers);
+    // }
+
+    // ^ now that we observe disconnects and connects, we dont need this initialization... leaving for posterity
+
     ye_logf(info, "Initialized Input Subsystem.\n");
 }
 
@@ -113,6 +116,42 @@ void ye_system_input() {
                         break;
                 }
                 break;
+        }
+
+        // controller stuff that only applies in game mode
+        if(!YE_STATE.editor.editor_mode){
+            switch(e.type){
+
+                // controller connect/disconnect events //
+                case SDL_CONTROLLERDEVICEREMOVED:
+                    // remove the controller from the list
+                    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+                        if(YE_STATE.runtime.controllers[i] != NULL){
+                            if(SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(YE_STATE.runtime.controllers[i])) == e.cdevice.which){
+                                SDL_GameControllerClose(YE_STATE.runtime.controllers[i]);
+                                YE_STATE.runtime.controllers[i] = NULL;
+                                YE_STATE.runtime.num_controllers--;
+                                ye_logf(info, "Disconnected GameController %d.\n", e.cdevice.which);
+                            }
+                        }
+                    }
+                    break;
+
+                case SDL_CONTROLLERDEVICEADDED:
+                    // add the controller to the list
+                    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+                        if(YE_STATE.runtime.controllers[i] == NULL){
+                            YE_STATE.runtime.controllers[i] = SDL_GameControllerOpen(e.cdevice.which);
+                            if(YE_STATE.runtime.controllers[i] != NULL){
+                                YE_STATE.runtime.num_controllers++;
+                                ye_logf(info, "Connected GameController %d: %s\n", e.cdevice.which, SDL_GameControllerName(YE_STATE.runtime.controllers[i]));
+                            }
+                            break;
+                        }
+                    }
+                    break;
+
+            }
         }
 
         // poll for ECS button events
