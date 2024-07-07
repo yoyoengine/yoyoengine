@@ -385,7 +385,7 @@ void ye_purge_ecs(){
     if(YE_STATE.editor.editor_mode){
         struct ye_entity * editor_camera = ye_create_entity_named("editor_camera");
         ye_add_transform_component(editor_camera, 0, 0);
-        ye_add_camera_component(editor_camera, 999, (SDL_Rect){0, 0, 2560, 1440});
+        ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
         ye_set_camera(editor_camera);
 
         struct ye_entity * origin = ye_create_entity_named("origin");

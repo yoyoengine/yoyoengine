@@ -67,6 +67,8 @@ struct ye_component_renderer {
         struct ye_component_renderer_animation *animation;
         struct ye_component_renderer_tilemap_tile *tile;
     } renderer_impl;
+
+    bool lock_aspect_ratio; ///< locks the rect aspect ratio
 };
 
 /**

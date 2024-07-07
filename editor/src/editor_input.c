@@ -20,8 +20,8 @@
 void editor_update_mouse_world_pos(int x, int y){
     // y = y - 35; // account for the menu bar
 
-    float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
-    float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+    float scaleX = (float)YE_STATE.engine.screen_width / YE_STATE.engine.target_camera->camera->view_field.w;
+    float scaleY = (float)YE_STATE.engine.screen_height / YE_STATE.engine.target_camera->camera->view_field.h;
     struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
     mouse_world_x = ((x / scaleX) + campos.x);
     mouse_world_y = ((y / scaleY) + campos.y);
@@ -47,8 +47,8 @@ void update_mx_my(){
     my = _my;
 
     // use the camera size to calculate the world coordinates of the mouse position
-    float scaleX = (float)YE_STATE.engine.screen_width / (float)YE_STATE.engine.target_camera->camera->view_field.w;
-    float scaleY = (float)YE_STATE.engine.screen_height / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+    float scaleX = (float)YE_STATE.engine.screen_width / YE_STATE.engine.target_camera->camera->view_field.w;
+    float scaleY = (float)YE_STATE.engine.screen_height / YE_STATE.engine.target_camera->camera->view_field.h;
     struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
     mx = ((mx / scaleX) + campos.x);
     my = ((my / scaleY) + campos.y);
@@ -194,6 +194,7 @@ void editor_input_shortcuts(SDL_Event event){
             if (event.key.keysym.mod & KMOD_CTRL && event.key.keysym.mod & KMOD_SHIFT)
             {
                 ye_logf(debug,"Editor Reloading Scene.\n");
+                editor_deselect_all();
                 ye_reload_scene();
                 editor_re_attach_ecs();
                 editor_saved();

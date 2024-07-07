@@ -175,7 +175,7 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
         case YE_COMPONENT_CAMERA:
             if(entity->camera != NULL){
                 // set x,y,w,h
-                pos = ye_convert_rect_rectf(entity->camera->view_field);
+                pos = entity->camera->view_field;
 
                 // if relative adjust its position
                 if(entity->camera->relative && entity->transform != NULL){

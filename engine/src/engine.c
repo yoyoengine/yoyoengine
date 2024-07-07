@@ -218,7 +218,7 @@ void setup_splash_screen(){
 
     struct ye_entity * splash_cam = ye_create_entity();
     ye_add_transform_component(splash_cam, 0,0);
-    ye_add_camera_component(splash_cam, 999, (SDL_Rect){0,0,1920,1080});
+    ye_add_camera_component(splash_cam, 999, (struct ye_rectf){0,0,1920,1080});
     ye_set_camera(splash_cam);
 
     // background for splash

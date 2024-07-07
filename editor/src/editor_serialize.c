@@ -49,16 +49,19 @@ void serialize_entity_camera(struct ye_entity *entity, json_t *entity_json){
 
     // set the view field object
     json_t *view_field = json_object();
-    json_object_set_new(view_field, "x", json_integer(entity->camera->view_field.x));
-    json_object_set_new(view_field, "y", json_integer(entity->camera->view_field.y));
-    json_object_set_new(view_field, "w", json_integer(entity->camera->view_field.w));
-    json_object_set_new(view_field, "h", json_integer(entity->camera->view_field.h));
+    json_object_set_new(view_field, "x", json_real(entity->camera->view_field.x));
+    json_object_set_new(view_field, "y", json_real(entity->camera->view_field.y));
+    json_object_set_new(view_field, "w", json_real(entity->camera->view_field.w));
+    json_object_set_new(view_field, "h", json_real(entity->camera->view_field.h));
 
     // set the camera object
     json_object_set_new(entity_json, "camera", camera);
 
     // set the view field object
     json_object_set_new(camera, "view field", view_field);
+
+    // set the lock aspect ratio
+    json_object_set_new(camera, "lock aspect ratio", json_boolean(entity->camera->lock_aspect_ratio));
 }
 
 /*
@@ -112,6 +115,9 @@ void serialize_entity_renderer(struct ye_entity *entity, json_t *entity_json){
 
     // set the roatation
     json_object_set_new(renderer, "rotation", json_real(entity->renderer->rotation));
+
+    // aspect ratio lock
+    json_object_set_new(renderer, "lock aspect ratio", json_boolean(entity->renderer->lock_aspect_ratio));
 
     // and now the fun part... the renderer specific impl
 

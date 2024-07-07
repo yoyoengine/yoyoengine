@@ -699,3 +699,8 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 - physics gravity fall towards floor? would cause lot of collisions persistantly, how does unity do it?
 - lua scipting pass globals from editor panel.
 - lua scripting we should have an implicit SELF table pushed to script that represents the entity they are attached to, since this wont change during the lifecycle of that script's execution
+
+## slkgjdlskgd
+
+audio source falloff distance
+collider aspect ratio lock?

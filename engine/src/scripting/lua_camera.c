@@ -28,7 +28,7 @@ int ye_lua_create_camera(lua_State *L) {
     int h = luaL_checknumber(L, 5);
     int z = luaL_checknumber(L, 6);
 
-    ye_add_camera_component(ent, z, (SDL_Rect){x, y, w, h});
+    ye_add_camera_component(ent, z, (struct ye_rectf){x, y, w, h});
 
     return 0;
 }

@@ -91,15 +91,29 @@ void _paint_transform(struct nk_context *ctx, struct ye_entity *ent){
 void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
     if(ent->renderer != NULL){
         if(nk_tree_push(ctx, NK_TREE_TAB, "Renderer", NK_MAXIMIZED)){
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_dynamic(ctx, 25, 3);
             nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->renderer->active);
             nk_checkbox_label(ctx, "Relative", (nk_bool*)&ent->renderer->relative);
+            nk_checkbox_label(ctx, "Lock Aspect Ratio", (nk_bool*)&ent->renderer->lock_aspect_ratio);
 
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_property_float(ctx, "#x", -1000000, &ent->renderer->rect.x, 1000000, 1, 5);
             nk_property_float(ctx, "#y", -1000000, &ent->renderer->rect.y, 1000000, 1, 5);
-            nk_property_float(ctx, "#w", -1000000, &ent->renderer->rect.w, 1000000, 1, 5);
-            nk_property_float(ctx, "#h", -1000000, &ent->renderer->rect.h, 1000000, 1, 5);
+
+            float prev_w = ent->renderer->rect.w;
+            float prev_h = ent->renderer->rect.h;
+
+            nk_property_float(ctx, "#w", 0, &ent->renderer->rect.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#h", 0, &ent->renderer->rect.h, 1000000, 1, 5);
+
+            if(ent->renderer->lock_aspect_ratio){
+                if(prev_w != ent->renderer->rect.w){
+                    ent->renderer->rect.h = ent->renderer->rect.w * (prev_h / prev_w);
+                }
+                else if(prev_h != ent->renderer->rect.h){
+                    ent->renderer->rect.w = ent->renderer->rect.h * (prev_w / prev_h);
+                }
+            }
 
             nk_checkbox_label(ctx, "Flipped X", (nk_bool*)&ent->renderer->flipped_x);
             nk_checkbox_label(ctx, "Flipped Y", (nk_bool*)&ent->renderer->flipped_y);
@@ -497,14 +511,29 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
 void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
     if(ent->camera != NULL){
         if(nk_tree_push(ctx, NK_TREE_TAB, "Camera", NK_MAXIMIZED)){
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_dynamic(ctx, 25, 3);
             nk_checkbox_label(ctx, "Active", (nk_bool*)&ent->camera->active);
             nk_checkbox_label(ctx, "Relative", (nk_bool*)&ent->camera->relative);
+            nk_checkbox_label(ctx, "Lock Aspect Ratio", (nk_bool*)&ent->camera->lock_aspect_ratio);
             nk_layout_row_dynamic(ctx, 25, 2);
-            nk_property_int(ctx, "#x", -1000000, &ent->camera->view_field.x, 1000000, 1, 5);
-            nk_property_int(ctx, "#y", -1000000, &ent->camera->view_field.y, 1000000, 1, 5);
-            nk_property_int(ctx, "#w", -1000000, &ent->camera->view_field.w, 1000000, 1, 5);
-            nk_property_int(ctx, "#h", -1000000, &ent->camera->view_field.h, 1000000, 1, 5);
+            nk_property_float(ctx, "#x", -1000000, &ent->camera->view_field.x, 1000000, 1, 5);
+            nk_property_float(ctx, "#y", -1000000, &ent->camera->view_field.y, 1000000, 1, 5);
+
+            float prev_w = ent->camera->view_field.w;
+            float prev_h = ent->camera->view_field.h;
+
+            nk_property_float(ctx, "#w", 0, &ent->camera->view_field.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#h", 0, &ent->camera->view_field.h, 1000000, 1, 5);
+            
+            if(ent->camera->lock_aspect_ratio){
+                if(prev_w != ent->camera->view_field.w){
+                    ent->camera->view_field.h = ent->camera->view_field.w * (prev_h / prev_w);
+                }
+                else if(prev_h != ent->camera->view_field.h){
+                    ent->camera->view_field.w = ent->camera->view_field.h * (prev_w / prev_h);
+                }
+            }
+            
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_property_int(ctx, "#z", -1000000, &ent->camera->z, 1000000, 1, 5);
 
@@ -528,7 +557,7 @@ void _paint_camera(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_button_label(ctx, "Add Camera Component")){
-            ye_add_camera_component(ent, 9999, (SDL_Rect){0,0,1920,1080});
+            ye_add_camera_component(ent, 9999, (struct ye_rectf){0,0,1920,1080});
             editor_unsaved();
         }
     }
@@ -545,8 +574,8 @@ void _paint_collider(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_property_float(ctx, "#x", -1000000, &ent->collider->rect.x, 1000000, 1, 5);
             nk_property_float(ctx, "#y", -1000000, &ent->collider->rect.y, 1000000, 1, 5);
-            nk_property_float(ctx, "#w", -1000000, &ent->collider->rect.w, 1000000, 1, 5);
-            nk_property_float(ctx, "#h", -1000000, &ent->collider->rect.h, 1000000, 1, 5);
+            nk_property_float(ctx, "#w", 0, &ent->collider->rect.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#h", 0, &ent->collider->rect.h, 1000000, 1, 5);
             
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -822,8 +851,8 @@ void _paint_button(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 2);
             nk_property_float(ctx, "#x", -1000000, &ent->button->rect.x, 1000000, 1, 5);
             nk_property_float(ctx, "#y", -1000000, &ent->button->rect.y, 1000000, 1, 5);
-            nk_property_float(ctx, "#w", -1000000, &ent->button->rect.w, 1000000, 1, 5);
-            nk_property_float(ctx, "#h", -1000000, &ent->button->rect.h, 1000000, 1, 5);
+            nk_property_float(ctx, "#w", 0, &ent->button->rect.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#h", 0, &ent->button->rect.h, 1000000, 1, 5);
             
 
             nk_layout_row_dynamic(ctx, 25, 1);
@@ -1003,7 +1032,7 @@ void ye_editor_paint_inspector(struct nk_context *ctx){
                 nk_end(ctx);
                 return;
             }
-            else{
+            else if (num_editor_selections == 1) { // do not handle 0 selections because this panel is unrendered
                 nk_layout_row_dynamic(ctx, 25, 2);
                 nk_label(ctx, "Name:", NK_TEXT_LEFT);
                 // TODO: bugfix name editing, setting to zero len is unhappy, also should be 99 for str term?

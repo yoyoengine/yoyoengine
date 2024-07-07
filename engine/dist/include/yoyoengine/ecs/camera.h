@@ -15,6 +15,7 @@
 
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/utils.h>
 #include <SDL.h>
 
 /**
@@ -28,7 +29,9 @@ struct ye_component_camera {
     bool relative;  // whether or not this comp is relative to a parent transform
     int z; // the layer the camera sits on
 
-    SDL_Rect view_field;    // view field of camera
+    struct ye_rectf view_field;    // view field of camera
+
+    bool lock_aspect_ratio; // whether or not to lock the aspect ratio of the view field
 };
 
 /**
@@ -45,7 +48,7 @@ void ye_set_camera(struct ye_entity *entity);
  * @param z The layer the camera sits on
  * @param view_field The view field of the camera
  */
-void ye_add_camera_component(struct ye_entity *entity, int z, SDL_Rect view_field);
+void ye_add_camera_component(struct ye_entity *entity, int z, struct ye_rectf view_field);
 
 /**
  * @brief Removes a camera component from an entity

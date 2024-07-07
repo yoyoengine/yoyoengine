@@ -92,6 +92,7 @@ void editor_reload_settings(){
 }
 
 void editor_load_scene(char * path){
+    editor_deselect_all();
     ye_load_scene(path);
     editor_re_attach_ecs();
 }
@@ -323,7 +324,7 @@ int main(int argc, char **argv) {
     // create our editor camera and register it with the engine
     editor_camera = ye_create_entity_named("editor_camera");
     ye_add_transform_component(editor_camera, 0, 0);
-    ye_add_camera_component(editor_camera, 999, (SDL_Rect){0, 0, 2560, 1440});
+    ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
     ye_set_camera(editor_camera);
 
     // register all editor ui components

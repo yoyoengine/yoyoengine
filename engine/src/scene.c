@@ -92,8 +92,8 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
     }
 
     // validate the x,y,w,h ints in view feild
-    int cx,cy,cw,ch;
-    if(!ye_json_int(view_field,"x",&cx) || !ye_json_int(view_field,"y",&cy) || !ye_json_int(view_field,"w",&cw) || !ye_json_int(view_field,"h",&ch)) {
+    float cx,cy,cw,ch;
+    if(!ye_json_float(view_field,"x",&cx) || !ye_json_float(view_field,"y",&cy) || !ye_json_float(view_field,"w",&cw) || !ye_json_float(view_field,"h",&ch)) {
         ye_logf(warning,"Entity %s has a camera component with invalid view field\n", entity_name);
         return;
     }
@@ -105,12 +105,17 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
     }
 
     // add the camera component
-    ye_add_camera_component(e,z,(SDL_Rect){cx,cy,cw,ch});
+    ye_add_camera_component(e,z,(struct ye_rectf){cx,cy,cw,ch});
 
     // update active state
     if(ye_json_has_key(camera,"active")){
         bool active = true;    ye_json_bool(camera,"active",&active);
         e->camera->active = active;
+    }
+
+    // check for locked aspect ratio
+    if(ye_json_has_key(camera,"lock aspect ratio")){
+        ye_json_bool(camera,"lock aspect ratio",&e->camera->lock_aspect_ratio);
     }
 }
 
@@ -276,6 +281,11 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
     
     // set the rect
     e->renderer->rect = rect;
+
+    // update aspect ratio lock (if exists)
+    if(ye_json_has_key(renderer,"lock aspect ratio")){
+        ye_json_bool(renderer,"lock aspect ratio",&e->renderer->lock_aspect_ratio);
+    }
 
     // update the aplha (if exists)
     if(ye_json_has_key(renderer,"alpha")){

@@ -31,7 +31,7 @@ struct editor_selection_node{
 extern struct editor_selection_node * editor_selections;
 extern int num_editor_selections;
 
-#define editor_current_selection (editor_selections->ent)
+#define editor_current_selection (editor_selections ? editor_selections->ent : NULL)
 
 /**
  * @brief The entry point for all selection event parsing
