@@ -273,7 +273,7 @@ void ye_render_all() {
     */
     if(!YE_STATE.engine.stretch_viewport){
         // credit to my goat: github copilot for this one
-        SDL_RenderSetLogicalSize(pRenderer, YE_STATE.engine.target_camera->camera->view_field.w, YE_STATE.engine.target_camera->camera->view_field.h);
+        SDL_RenderSetLogicalSize(pRenderer, (int)YE_STATE.engine.target_camera->camera->view_field.w, (int)YE_STATE.engine.target_camera->camera->view_field.h);
     }
 
     ye_system_renderer(pRenderer);

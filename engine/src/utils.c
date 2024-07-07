@@ -324,8 +324,8 @@ void ye_get_mouse_world_position(int *x, int *y){
         // if we aren't using letterboxing, use the fullscreen dimensions
         viewableWidth = screenSize.width;
         viewableHeight = screenSize.height;
-        scaleX = viewableWidth / (float)YE_STATE.engine.target_camera->camera->view_field.w;
-        scaleY = viewableHeight / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+        scaleX = viewableWidth / YE_STATE.engine.target_camera->camera->view_field.w;
+        scaleY = viewableHeight / YE_STATE.engine.target_camera->camera->view_field.h;
 
         // printf("Viewable size: %d, %d\n", viewableWidth, viewableHeight);
 
@@ -335,8 +335,8 @@ void ye_get_mouse_world_position(int *x, int *y){
         // if we are using letterboxing, use the letterbox dimensions
         viewableWidth = YE_STATE.engine.letterbox.w;
         viewableHeight = YE_STATE.engine.letterbox.h;
-        scaleX = viewableWidth / (float)YE_STATE.engine.target_camera->camera->view_field.w;
-        scaleY = viewableHeight / (float)YE_STATE.engine.target_camera->camera->view_field.h;
+        scaleX = viewableWidth / YE_STATE.engine.target_camera->camera->view_field.w;
+        scaleY = viewableHeight / YE_STATE.engine.target_camera->camera->view_field.h;
 
         *x = (((*x - YE_STATE.engine.letterbox.x) / scaleX) + campos.x);
         *y = (((*y - YE_STATE.engine.letterbox.y) / scaleY) + campos.y);

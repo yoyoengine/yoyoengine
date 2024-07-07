@@ -704,3 +704,9 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 
 audio source falloff distance
 collider aspect ratio lock?
+
+## way later
+
+no visual launcher in python that shit is ass
+
+- editor should be the hub, since all you need is a folder. The editor itself can create the blank project templates, open projects, etc
