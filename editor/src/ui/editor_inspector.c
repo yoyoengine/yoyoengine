@@ -776,8 +776,8 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             nk_layout_row_dynamic(ctx, 25, 1);
             // save size before
             float size = ent->audiosource->range.w;
-            nk_property_float(ctx, "#size", 0, &ent->audiosource->range.w, 1000000, 1, 5);
-            ent->audiosource->range.h = ent->audiosource->range.w;
+            nk_property_float(ctx, "#size", ent->audiosource->range.h, &ent->audiosource->range.w, 1000000, 1, 5);
+            nk_property_float(ctx, "#falloff start", 0, &ent->audiosource->range.h, ent->audiosource->range.w, 1, 5);
 
             // if the size changed, move the x and y to keep the center the same
             if(size != ent->audiosource->range.w){
@@ -824,7 +824,8 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             }
             
             SDL_Rect circ = ye_get_position_rect(ent, YE_COMPONENT_AUDIOSOURCE);
-            ye_debug_render_circle(circ.x + (circ.w / 2), circ.y + (circ.h / 2), circ.w / 2, (SDL_Color){0, 255, 0, 128}, 8);
+            ye_debug_render_circle(circ.x + (circ.w / 2), circ.y + (circ.w / 2), circ.w / 2, (SDL_Color){0, 255, 0, 128}, 8);
+            ye_debug_render_circle(circ.x + (circ.w / 2), circ.y + (circ.w / 2), circ.h / 2, (SDL_Color){128, 255, 0, 128}, 8);
 
             nk_tree_pop(ctx);
         }

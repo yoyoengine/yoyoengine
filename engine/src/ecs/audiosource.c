@@ -109,10 +109,31 @@ void ye_system_audiosource(){
 
                     // find the center float of the audio source
                     float src_center_x = pos.x + (pos.w / 2);
-                    float src_center_y = pos.y + (pos.h / 2);
+                    float src_center_y = pos.y + (pos.w / 2);
 
                     // find the distance between src center and listener
                     float distance = ye_distance(listener_x, listener_y, src_center_x, src_center_y);
+
+                    /*
+                        If we are within falloff ring, play at full volume
+                    */
+                    if(distance < src->range.h / 2){
+                        distance = 0;
+                    }
+                    else {
+                        /*
+                            Outside the falloff ring we scale the distance between
+                            the observer and the beginning of the falloff ring
+
+                            TODO: maybe a better way to do this,
+                            stupid hack to make sure the division
+                            for distance_from_center_scaled is proper
+                        */
+                        if(!(src->range.h / 2 >= src->range.w / 2)) // if the rings dont overlap, scale distance
+                            distance -= src->range.h / 2;
+                        else // if rings overlap, erase fallback ring (hack)
+                            src->range.h = 0;
+                    }
 
                     // find the angle between src center and listener
                     float angle = ye_angle(listener_x, listener_y, src_center_x, src_center_y);
@@ -124,8 +145,8 @@ void ye_system_audiosource(){
                     }
 
                     // SDL_Mixer takes in a uint8_t for the distance, so we need to scale the distance to 0-255
-
-                    int distance_from_center_scaled = (int)(distance / (src->range.w / 2) * 255);
+                    // scale taking into account the falloff ring
+                    int distance_from_center_scaled = (int)(distance / ((src->range.w / 2) - (src->range.h / 2)) * 255);
 
                     if(distance_from_center_scaled > 255){
                         // mute the channel
