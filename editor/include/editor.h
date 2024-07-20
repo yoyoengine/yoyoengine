@@ -77,6 +77,7 @@ struct edicons {
     struct nk_image eye;
     struct nk_image buildreconfigure;
     struct nk_image duplicate;
+    struct nk_image trash;
 };
 
 extern struct edicons editor_icons;

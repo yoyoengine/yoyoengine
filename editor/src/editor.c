@@ -125,6 +125,7 @@ void yoyo_loading_refresh(char * status)
 }
 
 // pointers to destroy icon textures on shutdown
+// TODO: is this even working right now?
 SDL_Texture * style = NULL;
 SDL_Texture * gear = NULL;
 SDL_Texture * folder = NULL;
@@ -135,6 +136,7 @@ SDL_Texture * buildrun = NULL;
 SDL_Texture * pack = NULL;
 SDL_Texture * game = NULL;
 SDL_Texture * eye = NULL;
+SDL_Texture * trash = NULL;
 
 /*
     main function
@@ -227,6 +229,11 @@ int main(int argc, char **argv) {
     tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_duplicate.png"));
     SDL_Texture *duplicate = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
     editor_icons.duplicate = nk_image_ptr(duplicate);
+    SDL_FreeSurface(tmp_sur);
+
+    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_trash.png"));
+    SDL_Texture *trash = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
+    editor_icons.trash = nk_image_ptr(trash);
     SDL_FreeSurface(tmp_sur);
 
     ///////////////////////
@@ -407,6 +414,7 @@ int main(int argc, char **argv) {
     SDL_DestroyTexture(pack);
     SDL_DestroyTexture(game);
     SDL_DestroyTexture(eye);
+    SDL_DestroyTexture(trash);
 
     ye_shutdown_engine();
     json_decref(SETTINGS);

@@ -185,7 +185,7 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 // push some pretty styles for red button!! (thank you nuklear forum!) :D
                 nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(35,35,35))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                 
-                if(nk_button_symbol(ctx, NK_SYMBOL_X)){
+                if(nk_button_image(ctx, editor_icons.trash)){
                     // if our selected entity is the current entity, close the hiearchy
                     if(editor_is_selected(current->entity)){
                         editor_deselect(current->entity);
