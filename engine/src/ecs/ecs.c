@@ -272,14 +272,13 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     }
     if(entity->lua_script != NULL){
         struct ye_lua_script_global *globals = NULL;
+        struct ye_lua_script_global *og_ent_globals = entity->lua_script->globals;
 
-        /*
-            TODO: i'm deciding not to copy globals when
-            we duplicate a script. These are meant to change per entity.
-
-            This is partly being lazy and not wanting to deep copy
-            on my part, but I can always impl that later.
-        */
+        // copy the globals from the original entity
+        while(og_ent_globals != NULL) {
+            ye_lua_script_add_manual_global(&globals, og_ent_globals->type, og_ent_globals->name, (void*)&og_ent_globals->value);
+            og_ent_globals = og_ent_globals->next;
+        }
 
         ye_add_lua_script_component(new_entity, entity->lua_script->script_handle, globals);
         new_entity->lua_script->active = entity->lua_script->active;

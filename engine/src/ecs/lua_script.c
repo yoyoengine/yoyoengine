@@ -150,7 +150,7 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, s
     // allocate and assign the component
     entity->lua_script = malloc(sizeof(struct ye_component_lua_script));
     entity->lua_script->active = true;
-    entity->lua_script->globals = NULL;
+    entity->lua_script->globals = globals;
 
     /*
         Initialize state and load libs
@@ -227,13 +227,9 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, s
         _extract_signature(entity->lua_script, "onUnmount", &(entity->lua_script->has_on_unmount));
         _extract_signature(entity->lua_script, "onTriggerEnter", &(entity->lua_script->has_on_trigger_enter));
         _extract_signature(entity->lua_script, "onCollision", &(entity->lua_script->has_on_collision));
-    }
 
-    // set any globals we were passed through UI
-    if(!YE_STATE.editor.editor_mode) {
+        // set any globals we were passed through UI
         lua_State *L = entity->lua_script->state;
-
-        entity->lua_script->globals = globals;
 
         struct ye_lua_script_global *current = entity->lua_script->globals;
         while(current != NULL) {
@@ -253,7 +249,7 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, s
                     break;
                 default:
                     ye_logf(error,"Tried to add global to script on entity [%s]: ERROR, invalid global type\n", entity->name);
-                    return;
+                    return false;
             }
             lua_setglobal(L, name);
 
