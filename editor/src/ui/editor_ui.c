@@ -303,18 +303,21 @@ void ye_editor_paint_editor_settings(struct nk_context *ctx){
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, "Yoyo Editor Settings", NK_TEXT_CENTERED);
         nk_label(ctx, "", NK_TEXT_CENTERED);
+        
         nk_layout_row_dynamic(ctx, 25, 2);
         nk_label(ctx, "UI Color Theme:", NK_TEXT_CENTERED);
-
-        // combo box with color theme choices
         static const char *color_schemes[] = {"black", "dark", "blue", "red", "white", "amoled"};
         nk_combobox(ctx, color_schemes, NK_LEN(color_schemes), &PREFS.color_scheme_index, 25, nk_vec2(200,200));
 
+        nk_layout_row_dynamic(ctx, 25, 2);
+        nk_label(ctx, "Zoom style:", NK_TEXT_CENTERED);
+        static const char *zoom_styles[] = {"top left", "center", "mouse"};
+        nk_combobox(ctx, zoom_styles, NK_LEN(zoom_styles), &PREFS.zoom_style, 25, nk_vec2(200,200));
         nk_label(ctx, "", NK_TEXT_CENTERED);
+
         nk_layout_row_dynamic(ctx, 25, 2);
         nk_label(ctx, "Min select threshold (px):", NK_TEXT_CENTERED);
         nk_property_int(ctx, "px", 0, &PREFS.min_select_px, 10000, 1, 5);
-
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, "", NK_TEXT_CENTERED);
 

@@ -42,6 +42,7 @@
     INITIALIZE ALL
 */
 struct editor_prefs PREFS = {0};
+struct editor_state EDITOR_STATE = {0};
 
 bool unsaved;
 bool saving; // in the process of saving
@@ -55,7 +56,6 @@ struct ye_entity_node *entity_list_head;
 char *project_path;
 struct ye_entity staged_entity;
 json_t *SETTINGS;
-struct editor_state EDITOR_STATE;
 
 // holds the path to the editor settings file
 char editor_settings_path[1024];
@@ -125,18 +125,45 @@ void yoyo_loading_refresh(char * status)
 }
 
 // pointers to destroy icon textures on shutdown
-// TODO: is this even working right now?
-SDL_Texture * style = NULL;
-SDL_Texture * gear = NULL;
-SDL_Texture * folder = NULL;
-SDL_Texture * build = NULL;
-SDL_Texture * trick = NULL;
-SDL_Texture * play = NULL;
-SDL_Texture * buildrun = NULL;
-SDL_Texture * pack = NULL;
-SDL_Texture * game = NULL;
-SDL_Texture * eye = NULL;
-SDL_Texture * trash = NULL;
+SDL_Texture * style_tex             = NULL;
+SDL_Texture * gear_tex              = NULL;
+SDL_Texture * folder_tex            = NULL;
+SDL_Texture * build_tex             = NULL;
+SDL_Texture * trick_tex             = NULL;
+SDL_Texture * play_tex              = NULL;
+SDL_Texture * buildrun_tex          = NULL;
+SDL_Texture * pack_tex              = NULL;
+SDL_Texture * game_tex              = NULL;
+SDL_Texture * eye_tex               = NULL;
+SDL_Texture * trash_tex             = NULL;
+SDL_Texture * duplicate_tex         = NULL;
+SDL_Texture * buildreconfigure_tex  = NULL;
+
+void editor_pre_handle_input(SDL_Event event){
+    if (event.type == SDL_QUIT)
+        quit = true;
+}
+
+void editor_paint_welcome(struct nk_context *ctx){
+    if(nk_begin(ctx, "yoyoengine - homepage", nk_rect(0,0,screenWidth,screenHeight), NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
+        nk_layout_row_dynamic(ctx, screenHeight - 58, 2);
+
+        if(nk_group_begin_titled(ctx, "news", "Welcome", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
+            nk_layout_row_dynamic(ctx, 25, 1);
+
+            nk_label(ctx, "No projects found.", NK_TEXT_CENTERED);
+            nk_group_end(ctx);
+        }
+
+        if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "No projects found.", NK_TEXT_CENTERED);
+            nk_group_end(ctx);
+        }
+
+        nk_end(ctx);
+    }
+}
 
 /*
     main function
@@ -146,95 +173,34 @@ int main(int argc, char **argv) {
     // idk why i put this first but whatever
     editor_selecting_rect = (SDL_Rect){0, 0, 0, 0};
 
-    /*
-        Define editor state and set any defaults
-        for first timers or unserialized values
-    */
-    EDITOR_STATE = (struct editor_state){
-        .zoom_style = ZOOM_MOUSE
-    };
-
-    (void)argc; // supress compiler warning
-
     // build up editor contexts
     editor_settings_ui_init();
-
-    // get our path from the command line
-    char *path = argv[1];
-    // printf("PATH WAS: %s\n", path);
-    ye_logf(info, "Editor recieved path: %s\n",path);
-    project_path = path;
 
     // init the engine. this starts the engine as thinking our editor directory is the game dir. this is ok beacuse we want to configure based off of the editor settings.json
     ye_init_engine();
 
     // load editor icons //
-    // TODO: macro this?
 
-    SDL_Surface *tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_style.png"));
-    SDL_Texture *style = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.style = nk_image_ptr(style);
-    SDL_FreeSurface(tmp_sur);
+    #define INIT_EDITOR_TEXTURE(PATH, TEXTURE_VAR, ICON_FIELD) do {                     \
+        SDL_Surface *tmp_sur = IMG_Load(ye_get_engine_resource_static(PATH));           \
+        TEXTURE_VAR = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur); \
+        ICON_FIELD = nk_image_ptr(TEXTURE_VAR);                                         \
+        SDL_FreeSurface(tmp_sur);                                                       \
+    } while(0)
 
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_gear.png"));
-    SDL_Texture *gear = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.gear = nk_image_ptr(gear);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_folder.png"));
-    SDL_Texture *folder = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.folder = nk_image_ptr(folder);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_build.png"));
-    SDL_Texture *build = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.build = nk_image_ptr(build);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_trick.png"));
-    SDL_Texture *trick = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.trick = nk_image_ptr(trick);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_play.png"));
-    SDL_Texture *play = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.play = nk_image_ptr(play);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_buildrun.png"));
-    SDL_Texture *buildrun = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.buildrun = nk_image_ptr(buildrun);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_pack.png"));
-    SDL_Texture *pack = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.pack = nk_image_ptr(pack);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_game.png"));
-    SDL_Texture *game = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.game = nk_image_ptr(game);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_eye.png"));
-    SDL_Texture *eye = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.eye = nk_image_ptr(eye);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_buildreconfigure.png"));
-    SDL_Texture *buildreconfigure = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.buildreconfigure = nk_image_ptr(buildreconfigure);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_duplicate.png"));
-    SDL_Texture *duplicate = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.duplicate = nk_image_ptr(duplicate);
-    SDL_FreeSurface(tmp_sur);
-
-    tmp_sur = IMG_Load(ye_get_engine_resource_static("edicon_trash.png"));
-    SDL_Texture *trash = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, tmp_sur);
-    editor_icons.trash = nk_image_ptr(trash);
-    SDL_FreeSurface(tmp_sur);
+    INIT_EDITOR_TEXTURE("edicon_style.png", style_tex, editor_icons.style);
+    INIT_EDITOR_TEXTURE("edicon_gear.png", gear_tex, editor_icons.gear);
+    INIT_EDITOR_TEXTURE("edicon_folder.png", folder_tex, editor_icons.folder);
+    INIT_EDITOR_TEXTURE("edicon_build.png", build_tex, editor_icons.build);
+    INIT_EDITOR_TEXTURE("edicon_trick.png", trick_tex, editor_icons.trick);
+    INIT_EDITOR_TEXTURE("edicon_play.png", play_tex, editor_icons.play);
+    INIT_EDITOR_TEXTURE("edicon_buildrun.png", buildrun_tex, editor_icons.buildrun);
+    INIT_EDITOR_TEXTURE("edicon_pack.png", pack_tex, editor_icons.pack);
+    INIT_EDITOR_TEXTURE("edicon_game.png", game_tex, editor_icons.game);
+    INIT_EDITOR_TEXTURE("edicon_eye.png", eye_tex, editor_icons.eye);
+    INIT_EDITOR_TEXTURE("edicon_buildreconfigure.png", buildreconfigure_tex, editor_icons.buildreconfigure);
+    INIT_EDITOR_TEXTURE("edicon_duplicate.png", duplicate_tex, editor_icons.duplicate);
+    INIT_EDITOR_TEXTURE("edicon_trash.png", trash_tex, editor_icons.trash);
 
     ///////////////////////
 
@@ -281,6 +247,7 @@ int main(int argc, char **argv) {
         Read the editor config into the state struct,
         setting defaults as needed
     */
+    PREFS.zoom_style = ye_config_int(EDITOR_SETTINGS, "zoom_style", ZOOM_MOUSE); // zoom to mouse by default
     PREFS.color_scheme_index = ye_config_int(EDITOR_SETTINGS, "color_scheme_index", 5); // amoled by default
     PREFS.min_select_px = ye_config_int(EDITOR_SETTINGS, "min_select_px", 10); // 10px by default
 
@@ -314,6 +281,60 @@ int main(int argc, char **argv) {
 
     yoyo_loading_refresh("Constructing editor...");
 
+    // update screenWidth and screenHeight
+    struct ScreenSize screenSize = ye_get_screen_size();
+    screenWidth = screenSize.width;
+    screenHeight = screenSize.height;
+
+
+
+
+
+    ///////   project browser and welcome page   ///////
+
+    /*
+        if we have invoked the editor without a path to
+        a project, we should enter into a state that allows
+        the user to create and select projects at will
+    */
+    if(argc <= 1){
+
+        // create camera so engine doesn't freakout
+        struct ye_entity * cam = ye_create_entity_named("project select cam");
+        ye_add_transform_component(cam, 0, 0);
+        ye_add_camera_component(cam, 999, (struct ye_rectf){0, 0, 2560, 1440});
+        ye_set_camera(cam);
+
+        YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
+
+        ui_register_component("welcome", editor_paint_welcome);
+
+        screenWidth = 1920;
+        screenHeight = 1080;
+
+        bool selecting_project = true;
+        while(selecting_project){
+            if(quit)
+                exit(0);
+            
+            ye_process_frame();
+        }
+    }
+
+    ////////////////////////////////////////////////////
+
+
+
+
+
+    /////// stuff specific to choosing a project ///////
+
+    // get our path from the command line
+    char *path = argv[1];
+    // printf("PATH WAS: %s\n", path);
+    ye_logf(info, "Editor recieved path: %s\n",path);
+    project_path = path;
+
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
     if (path != NULL)
         ye_update_base_path(path); // GOD THIS IS SUCH A HEADACHE
@@ -322,11 +343,6 @@ int main(int argc, char **argv) {
 
     // let the engine know we also want to custom handle inputs
     YE_STATE.engine.callbacks.input_handler = editor_handle_input;
-
-    // update screenWidth and screenHeight
-    struct ScreenSize screenSize = ye_get_screen_size();
-    screenWidth = screenSize.width;
-    screenHeight = screenSize.height;
 
     // create our editor camera and register it with the engine
     editor_camera = ye_create_entity_named("editor_camera");
@@ -391,6 +407,12 @@ int main(int argc, char **argv) {
         ye_process_frame();
     }
 
+    ////////////////////////////////////////////////////
+
+
+
+
+
     /*
         Before we shutdown the editor, lets re-serialize
         the preferences we initially loaded
@@ -404,17 +426,19 @@ int main(int argc, char **argv) {
     json_decref(EDITOR_SETTINGS);
 
     // free editor icons
-    SDL_DestroyTexture(style);
-    SDL_DestroyTexture(gear);
-    SDL_DestroyTexture(folder);
-    SDL_DestroyTexture(build);
-    SDL_DestroyTexture(trick);
-    SDL_DestroyTexture(play);
-    SDL_DestroyTexture(buildrun);
-    SDL_DestroyTexture(pack);
-    SDL_DestroyTexture(game);
-    SDL_DestroyTexture(eye);
-    SDL_DestroyTexture(trash);
+    SDL_DestroyTexture(style_tex);
+    SDL_DestroyTexture(gear_tex);
+    SDL_DestroyTexture(folder_tex);
+    SDL_DestroyTexture(build_tex);
+    SDL_DestroyTexture(trick_tex);
+    SDL_DestroyTexture(play_tex);
+    SDL_DestroyTexture(buildrun_tex);
+    SDL_DestroyTexture(pack_tex);
+    SDL_DestroyTexture(game_tex);
+    SDL_DestroyTexture(eye_tex);
+    SDL_DestroyTexture(trash_tex);
+    SDL_DestroyTexture(duplicate_tex);
+    SDL_DestroyTexture(buildreconfigure_tex);
 
     ye_shutdown_engine();
     json_decref(SETTINGS);

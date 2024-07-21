@@ -131,7 +131,7 @@ void editor_input_panning(SDL_Event event){
 
         update_mx_my();
 
-        switch(EDITOR_STATE.zoom_style){
+        switch(PREFS.zoom_style){
             case ZOOM_TOP_LEFT:
                 // no behavior, zooms top left of camera by default
                 break;

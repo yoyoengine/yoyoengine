@@ -27,9 +27,35 @@ struct editor_prefs {
 
     // selection settings
     int min_select_px;
+
+    /*
+        Camera Zoom Style
+    */
+    enum {
+        ZOOM_TOP_LEFT,
+        ZOOM_CENTER,
+        ZOOM_MOUSE
+    } zoom_style;
 };
 
 extern struct editor_prefs PREFS;
+
+/*
+    This is pure runtime state of the editor,
+    any serializable preferences should be in PREFS
+
+    TODO: decide how struct members here and editor specific YE_STATE struct members
+    will interact. Should they have pointers in here?
+*/
+struct editor_state {
+    enum mode {
+        ESTATE_INIT,
+        ESTATE_GENERIC,
+        ESTATE_EDITING
+    } mode;
+};
+
+extern struct editor_state EDITOR_STATE;
 
 // global variables
 extern bool unsaved;
@@ -81,25 +107,6 @@ struct edicons {
 };
 
 extern struct edicons editor_icons;
-
-/*
-    Struct to hold editor preferences/settings
-
-    TODO: decide how struct members here and editor specific YE_STATE struct members
-    will interact. Should they have pointers in here?
-*/
-struct editor_state {
-    /*
-        Camera Zoom Style
-    */
-    enum {
-        ZOOM_TOP_LEFT,
-        ZOOM_CENTER,
-        ZOOM_MOUSE
-    } zoom_style;
-};
-
-extern struct editor_state EDITOR_STATE;
 
 bool ye_point_in_rect(int x, int y, SDL_Rect rect);
 
