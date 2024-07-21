@@ -271,7 +271,17 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->audiosource->active = entity->audiosource->active;
     }
     if(entity->lua_script != NULL){
-        ye_add_lua_script_component(new_entity, entity->lua_script->script_handle);
+        struct ye_lua_script_global *globals = NULL;
+
+        /*
+            TODO: i'm deciding not to copy globals when
+            we duplicate a script. These are meant to change per entity.
+
+            This is partly being lazy and not wanting to deep copy
+            on my part, but I can always impl that later.
+        */
+
+        ye_add_lua_script_component(new_entity, entity->lua_script->script_handle, globals);
         new_entity->lua_script->active = entity->lua_script->active;
     }
 

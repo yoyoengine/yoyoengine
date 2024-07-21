@@ -702,7 +702,6 @@ known bug where debug bool ticks need renderer object on entity to display stuff
 
 ## slkgjdlskgd
 
-audio source falloff distance
 collider aspect ratio lock?
 
 ## way later
@@ -710,3 +709,13 @@ collider aspect ratio lock?
 no visual launcher in python that shit is ass
 
 - editor should be the hub, since all you need is a folder. The editor itself can create the blank project templates, open projects, etc
+
+## slkujglkdfhjl
+
+copy paste component into other entity or entity comp
+
+remove component text color red
+
+should eventually do general editor nuklear style pass
+
+help panels scattered around editor? ex: in lua global fields add help icon to explain

@@ -20,6 +20,37 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+/*
+    Types of lua globals we can pass through editor
+
+    TODO: in the future we could implicitly cast to function sigs or tables,
+    via casting in lua_script.c when we create the lua state.
+*/
+enum ye_lua_script_global_t {
+    YE_LSG_NUMBER,
+    YE_LSG_STRING,
+    YE_LSG_BOOL
+};
+
+#define YE_LUA_SCRIPT_GLOBAL_NAME_MAX_CHARACTERS 64
+#define YE_LUA_SCRIPT_GLOBAL_VALUE_STRING_MAX_CHARACTERS 512
+
+/*
+    Linked list holding lua script editor defined globals
+*/
+struct ye_lua_script_global {
+    enum ye_lua_script_global_t type;
+    char name[YE_LUA_SCRIPT_GLOBAL_NAME_MAX_CHARACTERS];
+
+    union value_actual {
+        double number;
+        char string[YE_LUA_SCRIPT_GLOBAL_VALUE_STRING_MAX_CHARACTERS]; // TODO: should never need more than this, also Nuklear text area for large strings?
+        bool boolean;
+    } value;
+
+    struct ye_lua_script_global *next;
+};
+
 /**
  * @brief The script component for lua. Will recieve callbacks from the engine.
  */
@@ -28,6 +59,17 @@ struct ye_component_lua_script {
     char *script_handle;            // the path to the script
 
     lua_State *state;               // the lua state for this script
+
+    /*
+        List of globals we pass to script.
+
+        NOTE: this is not mutated at runtime, this is
+        just a pure declaration of variables to init
+        when the engine creates this component.
+
+        DO NOT USE THIS TO ACCESS OR MUTATE VALUES AT RUNTIME!
+    */
+    struct ye_lua_script_global *globals;
 
     /*
         Once the script is boostrapped, we parse references so we know
@@ -42,12 +84,28 @@ struct ye_component_lua_script {
 };
 
 /**
+ * @brief Internal engine function to specify adding a global to a custom initialized struct ye_lua_script_global
+ */
+void ye_lua_script_add_manual_global(struct ye_lua_script_global **target, enum ye_lua_script_global_t type, const char *name, void *value);
+
+/**
+ * @brief This exists primarily for the editor to add new globals to entity scripts to serialize them properly. If you don't already know how this works, you aren't meant to use it!
+ */
+void ye_lua_script_add_global(struct ye_entity *ent, enum ye_lua_script_global_t type, const char *name, void *value);
+
+/**
+ * @brief This exists primarily for the editor to remove globals from entity scripts and serialize them properly. If you don't already know how this works, you aren't meant to use it!
+ */
+void ye_lua_script_remove_global(struct ye_entity *ent, const char *name);
+
+/**
  * @brief Add a lua script component to an entity
  * 
  * @param entity The target entity
  * @param script_path The path to the script
+ * @param globals A constructed list of globals to feed into the script. NULL for none.
  */
-bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle);
+bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, struct ye_lua_script_global *globals);
 
 /**
  * @brief Remove a lua script component from an entity

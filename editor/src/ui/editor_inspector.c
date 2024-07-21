@@ -711,6 +711,107 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
 
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "Globals:", NK_TEXT_LEFT);
+
+            if(ent->lua_script->globals != NULL){
+                nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
+
+                nk_layout_row_push(ctx, 0.40);
+                nk_label(ctx, "Name", NK_TEXT_LEFT);
+
+                nk_layout_row_push(ctx, 0.07);
+                nk_label(ctx, "", NK_TEXT_CENTERED);
+
+                nk_layout_row_push(ctx, 0.40);
+                nk_label(ctx, "Value", NK_TEXT_LEFT);
+                
+
+                struct ye_lua_script_global *current = ent->lua_script->globals;
+                while(current != NULL) {
+                    nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
+
+                    nk_layout_row_push(ctx, 0.40);
+                    nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, &current->name, YE_LUA_SCRIPT_GLOBAL_NAME_MAX_CHARACTERS, nk_filter_default);
+
+                    nk_layout_row_push(ctx, 0.07);
+                    nk_label(ctx, "", NK_TEXT_CENTERED);
+
+                    nk_layout_row_push(ctx, 0.40);
+                    switch(current->type){
+                        case YE_LSG_NUMBER:
+                            nk_property_double(ctx, "#", -1000000, &current->value.number, 1000000, 1, 5);
+                            break;
+                        case YE_LSG_STRING:
+                            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, &current->value.string, 20, nk_filter_default);
+                            break;
+                        case YE_LSG_BOOL:
+                            nk_checkbox_label(ctx, "", &current->value.boolean);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    nk_layout_row_push(ctx, 0.07);
+                    nk_label(ctx, "", NK_TEXT_CENTERED);
+
+                    nk_layout_row_push(ctx, 0.05);
+                    if(nk_button_image(ctx, editor_icons.trash)) {
+                        ye_lua_script_remove_global(ent, current->name);
+                        editor_unsaved();
+                        break; // do not loop over broken memory
+                    }
+                    current = current->next;
+                }
+            }
+            else {
+                nk_layout_row_dynamic(ctx, 10, 1);
+                nk_label_colored(ctx, "No globals", NK_TEXT_CENTERED, nk_rgb(150, 150, 150));
+            }
+
+            // padding for add new global section
+            nk_layout_row_dynamic(ctx, 10, 1);
+
+            // WARN: THESE INDEXES MUST COORESPOND TO THE ENUM IN YE_LUA_SCRIPT.H
+            static const char *nk_label_global_keys[] = {"number", "string", "boolean"};
+            static int nk_label_global_selected_key = 0;
+
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
+            nk_layout_row_push(ctx, 0.30);
+            nk_label(ctx, "Add new global:", NK_TEXT_LEFT);
+            
+            nk_layout_row_push(ctx, 0.09);
+            nk_label(ctx, "", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(ctx, 0.37);
+            nk_label_global_selected_key = nk_combo(ctx, nk_label_global_keys, 3, nk_label_global_selected_key, 25, nk_vec2(200,200));
+
+            nk_layout_row_push(ctx, 0.02);
+            nk_label(ctx, "", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(ctx, 0.21);
+            if(nk_button_label(ctx, "Add")){
+
+                switch((enum ye_lua_script_global_t)nk_label_global_selected_key){
+                    case YE_LSG_NUMBER:
+                        double vd = 0;
+                        ye_lua_script_add_global(ent, YE_LSG_NUMBER, "new_global", (void *)&vd);
+                        break;
+                    case YE_LSG_STRING:
+                        ye_lua_script_add_global(ent, YE_LSG_STRING, "new_global", (void *)"");
+                        break;
+                    case YE_LSG_BOOL:
+                        bool vb = false;
+                        ye_lua_script_add_global(ent, YE_LSG_BOOL, "new_global", (void *)&vb);
+                        break;
+                    default:
+                        break;
+                }
+
+                editor_unsaved();
+            }
+
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_layout_row_dynamic(ctx, 25, 1);
             if(nk_button_label(ctx, "Remove Component")){
                 ye_remove_lua_script_component(ent);
                 editor_unsaved();
@@ -740,7 +841,7 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
                 editor_touch_file(ye_path_resources(proposed_script_path), "-- Template yoyoengine Lua script,\n-- provided for your convenience! :)\n\nfunction onMount()\n\t\nend\n\nfunction onUpdate()\n\t\nend\n\nfunction onUnmount()\n\t\nend");
             }
 
-            ye_add_lua_script_component(ent, proposed_script_path); // TODO: lua system hasnt been updated for yep yet. we need to read from bytecode or just content
+            ye_add_lua_script_component(ent, proposed_script_path, NULL); // TODO: lua system hasnt been updated for yep yet. we need to read from bytecode or just content
             editor_unsaved();
         }
     }

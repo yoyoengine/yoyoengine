@@ -23,7 +23,7 @@ int ye_lua_create_lua_script(lua_State *L) {
 
     char * script = luaL_checkstring(L, 2);
 
-    ye_add_lua_script_component(ent, script);
+    ye_add_lua_script_component(ent, script, NULL);
 
     return 0;
 }
@@ -64,7 +64,7 @@ int ye_lua_lua_script_modify(lua_State *L){
             the new path for now.
         */
         ye_remove_lua_script_component(ent);
-        ye_add_lua_script_component(ent, lua_tostring(L, 3));
+        ye_add_lua_script_component(ent, lua_tostring(L, 3), NULL);
     }
 
     return 0;

@@ -215,3 +215,26 @@ You would observe the following output in the console when executing the script:
     This feature works with varags as well, so you can pass any number of arguments to the function you're invoking. Additionally, you can return multiple return values from the function you're calling.
 
 All of this in combination makes for a powerful system to communicate between scripts in yoyoengine.
+
+## Setting entity specific globals through the editor
+
+`yoyoeditor` provides functionality to add globals that vary per entity. You can think of this like exposing variables from C# scripts to the editor in unity (if you have experience with the unity game engine).
+
+### Adding an entity specific global
+
+Looking at the "Script" tab for an entity, you will see the "Globals" section, with a "Add new global" row.
+
+Simply adjust the combo box to the desired global type, and click "Add".
+
+You will see the global populate as "new_global" in the "Globals" section.
+
+Adjust the name as you see fit, and if you need to delete a global click the trash icon.
+
+!!! warning
+    These globals are written into the state of the script AFTER the script is ran to initialize the state a single time. In other words, if you have some code that is not inside the on_mount callback, it will not have access to these globals. on_mount will run AFTER these globals are set.
+
+### Use Case
+
+If you wanted to make enemies in a game, where the enemies share a lot of similar code (like movement, health, etc), but you don't want to duplicate this code across enemy specific scripts, you can factor the logic out into a single script, and use entity specific globals to adjust the behavior of each enemy.
+
+Additionally, you could initialize some hard coded variables at the top level of a script, which could be overriden by editor globals as needed.

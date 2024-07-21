@@ -273,6 +273,42 @@ void serialize_entity_script(struct ye_entity *entity, json_t *entity_json){
     // set the script path
     json_object_set_new(script, "handle", json_string(entity->lua_script->script_handle));
 
+    // for each global in the entity, add it to an array of globals
+    json_t *globals = json_array();
+
+    struct ye_lua_script_global *node = entity->lua_script->globals;
+    while(node != NULL){
+        json_t *global = json_object();
+
+        // set the name
+        json_object_set_new(global, "name", json_string(node->name));
+
+        switch(node->type){
+            case YE_LSG_NUMBER:
+                json_object_set_new(global, "value", json_real(node->value.number));
+                break;
+            case YE_LSG_STRING:
+                json_object_set_new(global, "value", json_string(node->value.string));
+                break;
+            case YE_LSG_BOOL:
+                json_object_set_new(global, "value", json_boolean(node->value.boolean));
+                break;
+            default:
+                ye_logf(warning, "ermmm... this shouldnt have happend!!! what the flip!");
+        }
+
+        // set the type
+        json_object_set_new(global, "type", json_integer(node->type)); 
+
+        // add the global to the globals array
+        json_array_append_new(globals, global);
+
+        node = node->next;
+    }
+
+    // add the globals array to the script object
+    json_object_set_new(script, "globals", globals);
+
     // add the script object to the entity json
     json_object_set_new(entity_json, "script", script);
 }

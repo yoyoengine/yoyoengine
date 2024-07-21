@@ -144,13 +144,14 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
     return true;
 }
 
-bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
+bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, struct ye_lua_script_global *globals){
     // ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
     // allocate and assign the component
     entity->lua_script = malloc(sizeof(struct ye_component_lua_script));
     entity->lua_script->active = true;
-    
+    entity->lua_script->globals = NULL;
+
     /*
         Initialize state and load libs
     */
@@ -228,6 +229,38 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle){
         _extract_signature(entity->lua_script, "onCollision", &(entity->lua_script->has_on_collision));
     }
 
+    // set any globals we were passed through UI
+    if(!YE_STATE.editor.editor_mode) {
+        lua_State *L = entity->lua_script->state;
+
+        entity->lua_script->globals = globals;
+
+        struct ye_lua_script_global *current = entity->lua_script->globals;
+        while(current != NULL) {
+            const char *name = current->name;
+            enum ye_lua_script_global_t type = current->type;
+            void *value = &current->value;
+
+            switch(type) {
+                case YE_LSG_STRING:
+                    lua_pushstring(L, (char *)value);
+                    break;
+                case YE_LSG_BOOL:
+                    lua_pushboolean(L, *(bool *)value);
+                    break;
+                case YE_LSG_NUMBER:
+                    lua_pushnumber(L, *(lua_Number *)value);
+                    break;
+                default:
+                    ye_logf(error,"Tried to add global to script on entity [%s]: ERROR, invalid global type\n", entity->name);
+                    return;
+            }
+            lua_setglobal(L, name);
+
+            current = current->next;
+        }
+    }
+
 
     /*
         call the lua scripts on_mount function in its state
@@ -268,6 +301,14 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
     lua_close(entity->lua_script->state);
     entity->lua_script->state = NULL;
 
+    // free all the globals
+    struct ye_lua_script_global *current = entity->lua_script->globals;
+    while(current != NULL){
+        struct ye_lua_script_global *next = current->next;
+        free(current);
+        current = next;
+    }
+
     // free the allocated memory
     free(entity->lua_script);
     entity->lua_script = NULL;
@@ -307,4 +348,93 @@ void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *en
         }
         current = current->next;
     }
+}
+
+/*
+    +------------------------------+
+    |      GLOBAL MANIPULATION     |
+    +------------------------------+
+*/
+
+void ye_lua_script_add_manual_global(struct ye_lua_script_global **target, enum ye_lua_script_global_t type, const char *name, void *value) {
+    struct ye_lua_script_global *new_g = malloc(sizeof(struct ye_lua_script_global));
+    new_g->type = type;
+
+    if(strlen(name) > YE_LUA_SCRIPT_GLOBAL_NAME_MAX_CHARACTERS) {
+        ye_logf(error,"Tried to add name [%s] to script on entity: ERROR, global name is too long\n", name);
+        free(new_g);
+        return;
+    }
+
+    strncpy(new_g->name, name, YE_LUA_SCRIPT_GLOBAL_NAME_MAX_CHARACTERS);
+
+    switch(type) {
+        case YE_LSG_STRING:
+            if(strlen((char *)value) > YE_LUA_SCRIPT_GLOBAL_VALUE_STRING_MAX_CHARACTERS) {
+                ye_logf(error,"Tried to add string value to script on entity: ERROR, string value is too long\n");
+                free(new_g);
+                return;
+            }
+            strncpy(new_g->value.string, (char *)value, YE_LUA_SCRIPT_GLOBAL_VALUE_STRING_MAX_CHARACTERS);
+            break;
+        case YE_LSG_BOOL:
+            new_g->value.boolean = *((bool *)value);
+            break;
+        case YE_LSG_NUMBER:
+            new_g->value.number = *((double *)value);
+            break;
+        default:
+            ye_logf(error,"Tried to add global to script on entity: ERROR, invalid global type\n");
+            free(new_g);
+            return;
+    }
+
+    new_g->next = *target;
+    *target = new_g;
+}
+
+void ye_lua_script_add_global(struct ye_entity *ent, enum ye_lua_script_global_t type, const char *name, void *value) {
+    ye_lua_script_add_manual_global(&ent->lua_script->globals, type, name, value);
+
+    // actually set the global in the lua state
+
+    lua_State *L = ent->lua_script->state;
+
+    switch(type) {
+        case YE_LSG_STRING:
+            lua_pushstring(L, (char *)value);
+            break;
+        case YE_LSG_BOOL:
+            lua_pushboolean(L, *(bool *)value);
+            break;
+        case YE_LSG_NUMBER:
+            lua_pushnumber(L, *(lua_Number *)value);
+            break;
+        default:
+            ye_logf(error,"Tried to add global to script on entity [%s]: ERROR, invalid global type\n", ent->name);
+            return;
+    }
+
+    lua_setglobal(L, name);
+}
+
+void ye_lua_script_remove_global(struct ye_entity *ent, const char *name) {
+    struct ye_lua_script_global *current = ent->lua_script->globals;
+    struct ye_lua_script_global *prev = NULL;
+
+    while(current != NULL) {
+        if(strcmp(current->name, name) == 0) {
+            if(prev == NULL) {
+                ent->lua_script->globals = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+
+    ye_logf(warning,"Tried to remove global %s from script on entity [%s]: WARNING, global not found\n", name, ent->name);
 }
