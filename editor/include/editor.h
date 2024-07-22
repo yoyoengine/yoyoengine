@@ -104,6 +104,9 @@ struct edicons {
     struct nk_image buildreconfigure;
     struct nk_image duplicate;
     struct nk_image trash;
+
+    // not necessarily icons, but whatever...
+    struct nk_image lightheader;
 };
 
 extern struct edicons editor_icons;

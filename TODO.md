@@ -719,3 +719,9 @@ remove component text color red
 should eventually do general editor nuklear style pass
 
 help panels scattered around editor? ex: in lua global fields add help icon to explain
+
+## welcome page
+
+custom inline colors?
+
+network calls to get latest versions/updates (should happen anyways)

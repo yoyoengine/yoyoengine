@@ -61,6 +61,18 @@ float font_scale = 1;
 
 struct nk_context *ctx;
 
+struct nk_font *_ye_font_p;
+struct nk_font *_ye_font_h1;
+struct nk_font *_ye_font_h2;
+struct nk_font *_ye_font_h3;
+
+#define YE_FONT(name) nk_style_set_font(ctx, &name->handle)
+
+void ye_font_p(){ YE_FONT(_ye_font_p); }
+void ye_font_h1(){ YE_FONT(_ye_font_h1); }
+void ye_font_h2(){ YE_FONT(_ye_font_h2); }
+void ye_font_h3(){ YE_FONT(_ye_font_h3); }
+
 ////////////////////////////////
 
 typedef struct {
@@ -314,7 +326,6 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
     /* Load Cursor: if you uncomment cursor loading please hide the cursor */
     struct nk_font_atlas *atlas;
     struct nk_font_config config = nk_font_config(0);
-    struct nk_font *font;
 
     /* set up the font atlas and add desired font; note that font sizes are
         * multiplied by font_scale to produce better results at higher DPIs */
@@ -324,12 +335,20 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         If in editor mode, we load from engine resource file. If at runtime load from the packed engine resource yep
     */
     if(YE_STATE.editor.editor_mode){
-        font = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+        _ye_font_p = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 20 * font_scale, &config);
+        _ye_font_h1 = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 70 * font_scale, &config);
+        _ye_font_h2 = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 50 * font_scale, &config);
+        _ye_font_h3 = nk_font_atlas_add_from_file(atlas, ye_get_engine_resource_static("fonts/RobotoMono-Regular.ttf"), 30 * font_scale, &config);
     }
     else{
         // get font binary data from engine resources
         struct yep_data_info font_data = yep_engine_resource_misc("fonts/RobotoMono-Regular.ttf");
-        font = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 20 * font_scale, &config);
+
+        _ye_font_p = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 20 * font_scale, &config);
+        _ye_font_h1 = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 70 * font_scale, &config);
+        _ye_font_h2 = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 50 * font_scale, &config);
+        _ye_font_h3 = nk_font_atlas_add_from_memory(atlas, font_data.data, (nk_size)font_data.size, 30 * font_scale, &config);
+
         free(font_data.data); // GUESSING: nuklear seems to make its own copy of atlas when supplied this buffer so we are ok to free it
     }
     
@@ -337,9 +356,12 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
 
     /* this hack makes the font appear to be scaled down to the desired
         * size and is only necessary when font_scale > 1 */
-    font->handle.height /= font_scale;
+    _ye_font_p->handle.height /= font_scale;
+    _ye_font_h1->handle.height /= font_scale;
+    _ye_font_h2->handle.height /= font_scale;
+    _ye_font_h3->handle.height /= font_scale;
     /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-    nk_style_set_font(ctx, &font->handle);
+    nk_style_set_font(ctx, &_ye_font_p->handle);
 
     // ui_register_component("test",paint_test);
     if(YE_STATE.engine.debug_mode){

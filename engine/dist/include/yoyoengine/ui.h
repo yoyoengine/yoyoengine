@@ -26,6 +26,48 @@
 
 #include <SDL.h>
 
+/*
+    Some helpful macros to allow for easy text formatting.
+*/
+
+#define ye_h1(CODE) \
+    do { \
+        ye_font_h1(); \
+        CODE; \
+        ye_font_p(); \
+    } while(0)
+
+#define ye_h2(CODE) \
+    do { \
+        ye_font_h2(); \
+        CODE; \
+        ye_font_p(); \
+    } while(0)
+
+#define ye_h3(CODE) \
+    do { \
+        ye_font_h3(); \
+        CODE; \
+        ye_font_p(); \
+    } while(0)
+
+void ye_font_p();
+
+/**
+ * @brief WARNING! If you use this function you must reset the font by calling ye_font_p() after you are done.
+*/
+void ye_font_h1();
+
+/**
+ * @brief WARNING! If you use this function you must reset the font by calling ye_font_p() after you are done.
+*/
+void ye_font_h2();
+
+/**
+ * @brief WARNING! If you use this function you must reset the font by calling ye_font_p() after you are done.
+*/
+void ye_font_h3();
+
 /**
  * @brief Initializes the UI system.
  * 
