@@ -725,3 +725,33 @@ help panels scattered around editor? ex: in lua global fields add help icon to e
 custom inline colors?
 
 network calls to get latest versions/updates (should happen anyways)
+
+## libcurl samples
+
+```cmake
+# # fetch openssl for libcurl
+    # FetchContent_Declare(
+    #     openssl
+    #     GIT_REPOSITORY https://github.com/openssl/openssl.git
+    #     GIT_TAG openssl-3.3
+    #     GIT_PROGRESS TRUE
+    # )
+    # FetchContent_MakeAvailable(openssl)
+    # target_link_libraries(${EXECUTABLE_NAME} PRIVATE libssl libcrypto)
+
+    # # fetch and use libcurl for the editor
+
+    # set(BUILD_CURL_EXE off CACHE BOOL "Build curl executable")
+    # set(BUILD_SHARED_LIBS off CACHE BOOL "Build shared libraries")
+    # set(BUILD_STATIC_LIBS on CACHE BOOL "Build static libraries")
+    # set(CURL_DISABLE_INSTALL on CACHE BOOL "Disable installation of curl")
+
+    # FetchContent_Declare(
+    #     curl
+    #     GIT_REPOSITORY https://github.com/curl/curl.git
+    #     GIT_TAG curl-8_8_0
+    #     GIT_PROGRESS TRUE
+    # )
+    # FetchContent_MakeAvailable(curl)
+    # target_link_libraries(${EXECUTABLE_NAME} PRIVATE libcurl)
+```

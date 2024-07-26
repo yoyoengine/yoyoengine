@@ -51,8 +51,11 @@ bool quit;
 bool lock_viewport_interaction;
 struct ye_entity *editor_camera;
 struct ye_entity *origin;
+
+// this is so yucky to have this as a global, refactor TODO
 float screenWidth;
 float screenHeight;
+
 struct ye_entity_node *entity_list_head;
 char *project_path;
 struct ye_entity staged_entity;
@@ -144,72 +147,12 @@ SDL_Texture * lightheader           = NULL;
 void editor_pre_handle_input(SDL_Event event){
     if (event.type == SDL_QUIT)
         quit = true;
-}
 
-char welcome_text[512];
-
-void editor_paint_welcome(struct nk_context *ctx){
-    if(nk_begin(ctx, "yoyoengine - homepage", nk_rect(0,0,screenWidth,screenHeight), NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
-        nk_layout_row_dynamic(ctx, screenHeight - 58, 2);
-
-        if(nk_group_begin_titled(ctx, "news", "Welcome", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
-            // lightheader is 1350x450, so we need to scale it to keep its aspect ratio
-            struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
-            float scale = panelsize.x / 1350;
-
-            // nk_layout_row_dynamic(ctx, 450*(scale/2), 2);
-            // nk_layout_row_dynamic(ctx, 450*scale, 1);
-            nk_layout_row_static(ctx, 450*(scale/1.5), panelsize.x/1.5, 1);
-
-            nk_image(ctx, editor_icons.lightheader);
-
-            nk_layout_row_dynamic(ctx, 50, 1);
-
-            ye_h3(nk_label_colored(ctx, "Welcome to yoyoengine!", NK_TEXT_CENTERED, nk_rgb(255, 255, 255)));
-
-            nk_label(ctx,welcome_text, NK_TEXT_LEFT);
-
-            // ye_font_h1();
-            // nk_label_wrap(ctx, "H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 ");
-
-            // ye_font_h2();
-            // nk_label_wrap(ctx, "H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 H2 ");
-
-            // ye_font_h3();
-            // nk_label_wrap(ctx, "H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 H3 ");
-
-            // ye_font_p();
-            // nk_label_wrap(ctx, "P P P P P P P P P P P P P P P P ");
-
-            // // YE_STATE.engine.font_p
-            // // nk_style_set_font(ctx, &YE_STATE.engine.font_h1);
-
-            // // nk_style_set_font(ctx, &YE_STATE.engine.font_p->handle);
-            // // YE_FONT(ye_font_p);
-
-            // // nk_style_set_font(ctx, &ye_font_p->handle)
-            
-
-            // nk_label(ctx, "Welcome to yoyoengine!", NK_TEXT_LEFT);
-            // nk_label(ctx, "This is the editor homepage. Here you can create, manage, and edit projects.", NK_TEXT_LEFT);
-
-            // nk_style_set_font(ctx, &ye_nuklear_font->handle);
-            // YE_FONT(YE_STATE.engine.font_p);
-
-            // struct nk_font *font = YE_STATE.engine.font_p;
-
-            // nk_style_set_font(ctx, &YE_STATE.engine.font_p->handle);
-
-            nk_group_end(ctx);
+    if(event.type == SDL_WINDOWEVENT) {
+        if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            screenWidth = event.window.data1;
+            screenHeight = event.window.data2;
         }
-
-        if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "No projects found.", NK_TEXT_CENTERED);
-            nk_group_end(ctx);
-        }
-
-        nk_end(ctx);
     }
 }
 
@@ -357,12 +300,12 @@ int main(int argc, char **argv) {
 
         YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
 
-        snprintf(welcome_text, sizeof(welcome_text), "You are currently running yoyoeditor %s, powered by yoyoengine core %s", YE_EDITOR_VERSION, YE_ENGINE_VERSION);
-
-        ui_register_component("welcome", editor_paint_welcome);
-
         screenWidth = 1920;
         screenHeight = 1080;
+        
+        editor_init_panel_welcome();
+
+        ui_register_component("welcome", editor_panel_welcome);
 
         bool selecting_project = true;
         while(selecting_project){
