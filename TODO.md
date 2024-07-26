@@ -755,3 +755,9 @@ network calls to get latest versions/updates (should happen anyways)
     # FetchContent_MakeAvailable(curl)
     # target_link_libraries(${EXECUTABLE_NAME} PRIVATE libcurl)
 ```
+
+## skjldfdkjfhgkjdfhgjkdfhg
+
+nuklear docs have stuff on font rasterizing params, we could fine tune to make font rendering cleaner especially now that text and icons are larger
+
+when you read tomorrow impl the project manager fs ops and remove old thing plus move template around and polish it up (template has bad old shit like camera with no cam comp)
