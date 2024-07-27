@@ -17,7 +17,7 @@ sleep 1
 /opt/zoogies/yoyoengine/uninstall.sh
 
 # Reinstall from the GitHub repository
-installer_download_url=$(curl -s https://api.github.com/repos/zoogies/Boneworks-Save-Manager/releases/latest | grep browser_download_url | head -n 1 | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g' );
+installer_download_url=$(curl -s https://api.github.com/repos/zoogies/yoyoengine/releases/latest | grep browser_download_url | head -n 1 | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g' );
 echo "Running Newest Installer: $asset_download_url"
 curl -s installer_download_url | bash
 

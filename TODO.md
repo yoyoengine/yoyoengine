@@ -761,3 +761,29 @@ network calls to get latest versions/updates (should happen anyways)
 nuklear docs have stuff on font rasterizing params, we could fine tune to make font rendering cleaner especially now that text and icons are larger
 
 when you read tomorrow impl the project manager fs ops and remove old thing plus move template around and polish it up (template has bad old shit like camera with no cam comp)
+
+## nuklear malpractice
+
+the custom window manager is not needed, you could nuklear-fu
+with find_window etc
+
+you should call nk_popup_close
+and nk_popup_end to avoid dangling bad active window state
+
+## editor persist data
+
+/var/lib/yoyoengine for projects
+/opt/zoogies/yoyoengine for editor install
+
+make and copy a desktop file so it shows up properly
+
+## yoyojam
+
+- local managed dir /var/lib/yoyoengine project management
+- do not actually delete them when clicking delete, but tracking seperate projs is annoying
+- open in how to not be annoying with git tracking
+- init new projects with git?
+- how do we actually want to relate engine source to projects? DECIDE THIS!
+  - prob remove engine build path - or not, it just needs to be to local copy
+  - what about when people want to fork but its a submodule?
+- make auto update actually call script

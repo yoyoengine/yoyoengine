@@ -14,6 +14,7 @@
 
 #include "editor.h"
 #include "editor_panels.h"
+#include "editor_fs_ops.h"
 
 int is_curl_installed() {
     // TODO: NOTCROSSPLATFORM
@@ -61,6 +62,34 @@ char *run_curl_command(const char *url) {
     return json_data;
 }
 
+char *check_remote_version() {
+    char *json_data = run_curl_command("https://api.github.com/repos/zoogies/yoyoengine/releases/latest");
+    if(json_data){
+        json_t *root = json_loads(json_data, 0, NULL);
+        if (!root) {
+            ye_logf(error, "Could not ping update server: failed to parse json\n");
+            free(json_data);
+            return NULL;
+        }
+
+        json_t *tag_name = json_object_get(root, "tag_name");
+        if (!json_is_string(tag_name)) {
+            ye_logf(error, "Could not ping update server: failed to get tag_name\n");
+            json_decref(root);
+            free(json_data);
+            return NULL;
+        }
+
+        char *tag_name_str = strdup(json_string_value(tag_name));
+        json_decref(root);
+        free(json_data);
+        return tag_name_str;
+    }
+
+    ye_logf(error, "Could not ping update server: failed to fetch json\n");
+    return NULL;
+}
+
 char welcome_text[512];
 
 json_t *commits = NULL;
@@ -68,6 +97,10 @@ json_t *commits = NULL;
 bool curl_installed = true;
 bool offline = false;
 bool error_welcome = false;
+int latest_version_int = -1;
+int current_version_int = -1;
+bool update_available = false;
+char update_text[128];
 
 void editor_init_panel_welcome() {
     snprintf(welcome_text, sizeof(welcome_text), "You are currently running yoyoeditor %s, powered by yoyoengine core %s", YE_EDITOR_VERSION, YE_ENGINE_VERSION);
@@ -80,6 +113,30 @@ void editor_init_panel_welcome() {
         return;
     }
 
+    // check if update is available
+    char *latest_version = check_remote_version();
+    // parse out the version number from the string "build-XXX"
+    if(latest_version){
+        char *latest_version_num = latest_version + 6; // remove "build-"
+        
+        latest_version_int = atoi(latest_version_num);
+
+        char *current_version_num = YE_EDITOR_VERSION + 6; // remove "build "
+        current_version_int = atoi(current_version_num);
+
+        free(latest_version);
+
+        ye_logf(info, "Pinged update server. Latest version: %d, Current version: %d\n", latest_version_int, current_version_int);
+
+        if(latest_version_int > current_version_int){
+            update_available = true;
+        }
+    }
+
+    // do always just for testing purposes
+    snprintf(update_text, sizeof(update_text), "build %d -> build %d", current_version_int, latest_version_int);
+    // update_available = true; DEBUG
+
     const char *url = "https://api.github.com/repos/zoogies/yoyoengine/commits?sha=main&per_page=10";
 
     char *json_data = run_curl_command(url);
@@ -91,6 +148,39 @@ void editor_init_panel_welcome() {
         }
 
         free(json_data);
+    }
+}
+
+void update_available_popup(struct nk_context *ctx) {
+    struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
+    int w = 500;
+    int h = 200;
+    if(nk_popup_begin(ctx, NK_POPUP_STATIC, "Update Available", NK_WINDOW_BORDER|NK_WINDOW_TITLE, nk_rect((panelsize.x/2) - (w/2), (panelsize.y/2) - (h/2), w, h))){
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label(ctx, "An update is available for yoyoengine!", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label_colored(ctx, update_text, NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
+
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label(ctx, "Would you like to download it?", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 8, 1);
+        nk_label(ctx, "", NK_TEXT_CENTERED);
+
+        nk_layout_row_dynamic(ctx, 30, 2);
+        if(nk_button_label(ctx, "No")){
+            update_available = false;
+            nk_popup_close(ctx);
+            nk_popup_end(ctx);
+            return;
+        }
+
+        if(nk_button_label(ctx, "Yes")){
+            ye_logf(info, "Download Update\n");
+        }
+
+        nk_popup_end(ctx);
     }
 }
 
@@ -221,6 +311,41 @@ void group_welcome(struct nk_context *ctx) {
     }
 }
 
+// TODO: port this other places, kinda nice
+#define align_cent(w,h) nk_rect((screenWidth/2) - (w/2), (screenHeight/2) - (h/2), w, h)
+
+bool create_project_popup_open = false;
+struct nk_window *win = NULL;
+
+char new_proj_name[128];
+
+void create_project_popup(struct nk_context *ctx) {
+    struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
+    int w = 400;
+    int h = 250;
+    if(nk_popup_begin(ctx, NK_POPUP_STATIC, "Create Project", NK_WINDOW_BORDER|NK_WINDOW_TITLE, nk_rect((panelsize.x/2) - (w/2), (panelsize.y/2) - (h/2), w, h))){
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_label(ctx, "Project Name:", NK_TEXT_LEFT);
+
+        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, new_proj_name, sizeof(new_proj_name) - 1, nk_filter_default);
+
+        nk_layout_row_dynamic(ctx, 30, 2);
+        if(nk_button_label(ctx, "Cancel")){
+            create_project_popup_open = false;
+            nk_popup_close(ctx);
+            nk_popup_end(ctx);
+            return;
+        }
+
+        if(nk_button_label(ctx, "Create")){
+            ye_logf(info, "Create Project\n");
+        }
+
+        nk_popup_end(ctx);
+    }
+}
+
 void group_projects(struct nk_context *ctx) {
     if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
         struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
@@ -231,7 +356,8 @@ void group_projects(struct nk_context *ctx) {
         ye_h3(nk_label_colored(ctx, "Projects:", NK_TEXT_LEFT, nk_rgb(255, 255, 255)));
 
         if(nk_button_image_label(ctx, editor_icons.style, "New Project", NK_TEXT_CENTERED)){
-            ye_logf(info, "New Project\n");
+            create_project_popup_open = true;
+            snprintf(new_proj_name, sizeof(new_proj_name), "");
         }
 
         if(nk_button_image_label(ctx, editor_icons.folder, "Open Existing Project", NK_TEXT_CENTERED)){
@@ -277,16 +403,25 @@ void group_projects(struct nk_context *ctx) {
         
         // Pop the custom color after rendering the group
         nk_style_pop_color(ctx);
+
+        if(create_project_popup_open){
+            create_project_popup(ctx);
+        }
     }
 }
 
 void editor_panel_welcome(struct nk_context *ctx){
+    // if you change window name, change above too
     if(nk_begin(ctx, "yoyoengine - homepage", nk_rect(0,0,screenWidth,screenHeight), NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
         nk_layout_row_dynamic(ctx, screenHeight - 58, 2);
 
         group_welcome(ctx);
 
         group_projects(ctx);
+
+        if(update_available){
+            update_available_popup(ctx);
+        }
 
         nk_end(ctx);
     }
