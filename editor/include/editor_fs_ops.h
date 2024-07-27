@@ -18,4 +18,7 @@ bool editor_rename(const char *src, const char *dst);
 // only works one level deep of new directories
 bool editor_create_directory(const char *path);
 
+// prompts the user to select a folder and returns a malloced string
+char * editor_file_dialog_select_folder();
+
 #endif

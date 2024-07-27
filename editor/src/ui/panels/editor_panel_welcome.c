@@ -7,6 +7,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <pwd.h>
 
 #include <Nuklear/nuklear.h>
 
@@ -153,6 +156,17 @@ void editor_init_panel_welcome() {
     // project list stuff
 
     load_project_cache();
+}
+
+// get a timestamp buffer, format MM/DD/YYYY
+void get_stamp_string(char *buffer, size_t buffer_size) {
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    // Make sure the buffer is large enough
+    if (buffer_size >= 11) {
+        snprintf(buffer, buffer_size, "%02d/%02d/%d", tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900);
+    }
 }
 
 void update_available_popup(struct nk_context *ctx) {
@@ -321,7 +335,8 @@ void group_welcome(struct nk_context *ctx) {
 bool create_project_popup_open = false;
 struct nk_window *win = NULL;
 
-char new_proj_name[128];
+char new_proj_name[128]; // the name of the project folder to create
+char new_proj_path[512]; // the parent directory we will create the project in
 
 void create_project_popup(struct nk_context *ctx) {
     struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
@@ -334,6 +349,27 @@ void create_project_popup(struct nk_context *ctx) {
         nk_layout_row_dynamic(ctx, 30, 1);
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, new_proj_name, sizeof(new_proj_name) - 1, nk_filter_default);
 
+        nk_label(ctx, "Project Path:", NK_TEXT_LEFT);
+        
+        nk_layout_row_begin(ctx, NK_DYNAMIC, 30, 2);
+
+        nk_layout_row_push(ctx, 0.66);
+
+        nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, new_proj_path, sizeof(new_proj_path) - 1, nk_filter_default);
+        
+        nk_layout_row_push(ctx, 0.28 + 0.05);
+
+        if(nk_button_image_label(ctx, editor_icons.folder, "browse", NK_TEXT_CENTERED)){
+            char *path = editor_file_dialog_select_folder();
+            if(path){
+                snprintf(new_proj_path, sizeof(new_proj_path), "%s", path);
+                free(path);
+            }
+        }
+
+        nk_layout_row_dynamic(ctx, 20, 1);
+        nk_label(ctx, "", NK_TEXT_LEFT);
+
         nk_layout_row_dynamic(ctx, 30, 2);
         if(nk_button_label(ctx, "Cancel")){
             create_project_popup_open = false;
@@ -344,6 +380,16 @@ void create_project_popup(struct nk_context *ctx) {
 
         if(nk_button_label(ctx, "Create")){
             ye_logf(info, "Create Project\n");
+
+            /*
+                Process:
+                1. copy template into new_proj_path/new_proj_name
+                -- past this is just theory --
+                2. git init?
+                3. git submodule yoyoengine?
+            */
+
+            // TODO: pickup here tomorrow
         }
 
         nk_popup_end(ctx);
@@ -352,10 +398,43 @@ void create_project_popup(struct nk_context *ctx) {
 
 json_t *project_cache = NULL;
 
-void load_project_cache() {
-    // open /var/lib/yoyoengine project_cache.yoyo
-    project_cache = ye_json_read("/var/lib/yoyoengine/project_cache.yoyo");
+
+//////////////////////////////////
+// Helpers for the project list //
+//////////////////////////////////
+
+// expands a home dir path to be absolute
+const char* expand_tilde(const char *path) {
+    static char expanded_path[1024]; // Static buffer to hold the expanded path
+
+    if (path[0] == '~') {
+        const char *home = getenv("HOME");
+        if (!home) {
+            home = getpwuid(getuid())->pw_dir;
+        }
+        snprintf(expanded_path, sizeof(expanded_path), "%s%s", home, path + 1);
+    } else {
+        strncpy(expanded_path, path, sizeof(expanded_path));
+        expanded_path[sizeof(expanded_path) - 1] = '\0'; // Ensure null-termination
+    }
+
+    return expanded_path;
 }
+
+void serialize_projects() {
+    if(!project_cache){
+        project_cache = json_object();
+        json_object_set_new(project_cache, "projects", json_array());
+    }
+
+    ye_json_write(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"), project_cache);
+}
+
+void load_project_cache() {
+    project_cache = ye_json_read(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"));
+}
+
+//////////////////////////////////
 
 void group_projects(struct nk_context *ctx) {
     if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
@@ -373,6 +452,36 @@ void group_projects(struct nk_context *ctx) {
 
         if(nk_button_image_label(ctx, editor_icons.folder, "Open Existing Project", NK_TEXT_CENTERED)){
             ye_logf(info, "Open Existing Project\n");
+
+            char *path = editor_file_dialog_select_folder();
+
+            if(path){
+                // check if path/settings.yoyo exists, if so read it into json_t
+                char settings_path[1024];
+                snprintf(settings_path, sizeof(settings_path), "%s/settings.yoyo", path);
+                if(!access(settings_path, F_OK) != -1){
+                    ye_logf(error, "%s was not a real yoyoengine project.\n", path);
+                }
+
+                json_t *settings = ye_json_read(settings_path);
+
+                const char * name = json_string_value(json_object_get(settings, "name"));
+
+                // set key in project cache
+                json_t *project = json_object();
+                json_object_set_new(project, "name", json_string(name));
+                json_object_set_new(project, "date", json_string("01/01/2023"));
+                json_object_set_new(project, "path", json_string(path));
+
+                json_t *projects = json_object_get(project_cache, "projects");
+                
+                // append at start of array
+                json_array_insert_new(projects, 0, project);
+
+                serialize_projects();
+
+                free(path);
+            }
         }
 
         rolling_height += 50;
@@ -405,21 +514,43 @@ void group_projects(struct nk_context *ctx) {
             const char *name_str = json_string_value(json_object_get(project, "name"));
             const char *path_str = json_string_value(json_object_get(project, "path"));
 
-            nk_label(ctx, date_str, NK_TEXT_LEFT);
+            nk_label(ctx, date_str, NK_TEXT_CENTERED);
 
             ye_h3(nk_label(ctx, name_str, NK_TEXT_LEFT));
         
             if(nk_button_image_label(ctx, editor_icons.folder , "Open", NK_TEXT_CENTERED)){
-                ye_logf(info, "Open Project\n");
+                ye_logf(debug, "Open Project\n");
 
-                // printf("open path: %s\n", path_str);
+                char stamp[11]; get_stamp_string(&stamp, sizeof(stamp));
+                printf("stamp: %s\n", stamp);
+                json_object_set_new(project, "date", json_string(&stamp));
+                
+                // json_array_insert_new(projects, 0, project);
+                // json_array_remove(projects, i-1);
+
+                serialize_projects();
 
                 EDITOR_STATE.mode = ESTATE_EDITING;
+                
+                if(EDITOR_STATE.opened_project_path){
+                    free(EDITOR_STATE.opened_project_path);
+                }
                 EDITOR_STATE.opened_project_path = strdup(path_str);
+
+                nk_group_end(ctx);
+                nk_style_pop_color(ctx);
+                return;
             }
 
+            // TODO: put a notice somewhere that this only deletes the reference, not the proj files
             if(nk_button_image_label(ctx, editor_icons.trash, "Delete", NK_TEXT_CENTERED)){
-                ye_logf(info, "Delete Project\n");
+                ye_logf(debug, "Delete Project\n");
+
+                json_array_remove(projects, i);
+                serialize_projects();
+                nk_group_end(ctx);
+                nk_style_pop_color(ctx);
+                return;
             }
         
         }

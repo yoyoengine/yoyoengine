@@ -4,6 +4,23 @@ The reccomended way to use yoyoengine is via a submodule inside your main git pr
 
 In the future I might release standalone versions of the editor and launcher, but by the nature of yoyoengine, you will probably want to hack on the core engine itself at some point.
 
+## Dependencies
+
+There are a few "hard" dependencies for yoyoengine, which are:
+
+- A C compiler, CMake, Make, and git
+
+But there are also some "soft" dependencies which are:
+
+- curl
+- zenity
+
+These "soft" dependencies will cause runtime "errors" if they are not present, but everything will still work as expected.
+
+For example, yoyoeditor uses curl to check for updates against github, but if curl is not installed you will simply see "curl is not installed." in the console without any other issues.
+
+These are typically installed on every linux system by default, so you shouldn't have to worry about them.
+
 ## Adding yoyoengine
 
 1. Create a new git repo

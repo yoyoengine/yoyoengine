@@ -772,7 +772,8 @@ and nk_popup_end to avoid dangling bad active window state
 
 ## editor persist data
 
-/var/lib/yoyoengine for projects
+~~/var/lib/yoyoengine for projects~~ NO, NOT ANYMORE
+~/.local/share/yoyoengine has project_cache.yoyo for project list, projects are put wherever the user wants when opening or creating them
 /opt/zoogies/yoyoengine for editor install
 
 make and copy a desktop file so it shows up properly
@@ -791,3 +792,15 @@ make and copy a desktop file so it shows up properly
 ## kjdsfhkjfdhgkjdfhgkjfd
 
 expose uninstall and updater through GUI
+
+## Small Bug Squash Megalist
+
+- When opening to welcome page, fullscreen the window and then load into a project. you will notice a weird viewport bug that is fixed by resizing the window.
+- Resizing window spams terminal
+- empty color or font change buffers spam errors
+
+## pickup tomorrow
+
+editor create new project, you need to ideate about how engine is customized per project. if you do template you need to clone template from git, could submodule first then copy template. when you submodule you need to match latest tag and not main
+
+^ lowkey kinda bad because you would need internet to make projects, whereas everything else is offline rn... but submodule would require online too...

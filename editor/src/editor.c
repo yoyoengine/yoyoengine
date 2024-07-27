@@ -77,9 +77,19 @@ bool editor_panning = false;
 // nk_image icons
 struct edicons editor_icons;
 
+char *editor_base_path = NULL;
+
 /*
     ALL GLOBALS INITIALIZED
 */
+
+char * editor_path(const char *subpath) {
+    static char path[1024];
+
+    snprintf(path, sizeof(path), "%s/%s", editor_base_path, subpath);
+
+    return path;
+}
 
 bool ye_point_in_rect(int x, int y, SDL_Rect rect)
 { // TODO: MOVEME TO ENGINE
@@ -166,8 +176,8 @@ void editor_welcome_loop() {
 
     YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
 
-    screenWidth = 1920;
-    screenHeight = 1080;
+    struct ScreenSize ss = ye_get_screen_size();
+    screenWidth = ss.width; screenHeight = ss.height;
     
     editor_init_panel_welcome();
 
@@ -187,6 +197,20 @@ void editor_welcome_loop() {
     YE_STATE.engine.target_camera = NULL;
 }
 
+// TODO: dumb hack to supress error from this function. sue me.
+struct ye_entity * get_ent_by_name_silent(const char *name) {
+    struct ye_entity_node *current = entity_list_head;
+
+    while(current != NULL){
+        if(strcmp(current->entity->name, name) == 0){
+            return current->entity;
+        }
+        current = current->next;
+    }
+
+    return NULL;
+}
+
 void editor_editing_loop() {
     // state init
     // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
@@ -198,7 +222,7 @@ void editor_editing_loop() {
     // let the engine know we also want to custom handle inputs
     YE_STATE.engine.callbacks.input_handler = editor_handle_input;
 
-    editor_camera = ye_get_entity_by_name("editor_camera");
+    editor_camera = get_ent_by_name_silent("editor_camera");
     if(!editor_camera){ // we hit this because purge ecs recreates editor ents for us
         // create our editor camera and register it with the engine
         editor_camera = ye_create_entity_named("editor_camera");
@@ -214,7 +238,7 @@ void editor_editing_loop() {
     ui_register_component("project", ye_editor_paint_project);
     ui_register_component("editor_menu_bar", ye_editor_paint_menu);
 
-    origin = ye_get_entity_by_name("origin");
+    origin = get_ent_by_name_silent("origin");
     if(!origin){
         origin = ye_create_entity_named("origin");
         ye_add_transform_component(origin, -50, -50);
@@ -344,9 +368,8 @@ int main(int argc, char **argv) {
     /*
         Set the editor settings path
     */
-    char* basePath = SDL_GetBasePath();
-    snprintf(editor_settings_path, sizeof(editor_settings_path), "%s./editor.yoyo", basePath);
-    free(basePath);
+    editor_base_path = SDL_GetBasePath();
+    snprintf(editor_settings_path, sizeof(editor_settings_path), "%s./editor.yoyo", editor_base_path);
 
     yoyo_loading_refresh("Reading editor settings...");
 
@@ -450,6 +473,8 @@ int main(int argc, char **argv) {
 
     ye_shutdown_engine();
     json_decref(SETTINGS);
+
+    free(editor_base_path);
 
     // shutdown editor and teardown contextx
     editor_settings_ui_shutdown();

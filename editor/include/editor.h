@@ -14,6 +14,9 @@
 #include <jansson.h>
 #include <yoyoengine/yoyoengine.h>
 
+// get the path to a resource from the editor install dir
+char * editor_path(const char *subpath);
+
 /*
     Macros for marking dirty and saving status
 */

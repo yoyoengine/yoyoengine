@@ -114,3 +114,52 @@ bool editor_create_directory(const char *path) {
     }
     return true;
 }
+
+void _restore() {
+    SDL_WaitEvent(NULL);
+    SDL_RestoreWindow(YE_STATE.runtime.window);
+
+    // restore the window to being active (this is not working currently)
+    SDL_WaitEvent(NULL);
+    SDL_RaiseWindow(YE_STATE.runtime.window);
+}
+
+char * editor_file_dialog_select_folder() {
+    SDL_MinimizeWindow(YE_STATE.runtime.window);
+
+    // Check if zenity is installed
+    if (system("zenity --version") != 0) {
+        fprintf(stderr, "Failed to open folder selection dialog, zenity is not installed.\n");
+        _restore();
+        return NULL;
+    }
+
+    char buffer[1024];
+    FILE *fp;
+
+    // Run zenity to open folder selection dialog
+    fp = popen("zenity --file-selection --directory", "r");
+    if (fp == NULL) {
+        perror("popen");
+        _restore();
+        return NULL;
+    }
+
+    // Read the selected folder path from zenity
+    if (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        // Remove trailing newline character
+        buffer[strcspn(buffer, "\n")] = 0;
+        printf("Selected folder: %s\n", buffer);
+    } else {
+        printf("No folder selected.\n");
+        pclose(fp);
+        _restore();
+        return NULL;
+    }
+
+    pclose(fp);
+
+    _restore();
+
+    return strdup(buffer);
+}
