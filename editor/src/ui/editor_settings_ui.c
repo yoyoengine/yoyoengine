@@ -597,7 +597,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                 }
             }
             if(nk_button_image_label(ctx, editor_icons.folder, "Browse Project Files", NK_TEXT_CENTERED)){
-                editor_open_in_system(project_path);
+                editor_open_in_system(EDITOR_STATE.opened_project_path);
             }
             if(nk_button_image_label(ctx, editor_icons.style, "Edit styles.yoyo", NK_TEXT_CENTERED)){
                 /*

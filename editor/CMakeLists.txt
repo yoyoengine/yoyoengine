@@ -54,6 +54,10 @@ if(UNIX)
             "${EDITOR_BUILD_DIR}/resources"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/editor_resources" "${EDITOR_BUILD_DIR}/engine_resources"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/uninstall.sh" "${EDITOR_BUILD_DIR}/uninstall.sh"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_SOURCE_DIR}/updater.sh" "${EDITOR_BUILD_DIR}/updater.sh"
     )
 else()
     message(FATAL_ERROR "The editor is only supported on Linux. If this is a dealbreaker for you, please open an Issue and I will port it. Probably.")

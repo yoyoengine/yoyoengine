@@ -77,4 +77,32 @@ echo "Creating desktop shortcut..."
 echo "$desktop_entry" > "$desktop_shortcut"
 chmod +x "$desktop_shortcut"
 
+# create /var/lib/yoyoengine
+if [ ! -d "/var/lib/yoyoengine" ]; then
+    echo "Creating /var/lib/yoyoengine..."
+    if ! sudo mkdir -p "/var/lib/yoyoengine"; then
+        echo "Error: Failed to create /var/lib/yoyoengine."
+        exit 1
+    fi
+fi
+
+# create /var/lib/yoyoengine/projects
+if [ ! -d "/var/lib/yoyoengine/projects" ]; then
+    echo "Creating /var/lib/yoyoengine/projects..."
+    if ! sudo mkdir -p "/var/lib/yoyoengine/projects"; then
+        echo "Error: Failed to create /var/lib/yoyoengine/projects."
+        exit 1
+    fi
+fi
+
+# create /var/lib/yoyoengine/project_cache.yoyo and echo blank template
+if [ ! -f "/var/lib/yoyoengine/project_cache.yoyo" ]; then
+    echo "Creating /var/lib/yoyoengine/project_cache.yoyo..."
+    if ! sudo touch "/var/lib/yoyoengine/project_cache.yoyo"; then
+        echo "Error: Failed to create /var/lib/yoyoengine/project_cache.yoyo."
+        exit 1
+    fi
+    echo "{\"projects\":[]}" | sudo tee "/var/lib/yoyoengine/project_cache.yoyo" > /dev/null
+fi
+
 echo "Installation completed successfully."

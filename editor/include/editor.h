@@ -50,9 +50,11 @@ extern struct editor_prefs PREFS;
 struct editor_state {
     enum mode {
         ESTATE_INIT,
-        ESTATE_GENERIC,
+        ESTATE_WELCOME,
         ESTATE_EDITING
     } mode;
+
+    char * opened_project_path;
 };
 
 extern struct editor_state EDITOR_STATE;
@@ -67,7 +69,6 @@ extern struct ye_entity * origin;
 extern float screenWidth;
 extern float screenHeight;
 extern struct ye_entity_node * entity_list_head;
-extern char *project_path;
 
 // some fields for current selected entity tracking (this will be messy)
 // actually lets be really smart and keep local copy

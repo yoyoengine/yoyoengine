@@ -537,6 +537,12 @@ void ye_editor_paint_menu(struct nk_context *ctx){
             if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {    
                 editor_write_scene_to_disk(ye_path_resources(YE_STATE.runtime.scene_file_path));
             }
+            if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
+                EDITOR_STATE.mode = ESTATE_WELCOME;
+                
+                free(EDITOR_STATE.opened_project_path);
+                EDITOR_STATE.opened_project_path = NULL;
+            }
             nk_menu_end(ctx);
 
             /*

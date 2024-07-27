@@ -149,6 +149,10 @@ void editor_init_panel_welcome() {
 
         free(json_data);
     }
+
+    // project list stuff
+
+    load_project_cache();
 }
 
 void update_available_popup(struct nk_context *ctx) {
@@ -346,6 +350,13 @@ void create_project_popup(struct nk_context *ctx) {
     }
 }
 
+json_t *project_cache = NULL;
+
+void load_project_cache() {
+    // open /var/lib/yoyoengine project_cache.yoyo
+    project_cache = ye_json_read("/var/lib/yoyoengine/project_cache.yoyo");
+}
+
 void group_projects(struct nk_context *ctx) {
     if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
         struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
@@ -379,24 +390,43 @@ void group_projects(struct nk_context *ctx) {
         struct nk_color custom_color = nk_rgb(10, 10, 10);
         nk_style_push_color(ctx, &ctx->style.window.fixed_background.data.color, custom_color);
         
-        nk_layout_row_dynamic(ctx, panelsize.y - rolling_height - 10, 1);
+        nk_layout_row_dynamic(ctx, panelsize.y - rolling_height - 25, 1);
         nk_group_begin(ctx, "recent_projects", NK_WINDOW_BORDER);
         
+        json_t *projects = json_object_get(project_cache, "projects");
+
+        // iterate over projects array which contains dicts with keys name date path
         nk_layout_row_dynamic(ctx, 30, 4);
-        for(int i = 0; i < 100; i++){
+        for(size_t i = 0; i < json_array_size(projects); i++){
 
-            nk_label(ctx, "MM/DD/YYYY", NK_TEXT_LEFT);
+            json_t *project = json_array_get(projects, i);
 
-            ye_h3(nk_label(ctx, "Project Name", NK_TEXT_LEFT));
+            const char *date_str = json_string_value(json_object_get(project, "date"));
+            const char *name_str = json_string_value(json_object_get(project, "name"));
+            const char *path_str = json_string_value(json_object_get(project, "path"));
+
+            nk_label(ctx, date_str, NK_TEXT_LEFT);
+
+            ye_h3(nk_label(ctx, name_str, NK_TEXT_LEFT));
         
             if(nk_button_image_label(ctx, editor_icons.folder , "Open", NK_TEXT_CENTERED)){
                 ye_logf(info, "Open Project\n");
+
+                // printf("open path: %s\n", path_str);
+
+                EDITOR_STATE.mode = ESTATE_EDITING;
+                EDITOR_STATE.opened_project_path = strdup(path_str);
             }
 
             if(nk_button_image_label(ctx, editor_icons.trash, "Delete", NK_TEXT_CENTERED)){
                 ye_logf(info, "Delete Project\n");
             }
         
+        }
+        if(json_array_size(projects) == 0){
+            nk_layout_row_dynamic(ctx, 30, 1);
+            ye_h3(nk_label(ctx, "No projects found.", NK_TEXT_CENTERED));
+            nk_label(ctx, "Go on and create your next masterpeice!", NK_TEXT_CENTERED);
         }
         
         nk_group_end(ctx);

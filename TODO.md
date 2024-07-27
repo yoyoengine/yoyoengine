@@ -787,3 +787,7 @@ make and copy a desktop file so it shows up properly
   - prob remove engine build path - or not, it just needs to be to local copy
   - what about when people want to fork but its a submodule?
 - make auto update actually call script
+
+## kjdsfhkjfdhgkjdfhgkjfd
+
+expose uninstall and updater through GUI

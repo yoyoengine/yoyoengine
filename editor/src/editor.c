@@ -57,7 +57,6 @@ float screenWidth;
 float screenHeight;
 
 struct ye_entity_node *entity_list_head;
-char *project_path;
 struct ye_entity staged_entity;
 json_t *SETTINGS;
 
@@ -154,6 +153,133 @@ void editor_pre_handle_input(SDL_Event event){
             screenHeight = event.window.data2;
         }
     }
+}
+
+void editor_welcome_loop() {
+    yoyo_loading_refresh("Loading welcome panel...");
+
+    // create camera so engine doesn't freakout
+    struct ye_entity * cam = ye_create_entity_named("project select cam");
+    ye_add_transform_component(cam, 0, 0);
+    ye_add_camera_component(cam, 999, (struct ye_rectf){0, 0, 2560, 1440});
+    ye_set_camera(cam);
+
+    YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
+
+    screenWidth = 1920;
+    screenHeight = 1080;
+    
+    editor_init_panel_welcome();
+
+    ui_register_component("welcome", editor_panel_welcome);
+
+    while(EDITOR_STATE.mode == ESTATE_WELCOME){
+        if(quit)
+            exit(0);
+        
+        ye_process_frame();
+    }
+
+    remove_ui_component("welcome");
+
+    ye_destroy_entity(cam);
+    editor_camera = NULL;
+    YE_STATE.engine.target_camera = NULL;
+}
+
+void editor_editing_loop() {
+    // state init
+    // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
+    if (EDITOR_STATE.opened_project_path != NULL)
+        ye_update_base_path(EDITOR_STATE.opened_project_path); // GOD THIS IS SUCH A HEADACHE
+    else
+        ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
+
+    // let the engine know we also want to custom handle inputs
+    YE_STATE.engine.callbacks.input_handler = editor_handle_input;
+
+    editor_camera = ye_get_entity_by_name("editor_camera");
+    if(!editor_camera){ // we hit this because purge ecs recreates editor ents for us
+        // create our editor camera and register it with the engine
+        editor_camera = ye_create_entity_named("editor_camera");
+        ye_add_transform_component(editor_camera, 0, 0);
+        ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
+        ye_set_camera(editor_camera);
+    }
+
+    // register all editor ui components
+    ui_register_component("heiarchy", ye_editor_paint_hiearchy);
+    ui_register_component("entity", ye_editor_paint_inspector);
+    ui_register_component("options", ye_editor_paint_options);
+    ui_register_component("project", ye_editor_paint_project);
+    ui_register_component("editor_menu_bar", ye_editor_paint_menu);
+
+    origin = ye_get_entity_by_name("origin");
+    if(!origin){
+        origin = ye_create_entity_named("origin");
+        ye_add_transform_component(origin, -50, -50);
+
+        SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
+        ye_cache_texture_manual(orgn_tex, "originwhite.png");
+        ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
+        origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
+    }
+
+    yoyo_loading_refresh("Loading entry scene...");
+
+    // load the scene out of the project settings::entry_scene
+    SETTINGS = ye_json_read(ye_path("settings.yoyo"));
+    // ye_json_log(SETTINGS);
+
+    SDL_Color red = {255, 0, 0, 255};
+    ye_cache_color("warning", red);
+
+    // get the scene to load from "entry_scene"
+    const char *entry_scene;
+    if (!ye_json_string(SETTINGS, "entry_scene", &entry_scene))
+    {
+        ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
+        // TODO: future me create a text entity easily in the center of the scene alerting this fact
+        struct ye_entity *text = ye_create_entity_named("warning text");
+        ye_add_transform_component(text, 0, 0);
+        ye_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", 128, "warning",0);
+        text->renderer->rect = (struct ye_rectf){0, 0, 1920, 500};
+    }
+    else
+    {
+        ye_load_scene(entry_scene);
+    }
+
+    entity_list_head = ye_get_entity_list_head();
+
+    // TODO: remove in future when we serialize editor prefs
+    YE_STATE.editor.editor_display_viewport_lines = true;
+
+    ye_logf(info, "Editor fully initialized.\n");
+    ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
+
+    // core editing loop
+    while(EDITOR_STATE.mode == ESTATE_EDITING && !quit) {
+        if(editor_draw_drag_rect)
+            ye_debug_render_rect(editor_selecting_rect.x, editor_selecting_rect.y, editor_selecting_rect.w, editor_selecting_rect.h, (SDL_Color){255, 0, 0, 255}, 10);
+        if(editor_panning)
+            ye_debug_render_line(pan_start.x, pan_start.y, pan_end.x, pan_end.y, (SDL_Color){255, 255, 255, 255}, 10);
+        editor_render_selection_rects();
+        ye_process_frame();
+    }
+
+    // if we have left that loop, cleanup the editor editing state
+    editor_deselect_all();
+    ye_purge_ecs();
+    remove_ui_component("heiarchy");
+    remove_ui_component("entity");
+    remove_ui_component("options");
+    remove_ui_component("project");
+    remove_ui_component("editor_menu_bar");
+
+    origin = NULL;
+    editor_camera = NULL;
+    YE_STATE.engine.target_camera = NULL;
 }
 
 /*
@@ -279,134 +405,21 @@ int main(int argc, char **argv) {
     screenWidth = screenSize.width;
     screenHeight = screenSize.height;
 
-
-
-
-
-    ///////   project browser and welcome page   ///////
-
     /*
         if we have invoked the editor without a path to
         a project, we should enter into a state that allows
         the user to create and select projects at will
     */
     if(argc <= 1){
-
-        // create camera so engine doesn't freakout
-        struct ye_entity * cam = ye_create_entity_named("project select cam");
-        ye_add_transform_component(cam, 0, 0);
-        ye_add_camera_component(cam, 999, (struct ye_rectf){0, 0, 2560, 1440});
-        ye_set_camera(cam);
-
-        YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
-
-        screenWidth = 1920;
-        screenHeight = 1080;
-        
-        editor_init_panel_welcome();
-
-        ui_register_component("welcome", editor_panel_welcome);
-
-        bool selecting_project = true;
-        while(selecting_project){
-            if(quit)
-                exit(0);
-            
-            ye_process_frame();
-        }
+        EDITOR_STATE.mode = ESTATE_WELCOME;
     }
 
-    ////////////////////////////////////////////////////
-
-
-
-
-
-    /////// stuff specific to choosing a project ///////
-
-    // get our path from the command line
-    char *path = argv[1];
-    // printf("PATH WAS: %s\n", path);
-    ye_logf(info, "Editor recieved path: %s\n",path);
-    project_path = path;
-
-    // update the games knowledge of where the resources path is, now for all the engine is concerned it is our target game
-    if (path != NULL)
-        ye_update_base_path(path); // GOD THIS IS SUCH A HEADACHE
-    else
-        ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
-
-    // let the engine know we also want to custom handle inputs
-    YE_STATE.engine.callbacks.input_handler = editor_handle_input;
-
-    // create our editor camera and register it with the engine
-    editor_camera = ye_create_entity_named("editor_camera");
-    ye_add_transform_component(editor_camera, 0, 0);
-    ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
-    ye_set_camera(editor_camera);
-
-    // register all editor ui components
-    ui_register_component("heiarchy", ye_editor_paint_hiearchy);
-    ui_register_component("entity", ye_editor_paint_inspector);
-    ui_register_component("options", ye_editor_paint_options);
-    ui_register_component("project", ye_editor_paint_project);
-    ui_register_component("editor_menu_bar", ye_editor_paint_menu);
-
-    origin = ye_create_entity_named("origin");
-    ye_add_transform_component(origin, -50, -50);
-
-    SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
-    ye_cache_texture_manual(orgn_tex, "originwhite.png");
-    ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
-    origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
-
-    yoyo_loading_refresh("Loading entry scene...");
-
-    // load the scene out of the project settings::entry_scene
-    SETTINGS = ye_json_read(ye_path("settings.yoyo"));
-    // ye_json_log(SETTINGS);
-
-    SDL_Color red = {255, 0, 0, 255};
-    ye_cache_color("warning", red);
-
-    // get the scene to load from "entry_scene"
-    const char *entry_scene;
-    if (!ye_json_string(SETTINGS, "entry_scene", &entry_scene))
-    {
-        ye_logf(error, "entry_scene not found in settings file. No scene has been loaded.");
-        // TODO: future me create a text entity easily in the center of the scene alerting this fact
-        struct ye_entity *text = ye_create_entity_named("warning text");
-        ye_add_transform_component(text, 0, 0);
-        ye_add_text_renderer_component(text, 900, "entry_scene not found in settings file. No scene has been loaded.", "default", 128, "warning",0);
-        text->renderer->rect = (struct ye_rectf){0, 0, 1920, 500};
-    }
-    else
-    {
-        ye_load_scene(entry_scene);
-    }
-
-    entity_list_head = ye_get_entity_list_head();
-
-    // TODO: remove in future when we serialize editor prefs
-    YE_STATE.editor.editor_display_viewport_lines = true;
-
-    ye_logf(info, "Editor fully initialized.\n");
-    ye_logf(info, "---------- BEGIN RUNTIME OUTPUT ----------\n");
-
+    // core editor loop, depending on state
     while(!quit) {
-        if(editor_draw_drag_rect)
-            ye_debug_render_rect(editor_selecting_rect.x, editor_selecting_rect.y, editor_selecting_rect.w, editor_selecting_rect.h, (SDL_Color){255, 0, 0, 255}, 10);
-        if(editor_panning)
-            ye_debug_render_line(pan_start.x, pan_start.y, pan_end.x, pan_end.y, (SDL_Color){255, 255, 255, 255}, 10);
-        editor_render_selection_rects();
-        ye_process_frame();
+        editor_welcome_loop();
+        
+        editor_editing_loop();
     }
-
-    ////////////////////////////////////////////////////
-
-
-
-
 
     /*
         Before we shutdown the editor, lets re-serialize
