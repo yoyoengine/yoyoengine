@@ -439,10 +439,17 @@ int main(int argc, char **argv) {
     if(argc <= 1){
         EDITOR_STATE.mode = ESTATE_WELCOME;
     }
+    else {
+        char *path = argv[1];
+        ye_logf(info, "Editor recieved path: %s\n",path);
+        EDITOR_STATE.opened_project_path = path;
+        EDITOR_STATE.mode = ESTATE_EDITING;
+    }
 
     // core editor loop, depending on state
     while(!quit) {
-        editor_welcome_loop();
+        if(EDITOR_STATE.mode == ESTATE_WELCOME)
+            editor_welcome_loop();
         
         editor_editing_loop();
     }
