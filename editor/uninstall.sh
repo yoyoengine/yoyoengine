@@ -40,4 +40,14 @@ else
 	echo "$desktop_shortcut does not exist."
 fi
 
+# remove ~/.local/share/yoyoengine
+local_share_dir="$HOME/.local/share/yoyoengine"
+if [ -d "$local_share_dir" ]; then
+	echo "Removing $local_share_dir..."
+	if ! rm -rf "$local_share_dir"; then
+		echo "Error: Failed to remove $local_share_dir."
+		exit 1
+	fi
+fi
+
 echo "Uninstallation completed successfully."

@@ -108,6 +108,7 @@ struct edicons {
     struct nk_image buildreconfigure;
     struct nk_image duplicate;
     struct nk_image trash;
+    struct nk_image refresh;
 
     // not necessarily icons, but whatever...
     struct nk_image lightheader;

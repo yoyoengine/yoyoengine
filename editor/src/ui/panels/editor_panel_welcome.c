@@ -18,6 +18,7 @@
 #include "editor.h"
 #include "editor_panels.h"
 #include "editor_fs_ops.h"
+#include "editor_utils.h"
 
 int is_curl_installed() {
     // TODO: NOTCROSSPLATFORM
@@ -222,8 +223,29 @@ void group_welcome(struct nk_context *ctx) {
         nk_label_wrap(ctx, welcome_text);
         running_height += 100;
 
+        nk_label_wrap(ctx, "yoyoengine is provided under the MIT license, and is free to use for any purpose. Credit is greatly appreciated, but not required.");
+        running_height += 50;
+
+        ye_h3(nk_label(ctx, "Helpful Links:", NK_TEXT_CENTERED));
+        running_height += 50;
+
+        // blank link link link blank
+        nk_layout_row_dynamic(ctx, 30, 5);
+
+        nk_label(ctx, "", NK_TEXT_LEFT);
+        if(nk_button_label(ctx, "Github"))
+            editor_open_in_system("https://github.com/zoogies/yoyoengine");
+        if(nk_button_label(ctx, "Documentation"))
+            editor_open_in_system("https://zoogies.github.io/yoyoengine/");
+        if(nk_button_label(ctx, "Report an Issue"))
+            editor_open_in_system("https://github.com/zoogies/yoyoengine/issues/new");
+        
+        nk_label(ctx, "", NK_TEXT_LEFT);
+
+        running_height += 30;
+
         int commits_size = 50 + (11 * 30) + 10 + 15;
-        int margin = panelsize.y - running_height - commits_size - 80;
+        int margin = panelsize.y - running_height - commits_size - 80 - 8;
 
         if(margin > 0){
             nk_layout_row_dynamic(ctx, margin, 1);
@@ -338,6 +360,8 @@ struct nk_window *win = NULL;
 char new_proj_name[128]; // the name of the project folder to create
 char new_proj_path[512]; // the parent directory we will create the project in
 
+json_t *project_cache = NULL;
+
 void create_project_popup(struct nk_context *ctx) {
     struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
     int w = 400;
@@ -381,23 +405,94 @@ void create_project_popup(struct nk_context *ctx) {
         if(nk_button_label(ctx, "Create")){
             ye_logf(info, "Create Project\n");
 
-            /*
-                Process:
-                1. copy template into new_proj_path/new_proj_name
-                -- past this is just theory --
-                2. git init?
-                3. git submodule yoyoengine?
-            */
+            char new_proj_full_path[512];
+            snprintf(new_proj_full_path, sizeof(new_proj_full_path), "%s/%s", new_proj_path, new_proj_name);
 
-            // TODO: pickup here tomorrow
+            if(!editor_create_directory(new_proj_full_path)){
+                ye_logf(error, "Failed to create project at %s\n", new_proj_full_path);
+                
+                // TODO: stuff like this is a good case for labels, goto: end
+                nk_popup_end(ctx);
+                return;
+            }
+
+            // copy template
+            char template_path[512];
+            snprintf(template_path, sizeof(template_path), "%s/.local/share/yoyoengine/source/template", getenv("HOME"));
+            printf("template_path: %s\n", template_path);
+
+            char game_path[512];
+            snprintf(game_path, sizeof(game_path), "%s/game", new_proj_full_path);
+
+            if(!editor_copy_directory(template_path, game_path)){
+                ye_logf(error, "Failed to copy template to %s\n", game_path);
+                
+                nk_popup_end(ctx);
+                return;
+            }
+
+            // run git init in new_proj_full_path
+            char git_init_cmd[512];
+            snprintf(git_init_cmd, sizeof(git_init_cmd), "cd \"%s\" && git init", new_proj_full_path);
+            if(system(git_init_cmd) != 0){
+                ye_logf(error, "Failed to run git init in %s\n", new_proj_full_path);
+                
+                nk_popup_end(ctx);
+                return;
+            }
+
+            // get the desired tag version from a dumb macro hack
+            char tag[16];
+            snprintf(tag, sizeof(tag), "%s", YE_ENGINE_VERSION);
+
+            // HACK: if we are using the build- convention,
+            // the tag uses a - instead of a space.
+            if(tag[0] == 'b'){
+                tag[5] = '-';
+            }
+
+            printf("tag: %s\n", tag);
+
+            // run git submodule add https://github.com/zoogies/yoyoengine.git in new_proj_full_path
+            char git_submodule_cmd[512];
+            snprintf(git_submodule_cmd, sizeof(git_submodule_cmd), 
+                "cd \"%s\" && git submodule add https://github.com/zoogies/yoyoengine.git && cd yoyoengine && git checkout %s", 
+                new_proj_full_path, tag);
+            if(system(git_submodule_cmd) != 0){
+
+                // special development edge case to not exit early
+                if(strcmp(tag, "build-0") != 0){
+                    ye_logf(error, "Failed to run git submodule add in %s\n", new_proj_full_path);
+
+                    nk_popup_end(ctx);
+                    return;
+                }
+                
+            }
+
+            // set key in project cache
+            json_t *project = json_object();
+            json_object_set_new(project, "name", json_string(new_proj_name));
+            char stamp[11]; get_stamp_string(&stamp, sizeof(stamp));
+            json_object_set_new(project, "date", json_string(&stamp));
+            json_object_set_new(project, "path", json_string(game_path));
+
+            json_t *projects = json_object_get(project_cache, "projects");
+
+            // append at start of array
+            json_array_insert_new(projects, 0, project);
+
+            serialize_projects();
+
+            create_project_popup_open = false;
+            nk_popup_close(ctx);
         }
 
         nk_popup_end(ctx);
     }
 }
 
-json_t *project_cache = NULL;
-
+// TODO: clean up dangling project cache??
 
 //////////////////////////////////
 // Helpers for the project list //
@@ -442,15 +537,17 @@ void group_projects(struct nk_context *ctx) {
 
         int rolling_height = 0;
 
-        nk_layout_row_dynamic(ctx, 50, 3);
+        nk_layout_row_dynamic(ctx, 50, 4);
         ye_h3(nk_label_colored(ctx, "Projects:", NK_TEXT_LEFT, nk_rgb(255, 255, 255)));
 
-        if(nk_button_image_label(ctx, editor_icons.style, "New Project", NK_TEXT_CENTERED)){
+        nk_label(ctx, "", NK_TEXT_LEFT);
+
+        if(nk_button_image_label(ctx, editor_icons.style, "New", NK_TEXT_CENTERED)){
             create_project_popup_open = true;
             snprintf(new_proj_name, sizeof(new_proj_name), "");
         }
 
-        if(nk_button_image_label(ctx, editor_icons.folder, "Open Existing Project", NK_TEXT_CENTERED)){
+        if(nk_button_image_label(ctx, editor_icons.folder, "Open", NK_TEXT_CENTERED)){
             ye_logf(info, "Open Existing Project\n");
 
             char *path = editor_file_dialog_select_folder();
@@ -459,7 +556,7 @@ void group_projects(struct nk_context *ctx) {
                 // check if path/settings.yoyo exists, if so read it into json_t
                 char settings_path[1024];
                 snprintf(settings_path, sizeof(settings_path), "%s/settings.yoyo", path);
-                if(!access(settings_path, F_OK) != -1){
+                if(access(settings_path, F_OK) != -1){
                     ye_logf(error, "%s was not a real yoyoengine project.\n", path);
                 }
 
@@ -467,10 +564,12 @@ void group_projects(struct nk_context *ctx) {
 
                 const char * name = json_string_value(json_object_get(settings, "name"));
 
+                char stamp[11]; get_stamp_string(&stamp, sizeof(stamp));
+
                 // set key in project cache
                 json_t *project = json_object();
                 json_object_set_new(project, "name", json_string(name));
-                json_object_set_new(project, "date", json_string("01/01/2023"));
+                json_object_set_new(project, "date", json_string(stamp));
                 json_object_set_new(project, "path", json_string(path));
 
                 json_t *projects = json_object_get(project_cache, "projects");
@@ -491,9 +590,37 @@ void group_projects(struct nk_context *ctx) {
         
         rolling_height += 15;
 
-        nk_layout_row_dynamic(ctx, 30, 1);
+        nk_layout_row_begin(ctx, NK_STATIC, 40, 4);
+
+        int gap = panelsize.x - 300 /*size of text*/ - 40 /*size of refresh*/ - 40 /*size of gear*/ - 15 /*padding*/;
+
+        nk_layout_row_push(ctx, 300);
+
         nk_label_colored(ctx, "Recent Projects:", NK_TEXT_LEFT, nk_rgb(255, 255, 255));
         
+        nk_layout_row_push(ctx, gap);
+        nk_label(ctx, "", NK_TEXT_LEFT);
+
+        nk_layout_row_push(ctx, 40);
+
+        if(nk_button_image(ctx, editor_icons.refresh)){
+            ye_logf(info, "Refresh Projects\n");
+
+            if(project_cache){
+                json_decref(project_cache);
+            }
+
+            load_project_cache();
+        }
+
+        nk_layout_row_push(ctx, 40);
+
+        if(nk_button_image(ctx, editor_icons.gear)){
+            ye_logf(debug, "Opening Cached Projects File\n");
+
+            editor_open_in_system(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"));
+        }
+
         rolling_height += 30;
 
         struct nk_color custom_color = nk_rgb(10, 10, 10);
@@ -505,7 +632,6 @@ void group_projects(struct nk_context *ctx) {
         json_t *projects = json_object_get(project_cache, "projects");
 
         // iterate over projects array which contains dicts with keys name date path
-        nk_layout_row_dynamic(ctx, 30, 4);
         for(size_t i = 0; i < json_array_size(projects); i++){
 
             json_t *project = json_array_get(projects, i);
@@ -514,10 +640,18 @@ void group_projects(struct nk_context *ctx) {
             const char *name_str = json_string_value(json_object_get(project, "name"));
             const char *path_str = json_string_value(json_object_get(project, "path"));
 
-            nk_label(ctx, date_str, NK_TEXT_CENTERED);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 30, 3);
+
+            nk_layout_row_push(ctx, 0.15);
+
+            nk_label_colored(ctx, date_str, NK_TEXT_CENTERED, nk_rgb(235, 235, 235));
+
+            nk_layout_row_push(ctx, 0.44);
 
             ye_h3(nk_label(ctx, name_str, NK_TEXT_LEFT));
         
+            nk_layout_row_push(ctx, 0.2);
+
             if(nk_button_image_label(ctx, editor_icons.folder , "Open", NK_TEXT_CENTERED)){
                 ye_logf(debug, "Open Project\n");
 
@@ -541,6 +675,8 @@ void group_projects(struct nk_context *ctx) {
                 nk_style_pop_color(ctx);
                 return;
             }
+
+            nk_layout_row_push(ctx, 0.2);
 
             // TODO: put a notice somewhere that this only deletes the reference, not the proj files
             if(nk_button_image_label(ctx, editor_icons.trash, "Delete", NK_TEXT_CENTERED)){

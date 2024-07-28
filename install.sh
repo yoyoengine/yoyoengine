@@ -96,4 +96,12 @@ if [ ! -f "~/.local/share/yoyoengine/project_cache.yoyo" ]; then
     echo "{\"projects\":[]}" | sudo tee "~/.local/share/yoyoengine/project_cache.yoyo" > /dev/null
 fi
 
+# Inside ~/.local/share/yoyoengine, git clone gh/zoogies/yoyoengine latest tag as ./source
+echo "Cloning yoyoengine repository..."
+latest_tag=$(git ls-remote --tags https://github.com/zoogies/yoyoengine.git | grep -o 'refs/tags/[^^]*$' | sort -V | tail -n1 | sed 's/refs\/tags\///')
+if ! git clone --branch $latest_tag --depth 1 https://github.com/zoogies/yoyoengine.git ~/.local/share/yoyoengine/source; then
+    echo "Error: Failed to clone yoyoengine repository."
+    exit 1
+fi
+
 echo "Installation completed successfully."

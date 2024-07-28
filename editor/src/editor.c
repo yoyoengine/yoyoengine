@@ -151,6 +151,8 @@ SDL_Texture * eye_tex               = NULL;
 SDL_Texture * trash_tex             = NULL;
 SDL_Texture * duplicate_tex         = NULL;
 SDL_Texture * buildreconfigure_tex  = NULL;
+SDL_Texture * refresh_tex           = NULL;
+
 SDL_Texture * lightheader           = NULL;
 
 void editor_pre_handle_input(SDL_Event event){
@@ -342,6 +344,7 @@ int main(int argc, char **argv) {
     INIT_EDITOR_TEXTURE("edicon_buildreconfigure.png", buildreconfigure_tex, editor_icons.buildreconfigure);
     INIT_EDITOR_TEXTURE("edicon_duplicate.png", duplicate_tex, editor_icons.duplicate);
     INIT_EDITOR_TEXTURE("edicon_trash.png", trash_tex, editor_icons.trash);
+    INIT_EDITOR_TEXTURE("edicon_refresh.png", refresh_tex, editor_icons.refresh);
 
     INIT_EDITOR_TEXTURE("lightheader.png", lightheader, editor_icons.lightheader);
 
@@ -470,6 +473,9 @@ int main(int argc, char **argv) {
     SDL_DestroyTexture(trash_tex);
     SDL_DestroyTexture(duplicate_tex);
     SDL_DestroyTexture(buildreconfigure_tex);
+    SDL_DestroyTexture(refresh_tex);
+
+    SDL_DestroyTexture(lightheader);
 
     ye_shutdown_engine();
     json_decref(SETTINGS);

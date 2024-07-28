@@ -798,9 +798,34 @@ expose uninstall and updater through GUI
 - When opening to welcome page, fullscreen the window and then load into a project. you will notice a weird viewport bug that is fixed by resizing the window.
 - Resizing window spams terminal
 - empty color or font change buffers spam errors
+- editor repacking edicons into games (yepignore?)
+- when zenity prompts, we minimze and then maximize which destroys the active reference in nuklear (even though the sdl backend does not touch this)
+  - it might actually be popups doing this, not zenity
+- <https://github.com/Immediate-Mode-UI/Nuklear/issues/653>
+
+### very low priority
+
+- console underneath group panels on welcome page
+
+## QOL tasking megalist
+
+- remove all absolute paths to /ryan/ in repo
+- move recently opened projects to top in project manager
 
 ## pickup tomorrow
 
 editor create new project, you need to ideate about how engine is customized per project. if you do template you need to clone template from git, could submodule first then copy template. when you submodule you need to match latest tag and not main
 
 ^ lowkey kinda bad because you would need internet to make projects, whereas everything else is offline rn... but submodule would require online too...
+
+go through and add browse to every field
+
+## design decisions
+
+creating projects should require internt, because you need it to cmake configure. so either way once you have a project downloaded you can be offline, but to configure and create it you need internet.
+
+## lksfjh gkjfdsgkjdf
+
+add back commandline args to immediate open project
+
+eventually when release is made will need to test locally without installed versions, maybe there are conflicts there
