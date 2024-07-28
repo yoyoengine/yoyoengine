@@ -22,14 +22,24 @@ if [ ! -f "CMakeCache.txt" ] || [ "$FORCE_RECONFIGURE" == true ]; then
         echo "cmake configuration failed."
         exit 1
     fi
-fi
 
-# Run make to build the project
-echo "Running make..."
-make -j4
-if [ $? -eq 0 ]; then
-    echo "make build succeeded."
+    # Run make without -j4 on the first build (some kind of race condition)
+    echo "Running make (first build)..."
+    make
+    if [ $? -eq 0 ]; then
+        echo "make build succeeded."
+    else
+        echo "make build failed."
+        exit 1
+    fi
 else
-    echo "make build failed."
-    exit 1
+    # Run make with -j4 on subsequent builds
+    echo "Running make with -j4..."
+    make -j4
+    if [ $? -eq 0 ]; then
+        echo "make build succeeded."
+    else
+        echo "make build failed."
+        exit 1
+    fi
 fi
