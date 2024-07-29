@@ -9,6 +9,11 @@
 #ifndef YE_EDITOR_FS_OPS_H
 #define YE_EDITOR_FS_OPS_H
 
+enum dialog_type{
+    FILE_DIALOG,
+    FOLDER_DIALOG
+};
+
 // recurse copy a directory
 bool editor_copy_directory(const char *src, const char *dst);
 
@@ -20,5 +25,10 @@ bool editor_create_directory(const char *path);
 
 // prompts the user to select a folder and returns a malloced string
 char * editor_file_dialog_select_folder();
+
+// prompts the user to select a file and returns a malloced string
+char *editor_file_dialog_select_file(const char *filter);
+
+char *editor_file_dialog_select_resource(const char *filter);
 
 #endif

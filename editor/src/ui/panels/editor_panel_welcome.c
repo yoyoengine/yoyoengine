@@ -556,8 +556,11 @@ void group_projects(struct nk_context *ctx) {
                 // check if path/settings.yoyo exists, if so read it into json_t
                 char settings_path[1024];
                 snprintf(settings_path, sizeof(settings_path), "%s/settings.yoyo", path);
-                if(access(settings_path, F_OK) != -1){
+                if(access(settings_path, F_OK) == -1){
                     ye_logf(error, "%s was not a real yoyoengine project.\n", path);
+                    free(path);
+                    nk_group_end(ctx);
+                    return;
                 }
 
                 json_t *settings = ye_json_read(settings_path);
@@ -656,7 +659,6 @@ void group_projects(struct nk_context *ctx) {
                 ye_logf(debug, "Open Project\n");
 
                 char stamp[11]; get_stamp_string(&stamp, sizeof(stamp));
-                printf("stamp: %s\n", stamp);
                 json_object_set_new(project, "date", json_string(&stamp));
                 
                 // json_array_insert_new(projects, 0, project);

@@ -811,6 +811,7 @@ expose uninstall and updater through GUI
 
 - remove all absolute paths to /ryan/ in repo
 - move recently opened projects to top in project manager
+- for visual editor people, things like picking bad paths need some kind of feedback visually rather than just a console warning
 
 ## pickup tomorrow
 
@@ -826,6 +827,8 @@ creating projects should require internt, because you need it to cmake configure
 
 ## lksfjh gkjfdsgkjdf
 
-add back commandline args to immediate open project
-
 eventually when release is made will need to test locally without installed versions, maybe there are conflicts there
+
+## todododooddododood
+
+implement file browse open in as many places as you can support it

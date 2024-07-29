@@ -18,6 +18,7 @@
 #include "editor.h"
 #include "editor_panels.h"
 #include "editor_utils.h"
+#include "editor_fs_ops.h"
 
 json_t * style_data = NULL;
 
@@ -270,19 +271,38 @@ void editor_panel_styles(struct nk_context *ctx)
 
         nk_layout_row_dynamic(ctx, 25, 1);
         if(nk_tree_push(ctx, NK_TREE_TAB, "Fonts", NK_MAXIMIZED)){
-            nk_layout_row_dynamic(ctx, 25, 3);
+
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 4);
+            nk_layout_row_push(ctx, 0.2f);
             nk_label(ctx, "name", NK_TEXT_LEFT);
+            nk_layout_row_push(ctx, 0.45f);
             nk_label(ctx, "path", NK_TEXT_LEFT);
-            // nk_label(ctx, "size", NK_TEXT_LEFT); no more font sizes!
+            nk_layout_row_push(ctx, 0.15f);
+            nk_label(ctx, "", NK_TEXT_LEFT);
+            nk_layout_row_push(ctx, 0.2f);
             nk_label(ctx, "delete", NK_TEXT_LEFT);
 
             struct style_font_node *current_font = font_head;
             while(current_font != NULL){
-                nk_layout_row_dynamic(ctx, 25, 3);
-                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.name, 32, nk_filter_default);
-                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.path, 256, nk_filter_default);
-                // nk_property_int(ctx, "Size:", 0, &current_font->font.size, 100, 1, 1); no more font sizes!
                 
+                nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 4);
+                nk_layout_row_push(ctx, 0.2f);
+
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.name, 32, nk_filter_default);
+                
+                nk_layout_row_push(ctx, 0.45f);
+                nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, current_font->font.path, 256, nk_filter_default);
+
+                nk_layout_row_push(ctx, 0.15f);
+                if(nk_button_image_label(ctx, editor_icons.folder, "browse", NK_TEXT_CENTERED)){
+                    char *new_path = editor_file_dialog_select_resource("*.ttf");
+                    if(new_path != NULL){
+                        strncpy(current_font->font.path, new_path, sizeof(current_font->font.path));
+                        free(new_path);
+                    }
+                }
+
+                nk_layout_row_push(ctx, 0.2f);                
                 // push some pretty styles for red button!! (thank you nuklear forum!) :D
                 nk_style_push_style_item(ctx, &ctx->style.button.normal, nk_style_item_color(nk_rgb(35,35,35))); nk_style_push_style_item(ctx, &ctx->style.button.hover, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_style_item(ctx, &ctx->style.button.active, nk_style_item_color(nk_rgb(255,0,0))); nk_style_push_vec2(ctx, &ctx->style.button.padding, nk_vec2(2,2));
                 
@@ -323,8 +343,9 @@ void editor_panel_styles(struct nk_context *ctx)
         nk_layout_row_dynamic(ctx, 25, 1); // spacer
 
         if(nk_tree_push(ctx, NK_TREE_TAB, "Colors", NK_MAXIMIZED)){
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_dynamic(ctx, 25, 3);
             nk_label(ctx, "name", NK_TEXT_CENTERED);
+            nk_label(ctx, "", NK_TEXT_CENTERED);
             nk_label(ctx, "color", NK_TEXT_CENTERED);
 
             struct style_color_node *current_color = color_head;

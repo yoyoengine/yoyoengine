@@ -16,6 +16,7 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+#include "editor.h"
 #include "editor_fs_ops.h"
 
 /*
@@ -124,42 +125,90 @@ void _restore() {
     SDL_RaiseWindow(YE_STATE.runtime.window);
 }
 
-char * editor_file_dialog_select_folder() {
+char *editor_file_dialog(const char *filter, const char *initial_dir, const char *log_message, enum dialog_type dialog_type) {
     SDL_MinimizeWindow(YE_STATE.runtime.window);
 
     // Check if zenity is installed
     if (system("zenity --version") != 0) {
-        fprintf(stderr, "Failed to open folder selection dialog, zenity is not installed.\n");
+        ye_logf(error, "Failed to open selection dialog, zenity is not installed.\n");
         _restore();
         return NULL;
     }
 
     char buffer[1024];
+    char cmd[1056];
     FILE *fp;
 
-    // Run zenity to open folder selection dialog
-    fp = popen("zenity --file-selection --directory", "r");
+    // Build the command string based on the dialog type
+    if (dialog_type == FILE_DIALOG) {
+        if (initial_dir) {
+            snprintf(cmd, sizeof(cmd), "zenity --file-selection --file-filter='%s' --filename='%s'", filter, initial_dir);
+        } else {
+            snprintf(cmd, sizeof(cmd), "zenity --file-selection --file-filter='%s'", filter);
+        }
+    } else if (dialog_type == FOLDER_DIALOG) {
+        snprintf(cmd, sizeof(cmd), "zenity --file-selection --directory");
+    }
+
+    // Run zenity to open the selection dialog
+    fp = popen(cmd, "r");
     if (fp == NULL) {
-        perror("popen");
+        ye_logf(error, "Failed to open selection dialog.\n");
         _restore();
         return NULL;
     }
 
-    // Read the selected folder path from zenity
+    // Read the selected path from zenity
     if (fgets(buffer, sizeof(buffer), fp) != NULL) {
         // Remove trailing newline character
         buffer[strcspn(buffer, "\n")] = 0;
-        printf("Selected folder: %s\n", buffer);
+        ye_logf(debug, "%s: %s\n", log_message, buffer);
     } else {
-        printf("No folder selected.\n");
+        ye_logf(debug, "No selection made.\n");
         pclose(fp);
         _restore();
         return NULL;
     }
 
     pclose(fp);
-
     _restore();
 
     return strdup(buffer);
+}
+
+char *editor_file_dialog_select_file(const char *filter) {
+    return editor_file_dialog(filter, NULL, "Selected file", FILE_DIALOG);
+}
+
+char *editor_file_dialog_select_resource(const char *filter) {
+    char resources_dir[1024];
+    snprintf(resources_dir, sizeof(resources_dir), "%s/resources/", EDITOR_STATE.opened_project_path);
+
+    char *selected_path = editor_file_dialog(filter, resources_dir, "Selected resource", FILE_DIALOG);
+    if (!selected_path) {
+        return NULL;
+    }
+
+    // Find the substring after the resources directory
+    const char *start = strstr(selected_path, resources_dir);
+    if (start != NULL) {
+        // Move the pointer past the needle to get the desired substring
+        start += strlen(resources_dir);
+        if (*start == '\0') {
+            ye_logf(error, "Selected resource path is empty after resources directory.\n");
+            free(selected_path);
+            return NULL;
+        }
+        char *result = strdup(start);
+        free(selected_path);
+        return result;
+    } else {
+        ye_logf(error, "Resources directory not found in the selected path.\n");
+        free(selected_path);
+        return NULL;
+    }
+}
+
+char *editor_file_dialog_select_folder() {
+    return editor_file_dialog(NULL, NULL, "Selected folder", FOLDER_DIALOG);
 }

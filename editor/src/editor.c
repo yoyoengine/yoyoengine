@@ -442,7 +442,12 @@ int main(int argc, char **argv) {
     else {
         char *path = argv[1];
         ye_logf(info, "Editor recieved path: %s\n",path);
-        EDITOR_STATE.opened_project_path = path;
+
+        // remote trailing slash (if it exists)
+        if(path[strlen(path) - 1] == '/')
+            path[strlen(path) - 1] = '\0';
+
+        EDITOR_STATE.opened_project_path = strdup(path); // TODO: free me :-0
         EDITOR_STATE.mode = ESTATE_EDITING;
     }
 
