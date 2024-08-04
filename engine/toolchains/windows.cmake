@@ -1,4 +1,7 @@
-# i dont really know why or how this works but it appears to
+# This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
+# Copyright (C) 2024  Ryan Zmuda
+#
+# Licensed under the MIT license. See LICENSE file in the project root for details.
 
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc)

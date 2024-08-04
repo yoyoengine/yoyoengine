@@ -279,8 +279,12 @@ set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BIN
 #    libs     #
 ###############
 
-# Set the output directory for libraries
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+# Set the output directory for libraries, on linux this is lib, on windows its bin
+if(UNIX)
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+else()
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+endif()
 
 # Copy libraries to the output directory after build
 add_custom_command(
