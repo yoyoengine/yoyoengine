@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include <SDL.h>
+
 #include <lua.h>
 
 #include <yoyoengine/timer.h>
@@ -71,7 +73,7 @@ int ye_lua_create_timer(lua_State *L) {
     timer->data = lua_data;
     timer->loops = lua_tointeger(L, 3);
     timer->start_ticks = lua_tointeger(L, 4);
-    timer->callback = ye_timer_lua_resolve;
+    timer->callback = (void*)ye_timer_lua_resolve;
 
     ye_register_timer(timer);
 
@@ -79,7 +81,7 @@ int ye_lua_create_timer(lua_State *L) {
 }
 
 int ye_lua_timer_get_ticks(lua_State *L) {
-    lua_pushinteger(L, SDL_GetTicks());
+    lua_pushinteger(L, (lua_Integer)SDL_GetTicks());
     return 1;
 }
 

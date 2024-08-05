@@ -17,7 +17,7 @@
 # Example Usage:
 #
 # mkdir build && cd build
-# cmake -DYOYO_ENGINE_SOURCE_DIR=XXXXXX -DGAME_NAME=XXXXXXX -DGAME_CFLAGS ..
+# cmake -DYOYO_ENGINE_SOURCE_DIR=XXXXXX -DGAME_NAME=XXXXXXX -DGAME_CFLAGS -DCMAKE_TOOLCHAIN_FILE=/path/to/toolchain.cmake ..
 #
 
 #############################################
@@ -28,6 +28,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 # Generic build flags
 set(CMAKE_C_FLAGS "" CACHE STRING "C flags to be used in the build")
+
+message(STATUS "Configuring for target platform: ${CMAKE_SYSTEM_NAME}")
 
 # Engine build flags
 set(YOYO_ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../yoyoengine/engine CACHE STRING "The source directory of the engine")
@@ -47,10 +49,27 @@ project(${GAME_NAME})
 # Flags that MUST come after project()
 set(GAME_BUILD_DESTINATION ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME} CACHE STRING "The destination of the final optimized game build")
 
-# TODO: add toolchains
-
 # append CUSTOM_CFLAGS to CMAKE_C_FLAGS
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CUSTOM_CFLAGS}")
+
+# include any cross compilation toolchains (we do it here so we have access to vars)
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # add a custom target that runs before each build to create a em_tmp folder and copy yep into it, and settings.yoyo
+    add_custom_target(emscripten_setup ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/em_tmp
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/*.yep ${CMAKE_BINARY_DIR}/em_tmp
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/settings.yoyo ${CMAKE_BINARY_DIR}/em_tmp
+        COMMENT "Setting up Emscripten temp ..."
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # required for cmake to compile as windows
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mwindows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # default
+else()
+    # something weird is happening
+    message(FATAL_ERROR "Invalid target platform: ${CMAKE_SYSTEM_NAME}")
+endif()
 
 # Include the engine
 add_subdirectory(${YOYO_ENGINE_SOURCE_DIR} yoyoengine)
@@ -59,6 +78,12 @@ add_subdirectory(${YOYO_ENGINE_SOURCE_DIR} yoyoengine)
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
 
 add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+
+# set some emscripten specific build flags
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    target_link_options(${GAME_NAME} PRIVATE --bind -Wbad-function-cast -Wcast-function-type -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=1gb --preload-file ${CMAKE_BINARY_DIR}/em_tmp@/)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
 
 target_link_libraries(${GAME_NAME} PRIVATE yoyoengine)
 include_directories(${CMAKE_SOURCE_DIR}/custom/include)
@@ -100,11 +125,25 @@ add_custom_target(copy_settings_yoyo ALL
 #############################################
 
 # on certain platforms, we want to cleanup unnecessary files
-# ex:
-# emscripten:
-# - *.yep
-# - settings.yoyo
-# - rename the game to index.html
-# windows:
-# - copy all tricks to bin, then delete tricks dir
-# TODO: implement me
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # windows specific cleanup
+    add_custom_target(windows_cleanup ALL
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/lib/libyoyoengine.dll ${CMAKE_BINARY_DIR}/bin/Windows
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
+        COMMENT "Performing Windows Cleanup ..."
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # emscripten specific cleanup
+    add_custom_target(emscripten_cleanup ALL
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Emscripten/*.yep
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Emscripten/settings.yoyo
+        COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/bin/Emscripten/${GAME_NAME}.html ${CMAKE_BINARY_DIR}/bin/Emscripten/index.html
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Emscripten/lib
+        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Emscripten/*.so
+        COMMENT "Performing Emscripten Cleanup ..."
+    )
+else()
+    # default
+endif()

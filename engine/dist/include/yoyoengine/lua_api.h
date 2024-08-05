@@ -48,6 +48,21 @@ void ye_lua_renderer_register(lua_State *L);
 // Button
 void ye_lua_button_register(lua_State *L);
 
+// Physics
+void ye_lua_physics_register(lua_State *L);
+
+// Collider
+void ye_lua_collider_register(lua_State *L);
+
+// AudioSource
+void ye_lua_audio_source_register(lua_State *L);
+
+// Tag
+void ye_lua_tag_register(lua_State *L);
+
+// LuaScript
+void ye_lua_lua_script_register(lua_State *L);
+
 //////////////////////////////////////////////////////////////////////////////
 
 /*

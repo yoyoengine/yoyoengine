@@ -470,17 +470,20 @@ void ye_construct_script(struct ye_entity* e, json_t* script, const char* entity
             json_t * value = json_object_get(global,"value");
 
             // add the global
+            double vd;
+            const char * vs;
+            bool vb;
             switch(type){
                 case YE_LSG_NUMBER:
-                    double vd = json_real_value(value);
+                    vd = json_real_value(value);
                     ye_lua_script_add_manual_global(&real_globals,type,name,(void*)&vd);
                     break;
                 case YE_LSG_STRING:
-                    const char *vs = json_string_value(value);
+                    vs = json_string_value(value);
                     ye_lua_script_add_manual_global(&real_globals,type,name,(void*)vs);
                     break;
                 case YE_LSG_BOOL:
-                    bool vb = json_boolean_value(value);
+                    vb = json_boolean_value(value);
                     ye_lua_script_add_manual_global(&real_globals,type,name,(void*)&vb);
                     break;
                 default:
