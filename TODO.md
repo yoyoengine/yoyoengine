@@ -870,3 +870,16 @@ eventually when release is made will need to test locally without installed vers
 - move engine resources to a static dir in engine install, while editor resources is its own thing that doesnt need moved into engine resources
 - should let yep be generic, and users can pack whatever they want into standalone yeps, can use this for an editor yep
 - make intro a scene
+
+## todo tomorrow real
+
+you just got emscripten and windows cross comp
+
+now add tricks for every platform
+
+after that, rework the callback functions to event system
+
+## plugins rework
+
+use event system
+should be drag and drop, so they build in isolation and as long as they exist inside the distributed tricks dir they will run, ie: a modder can drop in a new trick and it will be loaded

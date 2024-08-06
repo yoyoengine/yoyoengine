@@ -8,6 +8,8 @@ tags:
 !!! warning
     The structure and metadata requirements for tricks are still very subject to change.
 
+Plugins are supported on both Windows and Linux, but not Emscripten. Currently, they are not interchangible because the game links against them at compile time, but in the future, it is planned to have a system where plugins can be loaded at runtime (ie: modders can inject code freely).
+
 Plugins are called "tricks". They live in subdirectories of the project folder `/tricks` and have a directory structure like this:
 
 ```txt
@@ -91,6 +93,7 @@ void yoyo_trick_init(){
 
 The engine at build time will make a few assumptions about your trick:
 
+- The trick folder is named the same thing as the CMake target
 - It has a valid `trick.yoyo` in its root
 - It has a valid `CMakeLists.txt` in its root
 - It's `CMakeLists.txt` is setup in a way to build a shared library into `YOYO_TRICK_BUILD_DIR`

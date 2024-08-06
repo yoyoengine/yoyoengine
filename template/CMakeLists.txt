@@ -85,6 +85,40 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
+#############################################
+#              Tricks / Plugins             #
+#############################################
+
+# if not on emscripten
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+
+    message(STATUS "Adding tricks ...")
+
+    # set some vars for the tricks
+    set(YOYO_TRICK_BUILD_DIR ${GAME_BUILD_DESTINATION}/tricks)
+    file(MAKE_DIRECTORY ${YOYO_TRICK_BUILD_DIR})
+
+    set(YOYO_GAME_LINK_DIR ${GAME_BUILD_DESTINATION}/lib)
+    target_link_directories(${GAME_NAME} PRIVATE ${GAME_BUILD_DESTINATION}/tricks)
+
+    file(GLOB PLUGIN_DIRS CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tricks/*")
+    foreach(PLUGIN_DIR ${PLUGIN_DIRS})
+        if(IS_DIRECTORY ${PLUGIN_DIR})
+            get_filename_component(PLUGIN_NAME ${PLUGIN_DIR} NAME)
+            message(STATUS "Adding trick: ${PLUGIN_NAME}")
+            add_subdirectory(${PLUGIN_DIR})
+            target_include_directories(${GAME_NAME} PRIVATE ${PLUGIN_DIR}/include)
+            add_dependencies(${PLUGIN_NAME} yoyoengine)
+            target_link_libraries(${GAME_NAME} PRIVATE ${PLUGIN_NAME})
+        endif()
+    endforeach()
+
+endif()
+
+#############################################
+#           Finish Configuring Game         #
+#############################################
+
 target_link_libraries(${GAME_NAME} PRIVATE yoyoengine)
 include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 
@@ -132,6 +166,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/lib/libyoyoengine.dll ${CMAKE_BINARY_DIR}/bin/Windows
         COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
+        
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks
+
         COMMENT "Performing Windows Cleanup ..."
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
