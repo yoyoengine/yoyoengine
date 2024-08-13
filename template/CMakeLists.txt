@@ -185,3 +185,28 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 else()
     # default
 endif()
+
+#############################################
+#                  Custom                   #
+#############################################
+
+# Add a custom target that runs the binary
+if(CMAKE_SYSTEM_NAME STREQUAL "windows")
+    add_custom_target(run
+        COMMAND wine ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}
+        DEPENDS ${GAME_NAME}
+        COMMENT "Running the game with Wine ..."
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "emscripten")
+    add_custom_target(run
+        COMMAND emrun --no_browser --port 8080 ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}.html
+        DEPENDS ${GAME_NAME}
+        COMMENT "Running the game with emrun ..."
+    )
+else()
+    add_custom_target(run
+        COMMAND ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}
+        DEPENDS ${GAME_NAME}
+        COMMENT "Running the game ..."
+    )
+endif()

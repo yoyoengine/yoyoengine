@@ -49,7 +49,7 @@ char build_platform[32];
 int original_build_platform_int; // tracks the target platform when opening settings, to compare with after closing if we need to set the "delete_cache" build.yoyo bool
 int build_platform_int;
 int build_mode_int;
-char build_engine_build_path[256];
+char build_engine_source_dir[256];
 char build_rc_path[256];
 
 /*
@@ -232,7 +232,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             nk_label(ctx, "Engine Build Path:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The path to the engine build you want to use.");
-            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_engine_build_path, 256, nk_filter_default);
+            nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_engine_source_dir, 256, nk_filter_default);
 
             /*
                 Additional C Flags (string input)
@@ -303,7 +303,7 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
                 json_object_set_new(BUILD_FILE, "cflags", json_string(build_additional_cflags));
                 json_object_set_new(BUILD_FILE, "rc_path", json_string(build_rc_path));
                 json_object_set_new(BUILD_FILE, "platform", json_string(platforms[build_platform_int]));
-                json_object_set_new(BUILD_FILE, "engine_build_path", json_string(build_engine_build_path));
+                json_object_set_new(BUILD_FILE, "engine_source_dir", json_string(build_engine_source_dir));
                 json_object_set_new(BUILD_FILE, "delete_cache", json_boolean(original_build_platform_int != build_platform_int));
                 ye_json_write(ye_path("build.yoyo"),BUILD_FILE);
 
@@ -351,7 +351,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
             
             bounds = nk_widget_bounds(ctx);
             if(nk_button_image(ctx, editor_icons.build)){
-                editor_build();
+                editor_build(false, false);
             }
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "Build the project");
@@ -579,12 +579,12 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         /*
                             Engine Build Path
                         */
-                        const char * tmp_build_engine_build_path;
-                        if(!ye_json_string(BUILD_FILE, "engine_build_path", &tmp_build_engine_build_path)){
-                            strcpy((char*)tmp_build_engine_build_path,"");
+                        const char * tmp_build_engine_source_dir;
+                        if(!ye_json_string(BUILD_FILE, "engine_source_dir", &tmp_build_engine_source_dir)){
+                            strcpy((char*)tmp_build_engine_source_dir,"");
                         }
-                        strncpy(build_engine_build_path, (char*)tmp_build_engine_build_path, (size_t)sizeof(build_engine_build_path) - 1);
-                        build_engine_build_path[(size_t)sizeof(build_engine_build_path) - 1] = '\0'; // null terminate just in case TODO: write helper?
+                        strncpy(build_engine_source_dir, (char*)tmp_build_engine_source_dir, (size_t)sizeof(build_engine_source_dir) - 1);
+                        build_engine_source_dir[(size_t)sizeof(build_engine_source_dir) - 1] = '\0'; // null terminate just in case TODO: write helper?
                     }
                     else{
                         ye_logf(error, "build.yoyo not found.");
@@ -592,7 +592,7 @@ void ye_editor_paint_project(struct nk_context *ctx){
                         strcpy((char*)build_rc_path,"");
                         strcpy((char*)build_platform,"linux");
                         build_platform_int = 0;
-                        strcpy((char*)build_engine_build_path,"");
+                        strcpy((char*)build_engine_source_dir,"");
                     }
                 }
             }

@@ -12,7 +12,8 @@
 
 void editor_build_packs(bool force);
 
-void editor_build();
+// main handler for building the project, others are wrappers directed to this
+void editor_build(bool force_configure, bool should_run);
 
 void editor_build_and_run();
 

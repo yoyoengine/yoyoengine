@@ -23,6 +23,7 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <yoyoengine/yoyoengine.h>
 #include "editor_ui.h"
 #include "editor_settings_ui.h"
@@ -35,6 +36,7 @@
 #include <Nuklear/nuklear.h>
 #include <Nuklear/style.h>
 #include <Nuklear/nuklear_sdl_renderer.h>
+#include <linux/wait.h>
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR
@@ -121,6 +123,9 @@ void yoyo_loading_refresh(char * status)
 {
     // update status
     snprintf(editor_loading_buffer, sizeof(editor_loading_buffer), "%s", status);
+
+    // handle input
+    ye_system_input();
 
     // clear the screen
     SDL_RenderClear(YE_STATE.runtime.renderer);
@@ -286,6 +291,29 @@ void editor_editing_loop() {
 
     // core editing loop
     while(EDITOR_STATE.mode == ESTATE_EDITING && !quit) {
+
+        // if we are building, check if the build thread has finished to avoid zombie processes
+        // NOTCROSSPLATFORM
+        while(EDITOR_STATE.is_building) {
+            // poll pipe for build thread and when its done close the fork
+
+            char buf[256];
+            int n = read(EDITOR_STATE.pipefd[0], buf, sizeof(buf));
+            if(n > 0){
+                buf[n] = '\0';
+                ye_logf(info, "Build thread status: %s\n", buf);
+                if(strcmp(buf, "done") == 0){
+                    close(EDITOR_STATE.pipefd[0]);
+                    EDITOR_STATE.is_building = false;
+
+                    // cleanup zombie process
+                    int status;
+                    waitpid(EDITOR_STATE.building_thread, &status, 0);
+                }
+            }
+            yoyo_loading_refresh(buf);
+        }
+
         if(editor_draw_drag_rect)
             ye_debug_render_rect(editor_selecting_rect.x, editor_selecting_rect.y, editor_selecting_rect.w, editor_selecting_rect.h, (SDL_Color){255, 0, 0, 255}, 10);
         if(editor_panning)

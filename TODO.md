@@ -883,3 +883,9 @@ after that, rework the callback functions to event system
 
 use event system
 should be drag and drop, so they build in isolation and as long as they exist inside the distributed tricks dir they will run, ie: a modder can drop in a new trick and it will be loaded
+
+## new build sys
+
+actually do the invokations of cmake and make, do some neat pid fork exec stuff to let window move around while building, but preserve the terminal output
+
+tomorrow: clean up the garbage and make cmake cache removal when switching work. also make running targets work for notjust linux

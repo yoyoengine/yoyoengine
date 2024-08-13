@@ -58,6 +58,17 @@ struct editor_state {
     } mode;
 
     char * opened_project_path;
+
+    // build system //
+
+    bool is_building;
+    int building_thread;
+    int pipefd[2];
+
+    // game running //
+    bool is_running;
+    int running_thread;
+    // TODO: pipes for IPC :eyes:
 };
 
 extern struct editor_state EDITOR_STATE;
