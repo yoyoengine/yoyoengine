@@ -125,6 +125,12 @@ set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
 set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
 set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
 
+# Remove the example targets
+set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
 ###############
 #   SDL_gfx   #
 ###############

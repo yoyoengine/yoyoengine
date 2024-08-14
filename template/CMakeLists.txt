@@ -126,7 +126,9 @@ include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 target_include_directories(${GAME_NAME} PRIVATE ${YOYO_ENGINE_SOURCE_DIR}/dist/include)
 
 # output the game in the bin directory
-set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+endif()
 
 # set rpath for Linux (will allow the game to find the engine shared library on every system)
 if(UNIX)
@@ -167,7 +169,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
         
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows || true
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks
 
         COMMENT "Performing Windows Cleanup ..."
@@ -191,22 +193,22 @@ endif()
 #############################################
 
 # Add a custom target that runs the binary
-if(CMAKE_SYSTEM_NAME STREQUAL "windows")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_target(run
-        COMMAND wine ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}
-        DEPENDS ${GAME_NAME}
+        COMMAND wine ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}.exe
+        # DEPENDS ${GAME_NAME}
         COMMENT "Running the game with Wine ..."
     )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "emscripten")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     add_custom_target(run
         COMMAND emrun --no_browser --port 8080 ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}.html
-        DEPENDS ${GAME_NAME}
+        # DEPENDS ${GAME_NAME}
         COMMENT "Running the game with emrun ..."
     )
 else()
     add_custom_target(run
         COMMAND ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}
-        DEPENDS ${GAME_NAME}
+        # DEPENDS ${GAME_NAME}
         COMMENT "Running the game ..."
     )
 endif()

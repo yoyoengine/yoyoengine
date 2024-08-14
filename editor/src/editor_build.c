@@ -180,21 +180,27 @@ void editor_build(bool force_configure, bool should_run){
         // printf("\targ %d: %s\n", i, args[i]);
     // }
 
-    json_t *SETTINGS_FILE = json_load_file(ye_path("settings.yoyo"), 0, NULL);
-    if (SETTINGS_FILE == NULL) {
-        ye_logf(error, "Failed to read settings file.\n");
+    json_t *BUILD_FILE = json_load_file(ye_path("build.yoyo"), 0, NULL);
+    if (BUILD_FILE == NULL) {
+        ye_logf(error, "Failed to read build file.\n");
         return;
     }
 
-    if(force_configure || json_boolean_value(json_object_get(SETTINGS_FILE, "delete_cache"))) {
+    if(force_configure || json_boolean_value(json_object_get(BUILD_FILE, "delete_cache"))) {
         // absolutely NUKING the cache HELL YEA!!!!
         char buff[512];
         snprintf(buff, sizeof(buff), "rm -rf %s", ye_path("build/CMakeCache.txt"));
         system(buff);
+
+        // set delete_cache to false
+        json_object_set_new(BUILD_FILE, "delete_cache", json_false());
     }
 
-    json_decref(SETTINGS_FILE);
-    SETTINGS_FILE = NULL;
+    // serialize
+    json_dump_file(BUILD_FILE, ye_path("build.yoyo"), JSON_INDENT(4));
+
+    json_decref(BUILD_FILE);
+    BUILD_FILE = NULL;
 
     // create a system argument string
     char invoke[512];

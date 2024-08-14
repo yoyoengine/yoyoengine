@@ -889,3 +889,7 @@ should be drag and drop, so they build in isolation and as long as they exist in
 actually do the invokations of cmake and make, do some neat pid fork exec stuff to let window move around while building, but preserve the terminal output
 
 tomorrow: clean up the garbage and make cmake cache removal when switching work. also make running targets work for notjust linux
+
+## huge future improvement projects
+
+- Pipe between running game and editor to live debug and monitor
