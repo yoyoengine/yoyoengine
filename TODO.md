@@ -893,3 +893,11 @@ tomorrow: clean up the garbage and make cmake cache removal when switching work.
 ## huge future improvement projects
 
 - Pipe between running game and editor to live debug and monitor
+
+## tomorrow
+
+weird ass inconsistant behavior
+
+you should create dirs for installer and cache if not exists, gracefully handle
+
+there should be local update option rather than installer from github so you can dist prereleases

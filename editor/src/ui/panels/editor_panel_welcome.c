@@ -114,6 +114,7 @@ void editor_init_panel_welcome() {
     if(!curl_installed){
         ye_logf(info, "CURL IS NOT INSTALLED!\n");
         offline = true;
+        load_project_cache();
         return;
     }
 

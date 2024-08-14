@@ -1,5 +1,25 @@
 # Welcome to yoyoengine!
 
+## Quickstart
+
+To use yoyoengine, you need to be running linux! (Windows support is planned but not yet implemented)
+
+### Install Dependencies
+
+```bash
+sudo apt update && sudo apt install git cmake make gcc g++ curl zenity
+```
+
+deps for installer
+
+- sed
+- grep
+
+!!! note
+    If you are building yoyoeditor from scratch and recieve "SDL_mixer could not initialize! SDL_mixer Error: dsp: No such audio device" (possibly because you are in a vm), install: libpulse-dev libasound2-dev
+
+## old homepage:
+
 You are currently reading yoyoengine docs.
 
 These are generated using [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) from source in :simple-github:  [yoyoengine](https://github.com/zoogies/yoyoengine)
