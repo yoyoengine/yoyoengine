@@ -5,6 +5,8 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include <utime.h> // NOTCROSSPLATFORM
+
 #include "editor.h"
 #include <yoyoengine/yoyoengine.h>
 
@@ -449,5 +451,10 @@ void editor_write_scene_to_disk(const char *path){
     // ye_json_log(scene); //TODO: figure out how we update the name version styles and prefabs
 
     // write the scene file
-    ye_json_write(ye_path_resources(YE_STATE.runtime.scene_file_path), scene);                      
+    ye_json_write(ye_path_resources(YE_STATE.runtime.scene_file_path), scene);           
+
+    // manually force ye_path_resources() accessed time to update to now
+    if(utime(ye_path_resources(""), NULL) != 0){
+        ye_logf(error, "failed to update file access time for %s\n", ye_path_resources(""));
+    }
 }

@@ -124,6 +124,9 @@ bool is_dir_outofdate(const char *target_directory, const char *yep_file_path){
         return false;
     }
 
+    // ye_logf(debug,"Dir: %ld\n", dir_stat.st_mtime);
+    // ye_logf(debug,"Yep: %ld\n", yep_stat.st_mtime);
+
     // if the directory is newer than the yep file, return true
     if(dir_stat.st_mtime > yep_stat.st_mtime){
         return true;

@@ -115,7 +115,14 @@ void ye_editor_paint_hiearchy(struct nk_context *ctx){
                 matching_results++;
 
                 nk_layout_row(ctx, NK_DYNAMIC, 30, /*up and down arrows: 6 */ 4, ratio);
+
+                bool cached_active = current->entity->active;
+
                 nk_checkbox_label(ctx, "", (nk_bool*)&current->entity->active);
+
+                if(current->entity->active != cached_active){
+                    editor_unsaved();
+                }
 
                 // if the entity is selected, display it as a different color
                 bool flag = false; // messy way to do this, but it works

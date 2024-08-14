@@ -81,7 +81,7 @@ pid_t _configure() {
 // -DGAME_BUILD_DESTINATION     - NOT IMPLEMENTED
 // -DCMAKE_TOOLCHAIN_FILE
 char **retrieve_build_args() {
-    int num_args = 7;
+    int num_args = 8;
     char **args = malloc((num_args + 1) * sizeof(char *));
     if (args == NULL) {
         perror("Failed to allocate memory for args");
@@ -138,7 +138,8 @@ char **retrieve_build_args() {
     }
 
     // delimeter
-    args[num_args] = strdup("..");
+    args[num_args - 1] = strdup("..");
+    args[num_args] = NULL;
 
     json_decref(SETTINGS_FILE);
     json_decref(BUILD_FILE);
@@ -276,8 +277,8 @@ void editor_build(bool force_configure, bool should_run){
 
         // cleanup arg memory
         for(int i = 0; args[i] != NULL; i++){
-            if(args[i] != NULL)
-                free(args[i]);
+            free(args[i]);
+            args[i] = NULL; // Avoid dangling pointer
         }
 
         if(should_run){
@@ -298,7 +299,7 @@ void editor_build_and_run(){
 void editor_run(){
 
     // TODO: do we want pack rebuild on run only? its pretty cheap if we dont change any files
-    editor_build_packs(false);
+    // editor_build_packs(false);
 
     // create fork for running game
     // if(EDITOR_STATE.is_running) {
