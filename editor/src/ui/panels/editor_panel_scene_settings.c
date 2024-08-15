@@ -9,6 +9,7 @@
 
 #include "editor.h"
 #include "editor_panels.h"
+#include "editor_fs_ops.h"
 
 // TODO: move me to utils for editor and use everywhere
 struct nk_rect editor_panel_bounds_centered(int w, int h){
@@ -65,18 +66,33 @@ void editor_panel_scene_settings(struct nk_context *ctx){
             /*
                 Music
             */
-            json_t * music; ye_json_object(_scene, "music", &music);
-            char * mpath = NULL; ye_json_string(music, "src", &mpath);
-            if(mpath != NULL)
-                strncpy(scene_music_path, mpath, 256);
-            else
+            json_t *music = json_object_get(_scene, "music");
+            if (music == NULL) {
                 strcpy(scene_music_path, "\0");
-
-            bool mloop = false; ye_json_bool(music, "loop", &mloop);            
-            scene_music_loop = mloop;
-
-            float mvol = 1.0f; ye_json_float(music, "volume", &mvol);
-            scene_music_volume = mvol;
+                scene_music_loop = true;
+                scene_music_volume = 1.0f;
+            } else {
+                const char *mpath = json_string_value(json_object_get(music, "src"));
+                if (mpath != NULL) {
+                    strncpy(scene_music_path, mpath, 256);
+                } else {
+                    strcpy(scene_music_path, "\0");
+                }
+            
+                json_t *loop_obj = json_object_get(music, "loop");
+                if (loop_obj && json_is_boolean(loop_obj)) {
+                    scene_music_loop = json_boolean_value(loop_obj);
+                } else {
+                    scene_music_loop = true; // Default value if "loop" key is missing
+                }
+            
+                json_t *volume_obj = json_object_get(music, "volume");
+                if (volume_obj && json_is_real(volume_obj)) {
+                    scene_music_volume = json_real_value(volume_obj);
+                } else {
+                    scene_music_volume = 1.0f; // Default value if "volume" key is missing
+                }
+            }
         }
 
         /*
@@ -101,10 +117,12 @@ void editor_panel_scene_settings(struct nk_context *ctx){
 
         /*
             Default Camera
+        
+            TODO: an entity selector widget template for stuff just like this
         */
         nk_layout_row_dynamic(ctx, 30, 1);
         nk_layout_row_dynamic(ctx, 30, 1);
-        nk_label(ctx, "Default Camera Path:", NK_TEXT_CENTERED);
+        nk_label(ctx, "Default Camera Entity Name:", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, scene_default_camera, 256, nk_filter_default);
 
         /*
@@ -113,7 +131,19 @@ void editor_panel_scene_settings(struct nk_context *ctx){
         nk_layout_row_dynamic(ctx, 30, 1);
         nk_layout_row_dynamic(ctx, 30, 1);
         nk_label(ctx, "Scene Music Path:", NK_TEXT_CENTERED);
+        nk_layout_row_begin(ctx, NK_DYNAMIC, 30, 2);
+        nk_layout_row_push(ctx, 0.72f);
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, scene_music_path, 256, nk_filter_default);
+        nk_layout_row_push(ctx, 0.05f);
+        nk_layout_row_push(ctx, 0.28f);
+        if(nk_button_image_label(ctx, editor_icons.folder, "Browse", NK_TEXT_CENTERED)){
+            char *new_path = editor_file_dialog_select_resource("*.mp3 *.wav");
+            if(new_path != NULL){
+                strncpy(scene_music_path, new_path, (size_t)sizeof(scene_music_path) - 1);
+                free(new_path);
+            }
+        }
+        
         nk_layout_row_dynamic(ctx, 30, 2);
         nk_checkbox_label(ctx, "Loop", &scene_music_loop);
         nk_property_float(ctx, "Volume", 0.0f, &scene_music_volume, 1.0f, 0.1f, 0.1f); 

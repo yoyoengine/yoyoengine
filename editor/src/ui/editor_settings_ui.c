@@ -10,6 +10,7 @@
 #include "editor_build.h"
 #include "editor_panels.h"
 #include "editor_utils.h"
+#include "editor_fs_ops.h"
 #include <yoyoengine/yoyoengine.h>
 #include <unistd.h>
 
@@ -92,22 +93,48 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             /*
                 Icon Path
             */
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 2);
+            nk_layout_row_push(ctx, 0.5f);
+
             bounds = nk_widget_bounds(ctx);
             nk_label(ctx, "Icon Path:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The path (from inside resources/) to the icon file you want to use for the game window.");
+            nk_layout_row_push(ctx, 0.43f);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, project_icon_path, 256, nk_filter_default);
+
+            nk_layout_row_push(ctx, 0.05f);
+            nk_layout_row_push(ctx, 0.06f);
+            if(nk_button_image(ctx, editor_icons.folder)){
+                char *new_path = editor_file_dialog_select_resource("*");
+                if(new_path != NULL){
+                    strncpy(project_icon_path, new_path, (size_t)sizeof(project_icon_path) - 1);
+                    free(new_path);
+                }
+            }
 
             /*
                 Entry Scene
             */
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 2);
+            nk_layout_row_push(ctx, 0.5f);
+
             bounds = nk_widget_bounds(ctx);
             nk_label(ctx, "Entry Scene:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The scene file you want to load first when the game runs (include extension and path relative to /resources/).");
+            nk_layout_row_push(ctx, 0.43f);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, project_entry_scene, 256, nk_filter_default);
+
+            nk_layout_row_push(ctx, 0.05f);
+            nk_layout_row_push(ctx, 0.06f);
+            if(nk_button_image(ctx, editor_icons.folder)){
+                char *new_path = editor_file_dialog_select_resource("*.yoyo");
+                if(new_path != NULL){
+                    strncpy(project_entry_scene, new_path, (size_t)sizeof(project_entry_scene) - 1);
+                    free(new_path);
+                }
+            }
 
             /*
                 Log Level
@@ -227,12 +254,25 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             /*
                 Engine Build Path (string input)
             */
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 2);
+            nk_layout_row_push(ctx, 0.5f);
+
             bounds = nk_widget_bounds(ctx);
             nk_label(ctx, "Engine Build Path:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The path to the engine build you want to use.");
+            nk_layout_row_push(ctx, 0.43f);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_engine_source_dir, 256, nk_filter_default);
+
+            nk_layout_row_push(ctx, 0.05f);
+            nk_layout_row_push(ctx, 0.06f);
+            if(nk_button_image(ctx, editor_icons.folder)){
+                char *new_path = editor_file_dialog_select_folder();
+                if(new_path != NULL){
+                    strncpy(build_engine_source_dir, new_path, (size_t)sizeof(build_engine_source_dir) - 1);
+                    free(new_path);
+                }
+            }
 
             /*
                 Additional C Flags (string input)
@@ -247,12 +287,25 @@ void ye_editor_paint_project_settings(struct nk_context *ctx){
             /*
                 .rc path (string input)
             */
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 2);
+            nk_layout_row_push(ctx, 0.5f);
+
             bounds = nk_widget_bounds(ctx);
-            nk_label(ctx, ".rc Path", NK_TEXT_LEFT);
+            nk_label(ctx, ".rc Path:", NK_TEXT_LEFT);
             if (nk_input_is_mouse_hovering_rect(in, bounds))
                 nk_tooltip(ctx, "The RELATIVE (to the project root) path to the .rc file you want to use, defines the .exe icon on windows.");
+            nk_layout_row_push(ctx, 0.43f);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, build_rc_path, 256, nk_filter_default);
+
+            nk_layout_row_push(ctx, 0.05f);
+            nk_layout_row_push(ctx, 0.06f);
+            if(nk_button_image(ctx, editor_icons.folder)){
+                char *new_path = editor_file_dialog_select_resource("*.rc");
+                if(new_path != NULL){
+                    strncpy(build_rc_path, new_path, (size_t)sizeof(build_rc_path) - 1);
+                    free(new_path);
+                }
+            }
 
             /*
                 Build Mode (dropdown for debug, release)
