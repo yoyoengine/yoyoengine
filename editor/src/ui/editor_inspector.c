@@ -15,6 +15,7 @@
 #include "editor_panels.h"
 #include "editor_selection.h"
 #include "editor_utils.h"
+#include "editor_fs_ops.h"
 
 /*
     Some variables used globally
@@ -213,7 +214,10 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                     case YE_RENDERER_TYPE_IMAGE:
                         nk_layout_row_dynamic(ctx, 25, 1);
                         nk_label(ctx, "Image Renderer", NK_TEXT_CENTERED);
-                        nk_layout_row_dynamic(ctx, 25, 2);
+
+                        nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
+
+                        nk_layout_row_push(ctx, 0.3);
                         nk_label(ctx, "Image src:", NK_TEXT_LEFT);
 
                         // Allocate a temporary buffer that is large enough for user input
@@ -222,6 +226,7 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                         temp_src_buffer[sizeof(temp_src_buffer) - 1] = '\0';  // Ensure null-termination
 
                         // Allow the user to edit the text in the temporary buffer
+                        nk_layout_row_push(ctx, 0.5);
                         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_src_buffer, sizeof(temp_src_buffer), nk_filter_default);
 
                         // If the text has been changed, replace the old text with the new one
@@ -231,6 +236,20 @@ void _paint_renderer(struct nk_context *ctx, struct ye_entity *ent){
                             // recomputes the image texture
                             ye_update_renderer_component(ent);
                             editor_unsaved();
+                        }
+
+                        // browser
+                        nk_layout_row_push(ctx, 0.05);
+                        nk_layout_row_push(ctx, 0.2);
+                        if(nk_button_image_label(ctx, editor_icons.folder, "Browse", NK_TEXT_CENTERED)){
+                            char *new_src = editor_file_dialog_select_resource("*.png *.jpg *.jpeg");
+                            if(new_src != NULL){
+                                free(ent->renderer->renderer_impl.image->src);
+                                ent->renderer->renderer_impl.image->src = new_src;
+                                // recomputes the image texture
+                                ye_update_renderer_component(ent);
+                                editor_unsaved();
+                            }
                         }
 
                         break;
@@ -825,12 +844,27 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label_colored(ctx, "No script component", NK_TEXT_CENTERED, nk_rgb(255, 255, 0));
         nk_layout_row_dynamic(ctx, 25, 1);
-        nk_layout_row_dynamic(ctx, 25, 2);
+
 
         // proposed_script_path is used to hold the path that the user is typing in
+        nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
 
+        nk_layout_row_push(ctx, 0.30);
         nk_label(ctx, "Script Path:", NK_TEXT_LEFT);
+
+        nk_layout_row_push(ctx, 0.50);
         nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, proposed_script_path, sizeof(proposed_script_path), nk_filter_default);
+
+        // browse
+        nk_layout_row_push(ctx, 0.20);
+        if(nk_button_image_label(ctx, editor_icons.folder, "Browse", NK_TEXT_CENTERED)){
+            char *path = editor_file_dialog_select_resource("*.lua");
+            if(path != NULL){
+                strncpy(proposed_script_path, path, sizeof(proposed_script_path));
+                proposed_script_path[sizeof(proposed_script_path) - 1] = '\0';  // Ensure null-termination
+                free(path);
+            }
+        }
 
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_layout_row_dynamic(ctx, 25, 1);
@@ -902,8 +936,12 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
             temp_buffer_handle[sizeof(temp_buffer_handle) - 1] = '\0';  // Ensure null-termination
 
             // Allow the user to edit the text in the temporary buffer
-            nk_layout_row_dynamic(ctx, 25, 2);
+            nk_layout_row_begin(ctx, NK_DYNAMIC, 25, 3);
+            
+            nk_layout_row_push(ctx, 0.30);
             nk_label(ctx, "audio handle:", NK_TEXT_LEFT);
+
+            nk_layout_row_push(ctx, 0.50);
             nk_edit_string_zero_terminated(ctx, NK_EDIT_FIELD, temp_buffer_handle, sizeof(temp_buffer_handle), nk_filter_default);
 
             // If the text has been changed, replace the old text with the new one
@@ -912,6 +950,17 @@ void _paint_audiosource(struct nk_context *ctx, struct ye_entity *ent){
                 ent->audiosource->handle = strdup(temp_buffer_handle);
                 // printf("Changed handle to %s\n", ent->audiosource->handle);
                 editor_unsaved();
+            }
+
+            // browse
+            nk_layout_row_push(ctx, 0.20);
+            if(nk_button_image_label(ctx, editor_icons.folder, "Browse", NK_TEXT_CENTERED)){
+                char *path = editor_file_dialog_select_resource("*.wav *.mp3");
+                if(path != NULL){
+                    strncpy(temp_buffer_handle, path, sizeof(temp_buffer_handle));
+                    temp_buffer_handle[sizeof(temp_buffer_handle) - 1] = '\0';  // Ensure null-termination
+                    free(path);
+                }
             }
 
             if(_audiosource_disabled)

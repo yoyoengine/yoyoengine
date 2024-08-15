@@ -901,3 +901,8 @@ weird ass inconsistant behavior
 you should create dirs for installer and cache if not exists, gracefully handle
 
 there should be local update option rather than installer from github so you can dist prereleases
+
+## Nuklear fixes / enhancements (give back)
+
+- label icon buttons which have flag to collapse back into just icons depending on resizing
+- weird 0px scrollbar bug
