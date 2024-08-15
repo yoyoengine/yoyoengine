@@ -809,10 +809,6 @@ creating projects should require internt, because you need it to cmake configure
 
 eventually when release is made will need to test locally without installed versions, maybe there are conflicts there
 
-
-
-
-
 ## FINISHING 1.0
 
 ### Major new systems/reworks
@@ -839,7 +835,6 @@ eventually when release is made will need to test locally without installed vers
 
 #### Polish
 
-- file dialogs everywhere applicable
 - persist editor settings
 
 ### Bug Squash Megalist
@@ -871,24 +866,10 @@ eventually when release is made will need to test locally without installed vers
 - should let yep be generic, and users can pack whatever they want into standalone yeps, can use this for an editor yep
 - make intro a scene
 
-## todo tomorrow real
-
-you just got emscripten and windows cross comp
-
-now add tricks for every platform
-
-after that, rework the callback functions to event system
-
 ## plugins rework
 
 use event system
 should be drag and drop, so they build in isolation and as long as they exist inside the distributed tricks dir they will run, ie: a modder can drop in a new trick and it will be loaded
-
-## new build sys
-
-actually do the invokations of cmake and make, do some neat pid fork exec stuff to let window move around while building, but preserve the terminal output
-
-tomorrow: clean up the garbage and make cmake cache removal when switching work. also make running targets work for notjust linux
 
 ## huge future improvement projects
 
@@ -906,3 +887,7 @@ there should be local update option rather than installer from github so you can
 
 - label icon buttons which have flag to collapse back into just icons depending on resizing
 - weird 0px scrollbar bug
+
+yoyoengine specific nk
+
+- fork nuklear, since you have your own changes. use fetchcontent and maintain outside of THIS repo
