@@ -13,6 +13,7 @@
 #include <yoyoengine/yep.h>
 #include <yoyoengine/json.h>
 #include <yoyoengine/cache.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ecs/camera.h>
@@ -791,9 +792,9 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     /*
         Additional render step to allow the game to perform custom behavior
         TODO: removeme?
+        - 8/18/24, im just gonna leave for posterity
     */
-    if(YE_STATE.engine.callbacks.additional_render != NULL)
-        YE_STATE.engine.callbacks.additional_render();
+    ye_fire_event(YE_EVENT_ADDITIONAL_RENDER, (union ye_event_args){NULL});
 
     /*
         Perform additional immediate and callback based rendering on top of the frame we have just prepared

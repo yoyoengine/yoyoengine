@@ -79,20 +79,6 @@ char * ye_path(const char * path);
 char * ye_path_resources(const char * path);
 
 /**
- * @brief This struct holds references to callbacks declared and assigned through C scripting.
- */
-struct ye_engine_callbacks {
-    void (*input_handler)(SDL_Event event);
-    void (*pre_frame)();
-    void (*post_frame)();
-    void (*register_lua)(lua_State *L);
-    void (*scene_load)(char *scene_name);
-    void (*additional_render)();
-    void (*trigger_enter)(struct ye_entity *e1, struct ye_entity *e2);
-    void (*collision)(struct ye_entity *e1, struct ye_entity *e2);
-};
-
-/**
  * @brief The struct that defines the configuration of the engine core specifically.
 */
 struct ye_engine_config {
@@ -170,12 +156,6 @@ struct ye_engine_config {
 
     // the nuklear context
     struct nk_context *ctx; // TODO: should maybe be moved to runtime but idgaf rn
-
-    /*
-        The callbacks struct that holds all the callbacks
-        that can be assigned through C scripting
-    */
-    struct ye_engine_callbacks callbacks;
 };
 
 /**

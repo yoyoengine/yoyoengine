@@ -14,6 +14,7 @@
 #include <yoyoengine/yep.h>
 #include <yoyoengine/json.h>
 #include <yoyoengine/scene.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/cache.h>
 #include <yoyoengine/audio.h>
 #include <yoyoengine/utils.h>
@@ -706,6 +707,9 @@ void ye_construct_scene(json_t *entities){
 }
 
 void ye_load_scene(const char *scene_path){
+    // purge all non persistant events
+    ye_purge_events(false);
+
     // shutdown and restart audio subsystem TODO: do some soft reset instead
     ye_shutdown_audio();
 
@@ -839,8 +843,7 @@ void ye_load_scene(const char *scene_path){
     json_decref(SCENE);
 
     // send a scene loaded callback
-    if(YE_STATE.engine.callbacks.scene_load != NULL)
-        YE_STATE.engine.callbacks.scene_load(YE_STATE.runtime.scene_name);
+    ye_fire_event(YE_EVENT_SCENE_LOAD, (union ye_event_args){.scene_name = YE_STATE.runtime.scene_name});
 }
 
 char *ye_get_scene_name(){

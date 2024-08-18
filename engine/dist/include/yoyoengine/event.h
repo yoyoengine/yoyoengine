@@ -11,9 +11,29 @@
 #include <stdbool.h>
 
 #include <lua.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <yoyoengine/ecs/ecs.h>
+
+// get the number of events in the queue
+int ye_get_num_events();
+
+enum ye_event_type {
+    YE_EVENT_PRE_INIT,          // empty_cb
+    YE_EVENT_POST_INIT,         // empty_cb
+    YE_EVENT_HANDLE_INPUT,      // input_cb
+    YE_EVENT_LUA_REGISTER,      // lua_cb
+    YE_EVENT_PRE_FRAME,         // empty_cb
+    YE_EVENT_POST_FRAME,        // empty_cb
+    YE_EVENT_SCENE_LOAD,        // scene_load_cb
+    YE_EVENT_COLLISION,         // collision_cb
+    YE_EVENT_TRIGGER_ENTER,     // collision_cb
+    YE_EVENT_PRE_SHUTDOWN,      // empty_cb
+    YE_EVENT_POST_SHUTDOWN,     // empty_cb
+    YE_EVENT_ADDITIONAL_RENDER, // empty_cb
+
+    YE_EVENT_CUSTOM,    // void * data, user defined event
+};
 
 struct _ye_event {
     enum ye_event_type type;
@@ -42,19 +62,6 @@ union ye_event_args {
     void *custom_data;
 };
 
-enum ye_event_type {
-    YE_EVENT_PRE_INIT,      // empty_cb
-    YE_EVENT_POST_INIT,     // empty_cb
-    YE_EVENT_HANDLE_INPUT,  // input_cb
-    YE_EVENT_LUA_REGISTER,  // lua_cb
-    YE_EVENT_PRE_FRAME,     // empty_cb
-    YE_EVENT_POST_FRAME,    // empty_cb
-    YE_EVENT_SCENE_LOAD,    // scene_load_cb
-    YE_EVENT_COLLISION,     // collision_cb
-
-    YE_EVENT_CUSTOM,    // void * data, user defined event
-};
-
 #define YE_EVENT_FLAG_NONE 0
 
 enum ye_event_flag {
@@ -70,6 +77,8 @@ void _ye_add_event(struct _ye_event *event);
 void _ye_remove_event(struct _ye_event *event);
 
 void ye_purge_events(bool destroy_persistent);
+
+void ye_unregister_event_cb(void *cb);
 
 #endif
 

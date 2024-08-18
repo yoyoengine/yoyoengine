@@ -6,6 +6,7 @@
 */
 
 #include <yoyoengine/utils.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ecs/physics.h>
@@ -186,8 +187,7 @@ void ye_system_physics(){
                                 current->entity->physics->velocity.x = 0;
                                 current->entity->physics->velocity.y = 0;
 
-                                if(YE_STATE.engine.callbacks.collision != NULL)
-                                    YE_STATE.engine.callbacks.collision(current->entity,current_collider->entity);
+                                ye_fire_event(YE_EVENT_COLLISION, (union ye_event_args){current->entity, current_collider->entity});
                                 
                                 ye_lua_signal_collisions(current->entity,current_collider->entity);
 
@@ -213,8 +213,7 @@ void ye_system_physics(){
                                     If we hit a trigger collider, broadcast the two collision entities into the
                                     event callback
                                 */
-                                if(YE_STATE.engine.callbacks.trigger_enter != NULL)
-                                    YE_STATE.engine.callbacks.trigger_enter(current->entity,current_collider->entity);
+                                ye_fire_event(YE_EVENT_TRIGGER_ENTER, (union ye_event_args){.collision = {current->entity, current_collider->entity}});
                                 
                                 ye_lua_signal_trigger_enter(current->entity,current_collider->entity);
                             }

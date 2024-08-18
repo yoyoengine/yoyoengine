@@ -5,163 +5,19 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+/*
+    This file used to be a bloated hacky mess,
+    but look how clean it is now! :)
+*/
 #include <yoyoengine/yoyoengine.h>
 
-// controls whether the game is running. Set this to false at any point and everything will quit.
+/*
+    Controls whether the game is running.
+    Set this to false at any point and everything will quit.
+*/
 extern bool YG_RUNNING;
 
 /*
-    +---------------------------------------------------+
-    |             IMPORTANT INFORMATION:                |
-    +---------------------------------------------------+
-
-    In order to use the C api, you must uncomment any macros you wish to use below,
-    in order to let the engine entry point know that you are using them.
+    Entry point to user scripting.
 */
-
-
-
-/*
-    Runs one time before the engine is initialized. You cannot access anything within the engine,
-    however you could use this function to modify the settings.yoyo file to change the startup behavior of the
-    engine once it is actually initialized.
-*/
-// #define YOYO_PRE_INIT
-
-/*
-    Runs one time after the engine is initialized but before the game loop. This could be used to cleanup memory
-    or for any other purpose you want. The engine has been initialized so you can access YE_STATE
-*/
-// #define YOYO_POST_INIT
-
-/*
-    Runs once per frame assuming the engine has detected an input event. The engine is using SDL for inputs, so this
-    will pass the SDL_Event struct to your function. You can use this to implement custom input handling.
-
-    Make sure you implement this as:
-    void yoyo_handle_input(SDL_Event event);
-*/
-// #define YOYO_HANDLE_INPUT
-
-/*
-    Called when lua script components are created, will send the
-    yoyo_lua_register function the lua state to register custom lua api.
-*/
-// #define YOYO_LUA_REGISTER
-
-/*
-    Runs once per frame before the engine has done anything, but after the deltatime has been reset for the new frame.
-*/
-// #define YOYO_PRE_FRAME
-
-/*
-    Runs once per frame after the engine has done every system, right before control is returned. Since this happens
-    after rendering, either due to vsync or intenral frame delay this will run after we have hit the target amount of time
-    for a frame to take.
-*/
-// #define YOYO_POST_FRAME
-
-/*
-    Runs once after the scene has been loaded, before the render loop.
-    void yoyo_scene_load(char *scene_name);
-*/
-// #define YOYO_SCENE_LOAD
-
-/*
-    Runs once before the engine is shutdown. You can still access YE_STATE here.
-*/
-// #define YOYO_PRE_SHUTDOWN
-
-/*
-    Runs once after the engine is shutdown. The engine context is completely destroyed.
-    You can use this to cleanup anything extra in your game. The program will exit immediately after this function returns.
-*/
-// #define YOYO_POST_SHUTDOWN
-
-/*
-    Runs once a frame, after the engine has painted everything (except UI) from the ECS
-    renderer to the next frame buffer to be presented. Use this to do things like draw debug
-    lines or information.
-*/
-// #define YOYO_ADDITIONAL_RENDER
-
-/*
-    Enables the callback which will send the struct ye_entity * to two colliders, entity two being the source trigger
-    and entity one being the static collider that touched it
-*/
-// #define YOYO_TRIGGER_ENTER
-
-/*
-    Fires when two static colliders hit, returns the source and the target entities
-*/
-// #define YOYO_COLLISION
-
-
-
-/*
-    Everything else below this comment is automatically managed and SHOULD NOT BE TOUCHED
-    unless you are absolutely sure you know what you are doing.
-
-    If you wish to implement custom behavior, define a function according to the custom C scripting docs.
-
-    If you wish to modify certain startup variables based on things like savedata (user set volume to zero but default launch volume is 100)
-    you can do so with YOYO_PRE_INIT and write directly to settings.yoyo
-    
-    +---------------------------------------------------+
-    |   DO NOT MODIFY ANYTHING BELOW THIS LINE !!!!!!   |
-    +---------------------------------------------------+
-*/
-
-
-
-
-
-
-
-
-
-
-
-#ifdef YOYO_PRE_INIT
-    void yoyo_pre_init();
-#endif
-
-#ifdef YOYO_POST_INIT
-    void yoyo_post_init();
-#endif
-
-#ifdef YOYO_HANDLE_INPUT
-    void yoyo_handle_input(SDL_Event event);
-#endif
-
-#ifdef YOYO_PRE_FRAME
-    void yoyo_pre_frame();
-#endif
-
-#ifdef YOYO_POST_FRAME
-    void yoyo_post_frame();
-#endif
-
-#ifdef YOYO_SCENE_LOAD
-    void yoyo_scene_load(char *scene_name);
-#endif
-
-#ifdef YOYO_PRE_SHUTDOWN
-    void yoyo_pre_shutdown();
-#endif
-
-#ifdef YOYO_POST_SHUTDOWN
-    void yoyo_post_shutdown();
-#endif
-
-#ifdef YOYO_ADDITIONAL_RENDER
-    void yoyo_additional_render();
-#endif
-
-#ifdef YOYO_TRIGGER_ENTER
-    void yoyo_trigger_enter();
-#endif
-
-#ifdef YOYO_COLLISION
-    void yoyo_collision();
-#endif
+void yoyo_register_callbacks(void);

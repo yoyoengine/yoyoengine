@@ -19,6 +19,10 @@
 
 struct _ye_event * ye_event_queue = NULL;
 
+int num_events = 0;
+
+int ye_get_num_events(){ return num_events; }
+
 void _ye_add_event(struct _ye_event *event){
     if(ye_event_queue == NULL){
         ye_event_queue = event;
@@ -30,6 +34,8 @@ void _ye_add_event(struct _ye_event *event){
         }
         current->next = event;
     }
+
+    num_events++;
 }
 
 void ye_register_event_cb(enum ye_event_type type, void *cb, int flags){
@@ -77,7 +83,10 @@ void ye_fire_event(enum ye_event_type type, union ye_event_args args){
             switch(type){
                 case YE_EVENT_PRE_INIT:
                 case YE_EVENT_POST_INIT:
+                case YE_EVENT_PRE_SHUTDOWN:
+                case YE_EVENT_POST_SHUTDOWN:
                 case YE_EVENT_PRE_FRAME:
+                case YE_EVENT_ADDITIONAL_RENDER:
                 case YE_EVENT_POST_FRAME:
                     current->empty_cb();
                     break;
@@ -119,6 +128,8 @@ void _ye_remove_event (struct _ye_event *event){
                 previous->next = current->next;
             }
             free(current);
+
+            num_events--;
             return;
         }
         previous = current;
@@ -135,5 +146,23 @@ void ye_purge_events(bool destroy_persistent){
             _ye_remove_event(current);
         }
         current = next;
+    }
+}
+
+void ye_unregister_event_cb(void *cb){
+    struct _ye_event *current = ye_event_queue;
+    while(current != NULL){
+        if(
+            current->empty_cb == cb         ||
+            current->input_cb == cb         ||
+            current->lua_cb == cb           ||
+            current->scene_load_cb == cb    ||
+            current->collision_cb == cb     ||
+            current->custom_cb == cb
+        ){
+            _ye_remove_event(current);
+            return;
+        }
+        current = current->next;
     }
 }

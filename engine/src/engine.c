@@ -22,6 +22,7 @@
 #include <yoyoengine/scene.h>
 #include <yoyoengine/json.h>
 #include <yoyoengine/audio.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/timer.h>
 #include <yoyoengine/cache.h>
 #include <yoyoengine/config.h>
@@ -118,9 +119,7 @@ void ye_process_frame(){
     ye_update_timers();
 
     // C pre frame callback
-    if(YE_STATE.engine.callbacks.pre_frame != NULL){
-        YE_STATE.engine.callbacks.pre_frame();
-    }
+    ye_fire_event(YE_EVENT_PRE_FRAME, (union ye_event_args){NULL});
 
     int input_time = SDL_GetTicks64();
     
@@ -162,9 +161,7 @@ void ye_process_frame(){
     YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
 
     // C post frame callback
-    if(YE_STATE.engine.callbacks.post_frame != NULL){
-        YE_STATE.engine.callbacks.post_frame();
-    }
+    ye_fire_event(YE_EVENT_POST_FRAME, (union ye_event_args){NULL});
 }
 
 float ye_delta_time(){
@@ -275,6 +272,11 @@ void setup_splash_screen(){
 }
 
 void ye_init_engine() {
+
+    // pre init callback //
+    ye_fire_event(YE_EVENT_PRE_INIT, (union ye_event_args){NULL});
+    ///////////////////////
+
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
     // printf("Executable path: %s\n", executable_path);
@@ -414,9 +416,19 @@ void ye_init_engine() {
         ye_json_write(ye_path("settings.yoyo"), SETTINGS);
         json_decref(SETTINGS);
     }
+
+    // post init callback //
+    ye_fire_event(YE_EVENT_POST_INIT, (union ye_event_args){NULL});
+    ///////////////////////
+
 } // control is now resumed by the game
 
 void ye_shutdown_engine(){
+
+    // pre shutdown callback //
+    ye_fire_event(YE_EVENT_PRE_SHUTDOWN, (union ye_event_args){NULL});
+    ///////////////////////////
+
     ye_logf(info, "Shutting down engine...\n");
 
     // shut tricks down
@@ -468,4 +480,11 @@ void ye_shutdown_engine(){
 
     // quit SDL (should destroy anything else i forget)
     SDL_Quit();
+
+    // post shutdown callback //
+    ye_fire_event(YE_EVENT_POST_SHUTDOWN, (union ye_event_args){NULL});
+    ////////////////////////////
+
+    // free all event memory
+    ye_purge_events(true);
 }

@@ -181,7 +181,7 @@ void editor_welcome_loop() {
     ye_add_camera_component(cam, 999, (struct ye_rectf){0, 0, 2560, 1440});
     ye_set_camera(cam);
 
-    YE_STATE.engine.callbacks.input_handler = editor_pre_handle_input;
+    ye_register_event_cb(YE_EVENT_HANDLE_INPUT, editor_pre_handle_input, YE_EVENT_FLAG_PERSISTENT);
 
     struct ScreenSize ss = ye_get_screen_size();
     screenWidth = ss.width; screenHeight = ss.height;
@@ -202,6 +202,8 @@ void editor_welcome_loop() {
     ye_destroy_entity(cam);
     editor_camera = NULL;
     YE_STATE.engine.target_camera = NULL;
+
+    ye_unregister_event_cb(editor_pre_handle_input);
 }
 
 // TODO: dumb hack to supress error from this function. sue me.
@@ -227,7 +229,7 @@ void editor_editing_loop() {
         ye_logf(error, "No project path provided. Please provide a path to the project folder as the first argument.");
 
     // let the engine know we also want to custom handle inputs
-    YE_STATE.engine.callbacks.input_handler = editor_handle_input;
+    ye_register_event_cb(YE_EVENT_HANDLE_INPUT, editor_handle_input, YE_EVENT_FLAG_PERSISTENT);
 
     editor_camera = get_ent_by_name_silent("editor_camera");
     if(!editor_camera){ // we hit this because purge ecs recreates editor ents for us
@@ -334,6 +336,8 @@ void editor_editing_loop() {
     origin = NULL;
     editor_camera = NULL;
     YE_STATE.engine.target_camera = NULL;
+
+    ye_unregister_event_cb(editor_handle_input);
 }
 
 /*

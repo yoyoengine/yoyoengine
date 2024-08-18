@@ -10,26 +10,51 @@
 #include "yoyo_c_api.h"
 
 /*
-    If you are planning on writing C scripts, you will likely be overriding some of the
-    engine callbacks. I would reccomend populating this file with those stubs, and routing
-    them to the correct callback handlers depending on the game state.
+    Hello! Thank you for checking out yoyoengine :)
 
-    For example, if you have a scene where you want to handle player input, and one where you
-    do not, you could have a stub like this:
+    This is the main routing point for any C scripting you wish to do.
 
-    enum YOUR_GAME_STATE {
-        GAME,
-        MENU
-    } YOUR_GAME_STATE;
+    yoyo_register_callbacks is called once on init, and lets you
+    give the engine function pointers to your custom functions.
 
-    // (dont forget to uncomment the proper macro in yoyo_c_api.h)
-    void yoyo_handle_input(SDL_Event event) {
-        if (YOUR_GAME_STATE == GAME) {
-            game_handle_input(event);
-        } else if (YOUR_GAME_STATE == MENU) {
-            menu_handle_input(event);
-        }
-    }
+    Unless you set these to persistant, they will be unlinked after a
+    scene load.
 
-    Happy Coding!
+    I've populated some stubs and examples for you below.
 */
+
+void example_scene_load(char *scene_name){
+    /*
+        This will be fed the new scene name every time one is loaded.
+
+        You can use this to conditionally register callbacks
+    */
+}
+
+/*
+    Default input handler! :)
+
+    note: if you delete this, you must re-implement a handler for SDL_QUIT.
+*/
+void handle_input(SDL_Event event){
+    if(event.type == SDL_QUIT){
+        YG_RUNNING = false;
+    }
+}
+
+/*
+    This function is called once on init by the engine managed entry point.
+*/
+void yoyo_register_callbacks() {
+    // register our input handler (persistent flag means it will never be unlinked)
+    ye_register_event_cb(YE_EVENT_HANDLE_INPUT, handle_input, YE_EVENT_FLAG_PERSISTENT);
+
+    // register our example scene load handler
+    ye_register_event_cb(YE_EVENT_SCENE_LOAD, example_scene_load, YE_EVENT_FLAG_PERSISTENT);
+
+    /*
+        TIP:
+        You are allowed to stack callbacks, so if you
+        want multiple scene load handlers you can do that!
+    */
+}

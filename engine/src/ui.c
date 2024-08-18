@@ -19,6 +19,7 @@
 #include <SDL.h>
 
 #include <yoyoengine/ui.h>
+#include <yoyoengine/event.h>
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -168,6 +169,7 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
 
     // put all the parameters into strings for display
     char fps_str[100];
+    char event_count_str[100];
     char input_time_str[100];
     char physics_time_str[100];
     char paint_time_str[100];
@@ -178,6 +180,7 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     char audio_chunk_count_str[100];
     char log_line_count_str[100];
     sprintf(fps_str, "fps: %d", YE_STATE.runtime.fps);
+    sprintf(event_count_str, "event count: %d", ye_get_num_events());
     sprintf(input_time_str, "input time: %dms", YE_STATE.runtime.input_time);
     sprintf(physics_time_str, "physics time: %dms", YE_STATE.runtime.physics_time);
     sprintf(paint_time_str, "paint time: %dms", YE_STATE.runtime.paint_time);
@@ -246,6 +249,7 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
 
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, fps_str, NK_TEXT_LEFT);
+        nk_label(ctx, event_count_str, NK_TEXT_LEFT);
         nk_label(ctx, input_time_str, NK_TEXT_LEFT);
         nk_label(ctx, physics_time_str, NK_TEXT_LEFT);
         nk_label(ctx, paint_time_str, NK_TEXT_LEFT);

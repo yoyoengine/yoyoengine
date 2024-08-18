@@ -17,6 +17,7 @@
 
 #include <yoyoengine/ui.h>
 #include <yoyoengine/input.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/button.h>
@@ -159,10 +160,8 @@ void ye_system_input() {
             ye_system_button(e);
         }
 
-        // send event to callback specified by game (if needed)
-        if(YE_STATE.engine.callbacks.input_handler != NULL){
-            YE_STATE.engine.callbacks.input_handler(e);
-        }
+        // attempt to send event to callback specified by game
+        ye_fire_event(YE_EVENT_HANDLE_INPUT, (union ye_event_args){.input = e});
 
         /*
             Currently lua polls inputs through its own medium (direct query as needed),

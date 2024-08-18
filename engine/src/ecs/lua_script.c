@@ -10,6 +10,7 @@
 #include <lua.h>
 
 #include <yoyoengine/yep.h>
+#include <yoyoengine/event.h>
 #include <yoyoengine/tricks.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
@@ -169,8 +170,7 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, s
     ye_register_lua_scripting_api(entity->lua_script->state);
 
     // allow game to register lua bindings (function pointer pass state)
-    if(YE_STATE.engine.callbacks.register_lua != NULL)
-        YE_STATE.engine.callbacks.register_lua(entity->lua_script->state);
+    ye_fire_event(YE_EVENT_LUA_REGISTER, (union ye_event_args){.L = entity->lua_script->state});
 
     // allow any C tricks to register lua bindings
     ye_register_trick_lua_bindings(entity->lua_script->state);
