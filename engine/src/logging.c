@@ -74,7 +74,7 @@ void ye_open_log(){
     // open the log file
     logFile = fopen(logpath, "w");
     if (logFile == NULL) {
-        printf("%sError opening logfile at: %s\n",logpath,RED);
+        printf("%sError opening logfile at: %s%s\n",RED,logpath,RESET);
     }
     else{
         fseek(logFile, 0, SEEK_END);
