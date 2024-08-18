@@ -147,8 +147,16 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
 bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, struct ye_lua_script_global *globals){
     // ye_logf(debug,"Adding lua script component to entity %s\n", entity->name);
     
+    if(entity == NULL){
+        ye_logf(error,"Attempted to add lua script component to NULL entity\n");
+        return false;
+    }
+
     // allocate and assign the component
     entity->lua_script = malloc(sizeof(struct ye_component_lua_script));
+    // init to zeros
+    memset(entity->lua_script, 0, sizeof(struct ye_component_lua_script));
+    
     entity->lua_script->active = true;
     entity->lua_script->globals = globals;
 
@@ -306,6 +314,8 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
     }
 
     // free the allocated memory
+    free(entity->lua_script->script_handle);
+    entity->lua_script->script_handle = NULL;
     free(entity->lua_script);
     entity->lua_script = NULL;
 

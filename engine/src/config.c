@@ -25,6 +25,7 @@ int ye_config_int(json_t* config, const char* key, int default_value) {
     // set the key
     json_t *new = json_integer(default_value);
     json_object_set(config, key, new);
+    json_decref(new); // Decrement the reference count to avoid memory leak
     return default_value;
 }
 
@@ -37,6 +38,7 @@ float ye_config_float(json_t* config, const char* key, float default_value) {
     // set the key
     json_t *new = json_real(default_value);
     json_object_set(config, key, new);
+    json_decref(new); // Decrement the reference count to avoid memory leak
     return default_value;
 }
 
@@ -49,6 +51,7 @@ char* ye_config_string(json_t* config, const char* key, const char* default_valu
     // set the key
     json_t *new = json_string(default_value);
     json_object_set(config, key, new);
+    json_decref(new); // Decrement the reference count to avoid memory leak
     return strdup(default_value);
 }
 
@@ -61,5 +64,6 @@ bool ye_config_bool(json_t* config, const char* key, bool default_value) {
     // set the key
     json_t *new = json_boolean(default_value);
     json_object_set(config, key, new);
+    json_decref(new); // Decrement the reference count to avoid memory leak
     return default_value;
 }

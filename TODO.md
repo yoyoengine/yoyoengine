@@ -654,6 +654,8 @@ shift ctrl select entity to do range in heiarchy?
 
 make better custom color themes, you should do a lookup table thing and port over the hard coded dark background stuff. plus also should have a parameter controlling the tint color of icons (black for light themes)
 
+you could write a custom serializer and reader for a custom designer widget you show the user to let them customize their ui colors
+
 you probably need a whole parameter pass for reading from config files for editor... you did something for engine so check that out and see if its reusable potentially.
 
 when we open settings:
@@ -817,11 +819,6 @@ eventually when release is made will need to test locally without installed vers
 
 - Rather than macro wizardry, you should have one function which the user can use to register callbacks for engine events.
 
-#### Build System 3.0
-
-- No python jank, pure cmakelists for incremental builds
-- Fix repacking, use cmake to watch dir for changes
-
 #### Switching to semver
 
 - change every location in code
@@ -891,3 +888,8 @@ there should be local update option rather than installer from github so you can
 yoyoengine specific nk
 
 - fork nuklear, since you have your own changes. use fetchcontent and maintain outside of THIS repo
+
+## things i could do
+
+- maybe new system for editor to track current styles and expose them as drop downs rather than names
+  - solves the problem of error spamming and also makes it easier for the user
