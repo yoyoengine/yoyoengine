@@ -893,3 +893,9 @@ yoyoengine specific nk
 
 - maybe new system for editor to track current styles and expose them as drop downs rather than names
   - solves the problem of error spamming and also makes it easier for the user
+
+## todoo
+
+add identifier for the version of yoyoengine a project is configured for, and error if not matching.
+
+might need to add a hub to manage different installs rather than the current approach... maybe the editor can live alongside the project? idek anymore

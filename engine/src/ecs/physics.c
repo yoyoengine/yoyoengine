@@ -187,7 +187,7 @@ void ye_system_physics(){
                                 current->entity->physics->velocity.x = 0;
                                 current->entity->physics->velocity.y = 0;
 
-                                ye_fire_event(YE_EVENT_COLLISION, (union ye_event_args){current->entity, current_collider->entity});
+                                ye_fire_event(YE_EVENT_COLLISION, (union ye_event_args){.collision = {current->entity, current_collider->entity}});
                                 
                                 ye_lua_signal_collisions(current->entity,current_collider->entity);
 
