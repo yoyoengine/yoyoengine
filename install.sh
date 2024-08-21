@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
 # Copyright (C) 2024  Ryan Zmuda

@@ -106,6 +106,57 @@ int current_version_int = -1;
 bool update_available = false;
 char update_text[128];
 
+// TODO: port this other places, kinda nice
+#define align_cent(w,h) nk_rect((screenWidth/2) - (w/2), (screenHeight/2) - (h/2), w, h)
+
+bool create_project_popup_open = false;
+struct nk_window *win = NULL;
+
+char new_proj_name[128]; // the name of the project folder to create
+char new_proj_path[512]; // the parent directory we will create the project in
+
+json_t *project_cache = NULL;
+
+// TODO: clean up dangling project cache??
+
+//////////////////////////////////
+// Helpers for the project list //
+//////////////////////////////////
+
+// expands a home dir path to be absolute
+const char* expand_tilde(const char *path) {
+    static char expanded_path[1024]; // Static buffer to hold the expanded path
+
+    if (path[0] == '~') {
+        const char *home = getenv("HOME");
+        if (!home) {
+            home = getpwuid(getuid())->pw_dir;
+        }
+        snprintf(expanded_path, sizeof(expanded_path), "%s%s", home, path + 1);
+    } else {
+        strncpy(expanded_path, path, sizeof(expanded_path));
+        expanded_path[sizeof(expanded_path) - 1] = '\0'; // Ensure null-termination
+    }
+
+    return expanded_path;
+}
+
+void serialize_projects() {
+    if(!project_cache){
+        project_cache = json_object();
+        json_object_set_new(project_cache, "projects", json_array());
+    }
+
+    ye_json_write(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"), project_cache);
+}
+
+void load_project_cache() {
+    project_cache = ye_json_read(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"));
+}
+
+//////////////////////////////////
+
+
 void editor_init_panel_welcome() {
     snprintf(welcome_text, sizeof(welcome_text), "You are currently running yoyoeditor %s, powered by yoyoengine core %s", YE_EDITOR_VERSION, YE_ENGINE_VERSION);
 
@@ -352,17 +403,6 @@ void group_welcome(struct nk_context *ctx) {
     }
 }
 
-// TODO: port this other places, kinda nice
-#define align_cent(w,h) nk_rect((screenWidth/2) - (w/2), (screenHeight/2) - (h/2), w, h)
-
-bool create_project_popup_open = false;
-struct nk_window *win = NULL;
-
-char new_proj_name[128]; // the name of the project folder to create
-char new_proj_path[512]; // the parent directory we will create the project in
-
-json_t *project_cache = NULL;
-
 void create_project_popup(struct nk_context *ctx) {
     struct nk_vec2 panelsize = nk_window_get_content_region_size(ctx);
     int w = 400;
@@ -492,45 +532,6 @@ void create_project_popup(struct nk_context *ctx) {
         nk_popup_end(ctx);
     }
 }
-
-// TODO: clean up dangling project cache??
-
-//////////////////////////////////
-// Helpers for the project list //
-//////////////////////////////////
-
-// expands a home dir path to be absolute
-const char* expand_tilde(const char *path) {
-    static char expanded_path[1024]; // Static buffer to hold the expanded path
-
-    if (path[0] == '~') {
-        const char *home = getenv("HOME");
-        if (!home) {
-            home = getpwuid(getuid())->pw_dir;
-        }
-        snprintf(expanded_path, sizeof(expanded_path), "%s%s", home, path + 1);
-    } else {
-        strncpy(expanded_path, path, sizeof(expanded_path));
-        expanded_path[sizeof(expanded_path) - 1] = '\0'; // Ensure null-termination
-    }
-
-    return expanded_path;
-}
-
-void serialize_projects() {
-    if(!project_cache){
-        project_cache = json_object();
-        json_object_set_new(project_cache, "projects", json_array());
-    }
-
-    ye_json_write(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"), project_cache);
-}
-
-void load_project_cache() {
-    project_cache = ye_json_read(expand_tilde("~/.local/share/yoyoengine/project_cache.yoyo"));
-}
-
-//////////////////////////////////
 
 void group_projects(struct nk_context *ctx) {
     if(nk_group_begin_titled(ctx, "project_list", "Projects", NK_WINDOW_BORDER|NK_WINDOW_TITLE)){
