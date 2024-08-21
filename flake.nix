@@ -23,29 +23,33 @@
         ];
 
         buildDependencies = [
-              pkgs.pkg-config
+          pkgs.pkg-config
 
-              # build system
-              pkgs.cmake
-              pkgs.gnumake
+          # build system
+          pkgs.cmake
+          pkgs.gnumake
 
-              # opengl
-              pkgs.libGL.dev
+          # opengl
+          pkgs.libGL.dev
 
-              # wayland
-              pkgs.wayland.dev
-              pkgs.libxkbcommon.dev
+          # wayland
+          pkgs.wayland.dev
+          pkgs.libxkbcommon.dev
 
-              # xorg
-              pkgs.xorg.libX11.dev
-              pkgs.xorg.libXcursor.dev
-              pkgs.xorg.libXext.dev
-              pkgs.xorg.libXi.dev
-              pkgs.xorg.libXrandr.dev
+          # xorg
+          pkgs.xorg.libX11.dev
+          pkgs.xorg.libXcursor.dev
+          pkgs.xorg.libXext.dev
+          pkgs.xorg.libXi.dev
+          pkgs.xorg.libXrandr.dev
         ];
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = [
+            # compilers
+            pkgs.emscripten
+            pkgs.pkgsCross.mingwW64.buildPackages.gcc
+
             # debugging tools
             pkgs.gdb
             pkgs.renderdoc
@@ -54,17 +58,33 @@
             # opengl
             pkgs.libGL
 
-			# wayland
+            # wayland
             pkgs.wayland
             pkgs.wayland-protocols
             pkgs.libxkbcommon
 
-			# x11
+            # x11
             pkgs.xorg.libX11
             pkgs.xorg.libXcursor
             pkgs.xorg.libXext
             pkgs.xorg.libXi
             pkgs.xorg.libXrandr
+
+            # docs
+            pkgs.python3
+            pkgs.python312Packages.pygithub
+            pkgs.python312Packages.mkdocs-material
+            pkgs.python312Packages.mkdocs-git-revision-date-localized-plugin
+
+            (pkgs.python312Packages.buildPythonPackage rec {
+              pname = "mkdocs-git-committers-plugin";
+              version = "0.2.3";
+
+              src = pkgs.fetchPypi {
+                inherit pname version;
+                sha256 = "sha256-dxiNiqzBHVIz1pSUNWcOPWVF/7eg4nTVbzLtOYQ1PGE=";
+              };
+            })
           ];
 
           nativeBuildInputs = buildDependencies;
