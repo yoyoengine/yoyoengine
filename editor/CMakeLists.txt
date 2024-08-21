@@ -32,6 +32,13 @@ if(UNIX)
     set(EXECUTABLE_NAME yoyoeditor)
     set(EDITOR_BUILD_DIR "${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}")
 
+    # set rpath for Linux (will allow the game to find the engine shared library on every system)
+    SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
+    # note: if you check ldd, it will still show absolute!!
+    #       Use chrpath to see the real rpath.
+    
     # Create the executable and link the engine library
     add_executable(${EXECUTABLE_NAME} ${SOURCES})
     target_link_libraries(${EXECUTABLE_NAME} PRIVATE yoyoengine m)
