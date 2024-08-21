@@ -134,7 +134,7 @@ char **retrieve_build_args() {
     if (strcmp(platform, "windows") != 0 && strcmp(platform, "emscripten") != 0) {
         snprintf(args[6], 1, "\0");
     } else {
-        snprintf(args[6], strlen(engine_source_dir) + strlen(platform) + strlen("-DCMAKE_TOOLCHAIN_FILE=") + 256, "-DCMAKE_TOOLCHAIN_FILE=%stoolchains/%s.cmake", engine_source_dir, platform);
+        snprintf(args[6], strlen(engine_source_dir) + strlen(platform) + strlen("-DCMAKE_TOOLCHAIN_FILE=") + 256, "-DCMAKE_TOOLCHAIN_FILE=%s/toolchains/%s.cmake", engine_source_dir, platform);
     }
 
     // delimeter
@@ -154,6 +154,33 @@ error:
     }
     free(args);
     return NULL;
+}
+
+void editor_run(){
+
+    // TODO: do we want pack rebuild on run only? its pretty cheap if we dont change any files
+    // editor_build_packs(false);
+
+    // create fork for running game
+    // if(EDITOR_STATE.is_running) {
+        // stop the forked proc by pid
+        // kill(EDITOR_STATE.running_thread, SIGKILL);
+        // EDITOR_STATE.is_running = false;
+    // }
+
+    pid_t pid = fork();
+    if(pid == 0){
+        // chdir to build dir
+        chdir(ye_path("build"));
+
+        // run the game
+        execlp("make", "make", "run", NULL);
+        exit(0);
+    }
+    // else {
+        // EDITOR_STATE.running_thread = pid;
+        // EDITOR_STATE.is_running = true;
+    // }
 }
 
 // NOTCROSSPLATFORM
@@ -294,33 +321,6 @@ void editor_build(bool force_configure, bool should_run){
 
 void editor_build_and_run(){
     editor_build(false, true);
-}
-
-void editor_run(){
-
-    // TODO: do we want pack rebuild on run only? its pretty cheap if we dont change any files
-    // editor_build_packs(false);
-
-    // create fork for running game
-    // if(EDITOR_STATE.is_running) {
-        // stop the forked proc by pid
-        // kill(EDITOR_STATE.running_thread, SIGKILL);
-        // EDITOR_STATE.is_running = false;
-    // }
-
-    pid_t pid = fork();
-    if(pid == 0){
-        // chdir to build dir
-        chdir(ye_path("build"));
-
-        // run the game
-        execlp("make", "make", "run", NULL);
-        exit(0);
-    }
-    // else {
-        // EDITOR_STATE.running_thread = pid;
-        // EDITOR_STATE.is_running = true;
-    // }
 }
 
 void editor_build_reconfigure(){

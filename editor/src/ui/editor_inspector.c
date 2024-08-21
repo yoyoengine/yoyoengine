@@ -809,17 +809,18 @@ void _paint_script(struct nk_context *ctx, struct ye_entity *ent){
 
             nk_layout_row_push(ctx, 0.21);
             if(nk_button_label(ctx, "Add")){
-
+                double vd;
+                bool vb;
                 switch((enum ye_lua_script_global_t)nk_label_global_selected_key){
                     case YE_LSG_NUMBER:
-                        double vd = 0;
+                        vd = 0;
                         ye_lua_script_add_global(ent, YE_LSG_NUMBER, "new_global", (void *)&vd);
                         break;
                     case YE_LSG_STRING:
                         ye_lua_script_add_global(ent, YE_LSG_STRING, "new_global", (void *)"");
                         break;
                     case YE_LSG_BOOL:
-                        bool vb = false;
+                        vb = false;
                         ye_lua_script_add_global(ent, YE_LSG_BOOL, "new_global", (void *)&vb);
                         break;
                     default:
