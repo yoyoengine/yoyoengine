@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check for the --reconfigure flag
 FORCE_RECONFIGURE=false
