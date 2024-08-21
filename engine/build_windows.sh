@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a new build directory
 mkdir "./build"
@@ -20,7 +20,7 @@ fi
 
 # Run make to build the project
 echo "Running make..."
-make -j4
+make -j$(nproc)
 if [ $? -eq 0 ]
 then
     echo "make build succeeded."

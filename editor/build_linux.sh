@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check for the --reconfigure flag
 FORCE_RECONFIGURE=false
@@ -34,8 +34,8 @@ if [ ! -f "CMakeCache.txt" ] || [ "$FORCE_RECONFIGURE" == true ]; then
     fi
 else
     # Run make with -j4 on subsequent builds
-    echo "Running make with -j4..."
-    make -j4
+	echo "Running make with -j$(nproc)..."
+	make -j$(nproc)
     if [ $? -eq 0 ]; then
         echo "make build succeeded."
     else

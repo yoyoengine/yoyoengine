@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
 # Copyright (C) 2024  Ryan Zmuda
@@ -9,7 +9,7 @@ sleep 2
 
 # Create and run the updater script
 cat << 'EOF' > /tmp/yoyoeditor-updater.sh
-#!/bin/bash
+#!/usr/bin/env bash
 # Wait for the main script to terminate
 sleep 1
 
@@ -25,8 +25,8 @@ curl -s installer_download_url | bash
 rm -- "$0"
 EOF
 
-chmod +x /tmp/updater.sh
-/tmp/updater.sh &
+chmod +x /tmp/yoyoeditor-updater.sh
+/tmp/yoyoeditor-updater.sh &
 
 # Terminate the main script
 exit 0
