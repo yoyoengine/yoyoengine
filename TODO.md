@@ -899,3 +899,9 @@ yoyoengine specific nk
 add identifier for the version of yoyoengine a project is configured for, and error if not matching.
 
 might need to add a hub to manage different installs rather than the current approach... maybe the editor can live alongside the project? idek anymore
+
+## automated cicd
+
+- Add back lua runtime concat
+- add some actual runnability tests for yoyoeditor
+- maybe unit tests for the engine api
