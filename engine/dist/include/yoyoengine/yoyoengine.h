@@ -24,6 +24,7 @@
     #include <yoyoengine/yoyoengine.h> assuming they have
     defined the header and lib paths correctly.
 */
+#include "version.h"        // version info
 #include "engine.h"         // init and core
 #include "config.h"         // jansson wrapper for config files
 #include "networking.h"

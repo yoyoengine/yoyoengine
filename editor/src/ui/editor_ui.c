@@ -405,7 +405,7 @@ void ye_editor_paint_menu(struct nk_context *ctx){
 
                     json_t *new_scene = json_object();
                     json_object_set_new(new_scene, "name", json_string(new_scene_name));
-                    json_object_set_new(new_scene, "version", json_integer(0)); // TODO: this should be a macro
+                    json_object_set_new(new_scene, "version", json_integer(YOYO_ENGINE_SCENE_VERSION)); // TODO: this should be a macro
                     json_object_set_new(new_scene, "styles", json_array());
                     json_object_set_new(new_scene, "prefabs", json_array());
 

@@ -28,6 +28,7 @@
 #include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/tricks.h>
+#include <yoyoengine/version.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/graphics.h>
@@ -251,7 +252,7 @@ void setup_splash_screen(){
     ye_cache_color("white", white);
     TTF_Font *orbitron = yep_engine_resource_font("fonts/Orbitron-Regular.ttf");
     ye_cache_font_manual("orbitron", orbitron);
-    ye_add_text_renderer_component(splash_version, 1, YE_ENGINE_VERSION, "orbitron", 64, "white",0);
+    ye_add_text_renderer_component(splash_version, 1, YOYO_ENGINE_VERSION_STRING, "orbitron", 64, "white",0);
     splash_version->renderer->rect = (struct ye_rectf){
         YE_STATE.engine.screen_width - 590,
         235,
@@ -305,6 +306,7 @@ void ye_init_engine() {
     YE_STATE.engine.log_file_path           = ye_config_string(SETTINGS, "log_file_path", log_default_path);
     YE_STATE.engine.icon_path               = ye_config_string(SETTINGS, "icon_path", "enginelogo.png");
     YE_STATE.engine.window_title            = ye_config_string(SETTINGS, "window_title", "Yoyo Engine Window");
+    ye_config_string(SETTINGS, "engine_version", YOYO_ENGINE_VERSION_STRING); // overwrite the version with what we opened it with
 
     YE_STATE.engine.window_mode             = ye_config_int(SETTINGS, "window_mode", 0);
     YE_STATE.engine.volume                  = ye_config_int(SETTINGS, "volume", 64);

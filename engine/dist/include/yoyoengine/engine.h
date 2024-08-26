@@ -25,14 +25,6 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-/*
-    Define some important constants to the engine
-*/
-#define YE_ENGINE_VERSION "build 0"
-#define YE_ENGINE_SCENE_VERSION 0 // version 0 of scene files
-#define YE_ENGINE_STYLES_VERSION 0 // version 0 of style files
-#define YE_ENGINE_ANIMATION_FILE_VERSION 0 // version 0 of animation files
-
 #ifdef YE_BUILD_MODE
     /*
         Do things like limit the debug log output unless override is set

@@ -18,14 +18,14 @@ void editor_panel_credits(struct nk_context *ctx){
 
         nk_layout_row_dynamic(ctx, 20, 2);
         nk_label(ctx, "Yoyo Engine Version:", NK_TEXT_CENTERED);
-        nk_label_colored(ctx, YE_ENGINE_VERSION, NK_TEXT_LEFT, nk_rgb(0,255,0));
+        nk_label_colored(ctx, YOYO_ENGINE_VERSION_STRING, NK_TEXT_LEFT, nk_rgb(0,255,0));
 
         // nk_label(ctx, "Scene File Version:", NK_TEXT_CENTERED);
         // nk_label(ctx, YE_ENGINE_SCENE_VERSION, NK_TEXT_CENTERED);
         
         nk_layout_row_dynamic(ctx, 20, 2);
         nk_label(ctx, "Yoyo Editor Version:", NK_TEXT_CENTERED);
-        nk_label_colored(ctx, YE_EDITOR_VERSION, NK_TEXT_LEFT, nk_rgb(0,255,0));
+        nk_label_colored(ctx, YOYO_EDITOR_VERSION_STRING, NK_TEXT_LEFT, nk_rgb(0,255,0));
 
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_layout_row_dynamic(ctx, 20, 1);

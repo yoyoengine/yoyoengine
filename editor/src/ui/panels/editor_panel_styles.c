@@ -230,8 +230,8 @@ void editor_panel_styles(struct nk_context *ctx)
             }
             else{
                 int file_version; ye_json_int(style_data,"version",&file_version);
-                if(file_version != YE_ENGINE_STYLES_VERSION){
-                    ye_logf(error, "The version of styles.yoyo is mismatched with what the engine expected. %d vs %d", file_version, YE_ENGINE_STYLES_VERSION);
+                if(file_version != YOYO_ENGINE_STYLES_VERSION){
+                    ye_logf(error, "The version of styles.yoyo is mismatched with what the engine expected. %d vs %d", file_version, YOYO_ENGINE_STYLES_VERSION);
 
                     nk_label(ctx, "styles.yoyo version mismatch", NK_TEXT_CENTERED);
                     if(nk_button_label(ctx, "Close")){
@@ -249,7 +249,7 @@ void editor_panel_styles(struct nk_context *ctx)
         else{
             nk_layout_row_dynamic(ctx, 25, 1);
             char buff[256];
-            snprintf(buff, sizeof(buff), "Editing styles.yoyo of version %d", YE_ENGINE_STYLES_VERSION);
+            snprintf(buff, sizeof(buff), "Editing styles.yoyo of version %d", YOYO_ENGINE_STYLES_VERSION);
             nk_label(ctx, buff, NK_TEXT_CENTERED);
 
             nk_layout_row_dynamic(ctx, 25, 1);

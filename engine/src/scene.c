@@ -19,6 +19,7 @@
 #include <yoyoengine/audio.h>
 #include <yoyoengine/utils.h>
 #include <yoyoengine/engine.h>
+#include <yoyoengine/version.h>
 #include <yoyoengine/ecs/tag.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
@@ -754,8 +755,8 @@ void ye_load_scene(const char *scene_path){
         return;
     }
     // scene files are backwards compatible (for now) but obviously cant guarantee being forwards compatible
-    if(scene_version > YE_ENGINE_SCENE_VERSION){
-        ye_logf(error,"Scene \"%s\" has version %d, but the engine only supports up to version %d\n", scene_path, scene_version, YE_ENGINE_SCENE_VERSION);
+    if(scene_version > YOYO_ENGINE_SCENE_VERSION){
+        ye_logf(error,"Scene \"%s\" has version %d, but the engine only supports up to version %d\n", scene_path, scene_version, YOYO_ENGINE_SCENE_VERSION);
         json_decref(SCENE);
         return;
     }

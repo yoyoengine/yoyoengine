@@ -67,7 +67,7 @@ char *run_curl_command(const char *url) {
 }
 
 char *check_remote_version() {
-    char *json_data = run_curl_command("https://api.github.com/repos/zoogies/yoyoengine/releases/latest");
+    char *json_data = run_curl_command("https://api.github.com/repos/yoyoengine/yoyoengine/releases/latest");
     if(json_data){
         json_t *root = json_loads(json_data, 0, NULL);
         if (!root) {
@@ -158,7 +158,7 @@ void load_project_cache() {
 
 
 void editor_init_panel_welcome() {
-    snprintf(welcome_text, sizeof(welcome_text), "You are currently running yoyoeditor %s, powered by yoyoengine core %s", YE_EDITOR_VERSION, YE_ENGINE_VERSION);
+    snprintf(welcome_text, sizeof(welcome_text), "You are currently running yoyoeditor %s, powered by yoyoengine core %s.", YOYO_EDITOR_VERSION_STRING, YOYO_ENGINE_VERSION_STRING);
 
     curl_installed = is_curl_installed();
 
@@ -170,30 +170,30 @@ void editor_init_panel_welcome() {
     }
 
     // check if update is available
-    char *latest_version = check_remote_version();
-    // parse out the version number from the string "build-XXX"
-    if(latest_version){
-        char *latest_version_num = latest_version + 6; // remove "build-"
+    // char *latest_version = check_remote_version();
+    // // parse out the version number from the string "build-XXX"
+    // if(latest_version){
+    //     char *latest_version_num = latest_version + 6; // remove "build-"
         
-        latest_version_int = atoi(latest_version_num);
+    //     latest_version_int = atoi(latest_version_num);
 
-        char *current_version_num = YE_EDITOR_VERSION + 6; // remove "build "
-        current_version_int = atoi(current_version_num);
+    //     char *current_version_num = YOYO_EDITOR_VERSION_STRING + 6; // remove "build "
+    //     current_version_int = atoi(current_version_num);
 
-        free(latest_version);
+    //     free(latest_version);
 
-        ye_logf(info, "Pinged update server. Latest version: %d, Current version: %d\n", latest_version_int, current_version_int);
+    //     ye_logf(info, "Pinged update server. Latest version: %d, Current version: %d\n", latest_version_int, current_version_int);
 
-        if(latest_version_int > current_version_int){
-            update_available = true;
-        }
-    }
+    //     if(latest_version_int > current_version_int){
+    //         update_available = true;
+    //     }
+    // }
 
     // do always just for testing purposes
-    snprintf(update_text, sizeof(update_text), "build %d -> build %d", current_version_int, latest_version_int);
+    // snprintf(update_text, sizeof(update_text), "build %d -> build %d", current_version_int, latest_version_int);
     // update_available = true; DEBUG
 
-    const char *url = "https://api.github.com/repos/zoogies/yoyoengine/commits?sha=main&per_page=10";
+    const char *url = "https://api.github.com/repos/yoyoengine/yoyoengine/commits?sha=main&per_page=10";
 
     char *json_data = run_curl_command(url);
     if(json_data){
@@ -286,11 +286,11 @@ void group_welcome(struct nk_context *ctx) {
 
         nk_label(ctx, "", NK_TEXT_LEFT);
         if(nk_button_label(ctx, "Github"))
-            editor_open_in_system("https://github.com/zoogies/yoyoengine");
+            editor_open_in_system("https://github.com/yoyoengine/yoyoengine");
         if(nk_button_label(ctx, "Documentation"))
             editor_open_in_system("https://zoogies.github.io/yoyoengine/");
         if(nk_button_label(ctx, "Report an Issue"))
-            editor_open_in_system("https://github.com/zoogies/yoyoengine/issues/new");
+            editor_open_in_system("https://github.com/yoyoengine/yoyoengine/issues/new");
         
         nk_label(ctx, "", NK_TEXT_LEFT);
 
@@ -484,7 +484,7 @@ void create_project_popup(struct nk_context *ctx) {
 
             // get the desired tag version from a dumb macro hack
             char tag[16];
-            snprintf(tag, sizeof(tag), "%s", YE_ENGINE_VERSION);
+            snprintf(tag, sizeof(tag), "%s", YOYO_ENGINE_VERSION_STRING);
 
             // HACK: if we are using the build- convention,
             // the tag uses a - instead of a space.
@@ -494,10 +494,10 @@ void create_project_popup(struct nk_context *ctx) {
 
             printf("tag: %s\n", tag);
 
-            // run git submodule add https://github.com/zoogies/yoyoengine.git in new_proj_full_path
+            // run git submodule add https://github.com/yoyoengine/yoyoengine.git in new_proj_full_path
             char git_submodule_cmd[512];
             snprintf(git_submodule_cmd, sizeof(git_submodule_cmd), 
-                "cd \"%s\" && git submodule add https://github.com/zoogies/yoyoengine.git && cd yoyoengine && git checkout %s", 
+                "cd \"%s\" && git submodule add https://github.com/yoyoengine/yoyoengine.git && cd yoyoengine && git checkout %s", 
                 new_proj_full_path, tag);
             if(system(git_submodule_cmd) != 0){
 

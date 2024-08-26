@@ -5,38 +5,25 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
-/*
-    Use Nuklear to add some editor ui as well as a smaller viewport synced to the current scene event
-
-    Goals:
-    - allow easily creating new render objects and events as well as dragging them around to resize and reorient
-    - we need a way to put the viewport in a corner or even a seperate window?
-
-    do we want this to live in this folder that its in rn? how to seperate the engine from the core? it needs to ship with the core
-
-    Constraints:
-    - editor only supported on linux
-
-    TODO:
-    - figure out the viewport position and size and calculate where other windows go
-        - this involves going back to the engine and polishing the old shit you wrote
-*/
-
 #include <stdio.h>
 #include <unistd.h>
-#include <yoyoengine/yoyoengine.h>
-#include "editor_ui.h"
-#include "editor_settings_ui.h"
-#include "editor_panels.h"
-#include "editor.h"
-#include "editor_input.h"
-#include "editor_selection.h"
+
+#include <linux/wait.h>
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <Nuklear/nuklear.h>
 #include <Nuklear/style.h>
 #include <Nuklear/nuklear_sdl_renderer.h>
-#include <linux/wait.h>
+
+#include <yoyoengine/yoyoengine.h>
+
+#include "editor.h"
+#include "editor_ui.h"
+#include "editor_input.h"
+#include "editor_panels.h"
+#include "editor_selection.h"
+#include "editor_settings_ui.h"
 
 // make some editor specific declarations to change engine core behavior
 #define YE_EDITOR

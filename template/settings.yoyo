@@ -2,6 +2,7 @@
     "IMPORTANT NOTICE":"DO NOT EDIT THESE DIRECTLY OR DELETE THEM, PLEASE CONFIGURE PROJECTS THROUGH THE EDITOR (unless you are going to programatically change these and know what youre doing.",
 
     "name": "Yoyo Engine Game",
+    "engine_version":"build 0",
     "entry_scene": "scenes/entry.yoyo",
     "window_mode": 0,
     "window_title": "Yoyo Engine Game",

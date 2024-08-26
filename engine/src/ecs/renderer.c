@@ -15,6 +15,7 @@
 #include <yoyoengine/cache.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
+#include <yoyoengine/version.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/renderer.h>
@@ -269,8 +270,8 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
 
     // version of the file
     int version; ye_json_int(META, "version", &version);
-    if(version != YE_ENGINE_ANIMATION_FILE_VERSION){
-        ye_logf(error, "Invalid animation meta file version %d against %d\n", version, YE_ENGINE_ANIMATION_FILE_VERSION);
+    if(version != YOYO_ENGINE_ANIMATION_FILE_VERSION){
+        ye_logf(error, "Invalid animation meta file version %d against %d\n", version, YOYO_ENGINE_ANIMATION_FILE_VERSION);
         json_decref(META);
         return;
     }

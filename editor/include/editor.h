@@ -8,7 +8,13 @@
 #ifndef YE_EDITOR_H
 #define YE_EDITOR_H
 
-#define YE_EDITOR_VERSION "build 0"
+/*
+    Versioning information (semver)
+*/
+#define YOYO_EDITOR_MAJOR_VERSION 1
+#define YOYO_EDITOR_MINOR_VERSION 0
+#define YOYO_EDITOR_PATCH_VERSION 0
+#define YOYO_EDITOR_VERSION_STRING "v1.0.0"
 
 #include <stdbool.h>
 #include <jansson.h>

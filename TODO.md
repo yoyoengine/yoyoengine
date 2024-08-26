@@ -905,3 +905,15 @@ might need to add a hub to manage different installs rather than the current app
 - Add back lua runtime concat
 - add some actual runnability tests for yoyoeditor
 - maybe unit tests for the engine api
+
+## now
+
+- figure out relation of versions, is editor frozen at engine runtime?
+  - its actually possible to move dirs outside and keep history... split into core and editor? then docs?
+- editor should look in its local bin dir to get the project cache, create if not existant
+- projects should track the default editor that created them, and warn if importing into a different one
+
+## later
+
+- move splash screen into scene file, allow clicking to skip, or any key press
+- scene fading in and out? DONT OVERSCOPE!!
