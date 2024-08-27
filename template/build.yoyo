@@ -1,8 +1,0 @@
-{
-    "IMPORTANT NOTICE":"DO NOT EDIT THESE DIRECTLY OR DELETE THEM, PLEASE CONFIGURE PROJECTS THROUGH THE EDITOR (unless you are going to programatically change these and know what youre doing.",
-
-    "platform":"windows",
-    "cflags":"-Wall -Wextra -g",
-    "engine_source_dir":"/home/ryan/repos/yoyoengine/engine/build",
-    "rc_path":""
-}
