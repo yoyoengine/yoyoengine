@@ -24,18 +24,18 @@ jobs:
         id: cache-fetchcontent
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/editor/build/_deps/*-src
-          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/editor/CMakeLists.txt') }}
+          path: ${{ github.workspace }}/engine/build/_deps/*-src
+          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
 
       - name: Configure with CMake
         run: |
-          mkdir -p ${{ github.workspace }}/editor/build
-          cd ${{ github.workspace }}/editor/build
+          mkdir -p ${{ github.workspace }}/engine/build
+          cd ${{ github.workspace }}/engine/build
           CC=gcc cmake -DBUILD_LUA_RUNTIME=OFF ..
 
       - name: Build with GCC
         run: |
-          cd ${{ github.workspace }}/editor/build
+          cd ${{ github.workspace }}/engine/build
           make -j${nproc}
 
   build-clang:
@@ -53,16 +53,16 @@ jobs:
         id: cache-fetchcontent
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/editor/build/_deps/*-src
-          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/editor/CMakeLists.txt') }}
+          path: ${{ github.workspace }}/engine/build/_deps/*-src
+          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
       
       - name: Configure with CMake
         run: |
-          mkdir -p ${{ github.workspace }}/editor/build
-          cd ${{ github.workspace }}/editor/build
+          mkdir -p ${{ github.workspace }}/engine/build
+          cd ${{ github.workspace }}/engine/build
           CC=clang cmake -DBUILD_LUA_RUNTIME=OFF ..
       
       - name: Build with Clang
         run: |
-          cd ${{ github.workspace }}/editor/build
+          cd ${{ github.workspace }}/engine/build
           make -j${nproc}
