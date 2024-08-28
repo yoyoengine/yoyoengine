@@ -19,4 +19,12 @@
 #define YOYO_ENGINE_STYLES_VERSION          0 // version 0 of style files
 #define YOYO_ENGINE_ANIMATION_FILE_VERSION  0 // version 0 of animation files
 
+#include <stdbool.h>
+
+void ye_get_version(const char *version_string, int *major, int *minor);
+
+bool ye_is_version_greater(const char *source, const char *target);
+
+void ye_version_tagify(const char *version_string, char *out);
+
 #endif
