@@ -320,12 +320,12 @@ add_custom_command(
 option(BUILD_LUA_RUNTIME "Build the Lua runtime" OFF)
 
 message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
-message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
 if(BUILD_LUA_RUNTIME)
     
     # where we will output the runtime
     option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/ye_runtime.lua)
+    message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
     # variable to hold runtime source file location
     set(LUA_RUNTIME_SRC
