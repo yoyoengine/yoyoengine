@@ -708,22 +708,12 @@ void ye_construct_scene(json_t *entities){
 }
 
 void ye_load_scene(const char *scene_path){
-    // purge all non persistant events
-    ye_purge_events(false);
-
-    // shutdown and restart audio subsystem TODO: do some soft reset instead
-    ye_shutdown_audio();
-
-    // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
-    ye_purge_ecs();
-
-    // wipe non persistant render entities (additional and debug)
-    ye_debug_renderer_cleanup(false);
-
-    ye_init_audio();
-
     /*
-        If we are in editor mode, this scene file will be loaded from the loose resources dir, if runtime it will be packed
+        Validate scene exists before we load it,
+        
+        If we are in editor mode, this scene file
+        will be loaded from the loose resources dir,
+        if runtime it will be packed
     */
     json_t *SCENE = NULL; 
     if(YE_STATE.editor.editor_mode){
@@ -739,6 +729,20 @@ void ye_load_scene(const char *scene_path){
         json_decref(SCENE);
         return;
     }
+
+    // purge all non persistant events
+    ye_purge_events(false);
+
+    // shutdown and restart audio subsystem TODO: do some soft reset instead
+    ye_shutdown_audio();
+
+    // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
+    ye_purge_ecs();
+
+    // wipe non persistant render entities (additional and debug)
+    ye_debug_renderer_cleanup(false);
+
+    ye_init_audio();
 
     if(YE_STATE.runtime.scene_file_path != NULL)
         free(YE_STATE.runtime.scene_file_path);
