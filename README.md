@@ -18,11 +18,21 @@ Check out the hand-crafted documentation website **[here](https://zoogies.github
 
 For advanced C developers, you can generate Doxygen documentation with `doxygen Doxyfile` in the `engine` directory.
 
+#### Head on over to [the yoyoengine hub](https://github.com/yoyoengine/launcher) to download the latest editor release.
+
 ## What?
 
 Yoyoengine started as a small game in SDL, and evolved into a fully featured, general purpose 2D game engine.
 
-Feature List:
+<table>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/zoogies.png" alt="Zoogies Logo"/></td>
+        <td><img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/theriac.png" alt="Theriac"/></td>
+    </tr>
+</table>
+<img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/vannie.png" alt="Raise A Vannie"/>
+
+### Feature List:
 
 - Easy to use visual editor
 - Multi platform support (Windows, Linux, Web)
@@ -32,7 +42,7 @@ Feature List:
 - Generic Gamepad and Controller abstraction layer
 - First class Lua scripting support, with native C scripting for complex or performance critical tasks
 
-Tech Stack:
+### Tech Stack:
 
 - [SDL2](https://www.libsdl.org/) (windowing, rendering, audio, input, networking, etc)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) (UI)
@@ -60,6 +70,6 @@ You can get in touch with me through my [portfolio](https://zmuda.dev), on disco
 ## Credit
 
 - The listed dependencies, for making this project possible.
-- [Kaidiak](https://linktr.ee/kaidiak), for producinig the engine splash screen sound effect.
+- [Kaidiak](https://linktr.ee/kaidiak), for producing the engine splash screen sound effect.
 - Ben Mathes, for creating icons used in the editor.
 - The [SDL discord](https://discord.gg/BwpFGBWsv8), a must join community if you use SDL.
