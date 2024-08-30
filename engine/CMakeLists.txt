@@ -327,6 +327,10 @@ if(BUILD_LUA_RUNTIME)
     option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/ye_runtime.lua)
     message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
+    # create full path to runtime output so it exists
+    get_filename_component(LUA_RUNTIME_OUTPUT_DIR ${LUA_RUNTIME_OUTPUT} DIRECTORY)
+    file(MAKE_DIRECTORY ${LUA_RUNTIME_OUTPUT_DIR})
+
     # variable to hold runtime source file location
     set(LUA_RUNTIME_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
