@@ -106,7 +106,7 @@ void ye_logf(enum logLevel level, const char *format, ...){
     }
 
     // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
-    if(YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
+    if((enum logLevel)YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
         return;
     }
     // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
@@ -165,7 +165,7 @@ void _ye_lua_logf(enum logLevel level, const char *format, ...){
     }
 
     // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
-    if(YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
+    if((enum logLevel)YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
         return;
     }
     // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
@@ -208,7 +208,7 @@ void _ye_lua_logf(enum logLevel level, const char *format, ...){
 
 void ye_log_newline(enum logLevel level){
     // if logging is disabled, or the log level is below the threshold, return
-    if(YE_STATE.engine.log_level > level){
+    if((enum logLevel)YE_STATE.engine.log_level > level){
         return;
     }
     fprintf(logFile, "\n");

@@ -40,7 +40,7 @@ void ye_pre_cache_scene(json_t *scene){
         ye_logf(error,"%s","Failed to read entities from scene.\n");
         return;
     }
-    for(int i = 0; i < json_array_size(entities); i++){
+    for(size_t i = 0; i < json_array_size(entities); i++){
         json_t *entity = NULL;      ye_json_arr_object(entities,i,&entity);
 
         // ye_json_log(entity);
@@ -76,7 +76,7 @@ void ye_pre_cache_scene(json_t *scene){
         }
 
         const char *src = NULL; // comply with mingw & clang
-        const char *path = NULL; // comply with mingw & clang
+        // const char *path = NULL; // comply with mingw & clang
         switch(type){
             case YE_RENDERER_TYPE_IMAGE:
                 if(!ye_json_string(impl,"src",&src)){
@@ -91,6 +91,9 @@ void ye_pre_cache_scene(json_t *scene){
                 //     continue;
                 // }
                 // ye_image(path);
+
+                // leaving this garbage for now because I anticipate doing an
+                // animation rewrite soon. TODO
                 break;
             default:
                 break;

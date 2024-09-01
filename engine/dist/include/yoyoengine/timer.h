@@ -15,6 +15,8 @@
 
 #include <stdbool.h>
 
+#include <yoyoengine/logging.h>
+
 /**
  * @brief A timer that can be registered with the engine.
  * 

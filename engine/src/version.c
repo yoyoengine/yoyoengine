@@ -41,18 +41,18 @@ bool ye_is_version_greater(const char *source, const char *target) {
     else if (source_major == target_major && source_minor > target_minor) {
         return true;
     }
+
+    ye_logf(error, "Something really weird happened when comparing versions: %s -> %s\n", source, target);
+    return false;
 }
 
-void ye_version_tagify(const char *version_string, char *out) {
+void ye_version_tagify(char *out) {
     // walk the version and replace spaces with hypens
-    for (int i = 0; i < strlen(version_string); i++) {
-        if (version_string[i] == ' ') {
+    for (int i = 0; i < (int)strlen(out); i++) {
+        if (out[i] == ' ') {
             out[i] = '-';
         }
-        else {
-            out[i] = version_string[i];
-        }
     }
-    out[strlen(version_string)] = '\0';
+    out[strlen(out)] = '\0';
     return;
 }

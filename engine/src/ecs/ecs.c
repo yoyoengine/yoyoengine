@@ -184,7 +184,7 @@ struct ye_entity * ye_create_entity_named(const char *name){
     return entity;
 }
 
-void ye_rename_entity(struct ye_entity *entity, char *new_name){
+void ye_rename_entity(struct ye_entity *entity, const char *new_name){
     // free the old name
     free(entity->name);
 
@@ -260,9 +260,9 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     if(entity->tag != NULL){
         ye_add_tag_component(new_entity);
         for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
-            if(entity->tag->tags[i] != NULL){
-                ye_add_tag(new_entity, entity->tag->tags[i]);
-            }
+            // we could iterate over the tags and add only non-empty,
+            // but this will achieve the same since we can just add empty tags.
+            ye_add_tag(new_entity, entity->tag->tags[i]);
         }
         new_entity->tag->active = entity->tag->active;
     }

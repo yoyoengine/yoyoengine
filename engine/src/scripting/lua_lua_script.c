@@ -21,7 +21,7 @@ int ye_lua_create_lua_script(lua_State *L) {
         return 0;
     }
 
-    char * script = luaL_checkstring(L, 2);
+    const char * script = luaL_checkstring(L, 2);
 
     ye_add_lua_script_component(ent, script, NULL);
 

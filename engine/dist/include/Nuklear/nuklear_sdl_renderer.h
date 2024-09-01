@@ -12,6 +12,10 @@
 #define NK_SDL_RENDERER_H_
 
 #include <SDL.h>
+
+// zoogies: forward declare nk_font_atlas
+struct nk_font_atlas;
+
 NK_API struct nk_context*   nk_sdl_init(SDL_Window *win, SDL_Renderer *renderer);
 NK_API void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
 NK_API void                 nk_sdl_font_stash_end(void);

@@ -378,10 +378,10 @@ bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, fl
 
     // Define vertices for the line
     SDL_Vertex vertices[4];
-    vertices[0] = (SDL_Vertex){{x1 + offsetX, y1 - offsetY},color};
-    vertices[1] = (SDL_Vertex){{x1 - offsetX, y1 + offsetY},color};
-    vertices[2] = (SDL_Vertex){{x2 + offsetX, y2 - offsetY},color};
-    vertices[3] = (SDL_Vertex){{x2 - offsetX, y2 + offsetY},color};
+    vertices[0] = (SDL_Vertex){{x1 + offsetX, y1 - offsetY},color, {0, 0}};
+    vertices[1] = (SDL_Vertex){{x1 - offsetX, y1 + offsetY},color, {0, 0}};
+    vertices[2] = (SDL_Vertex){{x2 + offsetX, y2 - offsetY},color, {0, 0}};
+    vertices[3] = (SDL_Vertex){{x2 - offsetX, y2 + offsetY},color, {0, 0}};
 
     // Define indices for the line segments
     int indices[6] = {0, 1, 2, 1, 2, 3};

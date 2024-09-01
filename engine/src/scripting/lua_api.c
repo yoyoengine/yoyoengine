@@ -52,11 +52,6 @@ int lua_log(lua_State* L){
     return 0;
 }
 
-int lua_debug_quit(lua_State* L){ // TODO: removeme
-    exit(0);
-    return 0;
-}
-
 int ye_lua_check_component_exists(lua_State* L){
     struct ye_entity * entity = lua_touserdata(L, 1);
 
@@ -107,7 +102,7 @@ int ye_lua_check_renderer_component_type_exists(lua_State* L){
         return 1;
     }
 
-    if(entity->renderer->type == type_indx){
+    if((int)entity->renderer->type == type_indx){
         lua_pushboolean(L, 1);
     } else {
         lua_pushboolean(L, 0);
@@ -174,7 +169,6 @@ int ye_lua_remove_component(lua_State* L){
 void ye_register_lua_scripting_api(lua_State *state){
     // scattered fns
     lua_register(state, "log", lua_log);
-    // lua_register(state, "ye_debug_quit", lua_debug_quit);
 
     /*
         Entity

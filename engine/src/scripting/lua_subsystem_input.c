@@ -122,7 +122,7 @@ int ye_lua_query_controller_state(lua_State *L) {
     lua_newtable(L);
 
     // Automatically map button values to their names
-    for (int i = 0; i < sizeof(button_names)/sizeof(button_names[0]); ++i) {
+    for (int i = 0; i < (int)(sizeof(button_names)/sizeof(button_names[0])); ++i) {
         lua_pushstring(L, button_names[i]);
         lua_pushboolean(L, SDL_GameControllerGetButton(controller, button_values[i]));
         lua_settable(L, -3);

@@ -338,7 +338,7 @@ void ye_recompute_boxing(){
 
             To achieve this, we figure out what the ratio actually is and then calculate the viewport and pillarbox size
         */
-        float targetAspectRatio = 16.0f / 9.0f;
+        // float targetAspectRatio = 16.0f / 9.0f;
 
         // calculate the target viewport size
         int targetWidth = screenSize.height * 16 / 9;

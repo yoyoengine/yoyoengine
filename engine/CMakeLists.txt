@@ -44,6 +44,16 @@ else()
     message(STATUS "Building yoyoengine in release mode")
 endif()
 
+# if ZOOGIES_DEVELOPMENT_BUILD, every warning should fail
+option(ZOOGIES_DEVELOPMENT_BUILD "Enable all warnings" OFF)
+if(ZOOGIES_DEVELOPMENT_BUILD)
+    target_compile_options(yoyoengine PRIVATE -Werror -Wall -Wextra)
+    message(STATUS "Building yoyoengine with maximum warnings enabled")
+
+    # Enable debug information
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 ###############
 #   jansson   #
 ###############

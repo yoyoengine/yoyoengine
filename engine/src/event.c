@@ -49,6 +49,9 @@ void ye_register_event_cb(enum ye_event_type type, void *cb, int flags){
         case YE_EVENT_POST_INIT:
         case YE_EVENT_PRE_FRAME:
         case YE_EVENT_POST_FRAME:
+        case YE_EVENT_PRE_SHUTDOWN:
+        case YE_EVENT_POST_SHUTDOWN:
+        case YE_EVENT_ADDITIONAL_RENDER:
             event->empty_cb = (void (*)())cb;
             break;
 
@@ -65,6 +68,7 @@ void ye_register_event_cb(enum ye_event_type type, void *cb, int flags){
             break;
 
         case YE_EVENT_COLLISION:
+        case YE_EVENT_TRIGGER_ENTER:
             event->collision_cb = (void (*)(struct ye_entity *, struct ye_entity *))cb;
             break;
 
@@ -83,11 +87,11 @@ void ye_fire_event(enum ye_event_type type, union ye_event_args args){
             switch(type){
                 case YE_EVENT_PRE_INIT:
                 case YE_EVENT_POST_INIT:
+                case YE_EVENT_PRE_FRAME:
+                case YE_EVENT_POST_FRAME:
                 case YE_EVENT_PRE_SHUTDOWN:
                 case YE_EVENT_POST_SHUTDOWN:
-                case YE_EVENT_PRE_FRAME:
                 case YE_EVENT_ADDITIONAL_RENDER:
-                case YE_EVENT_POST_FRAME:
                     current->empty_cb();
                     break;
 
@@ -104,6 +108,7 @@ void ye_fire_event(enum ye_event_type type, union ye_event_args args){
                     break;
 
                 case YE_EVENT_COLLISION:
+                case YE_EVENT_TRIGGER_ENTER:
                     current->collision_cb(args.collision.one, args.collision.two);
                     break;
 

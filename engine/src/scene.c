@@ -379,7 +379,7 @@ void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* enti
     }
 }
 
-void ye_construct_tag(struct ye_entity* e, json_t* tag, const char* entity_name){
+void ye_construct_tag(struct ye_entity* e, json_t* tag){
     // add tag component
     ye_add_tag_component(e);
 
@@ -393,7 +393,7 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag, const char* entity_name)
     json_t *tags = NULL;
     if(ye_json_array(tag,"tags",&tags)) {
         // add each tag in the array
-        for(int i = 0; i < json_array_size(tags); i++){
+        for(int i = 0; i < (int)json_array_size(tags); i++){
             const char *tag_name = NULL; ye_json_arr_string(tags,i,&tag_name);
             ye_add_tag(e,tag_name);
         }
@@ -402,7 +402,6 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag, const char* entity_name)
 
 void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* entity_name){
     // validate bounds field
-    json_t *bounds = NULL;
     struct ye_rectf b = ye_retrieve_position(collider);
 
     // validate is_trigger field
@@ -446,7 +445,7 @@ void ye_construct_script(struct ye_entity* e, json_t* script, const char* entity
 
     json_t *globals = NULL;
     if(ye_json_array(script,"globals",&globals)) {
-        for(int i = 0; i < json_array_size(globals); i++){
+        for(size_t i = 0; i < json_array_size(globals); i++){
             json_t *global = json_array_get(globals,i);
             if(global == NULL){
                 ye_logf(warning,"Entity %s has a script component, but it's globals array is invalid.\n", entity_name);
@@ -560,7 +559,7 @@ void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const ch
     }
 }
 
-void ye_construct_button(struct ye_entity* e, json_t* button, const char* entity_name){
+void ye_construct_button(struct ye_entity* e, json_t* button){
     // validate the position field
     struct ye_rectf b = ye_retrieve_position(button);
 
@@ -662,7 +661,7 @@ void ye_construct_scene(json_t *entities){
                 ye_logf(warning,"Entity %s has a tag field, but it's invalid.\n", entity_name);
                 continue;
             }
-            ye_construct_tag(e,tag,entity_name);
+            ye_construct_tag(e,tag);
         }
 
         // if we have a collider component on our entity
@@ -702,7 +701,7 @@ void ye_construct_scene(json_t *entities){
                 ye_logf(warning,"Entity %s has a button field, but it's invalid.\n", entity_name);
                 continue;
             }
-            ye_construct_button(e,button,entity_name);
+            ye_construct_button(e,button);
         }
     }
 }
@@ -779,7 +778,7 @@ void ye_load_scene(const char *scene_path){
     // pre cache all of its colors, fonts (TODO: thread this?)
     json_t *styles; ye_json_array(SCENE, "styles", &styles);
     // cache each styles file in array
-    for(int i = 0; i < json_array_size(styles); i++){
+    for(int i = 0; i < (int)json_array_size(styles); i++){
         const char *path; ye_json_arr_string(styles, i, &path);
         ye_pre_cache_styles(path);
     }

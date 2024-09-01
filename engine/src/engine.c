@@ -169,7 +169,7 @@ float ye_delta_time(){
     return YE_STATE.runtime.delta_time;
 }
 
-void ye_update_base_path(char *path){
+void ye_update_base_path(const char *path){
     // update the engine state
     free(executable_path);
     executable_path = strdup(path);
@@ -298,7 +298,7 @@ void ye_init_engine() {
     json_t *SETTINGS = ye_json_read(ye_path("settings.yoyo"));
     if (SETTINGS == NULL) {
         ye_logf(warning, "No settings.yoyo file found, it will be created using default values.\n");
-        json_t *SETTINGS = json_object();
+        SETTINGS = json_object();
     }
 
     // config strings all need freed later

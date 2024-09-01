@@ -275,7 +275,7 @@ float ye_delta_time();
  * 
  * @param path The (absolute) path to the new resources folder.
  */
-void ye_update_base_path(char *path);
+void ye_update_base_path(const char *path);
 
 /*
     entry point to the engine, initializes all subsystems

@@ -535,7 +535,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
                             // advance the frame index and wrap around as needed
                             animation->current_frame_index += frames_to_advance;
-                            if(animation->current_frame_index >= animation->frame_count){
+                            if((size_t)animation->current_frame_index >= animation->frame_count){
                                 animation->current_frame_index = animation->current_frame_index % animation->frame_count;
                                 if(animation->loops != -1){
                                     animation->loops--;

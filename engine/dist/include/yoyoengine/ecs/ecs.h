@@ -134,7 +134,7 @@ struct ye_entity * ye_create_entity_named(const char *name);
  * @param entity The entity to rename
  * @param name The new name
  */
-void ye_rename_entity(struct ye_entity *entity, char *name);
+void ye_rename_entity(struct ye_entity *entity, const char *new_name);
 
 /**
  * @brief !!!DO NOT USE THIS RIGHT NOW. IT IS COMPLETELY BROKEN!!! Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
