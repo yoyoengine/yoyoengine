@@ -60,7 +60,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/engine/build
           cd ${{ github.workspace }}/engine/build
-          CC=clang cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD ..
+          CC=clang cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
       
       - name: Build with Clang
         run: |
