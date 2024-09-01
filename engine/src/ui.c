@@ -47,7 +47,7 @@
 #endif
 
 #include <Nuklear/nuklear_sdl_renderer.h>
-#include <Nuklear/style.h>
+// #include <Nuklear/style.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/engine.h>
@@ -276,8 +276,8 @@ void ui_paint_cam_info(struct nk_context *ctx){
 
     sprintf(x_str, "x: %f", YE_STATE.engine.target_camera->transform->x);
     sprintf(y_str, "y: %f", YE_STATE.engine.target_camera->transform->y);
-    sprintf(w_str, "w: %d", YE_STATE.engine.target_camera->camera->view_field.w);
-    sprintf(h_str, "h: %d", YE_STATE.engine.target_camera->camera->view_field.h);
+    sprintf(w_str, "w: %f", YE_STATE.engine.target_camera->camera->view_field.w);
+    sprintf(h_str, "h: %f", YE_STATE.engine.target_camera->camera->view_field.h);
     sprintf(z_str, "z: %d", YE_STATE.engine.target_camera->camera->z);
 
     // Create the GUI layout
@@ -290,8 +290,8 @@ void ui_paint_cam_info(struct nk_context *ctx){
             nk_label(ctx, h_str, NK_TEXT_LEFT);
             nk_label(ctx, z_str, NK_TEXT_LEFT);
 
-        nk_property_int(ctx, "width", 0, &YE_STATE.engine.target_camera->camera->view_field.w, 90000, 1, 1);
-        nk_property_int(ctx, "height", 0, &YE_STATE.engine.target_camera->camera->view_field.h, 90000, 1, 1);
+        nk_property_float(ctx, "width", 0, &YE_STATE.engine.target_camera->camera->view_field.w, 90000, 1, 1);
+        nk_property_float(ctx, "height", 0, &YE_STATE.engine.target_camera->camera->view_field.h, 90000, 1, 1);
 
     nk_end(ctx);
     }

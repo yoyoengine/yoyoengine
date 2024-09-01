@@ -187,7 +187,8 @@ void teardown_splash_screen(){
             ye_load_scene(entry_scene);
         }
         else{
-            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+            if(!YE_STATE.editor.editor_mode)
+                ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
         }
     }
 
@@ -403,7 +404,8 @@ void ye_init_engine() {
             ye_load_scene(entry_scene);
         }
         else{
-            ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+            if(!YE_STATE.editor.editor_mode)
+                ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
         }
     }
     else{

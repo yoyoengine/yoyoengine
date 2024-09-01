@@ -917,3 +917,15 @@ might need to add a hub to manage different installs rather than the current app
 
 - move splash screen into scene file, allow clicking to skip, or any key press
 - scene fading in and out? DONT OVERSCOPE!!
+
+## lksdfjlkdfjgl
+
+engine splash screen is so outdated lmao...
+
+yoyolick/yoyoengine
+
+## random ideas
+
+toasts for errors
+
+option to auto focus terminal when error shows in editor
