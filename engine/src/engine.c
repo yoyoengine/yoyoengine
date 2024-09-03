@@ -204,63 +204,51 @@ void setup_splash_screen(){
         Setup the engine logo screen
 
         Construct ECS, add a timer to callback into loading the
-        default scene after 3000ms
+        default scene after 5000ms
     */
 
     YE_STATE.runtime.scene_name = strdup("engine_splash_screen");
 
+    json_t *splash_scene = NULL; // the intro scene bytes
+
+    // get the scene into a json from the engine pack
+    splash_scene = yep_engine_resource_json("startup/intro.yoyo");
+
     if(!YE_STATE.editor.editor_mode){
-        // because play sound looks in resources pack, we need to pre cache the engine one
-        _ye_mixer_engine_cache("startup/startup.wav");
-        ye_play_sound("startup/startup.wav",0,1); // play startup sound
+        /*
+            We need to prepopulate the cache with the resources
+            the intro scene uses, since they are all loaded
+            from the engine.yep pack.
+        */
+
+        TTF_Font *chakra = yep_engine_resource_font("startup/ChakraPetch-Regular.ttf");
+        ye_cache_font_manual("chakra", chakra);
+
+        SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_bg.png"));
+        ye_cache_texture_manual(splash_bg_tex, "startup/splash_bg.png");
+
+        SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_y.png"));
+        ye_cache_texture_manual(splash_y_tex, "startup/splash_y.png");
+
+        SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_gear.png"));
+        ye_cache_texture_manual(splash_gear_tex, "startup/splash_gear.png");
     }
 
-    struct ye_entity * splash_cam = ye_create_entity();
-    ye_add_transform_component(splash_cam, 0,0);
-    ye_add_camera_component(splash_cam, 999, (struct ye_rectf){0,0,1920,1080});
-    ye_set_camera(splash_cam);
+    // load the intro scene file out of the engine resources
+    ye_raw_scene_load(splash_scene);
+    json_decref(splash_scene);
 
-    // background for splash
-    struct ye_entity * splash_bg = ye_create_entity();
-    ye_add_transform_component(splash_bg, 0,0);
-    SDL_Texture *splash_bg_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_bg.png"));
-    ye_cache_texture_manual(splash_bg_tex, "startup/splash_bg.png");
-    ye_add_image_renderer_component_preloaded(splash_bg, 1, splash_bg_tex);
-    splash_bg->renderer->rect = (struct ye_rectf){0,0,1920,1080};
+    // hook into the build text entity and set the version string
+    struct ye_entity *build_text = ye_get_entity_by_name("build text");
+    if(build_text != NULL){
+        free(build_text->renderer->renderer_impl.text->text);
+        build_text->renderer->renderer_impl.text->text = strdup(YOYO_ENGINE_VERSION_STRING);
+        ye_update_renderer_component(build_text);
+    }
 
-    // foreground logo for splash
-    struct ye_entity * splash_y = ye_create_entity();
-    ye_add_transform_component(splash_y, 1920/2 - 350/2 - 100,1080/2 - 350/2);
-    SDL_Texture *splash_y_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_y.png"));
-    ye_cache_texture_manual(splash_y_tex, "startup/splash_y.png");
-    ye_add_image_renderer_component_preloaded(splash_y, 1, splash_y_tex);
-    splash_y->renderer->rect = (struct ye_rectf){0,0,350,350};
-
-    // gear spinning below logo
-    struct ye_entity * splash_gear = ye_create_entity();
-    ye_add_transform_component(splash_gear, 1920/2,1080/2 - 110);
-    SDL_Texture *splash_gear_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("startup/splash_gear.png"));
-    ye_cache_texture_manual(splash_gear_tex, "startup/splash_gear.png");
-    ye_add_image_renderer_component_preloaded(splash_gear, 1, splash_gear_tex);
-    splash_gear->renderer->rect = (struct ye_rectf){0,0,350,350};
-    ye_add_physics_component(splash_gear,0,0);
-    splash_gear->physics->rotational_velocity = 90;
-
-    // version label
-    struct ye_entity * splash_version = ye_create_entity();
-    ye_add_transform_component(splash_version, 0, 0);
-    SDL_Color white = {255, 255, 255, 255};
-    ye_cache_color("white", white);
-    TTF_Font *orbitron = yep_engine_resource_font("fonts/Orbitron-Regular.ttf");
-    ye_cache_font_manual("orbitron", orbitron);
-    ye_add_text_renderer_component(splash_version, 1, YOYO_ENGINE_VERSION_STRING, "orbitron", 64, "white",0);
-    splash_version->renderer->rect = (struct ye_rectf){
-        YE_STATE.engine.screen_width - 590,
-        235,
-        125,
-        75
-    };
-    ye_update_renderer_component(splash_version);
+    // start playing the music, since we cant do it from the scene file (should refactor to be generic in the future)
+    _ye_mixer_engine_cache("startup/startup.wav"); // done down here because load scene raw purges mixer cache
+    ye_play_sound("startup/startup.wav", 0, 1);
 
     /*
         Create a timer 3000ms from now to load the default scene

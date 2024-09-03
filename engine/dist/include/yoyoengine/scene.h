@@ -15,6 +15,8 @@
 
 #include <stdbool.h>
 
+#include <jansson.h>
+
 /**
  * @brief Initializes the scene manager
  */
@@ -44,6 +46,15 @@ char *ye_get_scene_name();
  * @brief Tears down the scene manager context, freeing the current scene name
  */
 void ye_shutdown_scene_manager();
+
+/**
+ * @brief Loads a scene from a json object
+ * 
+ * You are responsible for loading and freeing the json argument.
+ * 
+ * @param SCENE The json object representing the scene
+ */
+void ye_raw_scene_load(json_t *SCENE);
 
 /**
  * @brief Defer loading a scene til next frame

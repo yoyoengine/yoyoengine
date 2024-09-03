@@ -11,7 +11,6 @@ Nothing!!!
 - Refactor the FUCK out of the editor. It has the stinkiest code ever
 - Refactor and rework the plugin manager
 - How can we simplify serialization and boilerplate for each component
-- Make the intro loading code a scene in engine resources
 
 ### Bugs
 
@@ -26,7 +25,6 @@ Nothing!!!
 - Physics system should compute axies seperately
 - In production, missing assets will exit(1) through yep, rather than return missing
 - Multiple colliders touching gets weird
-- Editor is packing edicons into engine.yep
 - valgrind runs weirdly for editor, serializing editor components and segaulting and gp faulting
 - Scrollbar resets when selecting entity in heiarchy
 - shift ctrl select entity to do range in heiarchy?

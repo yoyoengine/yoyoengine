@@ -706,26 +706,10 @@ void ye_construct_scene(json_t *entities){
     }
 }
 
-void ye_load_scene(const char *scene_path){
-    /*
-        Validate scene exists before we load it,
-        
-        If we are in editor mode, this scene file
-        will be loaded from the loose resources dir,
-        if runtime it will be packed
-    */
-    json_t *SCENE = NULL; 
-    if(YE_STATE.editor.editor_mode){
-        SCENE = ye_json_read(ye_path_resources(scene_path));
-    }
-    else{
-        SCENE = yep_resource_json(scene_path);
-    }
-
+void ye_raw_scene_load(json_t *SCENE) {
     // try to open the scene file
     if(SCENE == NULL){
-        ye_logf(error,"Failed to load scene %s\n", scene_path);
-        json_decref(SCENE);
+        ye_logf(error,"Scene file could not be loaded.\n");
         return;
     }
 
@@ -743,36 +727,34 @@ void ye_load_scene(const char *scene_path){
 
     ye_init_audio();
 
-    if(YE_STATE.runtime.scene_file_path != NULL)
-        free(YE_STATE.runtime.scene_file_path);
-    
-    // malloc new string for current scene file path and copy it over
-    YE_STATE.runtime.scene_file_path = malloc(strlen(scene_path)+1);
-    strcpy(YE_STATE.runtime.scene_file_path,scene_path);
-
-    // read some meta about the scene and check validity
-    int scene_version;
-    if(!ye_json_int(SCENE, "version", &scene_version)){
-        ye_logf(error,"Scene \"%s\" has no version number\n", scene_path);
-        json_decref(SCENE);
-        return;
-    }
-    // scene files are backwards compatible (for now) but obviously cant guarantee being forwards compatible
-    if(scene_version > YOYO_ENGINE_SCENE_VERSION){
-        ye_logf(error,"Scene \"%s\" has version %d, but the engine only supports up to version %d\n", scene_path, scene_version, YOYO_ENGINE_SCENE_VERSION);
-        json_decref(SCENE);
-        return;
-    }
+    // NOTE: scene file path is unset.
 
     const char *scene_name; 
     if(!ye_json_string(SCENE, "name", &scene_name)){
-        ye_logf(warning,"Un-named scene loaded %s\n", scene_path);
+        ye_logf(warning,"unnamed scene loaded\n");
+        if(YE_STATE.runtime.scene_name != NULL)
+            free(YE_STATE.runtime.scene_name);
+        YE_STATE.runtime.scene_name = strdup("UNKNOWN SCENE");
     }
     else{
         if(YE_STATE.runtime.scene_name != NULL)
             free(YE_STATE.runtime.scene_name);
         YE_STATE.runtime.scene_name = strdup(scene_name);
         ye_logf(info,"Loaded scene: %s\n", scene_name);
+    }
+
+    // read some meta about the scene and check validity
+    int scene_version;
+    if(!ye_json_int(SCENE, "version", &scene_version)){
+        ye_logf(error,"Attempted to load scene \"%s\" with no version number\n", YE_STATE.runtime.scene_name);
+        json_decref(SCENE);
+        return;
+    }
+    // scene files are backwards compatible (for now) but obviously cant guarantee being forwards compatible
+    if(scene_version > YOYO_ENGINE_SCENE_VERSION){
+        ye_logf(error,"Scene \"%s\" has version %d, but the engine only supports up to version %d\n", YE_STATE.runtime.scene_name, scene_version, YOYO_ENGINE_SCENE_VERSION);
+        json_decref(SCENE);
+        return;
     }
 
     // pre cache all of its colors, fonts (TODO: thread this?)
@@ -801,14 +783,14 @@ void ye_load_scene(const char *scene_path){
     // check if the scene has a default camera and set it if so, if not log error
     const char* default_camera_name = NULL;
     if(!ye_json_string(scene,"default camera",&default_camera_name)){
-        ye_logf(error,"Scene \"%s\" has no default camera\n", scene_path);
+        ye_logf(error,"Scene \"%s\" has no default camera\n", YE_STATE.runtime.scene_name);
     }
     else{
         struct ye_entity *camera = ye_get_entity_by_name(default_camera_name);
         if(!YE_STATE.editor.editor_mode){
             ye_logf(info,"Setting default camera to: %s\n", default_camera_name);
             if(camera == NULL){
-                ye_logf(error,"Scene \"%s\" has no camera named \"%s\"\n", scene_path, default_camera_name);
+                ye_logf(error,"Scene \"%s\" has no camera named \"%s\"\n", YE_STATE.runtime.scene_name, default_camera_name);
             }
             else{
                 ye_set_camera(camera);
@@ -843,11 +825,37 @@ void ye_load_scene(const char *scene_path){
         }
     }
 
-    // deref the scene file.
-    json_decref(SCENE);
-
     // send a scene loaded callback
     ye_fire_event(YE_EVENT_SCENE_LOAD, (union ye_event_args){.scene_name = YE_STATE.runtime.scene_name});
+}
+
+void ye_load_scene(const char *scene_path){
+    /*
+        Validate scene exists before we load it,
+        
+        If we are in editor mode, this scene file
+        will be loaded from the loose resources dir,
+        if runtime it will be packed
+    */
+    json_t *SCENE = NULL; 
+    if(YE_STATE.editor.editor_mode){
+        SCENE = ye_json_read(ye_path_resources(scene_path));
+    }
+    else{
+        SCENE = yep_resource_json(scene_path);
+    }
+
+    // try to open the scene file
+    if(SCENE == NULL){
+        ye_logf(error,"Failed to load scene %s\n", scene_path);
+        json_decref(SCENE);
+        return;
+    }
+
+    ye_raw_scene_load(SCENE);
+
+    // deref the scene file.
+    json_decref(SCENE);
 }
 
 char *ye_get_scene_name(){
