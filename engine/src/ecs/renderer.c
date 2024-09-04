@@ -265,6 +265,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
     
     if(META == NULL){
         ye_logf(error, "Failed to load animation meta file %s\n", meta_file);
+        entity->renderer = NULL; // just in case :P
         return;
     }
 

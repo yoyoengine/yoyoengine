@@ -109,6 +109,8 @@ void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity
     // add the camera component
     ye_add_camera_component(e,z,(struct ye_rectf){cx,cy,cw,ch});
 
+    if(e->camera == NULL) return;
+
     // update active state
     if(ye_json_has_key(camera,"active")){
         bool active = true;    ye_json_bool(camera,"active",&active);
@@ -280,6 +282,9 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
             ye_logf(warning,"Entity %s has a renderer component, but it is missing the type field\n", entity_name);
             break;
     }
+
+    // if the renderer failed to be added, return
+    if(e->renderer == NULL) return;
     
     // set the rect
     e->renderer->rect = rect;
@@ -366,6 +371,8 @@ void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* enti
         }
     }
 
+    if(e->physics == NULL) return;
+
     // get rotational velocity
     if(ye_json_has_key(physics,"rotational velocity")){
         float rotational_velocity = 0;    ye_json_float(physics,"rotational velocity",&rotational_velocity);
@@ -382,6 +389,8 @@ void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* enti
 void ye_construct_tag(struct ye_entity* e, json_t* tag){
     // add tag component
     ye_add_tag_component(e);
+
+    if(e->tag == NULL) return;
 
     // update active state
     if(ye_json_has_key(tag,"active")){
@@ -416,6 +425,8 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
         ye_add_static_collider_component(e,b);
     else
         ye_add_trigger_collider_component(e,b);
+
+    if(e->collider == NULL) return;
 
     // validate the relative field
     bool relative;
@@ -497,6 +508,8 @@ void ye_construct_script(struct ye_entity* e, json_t* script, const char* entity
     // add the script component
     ye_add_lua_script_component(e,script_path, real_globals);
 
+    if(e->lua_script == NULL) return;
+
     // update active state
     if(ye_json_has_key(script,"active")){
         bool active = true;    ye_json_bool(script,"active",&active);
@@ -546,6 +559,8 @@ void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const ch
     // add the audiosource component
     ye_add_audiosource_component(e,handle,volume,play_on_awake,loops,simulated,b);
 
+    if(e->audiosource == NULL) return;
+
     // update active state
     if(ye_json_has_key(audiosource,"active")){
         bool active = true;    ye_json_bool(audiosource,"active",&active);
@@ -565,6 +580,8 @@ void ye_construct_button(struct ye_entity* e, json_t* button){
 
     // add the button component
     ye_add_button_component(e,b);
+
+    if(e->button == NULL) return;
 
     // update active state
     if(ye_json_has_key(button,"active")){
@@ -853,6 +870,10 @@ void ye_load_scene(const char *scene_path){
     }
 
     ye_raw_scene_load(SCENE);
+
+    if(YE_STATE.runtime.scene_file_path != NULL)
+        free(YE_STATE.runtime.scene_file_path);
+    YE_STATE.runtime.scene_file_path = strdup(scene_path);
 
     // deref the scene file.
     json_decref(SCENE);

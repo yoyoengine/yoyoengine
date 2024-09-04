@@ -258,8 +258,8 @@ bool _yep_seek_header(const char *handle, char *name, uint32_t *offset, uint32_t
 
 struct yep_data_info yep_extract_data(const char *file, const char *handle){
     if(!_yep_open_file(file)){
-        ye_logf(error,"Error opening yep file %s\n", file);
-        exit(1);
+        ye_logf(warning,"Error opening yep file %s\n", file);
+        return (struct yep_data_info){.data = NULL, .size = 0};
     }
 
     // printf("File: %s\n", yep_file_path);
@@ -276,8 +276,8 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle){
 
     // try to get our header
     if(!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)){
-        ye_logf(error,"Error: could not find resource \"%s\" in file %s\n", handle, file);
-        exit(1);
+        ye_logf(warning,"Handle \"%s\" does not exist in yep file %s\n", handle, file);
+        return (struct yep_data_info){.data = NULL, .size = 0};
     }
 
     // assuming we didnt fail, we have the header data
@@ -306,8 +306,8 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle){
     if(compression_type == YEP_COMPRESSION_ZLIB){
         char *decompressed_data;
         if(decompress_data(data, size, &decompressed_data, uncompressed_size) != 0){
-            ye_logf(error,"!!!Error decompressing data!!!\n");
-            exit(1);
+            ye_logf(warning,"!!!Error decompressing data!!!\n");
+            return (struct yep_data_info){.data = NULL, .size = 0};
         }
 
         // printf("Decompressed %s from %d bytes to %d bytes\n", handle, size, uncompressed_size);
@@ -696,6 +696,11 @@ struct yep_data_info _yep_misc(const char *handle, const char *file){
 SDL_Surface * _yep_image(const char *handle, const char *path){
     // load the data
     struct yep_data_info data = _yep_misc(handle, path);
+
+    // if the data is null, we load the missing texture
+    if(data.data == NULL || data.size == 0){
+        return yep_engine_resource_image("missing.png");
+    }
 
     // create the surface
     SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem(data.data, data.size), 1);
