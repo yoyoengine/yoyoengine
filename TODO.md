@@ -23,7 +23,6 @@ Nothing!!!
 - Get screen size uses only the primary monitor (sdl bug?)
 - Physics system MIGHT be broken with negative relative colliders
 - Physics system should compute axies seperately
-- In production, missing assets will exit(1) through yep, rather than return missing
 - Multiple colliders touching gets weird
 - valgrind runs weirdly for editor, serializing editor components and segaulting and gp faulting
 - Scrollbar resets when selecting entity in heiarchy

@@ -211,9 +211,15 @@ void create_entity_table(lua_State *L, void *entity) {
     lua_pushlightuserdata(L, entity);
     lua_setfield(L, -2, "_c_entity");
 
-    // Set the metatable
-    luaL_getmetatable(L, "Entity_mt");
-    lua_setmetatable(L, -2);
+    // Get the Entity_mt table from the global state
+    lua_getglobal(L, "Entity_mt");
+    if (!lua_istable(L, -1)) {
+        // Handle the error (Entity_mt is not a table)
+        lua_pop(L, 1);  // Remove the non-table value
+        printf("Error: Entity_mt is not a table!\n");
+    } else {
+        lua_setmetatable(L, -2);  // Set the table as the metatable
+    }
 }
 
 // Function to print the Lua stack for debugging
@@ -239,6 +245,48 @@ void print_lua_stack(lua_State *L) {
     }
     printf("\n");
 }
+
+// super useful for debugging :D
+// void dump_globals(lua_State* L) {
+//     // Push the global table onto the stack
+//     lua_pushglobaltable(L);
+    
+//     // Start iterating through the global table
+//     lua_pushnil(L);  // First key (nil means start from the beginning)
+    
+//     printf("Dumping globals:\n");
+    
+//     while (lua_next(L, -2) != 0) {
+//         // key is at index -2 and value is at index -1
+//         if (lua_type(L, -2) == LUA_TSTRING) {
+//             printf("%s = ", lua_tostring(L, -2));
+//         } else {
+//             printf("[non-string key] = ");
+//         }
+
+//         // Print value based on its type
+//         switch (lua_type(L, -1)) {
+//             case LUA_TNUMBER:
+//                 printf("%f\n", lua_tonumber(L, -1));
+//                 break;
+//             case LUA_TSTRING:
+//                 printf("%s\n", lua_tostring(L, -1));
+//                 break;
+//             case LUA_TBOOLEAN:
+//                 printf("%s\n", lua_toboolean(L, -1) ? "true" : "false");
+//                 break;
+//             default:
+//                 printf("%s\n", lua_typename(L, lua_type(L, -1)));
+//                 break;
+//         }
+
+//         // Remove value, keep key for the next iteration
+//         lua_pop(L, 1);
+//     }
+    
+//     // Remove the global table from the stack
+//     lua_pop(L, 1);
+// }
 
 void ye_run_lua_on_collision(struct ye_component_lua_script *script, struct ye_entity *entity1, struct ye_entity *entity2) {
     if(script->has_on_collision) {

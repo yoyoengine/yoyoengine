@@ -174,6 +174,7 @@ end
 
 -- entity is global
 _G["Entity"] = Entity
+_G["Entity_mt"] = Entity_mt
 
 -- global components
 _G["Transform"] = Transform
@@ -184,7 +185,7 @@ _G["Renderer"] = Renderer
 _G["RendererAlignment"] = RendererAlignment
 _G["RendererType"] = RendererType
 
-log("debug", "bootstrapped runtime.lua onto new VM\n")
+-- log("debug", "bootstrapped runtime.lua onto new VM\n")
 -- print("runtime version:",YE_LUA_RUNTIME_VERSION)
 
 ----------------------------------------------

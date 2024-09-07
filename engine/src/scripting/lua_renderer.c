@@ -26,7 +26,6 @@
 
 
 int ye_lua_create_image_renderer(lua_State *L) {
-    ye_logf(debug, "creating image renderer\n");
     struct ye_entity * ent = lua_touserdata(L, 1);
 
     if(ent == NULL) {
@@ -38,7 +37,6 @@ int ye_lua_create_image_renderer(lua_State *L) {
     const char * path = luaL_checkstring(L, 2);
     int z = luaL_checknumber(L, 3);
 
-    ye_logf(debug, "adding image renderer comp\n");
     ye_add_image_renderer_component(ent, z, path);
 
     return 0;

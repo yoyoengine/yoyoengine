@@ -328,3 +328,8 @@ function DuplicateEntity(self)
 
     return entity
 end
+
+---**Reference to the current entity.**
+---
+---@type Entity
+this = {}

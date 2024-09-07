@@ -139,7 +139,7 @@ bool _initialize_scripting_runtime(struct ye_entity *target) {
 
         free(buffers[i]);
 
-        ye_logf(debug,"Loaded %s into VM\n", scripts[i]);
+        // ye_logf(debug,"Loaded %s into VM\n", scripts[i]);
     }
 
     return true;
@@ -265,6 +265,31 @@ bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, s
         }
     }
 
+    /*
+        Push a reference to this entity into the lua state.
+
+        "this" is an Entity, with a metatable of Entity_mt referencing the ECS
+        entity this script is attatched to.
+    */
+    lua_State *L = entity->lua_script->state;
+    lua_newtable(L); // Create a new table
+    
+    // Set the _c_entity field
+    lua_pushlightuserdata(L, entity);
+    lua_setfield(L, -2, "_c_entity");
+    
+    // Get the Entity_mt table from the global state
+    lua_getglobal(L, "Entity_mt");
+    if (!lua_istable(L, -1)) {
+        // Handle the error (Entity_mt is not a table)
+        lua_pop(L, 1);  // Remove the non-table value
+        printf("Error: Entity_mt is not a table!\n");
+    } else {
+        lua_setmetatable(L, -2);  // Set the table as the metatable
+    }
+    
+    // Push the table as a global variable called "this"
+    lua_setglobal(L, "this");
 
     /*
         call the lua scripts on_mount function in its state
@@ -328,7 +353,7 @@ void ye_remove_lua_script_component(struct ye_entity *entity){
 void ye_system_lua_scripting(){
     struct ye_entity_node *current = lua_script_list_head;
     while(current != NULL){
-        if(current->entity->lua_script->active){
+        if(current->entity && current->entity->active && current->entity->lua_script->active){
             // run the update function
             ye_run_lua_on_update(current->entity->lua_script);
         }
@@ -337,22 +362,42 @@ void ye_system_lua_scripting(){
 }
 
 void ye_lua_signal_collisions(struct ye_entity *entity1, struct ye_entity *entity2){
-    struct ye_entity_node *current = lua_script_list_head;
-    while(current != NULL){
-        if(current->entity->lua_script->active){
-            ye_run_lua_on_collision(current->entity->lua_script, entity1, entity2);
-        }
-        current = current->next;
+    // struct ye_entity_node *current = lua_script_list_head;
+    // while(current != NULL){
+    //     if(current->entity->lua_script->active){
+    //         ye_run_lua_on_collision(current->entity->lua_script, entity1, entity2);
+    //     }
+    //     current = current->next;
+    // }
+
+    // run collision only in the collided entities
+
+    if(entity1 && entity1->lua_script && entity1->lua_script->active){
+        ye_run_lua_on_collision(entity1->lua_script, entity1, entity2);
+    }
+
+    if(entity2 && entity2->lua_script && entity2->lua_script->active){
+        ye_run_lua_on_collision(entity2->lua_script, entity1, entity2);
     }
 }
 
 void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *entity2){
-    struct ye_entity_node *current = lua_script_list_head;
-    while(current != NULL){
-        if(current->entity->lua_script->active){
-            ye_run_lua_on_trigger_enter(current->entity->lua_script, entity1, entity2);
-        }
-        current = current->next;
+    // struct ye_entity_node *current = lua_script_list_head;
+    // while(current != NULL){
+    //     if(current->entity->lua_script->active){
+    //         ye_run_lua_on_trigger_enter(current->entity->lua_script, entity1, entity2);
+    //     }
+    //     current = current->next;
+    // }
+
+    // run trigger enter only in the entered trigger and the enter-er 
+
+    if(entity1 && entity1->lua_script && entity1->lua_script->active){
+        ye_run_lua_on_trigger_enter(entity1->lua_script, entity1, entity2);
+    }
+
+    if(entity2 && entity2->lua_script && entity2->lua_script->active){
+        ye_run_lua_on_trigger_enter(entity2->lua_script, entity1, entity2);
     }
 }
 

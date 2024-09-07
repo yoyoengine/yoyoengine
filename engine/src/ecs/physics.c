@@ -5,6 +5,8 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include <stdbool.h>
+
 #include <yoyoengine/utils.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
@@ -40,12 +42,19 @@ void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float 
     // ye_logf(debug, "Added physics component to entity %d\n", entity->id);
 }
 
+// this is such a hack, but if we remove a component mid physics calculations, we dont want to break the memory access
+bool reset_physics_traversal = false;
+struct ye_entity_node *current = NULL;
+
 void ye_remove_physics_component(struct ye_entity *entity){
     free(entity->physics);
     entity->physics = NULL;
 
     // remove the entity from the physics component list
     ye_entity_list_remove(&physics_list_head, entity);
+
+    reset_physics_traversal = true;
+    current = physics_list_head;
 
     // log that we removed a physics and to what ID
     // ye_logf(debug, "Removed physics component from entity %d\n", entity->id);
@@ -86,8 +95,14 @@ void ye_system_physics(){
 
     float delta = ye_delta_time();
     // iterate over all entities with physics
-    struct ye_entity_node *current = physics_list_head;
+    current = physics_list_head;
     while (current != NULL) {
+        // generic validity checks (if the entity is destroyed after a collision, we need to check)
+        if(current->entity == NULL || current->entity->physics == NULL){
+            current = current->next;
+            continue;
+        }
+
         // if the current entity is inactive, dont run physics on it
         if(!current->entity->active){
             current = current->next;
@@ -191,6 +206,17 @@ void ye_system_physics(){
                                 
                                 ye_lua_signal_collisions(current->entity,current_collider->entity);
 
+                                // check reset flag
+                                if(reset_physics_traversal){
+                                    current = physics_list_head;
+                                    break;
+                                }
+
+                                // make sure entity hasn't been destroyed
+                                if(current->entity == NULL){
+                                    break;
+                                }
+
                                 /*
                                     Saving for later as it may be relevant to the future:
 
@@ -216,10 +242,28 @@ void ye_system_physics(){
                                 ye_fire_event(YE_EVENT_TRIGGER_ENTER, (union ye_event_args){.collision = {current->entity, current_collider->entity}});
                                 
                                 ye_lua_signal_trigger_enter(current->entity,current_collider->entity);
+
+                                // check reset flag
+                                if(reset_physics_traversal){
+                                    current = physics_list_head;
+                                    break;
+                                }
+
+                                // make sure entity hasn't been destroyed
+                                if(current->entity == NULL){
+                                    break;
+                                }
                             }
                         } // TODO: do we want to cancel rotational velocity here too?
                     }
                 }
+
+                if(reset_physics_traversal){
+                    current = physics_list_head;
+                    reset_physics_traversal = false;
+                    continue;
+                }
+
                 /*
                     even if we havent changed our new position at all from the old, this line is still true.
                     We are changing whatever position this entity needs to be based on whatever substep max it hit or change it needs to be.
@@ -227,6 +271,13 @@ void ye_system_physics(){
                 current->entity->transform->x = new_position.x; // bug? relativity makes it so we need to do something diff because this is offset with relative from root transform?
                 current->entity->transform->y = new_position.y;
             }
+
+            // make sure entity is still real and valid
+            if(current->entity == NULL){
+                current = current->next;
+                continue;
+            }
+
             // if we have rotational velocity apply it (if we have a renderer)
             if(current->entity->physics->rotational_velocity != 0 && current->entity->renderer != NULL){
                 // update the entity's rotation based on its rotational velocity
