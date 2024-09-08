@@ -489,3 +489,35 @@ void ye_lua_script_remove_global(struct ye_entity *ent, const char *name) {
 
     ye_logf(warning,"Tried to remove global %s from script on entity [%s]: WARNING, global not found\n", name, ent->name);
 }
+
+/*
+    +-----------------+
+    |      C API      |
+    +-----------------+
+
+    This is a simple API to allow setting globals at runtime
+*/
+
+ye_set_lua_script_global_bool(struct ye_entity *ent, const char *name, bool value) {
+    if(ent && ent->lua_script && ent->lua_script->state) {
+        lua_State *L = ent->lua_script->state;
+        lua_pushboolean(L, value);
+        lua_setglobal(L, name);
+    }
+}
+
+ye_set_lua_script_global_number(struct ye_entity *ent, const char *name, double value) {
+    if(ent && ent->lua_script && ent->lua_script->state) {
+        lua_State *L = ent->lua_script->state;
+        lua_pushnumber(L, value);
+        lua_setglobal(L, name);
+    }
+}
+
+ye_set_lua_script_global_string(struct ye_entity *ent, const char *name, const char *value) {
+    if(ent && ent->lua_script && ent->lua_script->state) {
+        lua_State *L = ent->lua_script->state;
+        lua_pushstring(L, value);
+        lua_setglobal(L, name);
+    }
+}
