@@ -410,7 +410,7 @@ void ye_init_engine() {
     }
 
     // post init callback //
-    ye_fire_event(YE_EVENT_POST_INIT, (union ye_event_args){NULL});
+    ye_fire_event(YE_EVENT_POST_INIT, (union ye_event_args){NULL}); // TODO: does not work with none flag
     ///////////////////////
 
 } // control is now resumed by the game

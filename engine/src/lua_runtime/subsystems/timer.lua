@@ -36,3 +36,9 @@ function Timer:getTicks(offset)
     offset = offset or 0
     return ye_lua_timer_get_ticks() + offset
 end
+
+---**Retrieves the delta time of the current frame**
+---@return number The delta time of the current frame
+function Timer:delta()
+    return ye_lua_timer_get_delta()
+end

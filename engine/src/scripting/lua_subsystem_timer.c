@@ -12,6 +12,7 @@
 
 #include <lua.h>
 
+#include <yoyoengine/engine.h>
 #include <yoyoengine/timer.h>
 #include <yoyoengine/lua_api.h>
 #include <yoyoengine/logging.h>
@@ -85,10 +86,17 @@ int ye_lua_timer_get_ticks(lua_State *L) {
     return 1;
 }
 
+int ye_lua_timer_get_delta(lua_State *L) {
+    lua_pushnumber(L, (lua_Number)YE_STATE.runtime.delta_time);
+    return 1;
+}
+
 int ye_lua_timer_register(lua_State *L) {
     lua_register(L, "ye_lua_timer_create_timer", ye_lua_create_timer);
 
     lua_register(L, "ye_lua_timer_get_ticks", ye_lua_timer_get_ticks);
+
+    lua_register(L, "ye_lua_timer_get_delta", ye_lua_timer_get_delta);
 
     return 0;
 }

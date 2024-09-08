@@ -66,6 +66,7 @@ void ye_remove_audiosource_component(struct ye_entity *entity){
     */
     free(entity->audiosource->handle);
     free(entity->audiosource);
+    entity->audiosource = NULL;
 
     // remove the entity from the audiosource list
     ye_entity_list_remove(&audiosource_list_head, entity);

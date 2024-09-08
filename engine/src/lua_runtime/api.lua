@@ -554,6 +554,11 @@ function ye_lua_timer_create_timer(duration_ms, callback_fn, loops, start_ticks,
 ---@return number ticks The current ticks of the engine
 function ye_lua_timer_get_ticks() end
 
+---**Gets the delta time of the current frame**
+---
+---@return number delta The delta time of the current frame
+function ye_lua_timer_get_delta() end
+
 ----------------
 -- Input API  --
 ----------------
