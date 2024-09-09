@@ -137,10 +137,10 @@ void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *en
     This is a simple API to allow setting globals at runtime
 */
 
-ye_set_lua_script_global_bool(struct ye_entity *ent, const char *name, bool value);
+void ye_set_lua_script_global_bool(struct ye_entity *ent, const char *name, bool value);
 
-ye_set_lua_script_global_number(struct ye_entity *ent, const char *name, double value);
+void ye_set_lua_script_global_number(struct ye_entity *ent, const char *name, double value);
 
-ye_set_lua_script_global_string(struct ye_entity *ent, const char *name, const char *value);
+void ye_set_lua_script_global_string(struct ye_entity *ent, const char *name, const char *value);
 
 #endif
