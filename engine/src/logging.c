@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#ifndef __cplusplus
 #ifndef ye_nk
 #define ye_nk
 
@@ -27,6 +28,7 @@
 
 #ifdef _WIN32
     #include <windows.h>
+#endif
 #endif
 
 #include <yoyoengine/scene.h>

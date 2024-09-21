@@ -19,7 +19,9 @@
     #define NK_INCLUDE_FIXED_TYPES
 #endif
 
+#ifndef __cplusplus
 #include <Nuklear/nuklear.h>
+#endif
 
 #include <yoyoengine/timer.h>
 #include <yoyoengine/logging.h>

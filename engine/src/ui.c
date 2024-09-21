@@ -42,12 +42,15 @@
 #ifdef _WIN32
     #define NK_INCLUDE_FIXED_TYPES
 #endif
-
+#ifndef __cplusplus
 #include <Nuklear/nuklear.h>
 #endif
+#endif
 
+#ifndef __cplusplus
 #include <Nuklear/nuklear_sdl_renderer.h>
 // #include <Nuklear/style.h>
+#endif
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/engine.h>

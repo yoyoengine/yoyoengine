@@ -24,6 +24,7 @@ project(yoyoengine)
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
 
 add_library(yoyoengine SHARED ${SOURCES})
+set_target_properties(yoyoengine PROPERTIES LINKER_LANGUAGE C)
 
 target_include_directories(yoyoengine PUBLIC dist/include/)
 

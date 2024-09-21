@@ -13,6 +13,7 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
+#ifndef __cplusplus
 #ifndef ye_nk
 #define ye_nk
 
@@ -25,6 +26,7 @@
 #endif
 
 #include <Nuklear/nuklear.h>
+#endif
 #endif
 
 #include <stdbool.h>
