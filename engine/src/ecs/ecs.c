@@ -241,6 +241,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     if(entity->button != NULL){
         ye_add_button_component(new_entity, entity->button->rect);
         new_entity->button->active = entity->button->active;
+        new_entity->button->relative = entity->button->relative;
     }
     if(entity->physics != NULL){
         ye_add_physics_component(new_entity, entity->physics->velocity.x, entity->physics->velocity.y);

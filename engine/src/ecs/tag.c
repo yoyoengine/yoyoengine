@@ -47,7 +47,9 @@ void ye_add_tag(struct ye_entity *entity, const char *tag){
 
     // perform a first pass to check if it already exists
     for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
-        if(strcmp(tag, entity->tag->tags[i]) == 0){
+        if(strcmp(tag, entity->tag->tags[i]) == 0
+            && entity->tag->tags[i][0] != '\0'
+        ){
             ye_logf(error, "Could not add tag \"%s\" to entity #%d. Tag already exists.\n", tag, entity->id);
             return;
         }

@@ -129,3 +129,9 @@ Nothing!!!
 ## TODO NOW
 
 - engine splash screen is dated asf
+
+## categorize later
+
+components relative by default
+
+components have aspect ratio lock sensibly (button)
