@@ -353,6 +353,12 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
         bool active = true;    ye_json_bool(renderer,"active",&active);
         e->renderer->active = active;
     }
+
+    // update the alpha
+    if(ye_json_has_key(renderer,"alpha")){
+        int alpha = 255;    ye_json_int(renderer,"alpha",&alpha);
+        e->renderer->alpha = alpha;
+    }
 }
 
 void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* entity_name){
@@ -734,7 +740,7 @@ void ye_raw_scene_load(json_t *SCENE) {
     ye_purge_events(false);
 
     // shutdown and restart audio subsystem TODO: do some soft reset instead
-    ye_shutdown_audio();
+    // ye_shutdown_audio();
 
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();
@@ -742,7 +748,7 @@ void ye_raw_scene_load(json_t *SCENE) {
     // wipe non persistant render entities (additional and debug)
     ye_debug_renderer_cleanup(false);
 
-    ye_init_audio();
+    // ye_init_audio();
 
     // NOTE: scene file path is unset.
 

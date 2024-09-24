@@ -219,6 +219,7 @@ void ye_shutdown_audio(){
     ye_shutdown_mixer_cache();
     // free music
     Mix_FreeMusic(music);
+    music = NULL;
 
     // reset channel counts
     audio_mix_allocated_channels = 0;

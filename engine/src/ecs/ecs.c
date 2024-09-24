@@ -233,6 +233,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->renderer->rect = entity->renderer->rect;
         new_entity->renderer->relative = entity->renderer->relative;
         new_entity->renderer->rotation = entity->renderer->rotation;
+        new_entity->renderer->alpha = entity->renderer->alpha;
     }
     if(entity->camera != NULL){ 
         ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
