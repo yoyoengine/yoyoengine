@@ -93,6 +93,8 @@ Nothing!!!
 - Resizing window spams terminal
 - empty color or font change buffers spam errors
 - option to auto focus terminal when error shows in editor
+- RPATH/LIBC:
+  - because we set rpath to be relative to origin, somehow this means we need a libc that is as new as what we built on (which for some reason is not the case without setting the rpath). So right now distros with an older libc compared to the build machine cannot run it
 
 ### Far out / Just shaping
 
