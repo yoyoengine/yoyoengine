@@ -33,6 +33,8 @@ Nothing!!!
 
 ### Features
 
+- Template should have C++ option, and integrate that into editor when creating project
+- Easy constructor for debug panels, particularly a datatype and interface functions for debug charts (like in roguefight)
 - Viewport jank
   - Scrolling on panels should not scroll the viewport
   - zenity refocus causes us to need to click a second time (might be a DE thing)
@@ -77,6 +79,7 @@ Nothing!!!
 - Copy paste components into other entities
 - Nuklear has tips on font rasterization, we could tweak to make it look better
 - Toasts or some system to show information and inform of erros rather than just the console
+- How awesome would it be if you could pop open a debug inspector at runtime of any game...
 
 ### Misc
 
@@ -95,6 +98,7 @@ Nothing!!!
 - option to auto focus terminal when error shows in editor
 - RPATH/LIBC:
   - because we set rpath to be relative to origin, somehow this means we need a libc that is as new as what we built on (which for some reason is not the case without setting the rpath). So right now distros with an older libc compared to the build machine cannot run it
+- It would be awesome to have a suite of debug panels which can be enabled through the console at any time, rather than setting config bools (just expose them to the console?)
 
 ### Far out / Just shaping
 
