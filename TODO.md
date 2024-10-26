@@ -141,3 +141,13 @@ Nothing!!!
 components relative by default
 
 components have aspect ratio lock sensibly (button)
+
+## WIP console rewrite
+
+- re-enable the new console
+- duplicate printouts in console lol (might need to refactor logging.c for that)
+- not seeing SYSTEM in stdout
+- fix segfault for multi arg commands
+- tear out old log panel
+- give default admin commands
+  - go deep with it, let us modify the engine runtime state

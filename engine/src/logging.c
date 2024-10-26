@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -33,6 +33,7 @@
 
 #include <yoyoengine/scene.h>
 #include <yoyoengine/engine.h>
+#include <yoyoengine/console.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
 
@@ -107,14 +108,17 @@ void ye_logf(enum logLevel level, const char *format, ...){
         YE_STATE.runtime.error_count++;
     }
 
+    // ALWAYS push to dev console buffer
+    // TODO: subject to change for optimization later
+    ye_console_push_message(ye_get_timestamp(), level, text);
+
     // if logging is disabled, or the log level is below the threshold, return (or if the file is not open yet)
     if((enum logLevel)YE_STATE.engine.log_level > level){ // idk why i wrote null like this i just want to feel cool
         return;
     }
     // if logfile unititialized, put it in the buffer anyways (because it meets threshold), and if we are in debug mode then print to stdout as well
     if(logFile == 0x0){
-        ye_add_to_log_buffer(level, text);
-        // if we are in debug mode put it in stdout as well
+        // if we are in debug mode put it in stdout
         if(YE_STATE.engine.debug_mode){
             printf("%s",text);
         }
@@ -122,21 +126,25 @@ void ye_logf(enum logLevel level, const char *format, ...){
     }
 
     switch (level) {
-        case debug:
+        case YE_LL_DEBUG:
             fprintf(logFile, "[%s] [DEBUG]: %s", ye_get_timestamp(), text);
             printf("%s[%s] [%sDEBUG%s]: %s", RESET, ye_get_timestamp(), MAGENTA, RESET, text);
             break;
-        case info:
+        case YE_LL_INFO:
             fprintf(logFile, "[%s] [INFO]:  %s", ye_get_timestamp(), text);
             printf("%s[%s] [%sINFO%s]:  %s", RESET, ye_get_timestamp(), GREEN, RESET, text);
             break;
-        case warning:
+        case YE_LL_WARNING:
             fprintf(logFile, "[%s] [WARNING]: %s", ye_get_timestamp(), text);
             printf("%s[%s] [WARNING]%s: %s", YELLOW, ye_get_timestamp(), RESET, text);
             break;
-        case error:
+        case YE_LL_ERROR:
             fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), text);
             printf("%s[%s] [ERROR]%s: %s", RED, ye_get_timestamp(), RESET, text);
+            break;
+        case _YE_RESERVED_LL_SYSTEM:
+            fprintf(logFile, "[%s] [SYSTEM]: %s", ye_get_timestamp(), text);
+            printf("%s[%s] [SYSTEM]%s: %s", CYAN, ye_get_timestamp(), RESET, text);
             break;
         default:
             fprintf(logFile, "[%s] [ERROR]: %s", ye_get_timestamp(), "Invalid log level\n");

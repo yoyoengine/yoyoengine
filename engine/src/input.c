@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -19,6 +19,7 @@
 #include <yoyoengine/input.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
+#include <yoyoengine/console.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/transform.h>
@@ -97,11 +98,13 @@ void ye_system_input() {
                     case SDLK_BACKQUOTE:
                         if(console_visible){
                             console_visible = false;
-                            remove_ui_component("console");
+                            remove_ui_component("ye_dev_console");
+                            // remove_ui_component("ye_dev_console");
                         }
                         else{
                             console_visible = true;
-                            ui_register_component("console",ye_paint_console);
+                            // ui_register_component("ye_dev_console", ye_paint_developer_console); // TODO: prob decouple this from here
+                            ui_register_component("ye_dev_console", ye_paint_console); // TODO: prob decouple this from here
                             should_reset_console_log_scroll = true;
                         }
                         break;

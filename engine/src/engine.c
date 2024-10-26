@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -28,6 +28,7 @@
 #include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/tricks.h>
+#include <yoyoengine/console.h>
 #include <yoyoengine/version.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -62,7 +63,7 @@ char* ye_get_engine_resource_static(const char *sub_path) {
     static char engine_reserved_buffer[256];  // Adjust the buffer size as per your requirement
 
     if (YE_STATE.engine.engine_resources_path == NULL) {
-        ye_logf(error, "Engine reserved paths not set!\n");
+        ye_logf(YE_LL_ERROR, "Engine reserved paths not set!\n");
         return NULL;
     }
 
@@ -81,7 +82,7 @@ char * ye_path(const char * path){
 
     // this is set at engine init so discourage calling before then
     if (executable_path == NULL) {
-        ye_logf(error, "Executable path not set!\n");
+        ye_logf(YE_LL_ERROR, "Executable path not set!\n");
         return NULL;
     }
 
@@ -94,7 +95,7 @@ char * ye_path_resources(const char * path){
     
     // this is set at engine init so discourage calling before then
     if (executable_path == NULL) {
-        ye_logf(error, "Executable path not set!\n");
+        ye_logf(YE_LL_ERROR, "Executable path not set!\n");
         return NULL;
     }
     
@@ -183,12 +184,12 @@ void teardown_splash_screen(){
     if(!YE_STATE.editor.editor_mode){
         const char * entry_scene;
         if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
-            ye_logf(info, "Detected entry: %s.\n", entry_scene);
+            ye_logf(YE_LL_INFO, "Detected entry: %s.\n", entry_scene);
             ye_load_scene(entry_scene);
         }
         else{
             if(!YE_STATE.editor.editor_mode)
-                ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+                ye_logf(YE_LL_WARNING, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
         }
     }
 
@@ -285,7 +286,7 @@ void ye_init_engine() {
     // check if ./settings.yoyo exists (if not, use defaults)
     json_t *SETTINGS = ye_json_read(ye_path("settings.yoyo"));
     if (SETTINGS == NULL) {
-        ye_logf(warning, "No settings.yoyo file found, it will be created using default values.\n");
+        ye_logf(YE_LL_WARNING, "No settings.yoyo file found, it will be created using default values.\n");
         SETTINGS = json_object();
     }
 
@@ -344,6 +345,8 @@ void ye_init_engine() {
     YE_STATE.engine.pEngineFontColor->b = 0;
     YE_STATE.engine.pEngineFontColor->a = 255;
 
+    ye_init_console(YE_DEFAULT_CONSOLE_BUFFER_SIZE);
+
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
     ye_log_init(YE_STATE.engine.log_file_path);
 
@@ -351,7 +354,7 @@ void ye_init_engine() {
     ye_init_input();
 
     if(YE_STATE.editor.editor_mode){
-        ye_logf(info, "Detected editor mode.\n");
+        ye_logf(YE_LL_INFO, "Detected editor mode.\n");
     }
 
     // initialize entity component system
@@ -360,7 +363,7 @@ void ye_init_engine() {
     // if we are in debug mode
     if(YE_STATE.engine.debug_mode){
         // display in console
-        ye_logf(debug, "Debug mode enabled.\n");
+        ye_logf(YE_LL_DEBUG, "Debug mode enabled.\n");
     }
 
     // startup audio systems
@@ -383,17 +386,17 @@ void ye_init_engine() {
         startup noise
     */
     if(YE_STATE.engine.skipintro){
-        ye_logf(info,"Skipping Intro.\n");
+        ye_logf(YE_LL_INFO,"Skipping Intro.\n");
 
         // load entry scene
         const char * entry_scene;
         if (ye_json_string(SETTINGS, "entry_scene", &entry_scene)) {
-            ye_logf(info, "Detected entry: %s.\n", entry_scene);
+            ye_logf(YE_LL_INFO, "Detected entry: %s.\n", entry_scene);
             ye_load_scene(entry_scene);
         }
         else{
             if(!YE_STATE.editor.editor_mode)
-                ye_logf(warning, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
+                ye_logf(YE_LL_WARNING, "No entry_scene specified in settings.yoyo, if you do not load a custom scene the engine will crash.\n");
         }
     }
     else{
@@ -401,7 +404,7 @@ void ye_init_engine() {
     }
 
     // debug output
-    ye_logf(info, "Engine Fully Initialized.\n");
+    ye_logf(YE_LL_INFO, "Engine Fully Initialized.\n");
 
     // dump settings in case we created defaults, then close
     if(SETTINGS != NULL){
@@ -421,7 +424,7 @@ void ye_shutdown_engine(){
     ye_fire_event(YE_EVENT_PRE_SHUTDOWN, (union ye_event_args){NULL});
     ///////////////////////////
 
-    ye_logf(info, "Shutting down engine...\n");
+    ye_logf(YE_LL_INFO, "Shutting down engine...\n");
 
     // shut tricks down
     ye_shutdown_tricks();
@@ -450,11 +453,11 @@ void ye_shutdown_engine(){
 
     // shutdown graphics
     ye_shutdown_graphics();
-    ye_logf(info, "Shut down graphics.\n");
+    ye_logf(YE_LL_INFO, "Shut down graphics.\n");
 
     // shutdown audio
     ye_shutdown_audio();
-    ye_logf(info, "Shut down audio.\n");
+    ye_logf(YE_LL_INFO, "Shut down audio.\n");
 
     // shutdown input
     ye_shutdown_input();
@@ -462,6 +465,9 @@ void ye_shutdown_engine(){
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();
+
+    ye_shutdown_console();
+
     free(YE_STATE.engine.log_file_path);
     free(YE_STATE.engine.engine_resources_path);
     free(YE_STATE.engine.game_resources_path);

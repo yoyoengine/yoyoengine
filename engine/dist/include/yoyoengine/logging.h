@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -37,10 +37,30 @@ extern bool should_reset_console_log_scroll;
  * @brief Describes the level of a log message
  */
 enum logLevel {
+    /*
+        DEPRECATED: v1 naming convention
+    */
     debug,
     info,
     warning,
-    error
+    error,
+
+    /*
+        v2 naming convention (more explicit)
+
+        Should be used going forwards, but old
+        enums will remain for compatibility
+    */
+    YE_LL_DEBUG = debug,
+    YE_LL_INFO = info,
+    YE_LL_WARNING = warning,
+    YE_LL_ERROR = error,
+
+    /*
+        RESERVED: for internal use
+    */
+    _YE_RESERVED_LL_SYSTEM = -1, // used to denote call/response from dev console
+    // ^^ -1 so we can keep > error as NONE
 };
 
 /**
