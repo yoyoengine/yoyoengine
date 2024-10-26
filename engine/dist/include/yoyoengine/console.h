@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,10 @@
 
 #ifndef CONSOLE_H
 #define CONSOLE_H
+
+#ifndef YE_COMMAND_HISTORY_SIZE
+    #define YE_COMMAND_HISTORY_SIZE 64
+#endif
 
 #include <yoyoengine/logging.h>
 
@@ -43,6 +47,18 @@ void ye_register_console_command(const char *prefix, void (*callback)(int, const
  * @param command The string to parse
  */
 void ye_parse_console_command(const char *command);
+
+/**
+ * @brief Attempt to execute a command by prefix with preconstructued arguments
+ * 
+ * This is NOT the same as ye_parse_console_command!
+ * 
+ * @param argc 
+ * @param argv
+ * 
+ * @return bool True if the command was found and executed, false otherwise 
+ */
+bool ye_execute_console_command(const char *prefix, int argc, const char **argv);
 
 /*
     Definition of a console command,

@@ -64,6 +64,7 @@ void ye_register_console_command(const char *prefix, void (*callback)(int, const
 
 void _register_default_commands() {
     ye_register_console_command("help", ye_cmd_help);
+    ye_register_console_command("entlist", ye_cmd_entlist);
 }
 
 /*
@@ -135,6 +136,60 @@ void ye_shutdown_console() {
     cmd_head = NULL;
 
     ye_logf(YE_LL_INFO, "Shut down console.\n");
+}
+
+/*
+    +-----------------+
+    | COMMAND HISTORY |
+    +-----------------+
+*/
+
+static char command_history[YE_COMMAND_HISTORY_SIZE][512];
+static int history_head = 0;            // for storing
+static int current_history_index = -1;  // for paging through reading
+static int history_count = 0;           // number of commands in history
+
+static char userInput[512] = {'\0'};
+
+void _add_command_to_history(const char *command) {
+    snprintf(command_history[history_head], sizeof(command_history[history_head]), "%s", command);
+    history_head = (history_head + 1) % YE_COMMAND_HISTORY_SIZE;
+    if (history_count < YE_COMMAND_HISTORY_SIZE) {
+        history_count++;
+    }
+    current_history_index = -1; // Reset the current history index
+}
+
+void _history_up_arrow() {
+    if (history_count == 0) {
+        return; // No history to navigate
+    }
+
+    if (current_history_index == -1) {
+        current_history_index = (history_head - 1 + YE_COMMAND_HISTORY_SIZE) % YE_COMMAND_HISTORY_SIZE;
+    } else if (current_history_index != (history_head - history_count + YE_COMMAND_HISTORY_SIZE) % YE_COMMAND_HISTORY_SIZE) {
+        current_history_index = (current_history_index - 1 + YE_COMMAND_HISTORY_SIZE) % YE_COMMAND_HISTORY_SIZE;
+    } else {
+        return; // Reached the beginning of the history
+    }
+
+    snprintf(userInput, sizeof(userInput), "%s", command_history[current_history_index]);
+}
+
+void _history_down_arrow() {
+    if (current_history_index == -1) {
+        return; // No history to navigate
+    }
+
+    int next_index = (current_history_index + 1) % YE_COMMAND_HISTORY_SIZE;
+
+    if (next_index == history_head) {
+        userInput[0] = '\0'; // Clear userInput if we reach the end of the history
+        current_history_index = -1; // Reset the current history index
+    } else {
+        current_history_index = next_index;
+        snprintf(userInput, sizeof(userInput), "%s", command_history[current_history_index]);
+    }
 }
 
 /*
@@ -224,16 +279,22 @@ void ye_paint_developer_console(struct nk_context * ctx) {
             ye_console_reset_scroll = false;
         }
 
-        static char userInput[256] = {'\0'};
         nk_layout_row_dynamic(ctx, inputHeight, 1);
         
         // if we entered a command
+        if (nk_input_is_key_pressed(&ctx->input, NK_KEY_UP)) {
+            _history_up_arrow();
+        } else if (nk_input_is_key_pressed(&ctx->input, NK_KEY_DOWN)) {
+            _history_down_arrow();
+        } else
         if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
             if (strlen(userInput) > 0) {
                 char newLine[sizeof("Console Command: ") + sizeof(userInput) + sizeof("\n") + 1];
                 snprintf(newLine, sizeof(newLine), "Console Command: %s\n", userInput);
 
                 ye_logf(_YE_RESERVED_LL_SYSTEM, newLine);
+
+                _add_command_to_history(userInput);
 
                 ye_parse_console_command(userInput);
 
@@ -308,6 +369,20 @@ void ye_console_push_message(const char * timestamp, enum logLevel level, const 
     console_buffer_index++;
 }
 
+bool ye_execute_console_command(const char *prefix, int num_args, const char **args) {
+    bool fired = false;
+    struct ye_console_command *current = cmd_head;
+    while(current != NULL) {
+        if(strcmp(current->prefix, prefix) == 0) {
+            current->callback(num_args, args);
+            fired = true;
+            break;
+        }
+        current = current->next;
+    }
+    return fired;
+}
+
 void ye_parse_console_command(const char *command) {
     /*
         Extract the first contiguous block of text from the command,
@@ -380,16 +455,7 @@ void ye_parse_console_command(const char *command) {
     /*
         Check if a command is registered that accepts that prefix
     */
-    bool fired = false;
-    struct ye_console_command *current = cmd_head;
-    while(current != NULL) {
-        if(strcmp(current->prefix, prefix) == 0) {
-            current->callback(num_args, (const char**)args);
-            fired = true;
-            break;
-        }
-        current = current->next;
-    }
+    bool fired = ye_execute_console_command(prefix, num_args, (const char **)args);
 
     if(!fired) {
         ye_logf(_YE_RESERVED_LL_SYSTEM, "Command not found: %s\n", prefix);
