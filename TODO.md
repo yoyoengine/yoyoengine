@@ -11,6 +11,8 @@ Nothing!!!
 - Refactor the FUCK out of the editor. It has the stinkiest code ever
 - Refactor and rework the plugin manager
 - How can we simplify serialization and boilerplate for each component
+- rework how the ui system works. its pretty jank that we register window cbs, i think nuklear has a built in way of handling this
+  - you could look at how that CAD guy uses it
 
 ### Bugs
 
@@ -80,6 +82,7 @@ Nothing!!!
 - Nuklear has tips on font rasterization, we could tweak to make it look better
 - Toasts or some system to show information and inform of erros rather than just the console
 - How awesome would it be if you could pop open a debug inspector at runtime of any game...
+- Nuklear docking fork
 
 ### Misc
 
@@ -144,10 +147,5 @@ components have aspect ratio lock sensibly (button)
 
 ## WIP console rewrite
 
-- re-enable the new console
-- duplicate printouts in console lol (might need to refactor logging.c for that)
-- not seeing SYSTEM in stdout
-- fix segfault for multi arg commands
-- tear out old log panel
 - give default admin commands
   - go deep with it, let us modify the engine runtime state

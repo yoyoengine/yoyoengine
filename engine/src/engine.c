@@ -268,6 +268,12 @@ void ye_init_engine() {
     ye_fire_event(YE_EVENT_PRE_INIT, (union ye_event_args){NULL});
     ///////////////////////
 
+    /*
+        We initialize the console here so we
+        retain logs from startup.
+    */
+    ye_init_console(YE_DEFAULT_CONSOLE_BUFFER_SIZE);
+
     // Get the path to our executable
     executable_path = SDL_GetBasePath(); // Don't forget to free memory later
     // printf("Executable path: %s\n", executable_path);
@@ -344,8 +350,6 @@ void ye_init_engine() {
     YE_STATE.engine.pEngineFontColor->g = 255;
     YE_STATE.engine.pEngineFontColor->b = 0;
     YE_STATE.engine.pEngineFontColor->a = 255;
-
-    ye_init_console(YE_DEFAULT_CONSOLE_BUFFER_SIZE);
 
     // no matter what we will initialize log level with what it should be. default is nothing but dev can override
     ye_log_init(YE_STATE.engine.log_file_path);
@@ -466,8 +470,6 @@ void ye_shutdown_engine(){
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();
 
-    ye_shutdown_console();
-
     free(YE_STATE.engine.log_file_path);
     free(YE_STATE.engine.engine_resources_path);
     free(YE_STATE.engine.game_resources_path);
@@ -485,4 +487,9 @@ void ye_shutdown_engine(){
 
     // free all event memory
     ye_purge_events(true);
+
+    /*
+        Shutdown console last so we retain logs
+    */
+    ye_shutdown_console();
 }

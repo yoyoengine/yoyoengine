@@ -33,7 +33,7 @@ void ye_paint_developer_console(struct nk_context *ctx);
  * @param prefix The first full keyterm to match against your command
  * @param callback A void(*)(const char *) function to be called when the command is matched, passed the rest of the string body
  */
-void ye_register_console_command(const char *prefix, void (*callback)(const char *));
+void ye_register_console_command(const char *prefix, void (*callback)(int, const char **));
 
 /**
  * @brief Parse a string and execute it as a command 

@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -14,6 +14,7 @@
 
 #include <yoyoengine/engine.h>
 #include <yoyoengine/console.h>
+#include <yoyoengine/commands.h>
 #include <yoyoengine/logging.h>
 
 extern struct ye_console_command * cmd_head;
@@ -53,8 +54,16 @@ void _clear_console_commands() {
     cmd_head = NULL;
 }
 
+void ye_register_console_command(const char *prefix, void (*callback)(int, const char **)) {
+    struct ye_console_command *newCmd = (struct ye_console_command *)malloc(sizeof(struct ye_console_command));
+    newCmd->prefix = strdup(prefix);
+    newCmd->callback = callback;
+    newCmd->next = cmd_head;
+    cmd_head = newCmd;
+}
+
 void _register_default_commands() {
-    // pass
+    ye_register_console_command("help", ye_cmd_help);
 }
 
 /*
@@ -167,6 +176,11 @@ void ye_paint_developer_console(struct nk_context * ctx) {
                 continue;
             }
 
+            // hold back any logs that are below the threshold (they still exist! we just dont show them)
+            if(current->level < YE_STATE.engine.log_level && current->level != _YE_RESERVED_LL_SYSTEM) {
+                continue;
+            }
+
             nk_layout_row_dynamic(ctx, 15, 1);
 
             struct nk_color color = nk_rgb(255, 255, 255);  // white text
@@ -196,25 +210,8 @@ void ye_paint_developer_console(struct nk_context * ctx) {
                         break;
                 }
             }
-            // uhhh, for some reason nuklear is adding question marks to the end of our heap strings...
-            char tmp[1024];
-            snprintf(tmp, sizeof(tmp), "%s", current->_cached_str);
-            // snprintf(tmp, sizeof(tmp), "%s", current->_cached_str);
-            // tmp[20] = '\0';
-            nk_label_colored(ctx, tmp, NK_TEXT_LEFT, color);
-
             // TODO: nk_label_colored_wrap
             nk_label_colored(ctx, (const char *)current->_cached_str, NK_TEXT_LEFT, color);
-
-            // nk_label_colored(ctx, (const char *)current->_cached_str, NK_TEXT_LEFT, color);
-            // nk_label_colored(ctx, (const char *)current->_cached_str, NK_TEXT_LEFT, color);
-            
-            // // debug for each character of the string, print it in printf as if it were an array into the terminal
-            // for (int j = 0; current->_cached_str[j] != '\0'; j++) {
-            //     printf("%c", current->_cached_str[j]);
-            // }
-            // printf("\n");
-
         }
         nk_group_end(ctx);
 
@@ -222,9 +219,9 @@ void ye_paint_developer_console(struct nk_context * ctx) {
             COMMAND ENTRY
         */
         // scroll to bottom of group when console first opened
-        if(should_reset_console_log_scroll){
+        if(ye_console_reset_scroll){
             nk_group_set_scroll(YE_STATE.engine.ctx, "Log", 0, 10000);
-            should_reset_console_log_scroll = false;
+            ye_console_reset_scroll = false;
         }
 
         static char userInput[256] = {'\0'};
@@ -232,8 +229,6 @@ void ye_paint_developer_console(struct nk_context * ctx) {
         
         // if we entered a command
         if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
-            printf("enter pressed\n");
-            
             if (strlen(userInput) > 0) {
                 char newLine[sizeof("Console Command: ") + sizeof(userInput) + sizeof("\n") + 1];
                 snprintf(newLine, sizeof(newLine), "Console Command: %s\n", userInput);
@@ -333,41 +328,52 @@ void ye_parse_console_command(const char *command) {
     }
     else {
         /*
-            TODO: segfaults
+            Calculate the prefix,
+            and create a char ** array of arguments
         */
-
-        // calculate the length of the prefix
-        int prefix_len = space - command + 1;
+        int prefix_len = space - command;
         prefix = (char *)malloc(prefix_len + 1);
         strncpy(prefix, command, prefix_len);
         prefix[prefix_len] = '\0';
 
-        // calculate the number of arguments
+        // printf("Prefix: %s\n", prefix);
+
+        // count the number of arguments
         num_args = 0;
-        for(char *c = space; *c != '\0'; c++) {
-            if(*c == ' ') {
+        char *current = space + 1;
+        while(*current != '\0') {
+            if(*current == ' ') {
                 num_args++;
             }
+            current++;
         }
-        num_args++; // add one for the last argument
+        num_args++; // account for the last argument
 
-        // allocate space for the arguments
+        // printf("Num args: %d\n", num_args);
+
+        // allocate the arg array
         args = (char **)malloc(sizeof(char *) * num_args);
 
-        // copy the arguments
-        char *arg_start = space + 1;
+        // populate the arg array
+        current = space + 1;
         for(int i = 0; i < num_args; i++) {
-            char *arg_end = strchr(arg_start, ' ');
-            if(arg_end == NULL) {
-                args[i] = strdup(arg_start);
+            char *next_space = strchr(current, ' ');
+            if(next_space == NULL) {
+                // this is the last arg
+                args[i] = strdup(current);
+
+                // printf("Arg %d: %s\n", i, args[i]);
+
+                break;
             }
-            else {
-                int arg_len = arg_end - arg_start;
-                args[i] = (char *)malloc(arg_len + 1);
-                strncpy(args[i], arg_start, arg_len);
-                args[i][arg_len] = '\0';
-            }
-            arg_start = arg_end + 1;
+            int arg_len = next_space - current;
+            args[i] = (char *)malloc(arg_len + 1);
+            strncpy(args[i], current, arg_len);
+            args[i][arg_len] = '\0';
+
+            // printf("Arg %d: %s\n", i, args[i]);
+
+            current = next_space + 1;
         }
     }
 
@@ -387,5 +393,15 @@ void ye_parse_console_command(const char *command) {
 
     if(!fired) {
         ye_logf(_YE_RESERVED_LL_SYSTEM, "Command not found: %s\n", prefix);
+        ye_logf(_YE_RESERVED_LL_SYSTEM, "Enter \"help\" for options and assistance.\n", prefix);
+    }
+
+    // once we have finished with the command, free the memory
+    free(prefix);
+    if(args != NULL) {
+        for(int i = 0; i < num_args; i++) {
+            free(args[i]);
+        }
+        free(args);
     }
 }

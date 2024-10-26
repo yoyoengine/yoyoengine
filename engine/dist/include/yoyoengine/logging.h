@@ -31,8 +31,6 @@
 
 #include <stdbool.h>
 
-extern bool should_reset_console_log_scroll;
-
 /**
  * @brief Describes the level of a log message
  */
@@ -92,12 +90,5 @@ void ye_logf(enum logLevel level, const char *format, ...);
  * @param ... The arguments for the format string
  */
 void _ye_lua_logf(enum logLevel level, const char *format, ...);
-
-/**
- * @brief UI function to paint a visual console
- * 
- * @param ctx The Nuklear context
- */
-void ye_paint_console(struct nk_context *ctx);
 
 #endif
