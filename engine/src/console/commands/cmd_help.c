@@ -18,14 +18,14 @@ void ye_cmd_help(int argc, const char **argv) {
     /*
         Convention for [help]
     */
-    // if(argc < 0) {
+    if(argc < 1) {
         ye_logf(_YE_RESERVED_LL_SYSTEM, "Usage: help (optional)[command prefix]\n");
         ye_logf(_YE_RESERVED_LL_SYSTEM, "   [command prefix]: the name of a command you wish to learn more about.\n");
         ye_logf(_YE_RESERVED_LL_SYSTEM, "                     (warning): it's up to the command developer to\n");
         ye_logf(_YE_RESERVED_LL_SYSTEM, "                     implement the [help] functionality. This might not\n");
         ye_logf(_YE_RESERVED_LL_SYSTEM, "                     work properly for all commands!\n");
         // return;
-    // }
+    }
 
     // ye_logf(_YE_RESERVED_LL_SYSTEM, "\n");
 

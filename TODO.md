@@ -83,6 +83,9 @@ Nothing!!!
 - Toasts or some system to show information and inform of erros rather than just the console
 - How awesome would it be if you could pop open a debug inspector at runtime of any game...
 - Nuklear docking fork
+- In console command system: tab for completing or suggesting commands, implement -2 flag for command to provide suggestions itself
+- Editor mode flag should become relevant to the engine. it would be nice if we could have a lightweight editor inside of shipped games to debug (as a module so we can disable it when prod). inspired by visu
+- We need to get closer to nuklear native window management, so we can spawn preset tool windows. for example: windows like generate hitbox masks or windows to preview asset packs
 
 ### Misc
 

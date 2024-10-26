@@ -126,4 +126,9 @@ extern bool ye_console_reset_scroll;
  */
 void ye_console_push_message(const char * timestamp, enum logLevel level, const char * message_body);
 
+/**
+ * @brief Clear the console buffer
+ */
+void ye_console_clear();
+
 #endif

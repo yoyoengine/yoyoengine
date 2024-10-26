@@ -65,6 +65,10 @@ void ye_register_console_command(const char *prefix, void (*callback)(int, const
 void _register_default_commands() {
     ye_register_console_command("help", ye_cmd_help);
     ye_register_console_command("entlist", ye_cmd_entlist);
+    ye_register_console_command("scene", ye_cmd_scene);
+    ye_register_console_command("config", ye_cmd_config);
+    ye_register_console_command("quit", ye_cmd_quit);
+    ye_register_console_command("clear", ye_cmd_clear);
 }
 
 /*
@@ -470,4 +474,9 @@ void ye_parse_console_command(const char *command) {
         }
         free(args);
     }
+}
+
+// could refactor but whatever. lol
+void ye_console_clear() {
+    _clear_console_buffer();
 }

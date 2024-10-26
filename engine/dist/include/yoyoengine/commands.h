@@ -11,11 +11,10 @@
 #include <yoyoengine/console.h>
 
 /*
-    TODO: implement
-    toggle paintbounds
-    toggle freecam
-    stretch
-    reload scene
+    shutdown engine
+
+    TODO:
+    show/hide debug panels which are presets
 */
 
 /*
@@ -30,5 +29,13 @@
 void ye_cmd_help(int argc, const char **argv);
 
 void ye_cmd_entlist(int argc, const char **argv);
+
+void ye_cmd_scene(int argc, const char **argv);
+
+void ye_cmd_config(int argc, const char **argv);
+
+void ye_cmd_quit(int argc, const char **argv);
+
+void ye_cmd_clear(int argc, const char **argv);
 
 #endif
