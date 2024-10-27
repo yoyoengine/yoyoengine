@@ -290,7 +290,11 @@ target_link_libraries(yoyoengine PRIVATE
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
 
 # set the output directory for the executable
-set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+if(UNIX)
+    set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+else()
+    set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+endif()
 
 ###############
 #    libs     #
