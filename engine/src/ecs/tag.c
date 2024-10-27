@@ -15,6 +15,11 @@
 
 
 void ye_add_tag_component(struct ye_entity *entity){
+    if(!entity) {
+        ye_logf(error, "Could not add tag component to NULL entity.\n");
+        return;
+    }
+
     if(entity->tag){
         ye_logf(error, "Entity %d already has a tag component\n", entity->id);
         return;
@@ -35,6 +40,11 @@ void ye_add_tag_component(struct ye_entity *entity){
 }
 
 void ye_add_tag(struct ye_entity *entity, const char *tag){
+    if(!entity) {
+        ye_logf(error, "Could not add tag \"%s\" to NULL entity.\n", tag);
+        return;
+    }
+
     // add tag component if it doesnt exist
     if(!entity->tag){
         ye_add_tag_component(entity);
@@ -73,6 +83,11 @@ void ye_add_tag(struct ye_entity *entity, const char *tag){
 }
 
 void ye_remove_tag(struct ye_entity *entity, const char *tag){
+    if(!entity) {
+        ye_logf(error, "Could not remove tag \"%s\" from NULL entity.\n", tag);
+        return;
+    }
+
     // check if tag component exists
     if(!entity->tag){
         ye_logf(error, "Could not remove tag \"%s\" from entity #%d. Entity has no tag component.\n", tag, entity->id);
@@ -113,6 +128,16 @@ void ye_remove_tag(struct ye_entity *entity, const char *tag){
 }
 
 void ye_remove_tag_component(struct ye_entity *entity){
+    if(!entity) {
+        ye_logf(error, "Could not remove tag component from NULL entity.\n");
+        return;
+    }
+
+    if(!entity->tag){
+        ye_logf(error, "Could not remove tag component from entity #%d. Entity has no tag component.\n", entity->id);
+        return;
+    }
+
     free(entity->tag);
     entity->tag = NULL;
 
@@ -123,6 +148,11 @@ void ye_remove_tag_component(struct ye_entity *entity){
 }
 
 bool ye_entity_has_tag(struct ye_entity *entity, const char *tag){
+    if(!entity) {
+        ye_logf(error, "Could not check if entity has tag \"%s\". Entity is NULL.\n", tag);
+        return false;
+    }
+
     // TODO: add more checks for active and such?
     if(entity->tag != NULL){
         for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
@@ -137,8 +167,24 @@ bool ye_entity_has_tag(struct ye_entity *entity, const char *tag){
 void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent)){
     struct ye_entity_node *itr = tag_list_head;
     while(itr != NULL){
+        if(itr->entity == NULL){
+            ye_logf(error, "??? Entity node in tag list is NULL\n");
+            return;
+        }
+
         if(ye_entity_has_tag(itr->entity,tag)){
+            /*
+                In order to mitigate the risk of a callback
+                destroying our list state (like if they remove
+                a entity), we will reset to the beginning of the list
+                after this. This gives us non-ideal complexity,
+                but to be honest I don't think I will ever need to optimize
+                this.
+            */
             callback(itr->entity);
+
+            itr = tag_list_head;
+            continue;
         }
 
         itr = itr->next;
