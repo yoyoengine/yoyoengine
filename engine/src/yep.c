@@ -354,13 +354,6 @@ void yep_shutdown(){
     ye_logf(info,"Shutting down yep subsystem...\n");
 }
 
-
-/*
-    Isolate the platform specific packing functionality that is only needed
-    when building games (which should be done on linux if youre a real developer)
-*/
-#ifdef __linux__
-
 /*
     Recursively walk the target pack directory and create a LL of files to be packed
 */
@@ -663,8 +656,6 @@ bool yep_pack_directory(char *directory_path, char *output_name){
         return true;
     }
 }
-
-#endif
 
 /*
     YEP TODO:

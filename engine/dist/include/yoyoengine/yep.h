@@ -19,6 +19,8 @@
 #ifdef __linux__
     #include <linux/limits.h>   // - PATH_MAX
     #include <dirent.h>         // directory functions
+#else
+    #include <platform/windows/dirent.h>
 #endif
 
 #include <jansson.h> // jansson
@@ -76,8 +78,6 @@ enum YEP_COMPRESSION {
  */
 struct yep_data_info yep_extract_data(const char *file, const char *handle);
 
-#ifdef __linux__
-
 /**
  * @brief Packs a given directory into a .yep, if the target directory is newer than the last pack, based on its dir name
  * 
@@ -97,8 +97,6 @@ bool yep_pack_directory(char *directory_path, char *output_name);
  * @return false Failure
  */
 bool yep_force_pack_directory(char *directory_path, char *output_name);
-
-#endif
 
 // extract data will call private functions
 // _yep_open_file(char *file); which will open the file into the yep global file pointer
