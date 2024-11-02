@@ -44,7 +44,11 @@ NK_API void                 nk_sdl_shutdown(void);
  */
 #ifdef NK_SDL_RENDERER_IMPLEMENTATION
 
-#include <strings.h>
+#ifdef __linux__
+    #include <strings.h>
+#else
+    #include <platform/windows/strings.h>
+#endif
 
 struct nk_sdl_device {
     struct nk_buffer cmds;

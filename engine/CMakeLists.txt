@@ -139,8 +139,10 @@ set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+if(WINDOWS) # these targets dont exist on windows or something
+    set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
 
 ###############
 #   SDL_gfx   #

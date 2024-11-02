@@ -115,13 +115,16 @@ void _cleanup_script_comp(struct ye_entity *target) {
     scripts for each component / system onto its state.
 */
 bool _initialize_scripting_runtime(struct ye_entity *target) {
+    /*
+        A bit jank to magic number, but msvc is unhappy with all else.
+        oh well...
+    */
     const char *scripts[] = {
         // only one script now, since we build runtime file :)
         "ye_runtime.lua",
     };
-    const int scripts_count = sizeof(scripts) / sizeof(scripts[0]);
-
-    char *buffers[scripts_count];
+    const int scripts_count = 1;
+    char *buffers[1];
 
     for(int i = 0; i < scripts_count; i++) {
         buffers[i] = _get_script_buffer(scripts[i], false);

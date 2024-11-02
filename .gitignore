@@ -9,3 +9,4 @@ examples/splash
 examples/throwaway
 
 .cache
+.vs

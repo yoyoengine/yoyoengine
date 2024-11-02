@@ -14,11 +14,11 @@
 #include <string.h>     // string functions
 #include <stdlib.h>     // malloc
 
-#include <dirent.h>         // directory functions
 #include <sys/stat.h>       // - stat
 
 #ifdef __linux__
     #include <linux/limits.h>   // - PATH_MAX
+    #include <dirent.h>         // directory functions
 #endif
 
 #include <jansson.h> // jansson
