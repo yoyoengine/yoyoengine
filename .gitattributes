@@ -2,3 +2,4 @@ engine/doxygen-awesome-sidebar-only.css linguist-vendored
 engine/doxygen-awesome.css linguist-vendored
 engine/dist/include/Nuklear linguist-vendored
 engine/dist/include/uthash linguist-vendored
+engine/dist/include/platform/** linguist-vendored
