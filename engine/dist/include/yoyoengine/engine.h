@@ -34,7 +34,7 @@
 #endif
 
 
-extern struct ye_engine_state YE_STATE;
+YE_API extern struct ye_engine_state YE_STATE;
 
 /**
  * @brief A struct that defines a screen size by width and height.

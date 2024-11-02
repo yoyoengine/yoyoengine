@@ -24,16 +24,16 @@
 */
 
 // lists the ECS acts upon
-extern struct ye_entity_node *entity_list_head;
-extern struct ye_entity_node *transform_list_head;
-extern struct ye_entity_node *renderer_list_head;
-extern struct ye_entity_node *camera_list_head;
-extern struct ye_entity_node *physics_list_head;
-extern struct ye_entity_node *tag_list_head;
-extern struct ye_entity_node *collider_list_head;
-extern struct ye_entity_node *lua_script_list_head;
-extern struct ye_entity_node *audiosource_list_head;
-extern struct ye_entity_node *button_list_head;
+YE_API extern struct ye_entity_node *entity_list_head;
+YE_API extern struct ye_entity_node *transform_list_head;
+YE_API extern struct ye_entity_node *renderer_list_head;
+YE_API extern struct ye_entity_node *camera_list_head;
+YE_API extern struct ye_entity_node *physics_list_head;
+YE_API extern struct ye_entity_node *tag_list_head;
+YE_API extern struct ye_entity_node *collider_list_head;
+YE_API extern struct ye_entity_node *lua_script_list_head;
+YE_API extern struct ye_entity_node *audiosource_list_head;
+YE_API extern struct ye_entity_node *button_list_head;
 
 /**
  * @brief Linked list structure for storing entities
