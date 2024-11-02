@@ -37,7 +37,11 @@ set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
 # if not in release mode, build in debug mode which sets cflags for max warnings and debug sigs
 option(YOYO_ENGINE_BUILD_RELEASE "Build the engine in release mode" ON)
 if(NOT YOYO_ENGINE_BUILD_RELEASE)
-    target_compile_options(yoyoengine PRIVATE -Wall -Wextra -g)
+    if(MSVC)
+        target_compile_options(yoyoengine PRIVATE -Wall -g)
+    else()
+        target_compile_options(yoyoengine PRIVATE -Wall -Wextra -g)
+    endif()
     message(STATUS "Building yoyoengine in debug mode")
 else()
     # target_compile_options(yoyoengine PRIVATE -03) COMPILER OPTIMIZATION DESTROYS ANIMATION SYSTEM
@@ -48,7 +52,11 @@ endif()
 # if ZOOGIES_DEVELOPMENT_BUILD, every warning should fail
 option(ZOOGIES_DEVELOPMENT_BUILD "Enable all warnings" OFF)
 if(ZOOGIES_DEVELOPMENT_BUILD)
-    target_compile_options(yoyoengine PRIVATE -Werror -Wall -Wextra)
+    if(MSVC)
+        target_compile_options(yoyoengine PRIVATE -Werror -Wall)
+    else()
+        target_compile_options(yoyoengine PRIVATE -Werror -Wall -Wextra)
+    endif()
     message(STATUS "Building yoyoengine with maximum warnings enabled")
 
     # Enable debug information
