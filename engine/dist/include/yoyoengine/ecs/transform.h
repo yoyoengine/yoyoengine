@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_TRANSFORM_H
 #define YE_TRANSFORM_H
+
+#include <yoyoengine/export.h>
 
 #include <yoyoengine/ecs/ecs.h>
 
@@ -34,13 +36,13 @@ struct ye_component_transform {
  * @param x The x position of the transform
  * @param y The y position of the transform
  */
-void ye_add_transform_component(struct ye_entity *entity, int x, int y);
+YE_API void ye_add_transform_component(struct ye_entity *entity, int x, int y);
 
 /**
  * @brief Removes a transform component from an entity
  * 
  * @param entity The entity to remove the component from
  */
-void ye_remove_transform_component(struct ye_entity *entity);
+YE_API void ye_remove_transform_component(struct ye_entity *entity);
 
 #endif

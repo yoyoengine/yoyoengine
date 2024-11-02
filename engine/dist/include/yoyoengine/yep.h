@@ -1,12 +1,14 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #ifndef YEP_H
 #define YEP_H
+
+#include <yoyoengine/export.h>
 
 #include <stdio.h>      // files
 #include <stdint.h>     // int types
@@ -76,7 +78,7 @@ enum YEP_COMPRESSION {
  * @param handle The name of the resource to search for
  * @return void* The data of the resource allocated into the heap (NULL if not found) 
  */
-struct yep_data_info yep_extract_data(const char *file, const char *handle);
+YE_API struct yep_data_info yep_extract_data(const char *file, const char *handle);
 
 /**
  * @brief Packs a given directory into a .yep, if the target directory is newer than the last pack, based on its dir name
@@ -86,7 +88,7 @@ struct yep_data_info yep_extract_data(const char *file, const char *handle);
  * @return true Success
  * @return false Failure
  */
-bool yep_pack_directory(char *directory_path, char *output_name);
+YE_API bool yep_pack_directory(char *directory_path, char *output_name);
 
 /**
  * @brief ALWAYS packs a given directory into a .yep, based on its dir name
@@ -96,7 +98,7 @@ bool yep_pack_directory(char *directory_path, char *output_name);
  * @return true Success
  * @return false Failure
  */
-bool yep_force_pack_directory(char *directory_path, char *output_name);
+YE_API bool yep_force_pack_directory(char *directory_path, char *output_name);
 
 // extract data will call private functions
 // _yep_open_file(char *file); which will open the file into the yep global file pointer
@@ -105,7 +107,7 @@ bool yep_force_pack_directory(char *directory_path, char *output_name);
 /**
  * @brief Initializes the yep subsystem
  */
-void yep_initialize();
+YE_API void yep_initialize();
 
 /**
  * @brief Shuts down the yep subsystem, closing any opened files
@@ -113,7 +115,7 @@ void yep_initialize();
  * NOTE: this does not free memory that has been allocated by the yep reader,
  * you are still responsible for that.
  */
-void yep_shutdown();
+YE_API void yep_shutdown();
 
 struct yep_header_node {
     char *fullpath; // used for easy access to file on second pass
@@ -151,7 +153,7 @@ struct yep_data_info {
  * 
  * !!! YOU MUST FREE THE SURFACE YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-SDL_Surface * yep_resource_image(const char *handle);
+YE_API SDL_Surface * yep_resource_image(const char *handle);
 
 /**
  * @brief Load a json file stored inside of resources.yep
@@ -161,7 +163,7 @@ SDL_Surface * yep_resource_image(const char *handle);
  * 
  * !!! You must json_decref the json_t when you are done with it. !!!
  */
-json_t * yep_resource_json(const char *handle);
+YE_API json_t * yep_resource_json(const char *handle);
 
 /**
  * @brief Load a audio file stored inside of resources.yep
@@ -171,7 +173,7 @@ json_t * yep_resource_json(const char *handle);
  * 
  * !!! YOU MUST FREE THE CHUNK YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-Mix_Chunk * yep_resource_audio(const char *handle);
+YE_API Mix_Chunk * yep_resource_audio(const char *handle);
 
 /**
  * @brief Load a music file stored inside of resources.yep
@@ -181,7 +183,7 @@ Mix_Chunk * yep_resource_audio(const char *handle);
  * 
  * !!! YOU MUST FREE THE MUSIC YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-Mix_Music * yep_resource_music(const char *handle);
+YE_API Mix_Music * yep_resource_music(const char *handle);
 
 /**
  * @brief Load a font file stored inside of resources.yep
@@ -191,7 +193,7 @@ Mix_Music * yep_resource_music(const char *handle);
  * 
  * !!! YOU MUST FREE THE FONT YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-TTF_Font * yep_resource_font(const char *handle);
+YE_API TTF_Font * yep_resource_font(const char *handle);
 
 /**
  * @brief Load a misc file stored inside of resources.yep
@@ -201,22 +203,22 @@ TTF_Font * yep_resource_font(const char *handle);
  * 
  * !!! YOU MUST FREE THE DATA YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-struct yep_data_info yep_resource_misc(const char *handle);
+YE_API struct yep_data_info yep_resource_misc(const char *handle);
 
 /*
     Engine api as well
 */
 
-SDL_Surface * yep_engine_resource_image(const char *handle);
+YE_API SDL_Surface * yep_engine_resource_image(const char *handle);
 
-json_t * yep_engine_resource_json(const char *handle);
+YE_API json_t * yep_engine_resource_json(const char *handle);
 
-Mix_Chunk * yep_engine_resource_audio(const char *handle);
+YE_API Mix_Chunk * yep_engine_resource_audio(const char *handle);
 
-Mix_Music * yep_engine_resource_music(const char *handle);
+YE_API Mix_Music * yep_engine_resource_music(const char *handle);
 
-TTF_Font * yep_engine_resource_font(const char * handle);
+YE_API TTF_Font * yep_engine_resource_font(const char * handle);
 
-struct yep_data_info yep_engine_resource_misc(const char *handle);
+YE_API struct yep_data_info yep_engine_resource_misc(const char *handle);
 
 #endif // YEP_H

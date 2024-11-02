@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
     Copyright (C) 2023  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
@@ -16,6 +16,8 @@
 
 #ifndef YE_TRICKS_H
 #define YE_TRICKS_H
+
+#include <yoyoengine/export.h>
 
 #include <lua.h>
 
@@ -42,7 +44,7 @@ struct ye_trick_node{
  * @brief Initializes the trick system
  * @note Currently does nothing
  */
-void ye_init_tricks();
+YE_API void ye_init_tricks();
 
 /**
  * @brief Register a trick with the engine.
@@ -51,23 +53,23 @@ void ye_init_tricks();
  * 
  * Should be invoked in yoyo_trick_init to make the engine aware of loaded tricks as well as any callbacks they desire to subscribe to.
  */
-void ye_register_trick(struct ye_trick_node trick);
+YE_API void ye_register_trick(struct ye_trick_node trick);
 
 /**
  * @brief Will unload all loaded tricks and cleanup.
  */
-void ye_shutdown_tricks();
+YE_API void ye_shutdown_tricks();
 
 /**
  * @brief Iterates over all loaded tricks and runs their updates
  */
-void ye_run_trick_updates();
+YE_API void ye_run_trick_updates();
 
 /**
  * @brief Registers any lua bindings tricks wish to expose
  * 
  * @param state The lua state to register the bindings to
  */
-void ye_register_trick_lua_bindings(lua_State *state);
+YE_API void ye_register_trick_lua_bindings(lua_State *state);
 
 #endif

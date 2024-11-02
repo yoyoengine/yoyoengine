@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_AUDIO_H
 #define YE_AUDIO_H
+
+#include <yoyoengine/export.h>
 
 #include <SDL_mixer.h>
 
@@ -30,10 +32,10 @@ struct ye_mixer_cache_item {
     MIXER CACHE
 */
 
-void ye_init_mixer_cache();
-void ye_shutdown_mixer_cache();
-void ye_purge_mixer_cache();
-void _ye_mixer_engine_cache(char *handle);
+YE_API void ye_init_mixer_cache();
+YE_API void ye_shutdown_mixer_cache();
+YE_API void ye_purge_mixer_cache();
+YE_API void _ye_mixer_engine_cache(char *handle);
 
 /**
  * @brief Load an audio chunk by handle into the cache and return a pointer to it
@@ -41,17 +43,17 @@ void _ye_mixer_engine_cache(char *handle);
  * @param handle 
  * @return Mix_Chunk* 
  */
-Mix_Chunk *ye_audio(const char *handle);
+YE_API Mix_Chunk *ye_audio(const char *handle);
 
 /*
     AUDIO SYSTEM
 */
 
-void ye_init_audio();
-void ye_shutdown_audio();
+YE_API void ye_init_audio();
+YE_API void ye_shutdown_audio();
 
-int ye_play_sound(const char *handle, int loops, float volume_scale);
-void ye_play_music(const char *handle, int loops, float volume_scale);
+YE_API int ye_play_sound(const char *handle, int loops, float volume_scale);
+YE_API void ye_play_music(const char *handle, int loops, float volume_scale);
 
 /**
  * @brief Set the volume for the entire audio system
@@ -60,6 +62,6 @@ void ye_play_music(const char *handle, int loops, float volume_scale);
  * 
  * @note This will update the global engine volume setting itself
  */
-void ye_set_volume(float volume);
+YE_API void ye_set_volume(float volume);
 
 #endif

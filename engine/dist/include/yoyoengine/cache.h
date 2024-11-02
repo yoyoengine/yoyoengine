@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -53,6 +53,8 @@
 #ifndef YE_CACHE_H
 #define YE_CACHE_H
 
+#include <yoyoengine/export.h>
+
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <jansson.h>
@@ -66,7 +68,7 @@
  * 
  * @param scene The scene to pre-cache.
  */
-void ye_pre_cache_scene(json_t *scene);
+YE_API void ye_pre_cache_scene(json_t *scene);
 
 /**
  * @brief Pre-caches styles.
@@ -75,42 +77,42 @@ void ye_pre_cache_scene(json_t *scene);
  * 
  * @param styles_path The path to the styles file.
  */
-void ye_pre_cache_styles(const char *styles_path);
+YE_API void ye_pre_cache_styles(const char *styles_path);
 
 /**
  * @brief Clears the texture cache.
  * 
  * Closes all cached textures. Be careful doing this at runtime.
  */
-void ye_clear_texture_cache();
+YE_API void ye_clear_texture_cache();
 
 /**
  * @brief Clears the font cache.
  * 
  * Closes all cached fonts. Be careful doing this at runtime.
  */
-void ye_clear_font_cache();
+YE_API void ye_clear_font_cache();
 
 /**
  * @brief Clears the color cache.
  * 
  * Frees all cached colors. Be careful doing this at runtime.
  */
-void ye_clear_color_cache();
+YE_API void ye_clear_color_cache();
 
 /**
  * @brief Initializes the caches.
  * 
  * After this, any color font or texture can be cached at any time, or pre-cached before a scene load.
  */
-void ye_init_cache();
+YE_API void ye_init_cache();
 
 /**
  * @brief Shuts down the cache.
  * 
  * Closes all cached textures, fonts, and colors.
  */
-void ye_shutdown_cache();
+YE_API void ye_shutdown_cache();
 
 /**
  * @brief A node for a cached texture.
@@ -158,21 +160,21 @@ struct ye_color_node {
  * @param path The path to the texture.
  * @return The cached texture.
  */
-SDL_Texture * ye_image(const char *path);
+YE_API SDL_Texture * ye_image(const char *path);
 
 /**
  * @brief Returns the pointer to a cached font based on name and size, returning a fallback default font if not found.
  * @param name The name of the font.
  * @return The cached font.
  */
-TTF_Font * ye_font(const char *name, int size);
+YE_API TTF_Font * ye_font(const char *name, int size);
 
 /**
  * @brief Caches a single color, returning a fallback default color if not found.
  * @param name The name of the color.
  * @return The cached color.
  */
-SDL_Color * ye_color(const char *name);
+YE_API SDL_Color * ye_color(const char *name);
 
 /** @} */ // end of CacheAPI
 
@@ -191,14 +193,14 @@ SDL_Color * ye_color(const char *name);
  * 
  * @note this is useful to make sure engine takes care of cleaning up a texture automatically
  */
-void ye_cache_texture_manual(SDL_Texture *texture, const char *key);
+YE_API void ye_cache_texture_manual(SDL_Texture *texture, const char *key);
 
 /**
  * @brief Create a texture from path.
  * @param path The path to the texture.
  * @return The cached texture.
  */
-SDL_Texture * ye_cache_texture(const char *path);
+YE_API SDL_Texture * ye_cache_texture(const char *path);
 
 /**
  * @brief Manually cache an already loaded font with a provided key
@@ -206,7 +208,7 @@ SDL_Texture * ye_cache_texture(const char *path);
  * @param name The name of the font key
  * @param font The font to cache
  */
-TTF_Font * ye_cache_font_manual(const char *name, TTF_Font *font);
+YE_API TTF_Font * ye_cache_font_manual(const char *name, TTF_Font *font);
 
 /**
  * @brief Create a font from name, size, and path.
@@ -215,7 +217,7 @@ TTF_Font * ye_cache_font_manual(const char *name, TTF_Font *font);
  * @param path The path to the font.
  * @return The cached font.
  */
-TTF_Font * ye_cache_font(const char *name/*, int size*/, const char *path);
+YE_API TTF_Font * ye_cache_font(const char *name/*, int size*/, const char *path);
 
 /**
  * @brief Cache a SDL_Color.
@@ -223,25 +225,25 @@ TTF_Font * ye_cache_font(const char *name/*, int size*/, const char *path);
  * @param color The color to cache.
  * @return The cached color.
  */
-SDL_Color * ye_cache_color(const char *name, SDL_Color color);
+YE_API SDL_Color * ye_cache_color(const char *name, SDL_Color color);
 
 /**
  * @brief Destroy a cached texture from path.
  * @param path The path to the texture.
  */
-void ye_destroy_texture(const char *path);
+YE_API void ye_destroy_texture(const char *path);
 
 /**
  * @brief Destroy a cached font from name.
  * @param name The name of the font.
  */
-void ye_destroy_font(const char *name);
+YE_API void ye_destroy_font(const char *name);
 
 /**
  * @brief Destroy a cached color from name.
  * @param name The name of the color.
  */
-void ye_destroy_color(const char *name);
+YE_API void ye_destroy_color(const char *name);
 
 /** @} */ // end of CacheLowLevel
 

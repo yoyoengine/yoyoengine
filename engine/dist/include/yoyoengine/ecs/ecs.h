@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_ECS_H
 #define YE_ECS_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -46,7 +48,7 @@ struct ye_entity_node {
  * 
  * @return struct ye_entity_node* 
  */
-struct ye_entity_node * ye_get_entity_list_head();
+YE_API struct ye_entity_node * ye_get_entity_list_head();
 
 /**
  * @brief Add an entity to a list
@@ -54,7 +56,7 @@ struct ye_entity_node * ye_get_entity_list_head();
  * @param list The list to add the entity to
  * @param entity The entity to add
  */
-void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity);
+YE_API void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity);
 
 /**
  * @brief Add an entity to a list sorted by its Z transform value (used for rendering order)
@@ -62,7 +64,7 @@ void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *entity);
  * @param list The list to add the entity to
  * @param entity The entity to add
  */
-void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct ye_entity *entity);
+YE_API void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct ye_entity *entity);
 
 /**
  * @brief Remove an entity from a list
@@ -77,7 +79,7 @@ void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct y
  * probably ye_entity_list_remove_free?
  * Not sure how to differentiate when this needs called though... just for actual list of entities?
  */
-void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity);
+YE_API void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity);
 
 /**
  * @brief Entity structure. An entity is a collection of components that make up a game object.
@@ -118,7 +120,7 @@ struct ye_vec2f {
  * 
  * @return struct ye_entity* 
  */
-struct ye_entity * ye_create_entity();
+YE_API struct ye_entity * ye_create_entity();
 
 /**
  * @brief Create a new entity and return a pointer to it (named)
@@ -126,7 +128,7 @@ struct ye_entity * ye_create_entity();
  * @param name The name of the entity
  * @return struct ye_entity* 
  */
-struct ye_entity * ye_create_entity_named(const char *name);
+YE_API struct ye_entity * ye_create_entity_named(const char *name);
 
 /**
  * @brief Rename an entity by pointer
@@ -134,7 +136,7 @@ struct ye_entity * ye_create_entity_named(const char *name);
  * @param entity The entity to rename
  * @param name The new name
  */
-void ye_rename_entity(struct ye_entity *entity, const char *new_name);
+YE_API void ye_rename_entity(struct ye_entity *entity, const char *new_name);
 
 /**
  * @brief !!!DO NOT USE THIS RIGHT NOW. IT IS COMPLETELY BROKEN!!! Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
@@ -142,14 +144,14 @@ void ye_rename_entity(struct ye_entity *entity, const char *new_name);
  * @param entity The entity to duplicate
  * @return struct ye_entity* 
  */
-struct ye_entity * ye_duplicate_entity(struct ye_entity *entity);
+YE_API struct ye_entity * ye_duplicate_entity(struct ye_entity *entity);
 
 /**
  * @brief Destroy an entity by pointer
  * 
  * @param entity The entity to destroy
  */
-void ye_destroy_entity(struct ye_entity * entity);
+YE_API void ye_destroy_entity(struct ye_entity * entity);
 
 /**
  * @brief Find entity by name, returns pointer to first entity of specified name, NULL if not found
@@ -157,7 +159,7 @@ void ye_destroy_entity(struct ye_entity * entity);
  * @param name The name of the entity to find
  * @return struct ye_entity* 
  */
-struct ye_entity * ye_get_entity_by_name(const char *name);
+YE_API struct ye_entity * ye_get_entity_by_name(const char *name);
 
 /**
  * @brief Find an entity by tag (if there are more than one entity with this tag, it will return the first one, and NOT by distance)
@@ -165,7 +167,7 @@ struct ye_entity * ye_get_entity_by_name(const char *name);
  * @param tag The tag of the entity to find
  * @return struct ye_entity* 
  */
-struct ye_entity * ye_get_entity_by_tag(const char *tag);
+YE_API struct ye_entity * ye_get_entity_by_tag(const char *tag);
 
 /**
  * @brief Find an entity by id, returns pointer to first entity of specified id, NULL if not found
@@ -173,26 +175,26 @@ struct ye_entity * ye_get_entity_by_tag(const char *tag);
  * @param id The id of the entity to find
  * @return struct ye_entity* 
  */
-struct ye_entity *ye_get_entity_by_id(int id);
+YE_API struct ye_entity *ye_get_entity_by_id(int id);
 
 /**
  * @brief Initialize the ECS
  */
-void ye_init_ecs();
+YE_API void ye_init_ecs();
 
 /**
  * @brief Purge the ECS
  */
-void ye_purge_ecs();
+YE_API void ye_purge_ecs();
 
 /**
  * @brief Shutdown the ECS
  */
-void ye_shutdown_ecs();
+YE_API void ye_shutdown_ecs();
 
 /**
  * @brief Print all entities
  */
-void ye_print_entities();
+YE_API void ye_print_entities();
 
 #endif

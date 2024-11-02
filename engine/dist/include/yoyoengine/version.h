@@ -1,12 +1,14 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #ifndef VERSION_H
 #define VERSION_H
+
+#include <yoyoengine/export.h>
 
 // minor version should go largely unused, but i'm reserving it just in case
 #define YOYO_ENGINE_MAJOR_VERSION   0
@@ -21,10 +23,10 @@
 
 #include <stdbool.h>
 
-void ye_get_version(const char *version_string, int *major, int *minor);
+YE_API void ye_get_version(const char *version_string, int *major, int *minor);
 
-bool ye_is_version_greater(const char *source, const char *target);
+YE_API bool ye_is_version_greater(const char *source, const char *target);
 
-void ye_version_tagify(char *out);
+YE_API void ye_version_tagify(char *out);
 
 #endif

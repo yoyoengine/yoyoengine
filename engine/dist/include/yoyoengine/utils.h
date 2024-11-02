@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef UTILS_H
 #define UTILS_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -40,7 +42,7 @@ struct ye_rectf; // this forward declaration ignores a bunch of compiler warning
  * @param max The maximum value.
  * @return int The clamped value.
  */
-int ye_clamp(int value, int min, int max);
+YE_API int ye_clamp(int value, int min, int max);
 
 /**
  * @brief Aligns a rectangle within another rectangle (by modifying the passed values).
@@ -50,7 +52,7 @@ int ye_clamp(int value, int min, int max);
  * @param alignment The alignment to use.
  * @param center The center point of the object (to be written to).
  */
-void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit);
+YE_API void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit);
 
 /**
  * @brief Returns the size of a texture as an SDL_Rect
@@ -58,7 +60,7 @@ void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum 
  * @param pTexture The texture to query for its actual size
  * @return SDL_Rect The returned size as an SDL_Rect
  */
-SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
+YE_API SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
 
 /**
  * @brief A rectangle made up of floats.
@@ -73,7 +75,7 @@ struct ye_rectf {
  * @param rect The floating rectangle to convert.
  * @return SDL_Rect The converted rectangle.
  */
-SDL_Rect ye_convert_rectf_rect(struct ye_rectf rect);
+YE_API SDL_Rect ye_convert_rectf_rect(struct ye_rectf rect);
 
 /**
  * @brief Convert an integer rectangle to a floating rectangle.
@@ -81,7 +83,7 @@ SDL_Rect ye_convert_rectf_rect(struct ye_rectf rect);
  * @param rect The integer rectangle to convert.
  * @return struct ye_rectf The converted rectangle.
  */
-struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect);
+YE_API struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect);
 
 /**
  * @brief A collection of enums that define the different types of components.
@@ -107,7 +109,7 @@ enum ye_component_type {
  * @param y2 The y position of the second point.
  * @return float The angle between the two points.
 */
-float ye_angle(float x1, float y1, float x2, float y2);
+YE_API float ye_angle(float x1, float y1, float x2, float y2);
 
 /**
  * @brief Returns the distance between two points.
@@ -118,7 +120,7 @@ float ye_angle(float x1, float y1, float x2, float y2);
  * @param y2 The y position of the second point.
  * @return float The distance between the two points.
 */
-float ye_distance(float x1, float y1, float x2, float y2);
+YE_API float ye_distance(float x1, float y1, float x2, float y2);
 
 /**
  * @brief Returns the position of a component on an entity.
@@ -136,7 +138,7 @@ float ye_distance(float x1, float y1, float x2, float y2);
  * @param type The type of component to get the position of.
  * @return struct ye_rectf The position of the component.
  */
-struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type type);
+YE_API struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type type);
 
 /**
  * @brief Wrapper for @ref ye_get_position that returns an SDL_Rect instead of a ye_rectf.
@@ -145,7 +147,7 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
  * @param type The type of component to get the position of.
  * @return SDL_Rect The position of the component.
  */
-SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type);
+YE_API SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type);
 
 /**
  * Draws a "thick point" (a filled square) centered on the given coordinates.
@@ -155,7 +157,7 @@ SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type t
  * @param y The y-coordinate of the center of the thick point.
  * @param thickness The side length of the square, which determines the "thickness" of the point.
  */
-void ye_draw_thick_point(SDL_Renderer *renderer, int x, int y, int thickness);
+YE_API void ye_draw_thick_point(SDL_Renderer *renderer, int x, int y, int thickness);
 
 /**
  * @brief Draws a circle using SDL_RenderDrawPoint.
@@ -166,7 +168,7 @@ void ye_draw_thick_point(SDL_Renderer *renderer, int x, int y, int thickness);
  * @param radius The radius of the circle.
  * @param thickness The thickness of the circle.
  */
-void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius, int thickness);
+YE_API void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y, int32_t radius, int thickness);
 
 /**
  * @brief Returns the world coordinates of a click on the window.
@@ -178,7 +180,7 @@ void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y,
  * 
  * @note offsets based on letterboxing, target scaling, and camera positioning
  */
-void ye_get_mouse_world_position(int *x, int *y);
+YE_API void ye_get_mouse_world_position(int *x, int *y);
 
 /**
  * @brief Checks if a specified component exists on an entity
@@ -187,7 +189,7 @@ void ye_get_mouse_world_position(int *x, int *y);
  * @param type The type of component to check for
  * @return bool Sucess or failure
 */
-bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type);
+YE_API bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type);
 
 /**
  * @brief Draws a line with a specified thickness.
@@ -201,7 +203,7 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type);
  * @param color The color of the line.
  * @return bool Success or failure.
 */
-bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, int thickness, SDL_Color color);
+YE_API bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, float y2, int thickness, SDL_Color color);
 
 /**
  * @brief Draws a rectangle with a specified thickness.
@@ -214,6 +216,6 @@ bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, fl
  * @param thickness The thickness of the rectangle.
  * @param color The color of the rectangle.
 */
-void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color);
+YE_API void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color);
 
 #endif

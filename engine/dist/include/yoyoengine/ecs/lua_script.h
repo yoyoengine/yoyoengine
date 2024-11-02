@@ -13,6 +13,8 @@
 #ifndef YE_LUA_SCRIPT_H
 #define YE_LUA_SCRIPT_H
 
+#include <yoyoengine/export.h>
+
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
 
@@ -86,48 +88,48 @@ struct ye_component_lua_script {
 /**
  * @brief Internal engine function to specify adding a global to a custom initialized struct ye_lua_script_global
  */
-void ye_lua_script_add_manual_global(struct ye_lua_script_global **target, enum ye_lua_script_global_t type, const char *name, void *value);
+YE_API void ye_lua_script_add_manual_global(struct ye_lua_script_global **target, enum ye_lua_script_global_t type, const char *name, void *value);
 
 /**
  * @brief This exists primarily for the editor to add new globals to entity scripts to serialize them properly. If you don't already know how this works, you aren't meant to use it!
  */
-void ye_lua_script_add_global(struct ye_entity *ent, enum ye_lua_script_global_t type, const char *name, void *value);
+YE_API void ye_lua_script_add_global(struct ye_entity* ent, enum ye_lua_script_global_t type, const char* name, void* value);
 
 /**
  * @brief This exists primarily for the editor to remove globals from entity scripts and serialize them properly. If you don't already know how this works, you aren't meant to use it!
  */
-void ye_lua_script_remove_global(struct ye_entity *ent, const char *name);
+YE_API void ye_lua_script_remove_global(struct ye_entity* ent, const char* name);
 
 /**
  * @brief Add a lua script component to an entity
- * 
+ *
  * @param entity The target entity
  * @param script_path The path to the script
  * @param globals A constructed list of globals to feed into the script. NULL for none.
  */
-bool ye_add_lua_script_component(struct ye_entity *entity, const char *handle, struct ye_lua_script_global *globals);
+YE_API bool ye_add_lua_script_component(struct ye_entity* entity, const char* handle, struct ye_lua_script_global* globals);
 
 /**
  * @brief Remove a lua script component from an entity
- * 
+ *
  * @param entity The target entity
  */
-void ye_remove_lua_script_component(struct ye_entity *entity);
+YE_API void ye_remove_lua_script_component(struct ye_entity* entity);
 
 /**
  * @brief The system that controls the behavior of lua scripts
  */
-void ye_system_lua_scripting();
+YE_API void ye_system_lua_scripting();
 
 /**
  * @brief Send onCollision to all scripts that observe it
  */
-void ye_lua_signal_collisions(struct ye_entity *entity1, struct ye_entity *entity2);
+YE_API void ye_lua_signal_collisions(struct ye_entity* entity1, struct ye_entity* entity2);
 
 /**
  * @brief Send onTriggerEnter to all scripts that observe it
  */
-void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *entity2);
+YE_API void ye_lua_signal_trigger_enter(struct ye_entity* entity1, struct ye_entity* entity2);
 
 /*
     +-----------------+
@@ -137,10 +139,10 @@ void ye_lua_signal_trigger_enter(struct ye_entity *entity1, struct ye_entity *en
     This is a simple API to allow setting globals at runtime
 */
 
-void ye_set_lua_script_global_bool(struct ye_entity *ent, const char *name, bool value);
+YE_API void ye_set_lua_script_global_bool(struct ye_entity* ent, const char* name, bool value);
 
-void ye_set_lua_script_global_number(struct ye_entity *ent, const char *name, double value);
+YE_API void ye_set_lua_script_global_number(struct ye_entity* ent, const char* name, double value);
 
-void ye_set_lua_script_global_string(struct ye_entity *ent, const char *name, const char *value);
+YE_API void ye_set_lua_script_global_string(struct ye_entity *ent, const char *name, const char *value);
 
 #endif

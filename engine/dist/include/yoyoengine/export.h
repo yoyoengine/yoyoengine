@@ -1,12 +1,17 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#ifndef YE_EXPORT_H
+#define YE_EXPORT_H
+
 #ifdef _WIN32
-#define YOYO_EXPORT __declspec(dllexport)
+    #define YE_API __declspec(dllexport)
 #else
-#define YOYO_EXPORT
+    #define YE_API
+#endif
+
 #endif

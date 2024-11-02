@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -13,6 +13,8 @@
 
 #ifndef YE_AUDIOSOURCE_H
 #define YE_AUDIOSOURCE_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -47,14 +49,14 @@ struct ye_component_audiosource {
  * @param loops The number of times to loop the sound (-1 for infinite looping)
  * @param simulated Whether or not the sound should be simulated (affected by the audio listener)
  */
-void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range);
+YE_API void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range);
 
 /**
  * @brief Will play the audio source on the entity <loops> times until paused, destroyed, disabled, or finished playing <loops>
  * 
  * @param entity The target entity
  */
-void ye_play_audiosource(struct ye_entity *entity);
+YE_API void ye_play_audiosource(struct ye_entity *entity);
 
 /**
  * @brief Pauses the audio source on the entity
@@ -63,25 +65,25 @@ void ye_play_audiosource(struct ye_entity *entity);
  * 
  * @note This function will reset the audio source to its initial state (like loops) and will dereference the channel in the mixcache
  */
-void ye_pause_audiosource(struct ye_entity *entity);
+YE_API void ye_pause_audiosource(struct ye_entity *entity);
 
 /**
  * @brief Removes the audiosource component from the entity
  * 
  * @param entity The target entity
  */
-void ye_remove_audiosource_component(struct ye_entity *entity);
+YE_API void ye_remove_audiosource_component(struct ye_entity *entity);
 
 /**
  * @brief The system in charge of processing audiosource components
  */
-void ye_system_audiosource();
+YE_API void ye_system_audiosource();
 
 /**
  * @brief Called from audio.c when a channel finishes, this function is in charge of re-scheduling audio chunks
  * 
  * @param channel The channel that finished
  */
-void ye_audiosource_channel_finished(int channel);
+YE_API void ye_audiosource_channel_finished(int channel);
 
 #endif

@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -13,6 +13,8 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <yoyoengine/export.h>
+
 #include <SDL.h>           // SDL_Rect, SDL_Texture, SDL_Color
 #include <stdbool.h>            // bool
 #include <SDL_ttf.h>       // TTF_Font
@@ -23,14 +25,14 @@
  * @param in The float value to be converted.
  * @return The converted pixel width.
  */
-int convertToRealPixelWidth(float in);
+YE_API int convertToRealPixelWidth(float in);
 
 /**
  * @brief Converts a float value to real pixel height.
  * @param in The float value to be converted.
  * @return The converted pixel height.
  */
-int convertToRealPixelHeight(float in);
+YE_API int convertToRealPixelHeight(float in);
 
 /**
  * @brief Creates a SDL_Rect with real pixel values.
@@ -41,7 +43,7 @@ int convertToRealPixelHeight(float in);
  * @param h The height of the rectangle.
  * @return The created SDL_Rect.
  */
-SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
+YE_API SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
 
 /**
  * @brief Loads a TTF_Font from a file.
@@ -49,25 +51,25 @@ SDL_Rect createRealPixelRect(bool centered, float x, float y, float w, float h);
  * @param fontSize The size of the font.
  * @return The loaded TTF_Font.
  */
-TTF_Font *ye_load_font(const char *pFontPath/*, int fontSize*/);
+YE_API TTF_Font *ye_load_font(const char *pFontPath/*, int fontSize*/);
 
 /**
  * @brief Creates a SDL_Texture from an image file.
  * @param pPath The path to the image file.
  * @return The created SDL_Texture, or NULL if the creation failed.
  */
-SDL_Texture * ye_create_image_texture(const char *pPath);
+YE_API SDL_Texture * ye_create_image_texture(const char *pPath);
 
 /**
  * @brief Creates a text texture with an outline.
  * @return The created SDL_Texture.
  */
-SDL_Texture *createTextTextureWithOutline();
+YE_API SDL_Texture *createTextTextureWithOutline();
 
 /*
     Untested rn.
 */
-SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength);
+YE_API SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength);
 
 /**
  * @brief Creates a text texture.
@@ -76,7 +78,7 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
  * @param pColor The color of the text.
  * @return The created SDL_Texture.
  */
-SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor);
+YE_API SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor);
 
 /**
  * @brief Creates a text texture with wrapping.
@@ -86,65 +88,65 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
  * @param wrapLength The length to wrap the text at.
  * @return The created SDL_Texture.
  */
-SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength);
+YE_API SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength);
 
 /**
  * @brief Renders all elements.
  */
-void ye_render_all();
+YE_API void ye_render_all();
 
 /**
  * @brief Sets the viewport size.
  * @param screenWidth The width of the screen.
  * @param screenHeight The height of the screen.
  */
-void setViewport(int screenWidth, int screenHeight);
+YE_API void setViewport(int screenWidth, int screenHeight);
 
 /**
  * @brief Changes the window mode.
  * @param mode The new window mode.
  */
-void changeWindowMode(Uint32 mode);
+YE_API void changeWindowMode(Uint32 mode);
 
 /**
  * @brief Changes the FPS cap.
  * @param cap The new FPS cap.
  */
-void changeFPS(int cap);
+YE_API void changeFPS(int cap);
 
 /**
  * @brief Gets the current screen resolution.
  * @return The current screen resolution.
  */
-struct ScreenSize getCurrentResolution();
+YE_API struct ScreenSize getCurrentResolution();
 
 /**
  * @brief Changes the screen resolution.
  * @param width The new width of the screen.
  * @param height The new height of the screen.
  */
-void changeResolution(int width, int height);
+YE_API void changeResolution(int width, int height);
 
 /**
  * @brief Grabs the current screen resolution and recomputes the boxing as needed.
  */
-void ye_recompute_boxing();
+YE_API void ye_recompute_boxing();
 
 /**
  * @brief Initializes the graphics.
  */
-void ye_init_graphics();
+YE_API void ye_init_graphics();
 
 /**
  * @brief Shuts down the graphics.
  */
-void ye_shutdown_graphics();
+YE_API void ye_shutdown_graphics();
 
 /**
  * @brief Gets the screen size.
  * @return The screen size.
  */
-struct ScreenSize ye_get_screen_size();
+YE_API struct ScreenSize ye_get_screen_size();
 
 /*
     GRAPHICS API:
@@ -155,6 +157,6 @@ struct ScreenSize ye_get_screen_size();
  * 
  * @param mode The SDL window mode to change to
  */
-void ye_set_window_mode(int mode);
+YE_API void ye_set_window_mode(int mode);
 
 #endif

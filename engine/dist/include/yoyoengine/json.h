@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -26,6 +26,8 @@
 #ifndef YE_JSON_H
 #define YE_JSON_H
 
+#include <yoyoengine/export.h>
+
 #include <jansson.h>
 #include <stdbool.h>
 
@@ -35,7 +37,7 @@
  * @return A new json_t object with refcount 1. Returns NULL if the file doesn't exist.
  * @note The returned pointer must be freed after use with json_decref.
  */
-json_t* ye_json_read(const char* path);
+YE_API json_t* ye_json_read(const char* path);
 
 /**
  * @brief Writes a json_t object to a file.
@@ -43,13 +45,13 @@ json_t* ye_json_read(const char* path);
  * @param json The json_t object to write.
  * @return 0 on success, -1 on failure.
  */
-int ye_json_write(const char* path, json_t* json);
+YE_API int ye_json_write(const char* path, json_t* json);
 
 /**
  * @brief Logs a json_t object for debugging purposes.
  * @param json The json_t object to log.
  */
-void ye_json_log(json_t* json);
+YE_API void ye_json_log(json_t* json);
 
 /**
  * @brief Merges two json_t objects, overwriting the first with the second if conflicts occur.
@@ -58,7 +60,7 @@ void ye_json_log(json_t* json);
  * @return 0 on success, -1 on failure.
  * @note This will modify the first json_t object without increasing its refcount.
  */
-int ye_json_merge(json_t* first, json_t* second);
+YE_API int ye_json_merge(json_t* first, json_t* second);
 
 /**
  * @brief Merges two json_t objects, but only updates values of existing keys in the first object.
@@ -66,7 +68,7 @@ int ye_json_merge(json_t* first, json_t* second);
  * @param second The second json_t object.
  * @return 0 on success, -1 on failure.
  */
-int ye_json_merge_existing(json_t* first, json_t* second);
+YE_API int ye_json_merge_existing(json_t* first, json_t* second);
 
 /**
  * @brief Merges two json_t objects, but only creates new keys, existing keys are not updated.
@@ -74,7 +76,7 @@ int ye_json_merge_existing(json_t* first, json_t* second);
  * @param second The second json_t object.
  * @return 0 on success, -1 on failure.
  */
-int ye_json_merge_missing(json_t* first, json_t* second);
+YE_API int ye_json_merge_missing(json_t* first, json_t* second);
 
 /**
  * @brief Checks if a json_t object has a specific key.
@@ -82,7 +84,7 @@ int ye_json_merge_missing(json_t* first, json_t* second);
  * @param key The key to check.
  * @return true if the key exists, false otherwise.
  */
-bool ye_json_has_key(json_t* json, const char* key);
+YE_API bool ye_json_has_key(json_t* json, const char* key);
 
 /**
  * @brief Extracts an int from a json_t object by key.
@@ -91,7 +93,7 @@ bool ye_json_has_key(json_t* json, const char* key);
  * @param out The pointer to assign the extracted int to.
  * @return true if extraction was successful, false otherwise.
  */
-bool ye_json_int(json_t* json, const char* key, int *out);
+YE_API bool ye_json_int(json_t* json, const char* key, int *out);
 
 /**
  * @brief Extract a float from a json_t by key, assigning the passed float to it
@@ -100,7 +102,7 @@ bool ye_json_int(json_t* json, const char* key, int *out);
  * @param out The output float
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_float(json_t* json, const char* key, float *out);
+YE_API bool ye_json_float(json_t* json, const char* key, float *out);
 
 /**
  * @brief Extract a bool from a json_t by key, assigning the passed bool to it
@@ -109,7 +111,7 @@ bool ye_json_float(json_t* json, const char* key, float *out);
  * @param out The output bool
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_bool(json_t* json, const char* key, bool *out);
+YE_API bool ye_json_bool(json_t* json, const char* key, bool *out);
 
 /**
  * @brief Extract a string from a json_t by key, assigning the passed string to it
@@ -120,7 +122,7 @@ bool ye_json_bool(json_t* json, const char* key, bool *out);
  * @param out The output string
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_string(json_t* json, const char* key, const char **out);
+YE_API bool ye_json_string(json_t* json, const char* key, const char **out);
 
 /**
  * @brief Extract a json_t from a json_t by key, assigning the passed json_t to it
@@ -129,7 +131,7 @@ bool ye_json_string(json_t* json, const char* key, const char **out);
  * @param out The output json_t
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_object(json_t* json, const char* key, json_t **out);
+YE_API bool ye_json_object(json_t* json, const char* key, json_t **out);
 
 /**
  * @brief Extract a json_t from a json_t by key, assigning the passed json_t to it
@@ -139,7 +141,7 @@ bool ye_json_object(json_t* json, const char* key, json_t **out);
  * @param out The output json_t
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_array(json_t* json, const char* key, json_t **out);
+YE_API bool ye_json_array(json_t* json, const char* key, json_t **out);
 
 /**
  * @brief Extract an int from a json_t by index, assigning the passed int to it
@@ -148,7 +150,7 @@ bool ye_json_array(json_t* json, const char* key, json_t **out);
  * @param out The output int
  * @return true if extraction was successful, false otherwise
  */
-bool ye_json_arr_int(json_t* json, int index, int *out);
+YE_API bool ye_json_arr_int(json_t* json, int index, int *out);
 
 /**
  * @brief Extracts a double from a json_t object by index.
@@ -157,7 +159,7 @@ bool ye_json_arr_int(json_t* json, int index, int *out);
  * @param out The pointer to assign the extracted double to.
  * @return true if extraction was successful, false otherwise.
  */
-bool ye_json_arr_double(json_t* json, int index, double *out);
+YE_API bool ye_json_arr_double(json_t* json, int index, double *out);
 
 /**
  * @brief Extracts a bool from a json_t object by index.
@@ -166,7 +168,7 @@ bool ye_json_arr_double(json_t* json, int index, double *out);
  * @param out The pointer to assign the extracted bool to.
  * @return true if extraction was successful, false otherwise.
  */
-bool ye_json_arr_bool(json_t* json, int index, bool *out);
+YE_API bool ye_json_arr_bool(json_t* json, int index, bool *out);
 
 /**
  * @brief Extracts a string from a json_t object by index.
@@ -176,7 +178,7 @@ bool ye_json_arr_bool(json_t* json, int index, bool *out);
  * @return true if extraction was successful, false otherwise.
  * @note This function sets const char **out to be a reference to the string in Jansson. If this needs to persist, you need to copy or duplicate its memory.
  */
-bool ye_json_arr_string(json_t* json, int index, const char **out);
+YE_API bool ye_json_arr_string(json_t* json, int index, const char **out);
 
 /**
  * @brief Extracts a json_t object from a json_t object by index.
@@ -185,7 +187,7 @@ bool ye_json_arr_string(json_t* json, int index, const char **out);
  * @param out The pointer to assign the extracted json_t object to.
  * @return true if extraction was successful, false otherwise.
  */
-bool ye_json_arr_object(json_t* json, int index, json_t **out);
+YE_API bool ye_json_arr_object(json_t* json, int index, json_t **out);
 
 /**
  * @brief Extracts a json_t array from a json_t object by index.
@@ -194,6 +196,6 @@ bool ye_json_arr_object(json_t* json, int index, json_t **out);
  * @param out The pointer to assign the extracted json_t array to.
  * @return true if extraction was successful, false otherwise.
  */
-bool ye_json_arr_array(json_t* json, int index, json_t **out);
+YE_API bool ye_json_arr_array(json_t* json, int index, json_t **out);
 
 #endif

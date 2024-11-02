@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_CAMERA_H
 #define YE_CAMERA_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -39,7 +41,7 @@ struct ye_component_camera {
  * 
  * @param entity The entity to set as the camera
  */
-void ye_set_camera(struct ye_entity *entity);
+YE_API void ye_set_camera(struct ye_entity *entity);
 
 /**
  * @brief Adds a camera component to an entity
@@ -48,13 +50,13 @@ void ye_set_camera(struct ye_entity *entity);
  * @param z The layer the camera sits on
  * @param view_field The view field of the camera
  */
-void ye_add_camera_component(struct ye_entity *entity, int z, struct ye_rectf view_field);
+YE_API void ye_add_camera_component(struct ye_entity *entity, int z, struct ye_rectf view_field);
 
 /**
  * @brief Removes a camera component from an entity
  * 
  * @param entity The entity to remove the component from
  */
-void ye_remove_camera_component(struct ye_entity *entity);
+YE_API void ye_remove_camera_component(struct ye_entity *entity);
 
 #endif

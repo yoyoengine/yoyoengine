@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef LOGGING_H
 #define LOGGING_H
+
+#include <yoyoengine/export.h>
 
 #ifndef __cplusplus
 #ifndef ye_nk
@@ -66,12 +68,12 @@ enum logLevel {
  * 
  * @param log_file_path The path to the log file
  */
-void ye_log_init(char *log_file_path);
+YE_API void ye_log_init(char *log_file_path);
 
 /**
  * @brief Shuts down the logging system
  */
-void ye_log_shutdown();
+YE_API void ye_log_shutdown();
 
 /**
  * @brief Logs a message to the console and console buffer
@@ -80,7 +82,7 @@ void ye_log_shutdown();
  * @param format The content of the message (similar to printf)
  * @param ... The arguments for the format string
  */
-void ye_logf(enum logLevel level, const char *format, ...);
+YE_API void ye_logf(enum logLevel level, const char *format, ...);
 
 /**
  * @brief THIS IS FOR INTERNAL USE ONLY. Logs a message normally but with a lua tag in front of the output.
@@ -89,6 +91,6 @@ void ye_logf(enum logLevel level, const char *format, ...);
  * @param format The content of the message (similar to printf)
  * @param ... The arguments for the format string
  */
-void _ye_lua_logf(enum logLevel level, const char *format, ...);
+YE_API void _ye_lua_logf(enum logLevel level, const char *format, ...);
 
 #endif

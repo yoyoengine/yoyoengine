@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_TAG_H
 #define YE_TAG_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -33,7 +35,7 @@ struct ye_component_tag {
  * 
  * @param entity The entity to which the tag component will be added
  */
-void ye_add_tag_component(struct ye_entity *entity);
+YE_API void ye_add_tag_component(struct ye_entity *entity);
 
 /**
  * @brief Add a tag to an entity, creating a tag component for that entity if it doesn't exist
@@ -41,7 +43,7 @@ void ye_add_tag_component(struct ye_entity *entity);
  * @param entity The entity to which the tag will be added
  * @param tag The tag to be added
  */
-void ye_add_tag(struct ye_entity *entity, const char *tag);
+YE_API void ye_add_tag(struct ye_entity *entity, const char *tag);
 
 /**
  * @brief Remove a tag from an entity, removing its tag component if it has no more tags
@@ -49,14 +51,14 @@ void ye_add_tag(struct ye_entity *entity, const char *tag);
  * @param entity The entity from which the tag will be removed
  * @param tag The tag to be removed
  */
-void ye_remove_tag(struct ye_entity *entity, const char *tag);
+YE_API void ye_remove_tag(struct ye_entity *entity, const char *tag);
 
 /**
  * @brief Remove a tag component from an entity
  * 
  * @param entity The entity from which the tag component will be removed
  */
-void ye_remove_tag_component(struct ye_entity *entity);
+YE_API void ye_remove_tag_component(struct ye_entity *entity);
 
 
 /**
@@ -67,7 +69,7 @@ void ye_remove_tag_component(struct ye_entity *entity);
  * @return true 
  * @return false 
  */
-bool ye_entity_has_tag(struct ye_entity *entity, const char *tag);
+YE_API bool ye_entity_has_tag(struct ye_entity *entity, const char *tag);
 
 /**
  * @brief Iterates over every tagged entity, passing each one that matches a tag to a specified callback
@@ -75,6 +77,6 @@ bool ye_entity_has_tag(struct ye_entity *entity, const char *tag);
  * @param tag The tag to match entities against
  * @param callback The non null callback with a struct ye_entity * parameter
  */
-void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent));
+YE_API void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent));
 
 #endif

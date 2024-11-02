@@ -1,12 +1,14 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #ifndef YE_DEBUG_RENDERER_H
 #define YE_DEBUG_RENDERER_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -65,7 +67,7 @@ struct ye_additional_render_callback_node {
  * @param color The color of the line
  * @param width The width of the line
 */
-void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color, int width);
+YE_API void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a rectangle at (x, y) with width w and height h with the specified color
@@ -77,7 +79,7 @@ void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color, int w
  * @param color The color of the rectangle
  * @param width The width of the line
 */
-void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width);
+YE_API void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a circle at (x, y) with the specified radius and color
@@ -88,7 +90,7 @@ void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width
  * @param color The color of the circle
  * @param width The width of the line
 */
-void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width);
+YE_API void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a point at (x, y) with the specified color
@@ -98,7 +100,7 @@ void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width
  * @param color The color of the point
  * @param width The width of the line
 */
-void ye_debug_render_point(int x, int y, SDL_Color color, int width);
+YE_API void ye_debug_render_point(int x, int y, SDL_Color color, int width);
 
 /*
     additional render callback API
@@ -110,16 +112,16 @@ void ye_debug_render_point(int x, int y, SDL_Color color, int width);
  * @param fn The function to be called
  * @param persistent If the function should be unregistered after a scene load
 */
-void ye_additional_render_fn_push(void (*fn)(void), bool persistent);
+YE_API void ye_additional_render_fn_push(void (*fn)(void), bool persistent);
 
 /*
     Engine impl
 */
 
 // renders all immediate and additional render calls
-void ye_debug_renderer_render();
+YE_API void ye_debug_renderer_render();
 
 // cleans up all immediate and additional render calls
-void ye_debug_renderer_cleanup(bool remove_persistant);
+YE_API void ye_debug_renderer_cleanup(bool remove_persistant);
 
 #endif // YE_DEBUG_RENDERER_H

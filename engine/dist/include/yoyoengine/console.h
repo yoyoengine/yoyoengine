@@ -13,6 +13,8 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include <yoyoengine/export.h>
+
 #ifndef YE_COMMAND_HISTORY_SIZE
     #define YE_COMMAND_HISTORY_SIZE 64
 #endif
@@ -29,7 +31,7 @@
  * 
  * @param ctx The nk_context *
  */
-void ye_paint_developer_console(struct nk_context *ctx);
+YE_API void ye_paint_developer_console(struct nk_context *ctx);
 
 /**
  * @brief Register a console command to be fired by the console
@@ -37,7 +39,7 @@ void ye_paint_developer_console(struct nk_context *ctx);
  * @param prefix The first full keyterm to match against your command
  * @param callback A void(*)(const char *) function to be called when the command is matched, passed the rest of the string body
  */
-void ye_register_console_command(const char *prefix, void (*callback)(int, const char **));
+YE_API void ye_register_console_command(const char *prefix, void (*callback)(int, const char **));
 
 /**
  * @brief Parse a string and execute it as a command 
@@ -46,7 +48,7 @@ void ye_register_console_command(const char *prefix, void (*callback)(int, const
  * 
  * @param command The string to parse
  */
-void ye_parse_console_command(const char *command);
+YE_API void ye_parse_console_command(const char *command);
 
 /**
  * @brief Attempt to execute a command by prefix with preconstructued arguments
@@ -58,7 +60,7 @@ void ye_parse_console_command(const char *command);
  * 
  * @return bool True if the command was found and executed, false otherwise 
  */
-bool ye_execute_console_command(const char *prefix, int argc, const char **argv);
+YE_API bool ye_execute_console_command(const char *prefix, int argc, const char **argv);
 
 /*
     Definition of a console command,
@@ -77,12 +79,12 @@ extern struct ye_console_command * cmd_head;
 /*
     Setup and validate data for the console
 */
-void ye_init_console();
+YE_API void ye_init_console();
 
 /*
     Clear data and destroy the console
 */
-void ye_shutdown_console();
+YE_API void ye_shutdown_console();
 
 /*
     Definitions for console buffer
@@ -124,11 +126,11 @@ extern bool ye_console_reset_scroll;
  * @param level The level of the message
  * @param message_body The body of the message (do not malloc this)
  */
-void ye_console_push_message(const char * timestamp, enum logLevel level, const char * message_body);
+YE_API void ye_console_push_message(const char * timestamp, enum logLevel level, const char * message_body);
 
 /**
  * @brief Clear the console buffer
  */
-void ye_console_clear();
+YE_API void ye_console_clear();
 
 #endif

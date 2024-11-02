@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef ENGINE_H
 #define ENGINE_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -50,7 +52,7 @@ struct ScreenSize {
  * @param sub_path The relative path (or just name with extension) of the engine resource you wish to access.
  * @return char* The absolute path to the engine resource.
  */
-char* ye_get_engine_resource_static(const char *sub_path);
+YE_API char* ye_get_engine_resource_static(const char *sub_path);
 
 /**
  * @brief Returns a pointer to a string in engine memory that contains the absolute path relative to the executable of the item you have specified.
@@ -60,7 +62,7 @@ char* ye_get_engine_resource_static(const char *sub_path);
  * 
  * NOTE: this only persists until the next call to this function. You must make your own copies if you need it to stick around
  */
-char * ye_path(const char * path);
+YE_API char * ye_path(const char * path);
 
 /**
  * @brief THIS IS NOT FOR USE WITH RUNTIME RESOURCES. This is for editor resources only.
@@ -68,7 +70,7 @@ char * ye_path(const char * path);
  * @param path The path relative to the project resources folder
  * @return char* The constructed path
  */
-char * ye_path_resources(const char * path);
+YE_API char * ye_path_resources(const char * path);
 
 /**
  * @brief The struct that defines the configuration of the engine core specifically.
@@ -255,7 +257,7 @@ struct ye_engine_state {
  * 
  * As well as many other misc operations, such as updating the current delta in @ref ye_runtime_data
  */
-void ye_process_frame();
+YE_API void ye_process_frame();
 
 /**
  * @brief Returns the current delta time in milliseconds.
@@ -265,7 +267,7 @@ void ye_process_frame();
  * 
  * @return float 
  */
-float ye_delta_time();
+YE_API float ye_delta_time();
 
 /**
  * @brief Updates the engines resources path to the new path provided.
@@ -275,7 +277,7 @@ float ye_delta_time();
  * 
  * @param path The (absolute) path to the new resources folder.
  */
-void ye_update_base_path(const char *path);
+YE_API void ye_update_base_path(const char *path);
 
 /*
     entry point to the engine, initializes all subsystems
@@ -287,7 +289,7 @@ void ye_update_base_path(const char *path);
  * 
  * You will need to have a 'settings.yoyo' file at the root of your project to initialize the engine. 
  */
-void ye_init_engine();
+YE_API void ye_init_engine();
 
 /**
  * @brief Shuts down the engine and all subsystems.
@@ -295,6 +297,6 @@ void ye_init_engine();
  * Does not shut down your own game logic, you will need a game loop to do that.
  * If you are using the editor and the default entry point, both will be handled for you.
  */
-void ye_shutdown_engine();
+YE_API void ye_shutdown_engine();
 
 #endif

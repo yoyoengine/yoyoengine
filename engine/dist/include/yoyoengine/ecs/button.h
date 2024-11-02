@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_BUTTON_H
 #define YE_BUTTON_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -34,16 +36,16 @@ struct ye_component_button {
     bool _was_pressed;  // tracks mouse down across event loop
 };
 
-void ye_add_button_component(struct ye_entity *entity, struct ye_rectf rect);
+YE_API void ye_add_button_component(struct ye_entity *entity, struct ye_rectf rect);
 
-void ye_remove_button_component(struct ye_entity *entity);
+YE_API void ye_remove_button_component(struct ye_entity *entity);
 
 /**
  * @brief Iterates over the button list and updates button internal state.
  * 
  * @param event The SDL event to be processed.
  */
-void ye_system_button(SDL_Event event);
+YE_API void ye_system_button(SDL_Event event);
 
 /*
     API FOR ACCESSING STATE:
@@ -54,20 +56,20 @@ void ye_system_button(SDL_Event event);
  * 
  * @param entity The entity to be checked.
  */
-bool ye_button_hovered(struct ye_entity *entity);
+YE_API bool ye_button_hovered(struct ye_entity *entity);
 
 /**
  * @brief Checks whether an entity's button is clicked.
  * 
  * @param entity The entity to be checked.
  */
-bool ye_button_clicked(struct ye_entity *entity);
+YE_API bool ye_button_clicked(struct ye_entity *entity);
 
 /**
  * @brief Checks whether an entity's button is pressed.
  * 
  * @param entity The entity to be checked.
  */
-bool ye_button_pressed(struct ye_entity *entity);
+YE_API bool ye_button_pressed(struct ye_entity *entity);
 
 #endif

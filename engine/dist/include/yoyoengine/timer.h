@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_TIMER_H
 #define YE_TIMER_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -52,7 +54,7 @@ struct ye_timer_node {
     Optional function to be registered by
     user that gives info on timer system
 */
-void ye_timer_overlay(struct nk_context *ctx);
+YE_API void ye_timer_overlay(struct nk_context *ctx);
 
 /**
  * @brief Register a timer with the engine.
@@ -61,33 +63,33 @@ void ye_timer_overlay(struct nk_context *ctx);
  * 
  * @param timer The timer to register.
  */
-void ye_register_timer(struct ye_timer * timer);
+YE_API void ye_register_timer(struct ye_timer * timer);
 
 /**
  * @brief Unregister a timer with the engine.
  * 
  * @param timer A pointer to the timer to unregister.
  */
-void ye_unregister_timer(struct ye_timer * timer);
+YE_API void ye_unregister_timer(struct ye_timer * timer);
 
 /**
  * @brief Destroy all timers registered with the engine.
  */
-void ye_unregister_all_timers();
+YE_API void ye_unregister_all_timers();
 
 /**
  * @brief Update and tick all timers registered with the engine.
  */
-void ye_update_timers();
+YE_API void ye_update_timers();
 
 /**
  * @brief Initialize the timer system.
  */
-void ye_init_timers();
+YE_API void ye_init_timers();
 
 /**
  * @brief Shutdown the timer system.
  */
-void ye_shutdown_timers();
+YE_API void ye_shutdown_timers();
 
 #endif

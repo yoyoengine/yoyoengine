@@ -1,12 +1,14 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2024  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #ifndef EVENT_H
 #define EVENT_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -16,7 +18,7 @@
 #include <yoyoengine/ecs/ecs.h>
 
 // get the number of events in the queue
-int ye_get_num_events();
+YE_API int ye_get_num_events();
 
 enum ye_event_type {
     YE_EVENT_PRE_INIT,          // empty_cb
@@ -68,17 +70,17 @@ enum ye_event_flag {
     YE_EVENT_FLAG_PERSISTENT = 1 << 0, // event will never be removed (even upon scene change)
 };
 
-void ye_register_event_cb(enum ye_event_type type, void *cb, int flags);
+YE_API void ye_register_event_cb(enum ye_event_type type, void *cb, int flags);
 
-void ye_fire_event(enum ye_event_type type, union ye_event_args args);
+YE_API void ye_fire_event(enum ye_event_type type, union ye_event_args args);
 
-void _ye_add_event(struct _ye_event *event);
+YE_API void _ye_add_event(struct _ye_event *event);
 
-void _ye_remove_event(struct _ye_event *event);
+YE_API void _ye_remove_event(struct _ye_event *event);
 
-void ye_purge_events(bool destroy_persistent);
+YE_API void ye_purge_events(bool destroy_persistent);
 
-void ye_unregister_event_cb(void *cb);
+YE_API void ye_unregister_event_cb(void *cb);
 
 #endif
 

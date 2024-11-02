@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_RENDERER_H
 #define YE_RENDERER_H
+
+#include <yoyoengine/export.h>
 
 #include <stdbool.h>
 
@@ -140,7 +142,7 @@ struct ye_component_renderer_tilemap_tile {
  * @brief Will refresh the values and texture of a renderer component based on its fields.
  * @param entity The entity to refresh.
  */
-void ye_update_renderer_component(struct ye_entity *entity);
+YE_API void ye_update_renderer_component(struct ye_entity *entity);
 
 /**
  * @brief Adds a renderer component to an entity.
@@ -150,7 +152,7 @@ void ye_update_renderer_component(struct ye_entity *entity);
  * @param z The z-index of the renderer component.
  * @param data A void pointer to a struct of matching type.
  */
-void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, int z, void *data);
+YE_API void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_renderer_type type, int z, void *data);
 
 /**
  * @brief  Adds an image renderer component to an entity.
@@ -158,7 +160,7 @@ void ye_add_renderer_component(struct ye_entity *entity, enum ye_component_rende
  * @param z The z-index of the image renderer component.
  * @param src The source of the image.
  */
-void ye_add_image_renderer_component(struct ye_entity *entity, int z,const char *src);
+YE_API void ye_add_image_renderer_component(struct ye_entity *entity, int z,const char *src);
 
 /**
  * @brief Adds an image renderer component to an entity.
@@ -167,7 +169,7 @@ void ye_add_image_renderer_component(struct ye_entity *entity, int z,const char 
  * @param texture The texture to use for the image.
  * @note This function is used for preloaded textures.
  */
-void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, SDL_Texture *texture);
+YE_API void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, SDL_Texture *texture);
 
 /**
  * @brief Temporarily adds a text renderer component to an entity.
@@ -178,7 +180,7 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
  * @param font_size The size of the font to use for rendering the text.
  * @param color The color to use for rendering the text.
  */
-void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, int wrap_width);
+YE_API void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, int wrap_width);
 
 /**
  * @brief Temporarily adds an outlined text renderer component to an entity.
@@ -191,7 +193,7 @@ void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char 
  * @param outline_color The color to use for the outline of the text.
  * @param outline_size The size of the outline.
  */
-void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size, int wrap_width);
+YE_API void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size, int wrap_width);
 
 /**
  * @brief Temporarily adds an animation renderer component to an entity.
@@ -199,7 +201,7 @@ void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, co
  * @param z The z-index of the animation renderer component.
  * @param meta_file The meta file to use for loading animation details.
  */
-void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const char *meta_file);
+YE_API void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const char *meta_file);
 
 /**
  * @brief Adds a tilemap tile renderer component to an entity.
@@ -209,13 +211,13 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
  * @param handle The handle to the tilemap source image (from loose or pack).
  * @param src The source rect of the tile.
  */
-void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, const char * handle, SDL_Rect src);
+YE_API void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, const char * handle, SDL_Rect src);
 
 /**
  * @brief Removes a renderer component from an entity.
  * @param entity The entity to remove the renderer component from.
  */
-void ye_remove_renderer_component(struct ye_entity *entity);
+YE_API void ye_remove_renderer_component(struct ye_entity *entity);
 
 /**
  * @brief Handles the rendering system.
@@ -247,6 +249,6 @@ void ye_remove_renderer_component(struct ye_entity *entity);
  * - SDL_RenderSetClipRect(renderer, &visibleRect);
  * - SDL_Rect rect = {0,0,640,320}; SDL_RenderSetViewport(pRenderer, &rect);
  */
-void ye_system_renderer(SDL_Renderer *renderer);
+YE_API void ye_system_renderer(SDL_Renderer *renderer);
 
 #endif

@@ -1,6 +1,6 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef YE_PHYSICS_H
 #define YE_PHYSICS_H
+
+#include <yoyoengine/export.h>
 
 /*
     Set a default of 10 substeps if the developer does not override it
@@ -42,20 +44,20 @@ struct ye_component_physics {
  * @param velocity_x The x component of the velocity
  * @param velocity_y The y component of the velocity
  */
-void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float velocity_y);
+YE_API void ye_add_physics_component(struct ye_entity *entity, float velocity_x, float velocity_y);
 
 /**
  * @brief Removes the physics component from an entity
  *
  * @param entity The entity to remove the component from
  */
-void ye_remove_physics_component(struct ye_entity *entity);
+YE_API void ye_remove_physics_component(struct ye_entity *entity);
 
 /**
  * @brief Physics system function
  *
  * This function is responsible for updating the physics components of all entities.
  */
-void ye_system_physics();
+YE_API void ye_system_physics();
 
 #endif
