@@ -9,7 +9,12 @@
 #define YE_EXPORT_H
 
 #ifdef _WIN32
-    #define YE_API __declspec(dllexport)
+    // if we are building, export, else import
+    #ifdef YOYO_ENGINE_BUILDING
+        #define YE_API __declspec(dllexport)
+    #else
+        #define YE_API __declspec(dllimport)
+    #endif
 #else
     #define YE_API
 #endif
