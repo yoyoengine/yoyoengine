@@ -336,7 +336,7 @@ if(YOYO_ENGINE_STATIC)
 		lua_static
 	)
 else()
-    target_link_libraries(yoyoengine PUBLIC 
+    target_link_libraries(yoyoengine PRIVATE 
         -Wl,--whole-archive
         jansson
         zlibstatic
