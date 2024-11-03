@@ -81,12 +81,12 @@ jobs:
           with:
             path: ${{ github.workspace }}\\engine\\build\\_deps\\*-src
             key: windows-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
-
+        - uses: ilammy/msvc-dev-cmd@v1.13.0
         - name: Configure with CMake
           run: |
             mkdir -p ${{ github.workspace }}\\engine\\build
             cd ${{ github.workspace }}\\engine\\build
-            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -G "Visual Studio 16 2019" ..
+            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
         
         - name: Build with MSVC
           run: |
