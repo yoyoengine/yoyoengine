@@ -84,7 +84,7 @@ jobs:
         - uses: ilammy/msvc-dev-cmd@v1.13.0
         - name: Configure with CMake
           run: |
-            mkdir -p ${{ github.workspace }}\\engine\\build
+            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\engine\\build"
             cd ${{ github.workspace }}\\engine\\build
             cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
         
