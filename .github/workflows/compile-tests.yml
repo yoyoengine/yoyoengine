@@ -66,3 +66,29 @@ jobs:
         run: |
           cd ${{ github.workspace }}/engine/build
           make -j${nproc}
+
+  build-msvc:
+      name: Build with MSVC
+      runs-on: windows-latest
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Cache Fetchcontent
+          id: cache-fetchcontent
+          uses: actions/cache@v4
+          with:
+            path: ${{ github.workspace }}\\engine\\build\\_deps\\*-src
+            key: windows-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+
+        - name: Configure with CMake
+          run: |
+            mkdir -p ${{ github.workspace }}\\engine\\build
+            cd ${{ github.workspace }}\\engine\\build
+            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -G "Visual Studio 16 2019" ..
+        
+        - name: Build with MSVC
+          run: |
+            cd ${{ github.workspace }}\\engine\\build
+            cmake --build . --config Release
