@@ -23,7 +23,22 @@ project(yoyoengine)
 
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
 
-add_library(yoyoengine SHARED ${SOURCES})
+# If we're using MSVC (first of all, I'm so sorry!),
+# then instead of building the satellite libs into one DLL,
+# we will let the GAME build them into its own exe
+if(MSVC OR YOYO_ENGINE_STATIC)
+    # Only set the cache variable if it hasn't been defined yet
+    if(NOT DEFINED YOYO_ENGINE_STATIC)
+        set(YOYO_ENGINE_STATIC TRUE CACHE BOOL "Building YOYOENGINE with the worst compiler ever designed")
+    endif()
+    add_library(yoyoengine STATIC ${SOURCES})
+else()
+    if(NOT DEFINED YOYO_ENGINE_STATIC)
+        set(YOYO_ENGINE_STATIC FALSE CACHE BOOL "Building YOYOENGINE the way it was intended")
+    endif()
+    add_library(yoyoengine SHARED ${SOURCES})
+endif()
+
 target_compile_definitions(yoyoengine PRIVATE YOYO_ENGINE_BUILDING)
 set_target_properties(yoyoengine PROPERTIES LINKER_LANGUAGE C)
 
@@ -122,7 +137,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibstaticd.lib)
 endif()
 
 # needed for zlib static
@@ -309,18 +324,31 @@ endif()
 #   linking   #
 ###############
 
-target_link_libraries(yoyoengine PRIVATE
-    -Wl,--whole-archive
-    jansson
-    zlibstatic
-    SDL2-static
-    SDL2_ttf
-    SDL2_image
-    SDL2_mixer
-    SDL2_net
-    lua_static
-    -Wl,--no-whole-archive
-)
+if(YOYO_ENGINE_STATIC)
+	target_link_libraries(yoyoengine PUBLIC 
+		jansson
+		zlibstatic
+		SDL2-static
+		SDL2_ttf
+		SDL2_image
+		SDL2_mixer
+		SDL2_net
+		lua_static
+	)
+else()
+    target_link_libraries(yoyoengine PUBLIC 
+        -Wl,--whole-archive
+        jansson
+        zlibstatic
+        SDL2-static
+        SDL2_ttf
+        SDL2_image
+        SDL2_mixer
+        SDL2_net
+        lua_static
+        -Wl,--no-whole-archive
+    )
+endif()
 
 # create an output dir based on platform
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
