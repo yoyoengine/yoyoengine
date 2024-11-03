@@ -79,6 +79,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${jansson_BINARY_DIR}/lib/jansson_d.lib)
+endif()
 
 ###############
 #    SDL2     #
@@ -98,6 +101,10 @@ FetchContent_Declare(
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 FetchContent_MakeAvailable(SDL2)
 target_include_directories(yoyoengine PUBLIC ${SDL2_SOURCE_DIR}/include)
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_BINARY_DIR}/SDL2-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_BINARY_DIR}/SDL2maind.lib)
+endif()
 
 ###############
 #    zlib     #
@@ -114,6 +121,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibd.lib)
+endif()
 
 # needed for zlib static
 set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
@@ -192,6 +202,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2_ttf)
 target_include_directories(yoyoengine PUBLIC ${SDL2_ttf_SOURCE_DIR}) # include is in the root of the repo
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_ttf_BINARY_DIR}/SDL2_ttfd.lib)
+endif()
 
 ###############
 #  SDL_image  #
@@ -221,6 +234,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2_image)
 target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/include)
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_image_BINARY_DIR}/SDL2_image-staticd.lib)
+endif()
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
 target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/external/zlib)
@@ -249,6 +265,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL2_mixer_SOURCE_DIR}/include)
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_mixer_BINARY_DIR}/SDL2_mixer-staticd.lib)
+endif()
 
 ###############
 #     lua     #
@@ -264,6 +283,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(lua)
 target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${lua_BINARY_DIR}/lua-5.4.5/lua_static.lib)
+endif()
 
 ###############
 #   SDL2_net  #
@@ -279,6 +301,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2_net)
 target_include_directories(yoyoengine PUBLIC ${SDL2_net_SOURCE_DIR})
+if(MSVC)
+    target_link_libraries(yoyoengine PUBLIC ${SDL2_net_BINARY_DIR}/SDL2_net-staticd.lib)
+endif()
 
 ###############
 #   linking   #
