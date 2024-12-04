@@ -11,6 +11,8 @@
 
 #include <jansson.h>
 
+#include <yoyoengine/types.h>
+
 #include <yoyoengine/yep.h>
 #include <yoyoengine/json.h>
 #include <yoyoengine/scene.h>
@@ -23,13 +25,14 @@
 #include <yoyoengine/ecs/tag.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
-#include <yoyoengine/ecs/physics.h>
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
+
+#include <yoyoengine/tar_physics/rigidbody.h>
 
 
 void ye_init_scene_manager(){
@@ -74,15 +77,26 @@ struct ye_rectf ye_retrieve_position(json_t *parent){
 }
 
 void ye_construct_transform(struct ye_entity* e, json_t* transform, const char* entity_name) {
-    int x, y;
-    if(!ye_json_int(transform,"x",&x) || !ye_json_int(transform,"y",&y)) {
-        ye_logf(warning,"Entity %s has a transform component with invalid position field\n", entity_name);
+    float x, y, rotation;
+    if(!ye_json_float(transform,"x",&x)) {
+        ye_logf(warning,"Entity %s has a transform component, but it is missing the x field\n", entity_name);
         x = 0;
+    }
+    if(!ye_json_float(transform,"y",&y)) {
+        ye_logf(warning,"Entity %s has a transform component, but it is missing the y field\n", entity_name);
         y = 0;
+    }
+    if(!ye_json_float(transform,"rotation",&rotation)) {
+        ye_logf(warning,"Entity %s has a transform component, but it is missing the rotation field\n", entity_name);
+        rotation = 0;
     }
 
     // construct transform component
     ye_add_transform_component(e,x,y); 
+    if(e->transform == NULL) return;
+
+    // update rotation
+    e->transform->rotation = rotation;
 }
 
 void ye_construct_camera(struct ye_entity* e, json_t* camera, const char* entity_name){
@@ -361,34 +375,48 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
     }
 }
 
-void ye_construct_physics(struct ye_entity* e, json_t* physics, const char* entity_name){
-    // get velocity
-    if(ye_json_has_key(physics,"velocity")){
-        json_t *velocity = NULL;
-        if(!ye_json_object(physics,"velocity",&velocity)) {
-            ye_logf(warning,"Entity \"%s\" has a physics component, but it is missing the velocity field\n", entity_name);
-        } else {
-            float x,y;
-            if(!ye_json_float(velocity,"x",&x) || !ye_json_float(velocity,"y",&y)) {
-                ye_logf(warning,"Entity %s has a physics component with invalid velocity field\n", entity_name);
-            } else {
-                ye_add_physics_component(e,x,y);
-            }
-        }
+void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* entity_name){
+    float mass;
+    if(!ye_json_float(rigidbody,"mass",&mass)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
+        return;
     }
 
-    if(e->physics == NULL) return;
-
-    // get rotational velocity
-    if(ye_json_has_key(physics,"rotational velocity")){
-        float rotational_velocity = 0;    ye_json_float(physics,"rotational velocity",&rotational_velocity);
-        e->physics->rotational_velocity = rotational_velocity;
+    float restitution;
+    if(!ye_json_float(rigidbody,"restitution",&restitution)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the restitution field\n", entity_name);
+        return;
     }
 
-    // update active state
-    if(ye_json_has_key(physics,"active")){
-        bool active = true;    ye_json_bool(physics,"active",&active);
-        e->physics->active = active;
+    float kinematic_friction;
+    if(!ye_json_float(rigidbody,"kinematic_friction",&kinematic_friction)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the kinematic friction field\n", entity_name);
+        return;
+    }
+
+    float rotational_kinematic_friction;
+    if(!ye_json_float(rigidbody,"rotational_kinematic_friction",&rotational_kinematic_friction)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the rotational kinematic friction field\n", entity_name);
+        return;
+    }
+
+    // add the rigidbody component
+    ye_add_rigidbody_component(e,mass,restitution,kinematic_friction,rotational_kinematic_friction);
+
+    float vx = 0;
+    float vy = 0;
+    float vr = 0;
+    if(!ye_json_float(rigidbody,"vx",&vx) || !ye_json_float(rigidbody,"vy",&vy) || !ye_json_float(rigidbody,"vr",&vr)) {
+        ye_logf(warning,"Entity %s has a rigidbody component with invalid velocity field\n", entity_name);
+    } else {
+        e->rigidbody->velocity = (struct ye_vec2f){vx,vy};
+        e->rigidbody->rotational_velocity = vr;
+    }
+
+    // update the active state
+    if(ye_json_has_key(rigidbody,"active")){
+        bool active = true;    ye_json_bool(rigidbody,"active",&active);
+        e->rigidbody->active = active;
     }
 }
 
@@ -416,8 +444,19 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag){
 }
 
 void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* entity_name){
-    // validate bounds field
-    struct ye_rectf b = ye_retrieve_position(collider);
+    // common
+    float x,y;
+    if(!ye_json_float(collider,"x",&x) || !ye_json_float(collider,"y",&y)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the x or y field\n", entity_name);
+        return;
+    }
+
+    // get the type
+    enum ye_collider_type type;
+    if(!ye_json_int(collider,"type",(int*)&type)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the type field\n", entity_name);
+        return;
+    }
 
     // validate is_trigger field
     bool is_trigger;
@@ -426,11 +465,45 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
         is_trigger = false;
     }
 
-    // add the collider component
-    if(!is_trigger)
-        ye_add_static_collider_component(e,b);
-    else
-        ye_add_trigger_collider_component(e,b);
+    json_t *impl = NULL;
+    if(!ye_json_object(collider,"impl",&impl)) {
+        ye_logf(warning,"Entity %s has a collider component, but it is missing the impl field\n", entity_name);
+        return;
+    }
+
+    switch(type) {
+        case YE_COLLIDER_RECT:
+            // validate the w,h fields
+            float w,h;
+            if(!ye_json_float(impl,"w",&w) || !ye_json_float(impl,"h",&h)) {
+                ye_logf(warning,"Entity %s has a collider component, but it is missing the w or h field\n", entity_name);
+                return;
+            }
+
+            if(is_trigger)
+                ye_add_trigger_rect_collider_component(e,x,y,w,h);
+            else
+                ye_add_static_rect_collider_component(e,x,y,w,h);
+            
+            break;
+        case YE_COLLIDER_CIRCLE:
+            // validate the radius field
+            float radius;
+            if(!ye_json_float(impl,"radius",&radius)) {
+                ye_logf(warning,"Entity %s has a collider component, but it is missing the radius field\n", entity_name);
+                return;
+            }
+            
+            if(is_trigger)
+                ye_add_trigger_circle_collider_component(e,x,y,radius);
+            else
+                ye_add_static_circle_collider_component(e,x,y,radius);
+
+            break;
+        default:
+            ye_logf(warning,"Entity %s has a collider component, but it has an invalid type field\n", entity_name);
+            return;
+    }
 
     if(e->collider == NULL) return;
 
@@ -667,14 +740,14 @@ void ye_construct_scene(json_t *entities){
             ye_construct_renderer(e,renderer,entity_name);
         }
 
-        // if we have a physics component on our entity
-        if(ye_json_has_key(components,"physics")){
-            json_t *physics = NULL; ye_json_object(components,"physics",&physics);
-            if(physics == NULL){
-                ye_logf(warning,"Entity %s has a physics field, but it's invalid.\n", entity_name);
+        // if we have a rigidbody component on our entity
+        if(ye_json_has_key(components,"rigidbody")){
+            json_t *rigidbody = NULL; ye_json_object(components,"rigidbody",&rigidbody);
+            if(rigidbody == NULL){
+                ye_logf(warning,"Entity %s has a rigidbody field, but it's invalid.\n", entity_name);
                 continue;
             }
-            ye_construct_physics(e,physics,entity_name);
+            ye_construct_rigidbody(e,rigidbody,entity_name);
         }
 
         // if we have a tag component on our entity

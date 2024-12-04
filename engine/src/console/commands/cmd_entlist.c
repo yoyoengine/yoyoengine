@@ -31,7 +31,7 @@ void ye_cmd_entlist(int argc, const char **argv) {
     bool include_camera         = false;
     bool include_lua_script     = false;
     bool include_button         = false;
-    bool include_physics        = false;
+    bool include_rigidbody        = false;
     bool include_collider       = false;
     bool include_tag            = false;
     bool include_audiosource    = false;
@@ -55,8 +55,8 @@ void ye_cmd_entlist(int argc, const char **argv) {
                     include_lua_script = true;
                 else if(strcmp(argv[i], "button") == 0)
                     include_button = true;
-                else if(strcmp(argv[i], "physics") == 0)
-                    include_physics = true;
+                else if(strcmp(argv[i], "rigidbody") == 0)
+                    include_rigidbody = true;
                 else if(strcmp(argv[i], "collider") == 0)
                     include_collider = true;
                 else if(strcmp(argv[i], "tag") == 0)
@@ -65,7 +65,7 @@ void ye_cmd_entlist(int argc, const char **argv) {
                     include_audiosource = true;
                 else{
                     ye_logf(_YE_RESERVED_LL_SYSTEM, "Invalid -c specifier: %s\n", argv[i]);
-                    ye_logf(_YE_RESERVED_LL_SYSTEM, "Valid specifiers: transform, renderer, camera, lua_script, button, physics, collider, tag, audiosource\n");
+                    ye_logf(_YE_RESERVED_LL_SYSTEM, "Valid specifiers: transform, renderer, camera, lua_script, button, rigidbody, collider, tag, audiosource\n");
                     return;
                 }
             } else if(strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
@@ -98,7 +98,7 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 matches = false;
             if(include_button && !current->entity->button)
                 matches = false;
-            if(include_physics && !current->entity->physics)
+            if(include_rigidbody && !current->entity->rigidbody)
                 matches = false;
             if(include_collider && !current->entity->collider)
                 matches = false;
@@ -127,8 +127,8 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Lua Script]\n");
             if(current->entity->button)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Button]\n");
-            if(current->entity->physics)
-                ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Physics]\n");
+            if(current->entity->rigidbody)
+                ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Rigidbody]\n");
             if(current->entity->collider)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Collider]\n");
             if(current->entity->tag)

@@ -39,17 +39,23 @@
 #include "uthash/uthash.h"
 #include "cache.h"
 #include "ui.h"
+
+// ecs //
 #include "ecs/ecs.h"
 #include "ecs/button.h"
 #include "ecs/audiosource.h"
 #include "ecs/camera.h"
-#include "ecs/ecs.h"
-#include "ecs/physics.h"
 #include "ecs/renderer.h"
 #include "ecs/transform.h"
 #include "ecs/collider.h"
 #include "ecs/tag.h"
 #include "ecs/lua_script.h"
+
+// physics //
+#include "tar_physics/tar.h"
+#include "tar_physics/solver.h"
+#include "tar_physics/rigidbody.h"
+
 #include "utils.h"
 #include "timer.h"
 #include "audio.h"

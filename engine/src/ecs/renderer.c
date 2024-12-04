@@ -18,9 +18,12 @@
 #include <yoyoengine/version.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/debug_renderer.h>
+
+#include <yoyoengine/types.h>
 
 void ye_update_renderer_component(struct ye_entity *entity){
     /*The purpose of this function is to be invoked when we know we have changed some internal variables of the renderer, and need to recompute the outputted texture*/
@@ -578,6 +581,12 @@ void ye_system_renderer(SDL_Renderer *renderer) {
 
                 // entity rect is now a reflection of the actual calculated rect
 
+                // get rotation factoring in the transform
+                float actual_rotation = current->entity->renderer->rotation;
+                if(current->entity->transform)
+                    actual_rotation = current->entity->transform->rotation + current->entity->renderer->rotation;
+
+
                 /*
                     TODO: HACK FOR ACEROLA JAM ZERO, THERE IS A BETTER WAY TO FORMULAICALLY DETERMINE THIS OFFSET TO CUT
                     DOWN ON RENDERING COSTS
@@ -587,7 +596,7 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                 */
                 int occlusion_offset_x = 0;
                 int occlusion_offset_y = 0;
-                if(current->entity->renderer->rotation != 0){
+                if(actual_rotation != 0){
                     occlusion_offset_x = YE_STATE.engine.target_camera->camera->view_field.w;
                     occlusion_offset_y = YE_STATE.engine.target_camera->camera->view_field.h;
                     // occlusion_offset_x = 1920;
@@ -663,10 +672,10 @@ void ye_system_renderer(SDL_Renderer *renderer) {
                         else if(current->entity->renderer->flipped_y){
                             flip = SDL_FLIP_VERTICAL;
                         }
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, (int)current->entity->renderer->rotation, NULL, flip);
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, NULL, flip);
                     }
-                    else if(current->entity->renderer->rotation != 0.0){
-                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, (int)current->entity->renderer->rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
+                    else if(actual_rotation != 0.0){
+                        SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
                     }
                     else{
                         SDL_RenderCopy(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect);

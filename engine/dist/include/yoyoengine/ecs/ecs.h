@@ -17,6 +17,8 @@
 
 #include <stdbool.h>
 
+#include <yoyoengine/types.h>
+
 /*
     =============================================================
                         ENTITY LISTS
@@ -28,12 +30,12 @@ YE_API extern struct ye_entity_node *entity_list_head;
 YE_API extern struct ye_entity_node *transform_list_head;
 YE_API extern struct ye_entity_node *renderer_list_head;
 YE_API extern struct ye_entity_node *camera_list_head;
-YE_API extern struct ye_entity_node *physics_list_head;
 YE_API extern struct ye_entity_node *tag_list_head;
 YE_API extern struct ye_entity_node *collider_list_head;
 YE_API extern struct ye_entity_node *lua_script_list_head;
 YE_API extern struct ye_entity_node *audiosource_list_head;
 YE_API extern struct ye_entity_node *button_list_head;
+YE_API extern struct ye_entity_node *rigidbody_list_head;
 
 /**
  * @brief Linked list structure for storing entities
@@ -95,18 +97,10 @@ struct ye_entity {
     struct ye_component_lua_script *lua_script;     // lua script component
     struct ye_component_button *button;             // button component
     struct ye_component_camera *camera;             // camera component
-    struct ye_component_physics *physics;           // physics component
     struct ye_component_collider *collider;         // collider component
     struct ye_component_tag *tag;                   // tag component
     struct ye_component_audiosource *audiosource;   // audiosource component
-};
-
-/**
- * @brief 2D vector structure
- */
-struct ye_vec2f {
-    float x;
-    float y;
+    struct ye_component_rigidbody *rigidbody;       // rigidbody component
 };
 
 /*

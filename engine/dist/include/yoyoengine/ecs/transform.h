@@ -27,6 +27,9 @@ struct ye_component_transform {
 
     float x;        // the transform x position
     float y;        // the transform y position
+
+    // physics2
+    float rotation; // clockwise rotation in degrees
 };
 
 /**

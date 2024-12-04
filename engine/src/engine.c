@@ -36,12 +36,13 @@
 #include <yoyoengine/networking.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
-#include <yoyoengine/ecs/physics.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
+
+#include <yoyoengine/tar_physics/tar.h>
 
 // buffer to hold filepath strings
 // will be modified by getPath()
@@ -140,7 +141,7 @@ void ye_process_frame(){
     int physics_time = SDL_GetTicks64();
     if(!YE_STATE.editor.editor_mode){
         // update physics
-        ye_system_physics(); // TODO: decouple from framerate
+        ye_physics_tick(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
 

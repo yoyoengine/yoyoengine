@@ -1,5 +1,5 @@
 /*
-    This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
+    This file is a part of yoyoengine. (https://github.com/yoyoengine)
     Copyright (C) 2023-2024  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
@@ -63,13 +63,6 @@ YE_API void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f
 YE_API SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture);
 
 /**
- * @brief A rectangle made up of floats.
- */
-struct ye_rectf {
-    float x, y, w, h;
-};
-
-/**
  * @brief Convert a floating rectangle to an integer rectangle.
  * 
  * @param rect The floating rectangle to convert.
@@ -91,7 +84,7 @@ YE_API struct ye_rectf ye_convert_rect_rectf(SDL_Rect rect);
 enum ye_component_type {
     YE_COMPONENT_TRANSFORM,
     YE_COMPONENT_RENDERER,
-    YE_COMPONENT_PHYSICS,
+    YE_COMPONENT_RIGIDBODY,
     YE_COMPONENT_COLLIDER,
     YE_COMPONENT_LUA_SCRIPT,
     YE_COMPONENT_AUDIOSOURCE,

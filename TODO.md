@@ -152,3 +152,10 @@ components have aspect ratio lock sensibly (button)
 
 - give default admin commands
   - go deep with it, let us modify the engine runtime state
+
+## TAR PHYSICS
+
+- collision detection
+- solver
+- LUA API's for colliders and rigidbodies
+- triple check accounting for rotation in all the other systems... should button, audiosource, be effected? should relative spin around the center of the transform??

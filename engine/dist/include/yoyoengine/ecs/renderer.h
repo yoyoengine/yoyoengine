@@ -22,6 +22,8 @@
 
 #include <yoyoengine/utils.h>
 
+#include <yoyoengine/types.h>
+
 /**
  * @enum ye_component_renderer_type
  * @brief Enum to store different unique types of renderers.

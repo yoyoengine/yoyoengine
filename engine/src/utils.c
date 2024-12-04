@@ -21,6 +21,8 @@
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/audiosource.h>
 
+#include <yoyoengine/types.h>
+
 void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit){
     SDL_Rect _bounds = ye_convert_rectf_rect(*bounds_f);
     SDL_Rect _obj = ye_convert_rectf_rect(*obj_f);
@@ -190,9 +192,18 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
         case YE_COMPONENT_COLLIDER:
             if(entity->collider != NULL){
                 // set x,y,w,h
-                pos = entity->collider->rect;
-                pos.w = entity->collider->rect.w;
-                pos.h = entity->collider->rect.h;
+                pos.x = entity->collider->x;
+                pos.y = entity->collider->y;
+
+                if(entity->collider->type == YE_COLLIDER_RECT){
+                    pos.w = entity->collider->width;
+                    pos.h = entity->collider->height;
+                } else if(entity->collider->type == YE_COLLIDER_CIRCLE){
+                    pos.x -= entity->collider->radius;
+                    pos.y -= entity->collider->radius;
+                    pos.w = entity->collider->radius * 2;
+                    pos.h = entity->collider->radius * 2;
+                }
 
                 // printf("UTIL: found pos at x:%f y:%f w:%f h:%f\n",pos.x,pos.y,pos.w,pos.h);
 
@@ -351,8 +362,8 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
             return entity->renderer != NULL;
         case YE_COMPONENT_CAMERA:
             return entity->camera != NULL;
-        case YE_COMPONENT_PHYSICS:
-            return entity->physics != NULL;
+        case YE_COMPONENT_RIGIDBODY:
+            return entity->rigidbody != NULL;
         case YE_COMPONENT_TAG:
             return entity->tag != NULL;
         case YE_COMPONENT_COLLIDER:

@@ -25,6 +25,19 @@
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/utils.h>
 
+enum ye_collider_type {
+    YE_COLLIDER_RECT = 0,
+    YE_COLLIDER_CIRCLE = 1
+};
+
+// v2, meh
+// enum ye_collider_flags {
+//     YE_COLLIDER_TRIGGER = 1 << 0,
+//     YE_COLLIDER_STATIC = 1 << 1,
+//     YE_COLLIDER_RECT = 1 << 2,
+//     YE_COLLIDER_CIRCLE = 1 << 3
+// };
+
 /**
  * @brief A structure representing a collider component.
  *
@@ -35,32 +48,30 @@ struct ye_component_collider {
     bool active;            /**< Controls whether system will act upon this component. */
     
     bool relative;          /**< Specifies whether this component is relative to a parent transform. */
-    
-    struct ye_rectf rect;   /**< The collider rectangle. */
 
     bool is_trigger;        /**< Specifies whether this collider is a trigger. If false, it is a static collider. */
 
-    /*
-        Meta tracking trigger states
-    */
-    // bool _trigger_entered;
+    enum ye_collider_type type; /**< The type of collider. */
+    float x, y;
+    // TODO: not sure how i feel about anonymous structs in the union...
+    union {
+        // YE_COLLIDER_RECT
+        struct { float width, height; };
+
+        // YE_COLLIDER_CIRCLE
+        struct { float radius; };
+    };
 };
 
-/**
- * @brief Adds a static collider to an entity.
- *
- * @param entity The entity to which the collider is to be added.
- * @param rect The rectangle defining the collider.
- */
-YE_API void ye_add_static_collider_component(struct ye_entity *entity, struct ye_rectf rect);
+///////////////////////////////////////////////////
 
-/**
- * @brief Adds a trigger collider to an entity.
- *
- * @param entity The entity to which the collider is to be added.
- * @param rect The rectangle defining the collider.
- */
-YE_API void ye_add_trigger_collider_component(struct ye_entity *entity, struct ye_rectf rect);
+YE_API void ye_add_static_rect_collider_component(struct ye_entity *entity, float x, float y, float w, float h); 
+YE_API void ye_add_trigger_rect_collider_component(struct ye_entity *entity, float x, float y, float w, float h); 
+
+YE_API void ye_add_static_circle_collider_component(struct ye_entity *entity, float x, float y, float radius);
+YE_API void ye_add_trigger_circle_collider_component(struct ye_entity *entity, float x, float y, float radius);
+
+///////////////////////////////////////////////////
 
 /**
  * @brief Removes an entity's collider component.

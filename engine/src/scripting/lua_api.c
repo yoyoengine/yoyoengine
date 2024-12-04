@@ -19,7 +19,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/lua_script.h>
-#include <yoyoengine/ecs/physics.h>
+#include <yoyoengine/tar_physics/rigidbody.h>
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
@@ -69,7 +69,7 @@ int ye_lua_check_component_exists(lua_State* L){
         entity->camera,
         entity->lua_script,
         entity->button,
-        entity->physics,
+        entity->rigidbody,
         entity->collider,
         entity->tag,
         entity->audiosource
@@ -141,7 +141,7 @@ int ye_lua_remove_component(lua_State* L){
             ye_remove_button_component(entity);
             break;
         case 5:
-            ye_remove_physics_component(entity);
+            ye_remove_rigidbody_component(entity);
             break;
         case 6:
             ye_remove_collider_component(entity);
@@ -206,9 +206,9 @@ void ye_register_lua_scripting_api(lua_State *state){
     ye_lua_collider_register(state);
 
     /*
-        Physics
+        Rigidbody
     */
-    ye_lua_physics_register(state);
+    ye_lua_rigidbody_register(state);
 
     /*
         LuaScript

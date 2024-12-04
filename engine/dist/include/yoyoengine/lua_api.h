@@ -50,8 +50,8 @@ YE_API void ye_lua_renderer_register(lua_State *L);
 // Button
 YE_API void ye_lua_button_register(lua_State *L);
 
-// Physics
-YE_API void ye_lua_physics_register(lua_State *L);
+// Rigidbody
+YE_API void ye_lua_rigidbody_register(lua_State *L);
 
 // Collider
 YE_API void ye_lua_collider_register(lua_State *L);
