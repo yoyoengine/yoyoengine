@@ -80,6 +80,20 @@ if(ZOOGIES_DEVELOPMENT_BUILD)
 endif()
 
 ###############
+#   Lilith    #
+###############
+
+# TODO: pin tag when stable
+FetchContent_Declare(
+    lilith
+    GIT_REPOSITORY https://github.com/yoyoengine/Lilith.git
+    GIT_TAG main
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(Lilith)
+target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lilith.h
+
+###############
 #   jansson   #
 ###############
 
@@ -326,6 +340,7 @@ endif()
 
 if(YOYO_ENGINE_STATIC)
 	target_link_libraries(yoyoengine PUBLIC 
+        lilith
 		jansson
 		zlibstatic
 		SDL2-static
@@ -338,6 +353,7 @@ if(YOYO_ENGINE_STATIC)
 else()
     target_link_libraries(yoyoengine PRIVATE 
         -Wl,--whole-archive
+        lilith
         jansson
         zlibstatic
         SDL2-static

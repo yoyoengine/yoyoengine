@@ -453,6 +453,56 @@ void _draw_subsecting_lines(SDL_Renderer * renderer, SDL_Rect cam, int line_spac
     // printf("x offset: %d, y offset: %d\n", x_offset, y_offset);
 }
 
+void _paint_viewport_lines(SDL_Renderer *renderer) {
+    // get the cam pos
+    SDL_Rect cam = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
+
+    /*
+        Grid of subsecting lines
+    */
+    if(cam.w < 2560)
+        _draw_subsecting_lines(renderer, cam, 50, 1, (SDL_Color){25, 25, 25, 255});
+    // if(cam.w < 3840)
+    if(cam.w < 5000)
+        _draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 255});
+    if(cam.w < 9500)
+        _draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 255});
+    if(cam.w > 10000){
+        int thickness = ((cam.w - 9500) / 2000) + 7;
+        // printf("thickness: %d\n", thickness);
+        _draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 255});
+    }
+    else{
+        _draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 255});
+    }
+
+    /*
+        Overpaint the axes
+    */
+
+    // x axis
+    ye_draw_thick_line(
+        renderer,
+        0,
+        0 - cam.y,
+        cam.w,
+        0 - cam.y,
+        10,
+        (SDL_Color){225, 225, 225, 255}
+    );
+
+    // y axis
+    ye_draw_thick_line(
+        renderer,
+        0 - cam.x,
+        0,
+        0 - cam.x,
+        cam.h,
+        10,
+        (SDL_Color){225, 225, 225, 255}
+    );
+}
+
 void ye_system_renderer(SDL_Renderer *renderer) {
     if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
 
@@ -799,6 +849,341 @@ void ye_system_renderer(SDL_Renderer *renderer) {
     //     SDL_RenderDrawRect(renderer, &selected_entity_rect);
     //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     // }
+
+    /*
+        Additional render step to allow the game to perform custom behavior
+        TODO: removeme?
+        - 8/18/24, im just gonna leave for posterity
+    */
+    ye_fire_event(YE_EVENT_ADDITIONAL_RENDER, (union ye_event_args){NULL});
+
+    /*
+        Perform additional immediate and callback based rendering on top of the frame we have just prepared
+    */
+    ye_debug_renderer_render();
+}
+
+void _attempt_tick_animation(struct ye_entity_node *current) {
+    // TODO: this should be decoupled from the renderer and become its own system
+
+    // if not editor mode (we want to not run animations in editor)
+    if(!YE_STATE.editor.editor_mode){
+        struct ye_component_renderer_animation *animation = current->entity->renderer->renderer_impl.animation;
+        if(!animation->paused){
+            int now = SDL_GetTicks();
+            if(now - animation->last_updated >= animation->frame_delay){
+                // the difference between now and last updated
+                int diff = (now - animation->last_updated);// / (animation->frame_delay); 
+
+                // the number of frames we need to advance
+                int frames_to_advance = diff / animation->frame_delay;
+
+                // advance the frame index and wrap around as needed
+                animation->current_frame_index += frames_to_advance;
+                if((size_t)animation->current_frame_index >= animation->frame_count){
+                    animation->current_frame_index = animation->current_frame_index % animation->frame_count;
+                    if(animation->loops != -1){
+                        animation->loops--;
+                        if(animation->loops <= 0){
+                            animation->paused = true; // TODO: dont just pause when it ends, but give option to destroy/ disable renderer
+                            // pause on the last frame of the animation
+                            animation->current_frame_index = animation->frame_count - 1;
+                        }
+                    }
+                }
+                animation->last_updated = now;
+                // current->entity->renderer->texture = animation->frames[animation->current_frame_index]; was this the only thing to change?
+            }
+        }
+    }
+}
+
+// TODO: refactor for prect
+void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) {
+    (void)renderer;
+    (void)current;
+    // paint bounds, my beloved <3
+    // if (YE_STATE.editor.paintbounds_visible) {
+    //     // create entity bounds offset by camera
+    //     // SDL_Rect entity_bounds = ye_convert_rectf_rect(current->entity->transform->bounds);
+    //     // entity_bounds.x = entity_bounds.x - camera_rect.x;
+    //     // entity_bounds.y = entity_bounds.y - camera_rect.y;
+        
+    //     // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    //     // SDL_RenderDrawRect(renderer, &entity_bounds);
+    //     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    //     SDL_RenderDrawRect(renderer, &entity_rect);
+
+    //     // paint an orange rectangle filled at the entity center (transform->center) SDL_Point
+    //     SDL_Rect center_rect = {entity_rect.x + current->entity->renderer->center.x - 10, entity_rect.y + current->entity->renderer->center.y - 10, 20, 20};
+    //     SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
+    //     SDL_RenderFillRect(renderer, &center_rect);
+    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // }
+    // TODO ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    // button bounds
+    // if(current->entity->button != NULL && YE_STATE.editor.button_bounds_visible){
+    //     // paint the button bounds
+    //     SDL_Rect button_bounds = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_BUTTON));
+    //     // printf("button_bounds: %d %d %d %d\n", button_bounds.x, button_bounds.y, button_bounds.w, button_bounds.h);
+    //     button_bounds.x = button_bounds.x - camera_rect.x;
+    //     button_bounds.y = button_bounds.y - camera_rect.y;
+    //     SDL_SetRenderDrawColor(renderer, 235, 52, 235, 255);
+    //     SDL_RenderDrawRect(renderer, &button_bounds);
+    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // }
+
+    // // audio range
+    // if(current->entity->audiosource != NULL && YE_STATE.editor.audiorange_visible){
+    //     SDL_Rect audio_range_rect = ye_convert_rectf_rect(
+    //         ye_get_position(current->entity,YE_COMPONENT_AUDIOSOURCE)
+    //     );
+    //     audio_range_rect.x = audio_range_rect.x - camera_rect.x;
+    //     audio_range_rect.y = audio_range_rect.y - camera_rect.y;
+    //     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    //     // use ye_draw_circle to draw the audio range, the width is the radius
+    //     ye_draw_circle(renderer, audio_range_rect.x + (audio_range_rect.w / 2), audio_range_rect.y + (audio_range_rect.h / 2), audio_range_rect.w / 2, 5);
+
+    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // }
+
+    // if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
+    //     // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
+    //     SDL_Color color = {255, 255, 255, 255};
+
+    //     // get the current engine font size
+    //     int og_size = TTF_FontHeight(YE_STATE.engine.pEngineFont);
+
+    //     // set the size to something way less for performance reasons
+    //     TTF_SetFontSize(YE_STATE.engine.pEngineFont, 32);
+
+    //     SDL_Texture *text_texture = createTextTexture(current->entity->name, YE_STATE.engine.pEngineFont, &color);
+    //     SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
+    //     SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
+    //     SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
+    //     SDL_DestroyTexture(text_texture); // TODO: cache for reusability somewhere and invalidate when name changes?
+
+    //     // set the font size back to the original size
+    //     TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
+    // }
+
+    // if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
+    //     // paint the collider
+    //     SDL_Rect collider_rect = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_COLLIDER));
+    //     collider_rect.x = collider_rect.x - camera_rect.x;
+    //     collider_rect.y = collider_rect.y - camera_rect.y;
+    //     // yellow trigger collider
+    //     if(current->entity->collider->is_trigger){
+    //         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    //         SDL_RenderDrawRect(renderer, &collider_rect);
+    //         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    //     }
+    //     // blue static collider
+    //     else{
+    //         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    //         SDL_RenderDrawRect(renderer, &collider_rect);
+    //         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    //     }
+    // }
+    // TODO: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+}
+
+void ye_renderer2(SDL_Renderer *renderer) {
+    struct ye_entity *current_cam = YE_STATE.engine.target_camera;
+    
+    // check if we have a non-null, active camera targeted
+    if (current_cam == NULL || current_cam->camera == NULL || !current_cam->camera->active) {
+        ye_logf(warning, "No active camera targeted. Skipping renderer system\n");
+        return;
+    }
+
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.editor_display_viewport_lines){
+        _paint_viewport_lines(renderer);
+    }
+
+    YE_STATE.runtime.painted_entity_count = 0;
+
+    /*
+        Calculate verticies bounding camera
+    */
+    struct ye_point_rectf cam_prect = ye_rect_to_point_rectf(current_cam->camera->view_field);
+    mat3_t cam_matrix = ye_get_offset_matrix(current_cam, YE_COMPONENT_CAMERA);
+    // transform each vertex to get the final camera rect
+    for(int i = 0; i < 4; i++){
+        vec2_t point = {.data = {cam_prect.verticies[i].x, cam_prect.verticies[i].y}};
+        point = lla_mat3_mult_vec2(cam_matrix, point);
+        cam_prect.verticies[i].x = point.data[0];
+        cam_prect.verticies[i].y = point.data[1];
+    }
+    
+    // Traverse tracked entities with renderer components
+    struct ye_entity_node *current = renderer_list_head;
+    while (current != NULL) {
+        if(!current->entity->renderer->active){
+            current = current->next;
+            continue;
+        }
+
+        // if this render object is an anim, tick it
+        if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION)
+            _attempt_tick_animation(current);
+        
+        // discard inactive/edge case entities
+        if(!current->entity->active ||
+            current->entity->renderer == NULL ||
+            !current->entity->renderer->active ||
+            current->entity->renderer->z > current_cam->camera->z
+        ) {
+            current = current->next;
+            continue;
+        }
+
+        struct ye_point_rectf entity_prect = ye_rect_to_point_rectf(current->entity->renderer->rect);
+        mat3_t entity_matrix = ye_get_offset_matrix(current->entity, YE_COMPONENT_RENDERER);
+
+        // transform each vertex to get the final entity rect
+        for(int i = 0; i < 4; i++){
+            vec2_t point = {.data = {entity_prect.verticies[i].x, entity_prect.verticies[i].y}};
+            point = lla_mat3_mult_vec2(entity_matrix, point);
+            entity_prect.verticies[i].x = point.data[0];
+            entity_prect.verticies[i].y = point.data[1];
+        }
+
+        // if a single vertex is on camera, we will render it
+        bool occluded = true;
+        for(int i = 0; i < 4; i++) {
+            if(ye_pointf_in_point_rectf(cam_prect.verticies[i], entity_prect)){
+                occluded = false;
+                break;
+            }
+        }
+        if(occluded) {
+            current = current->next;
+            continue;
+        }
+
+        // set alpha (log failure) TODO: profile efficiency of this
+        if (SDL_SetTextureAlphaMod(current->entity->renderer->texture, current->entity->renderer->alpha) != 0) {
+            ye_logf(warning, "Failed to set alpha for entity %s\n", current->entity->name);
+            // log the sdl get error
+            ye_logf(warning, "SDL_GetError: %s\n", SDL_GetError());
+        }
+
+        // matrix which transforms back to "window" coordinates
+        mat3_t norm_mat = lla_mat3_sub(cam_matrix, entity_matrix);
+
+        // temp
+        (void)norm_mat;
+
+        /*
+        
+            TODO: renderer2
+
+            - scale to window coordinates and RenderGeometry it (implicitely rotated)
+            - tilemap tiles are a weird edge case you need to figure out... offsetting into the tilemap is odd
+            - animation is also weird edge case offsetting into atlas
+            - refactor the component paintbounds
+            - alignment as far as stretch and fill are concerned is another wack edge case...
+            - flipped x and y are edge cases
+
+        */
+
+        // TODO: REFACTOR BELOW
+
+
+
+
+
+        // // scale it to be on screen and paint it
+        // entity_rect.x = entity_rect.x - camera_rect.x;
+        // entity_rect.y = entity_rect.y - camera_rect.y;
+
+        // /*
+        //     If the renderer is a tilemap tile, we need to set the src rect to the tilemap tile src rect
+        //     Else, just render the full source image
+
+        //     NOTE: in the future, this will probably also point to the correct frame of an animation
+        // */
+        // SDL_Rect *ent_src_rect = NULL;
+        // if(current->entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE){
+        //     ent_src_rect = &current->entity->renderer->renderer_impl.tile->src;
+        // }
+
+        // /*
+        //     For an animation, the src rect is
+        //     {
+        //         x: 0,
+        //         y: current_frame_index * frame_height,
+        //         w: frame_width,
+        //         h: frame_height
+        //     }
+        // */
+        // if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+        //     struct ye_component_renderer * rend = current->entity->renderer;
+        //     ent_src_rect = &(SDL_Rect){
+        //         0,
+        //         rend->renderer_impl.animation->current_frame_index * rend->renderer_impl.animation->frame_height,
+        //         rend->renderer_impl.animation->frame_width,
+        //         rend->renderer_impl.animation->frame_height
+        //     };
+        //     // printf("ent_src_rect: %d %d %d %d\n", ent_src_rect->x, ent_src_rect->y, ent_src_rect->w, ent_src_rect->h);
+        // }
+
+        // if(current->entity->renderer->alignment == YE_ALIGN_STRETCH)
+        //     ent_src_rect = NULL;
+
+        // // if transform is flipped or rotated render it differently
+        // if(current->entity->renderer->flipped_x || current->entity->renderer->flipped_y){
+        //     SDL_RendererFlip flip = SDL_FLIP_NONE;
+        //     if(current->entity->renderer->flipped_x && current->entity->renderer->flipped_y){
+        //         flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+        //     }
+        //     else if(current->entity->renderer->flipped_x){
+        //         flip = SDL_FLIP_HORIZONTAL;
+        //     }
+        //     else if(current->entity->renderer->flipped_y){
+        //         flip = SDL_FLIP_VERTICAL;
+        //     }
+        //     SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, NULL, flip);
+        // }
+        // else if(actual_rotation != 0.0){
+        //     SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
+        // }
+        // else{
+        //     SDL_RenderCopy(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect);
+        // }
+
+
+
+
+
+        // TODO: REFACTOR ABOVE ^^^^^
+
+        YE_STATE.runtime.painted_entity_count++;
+        
+        // TODO: prect refactor
+        _paint_paintbounds(renderer, current);
+    }
+    current = current->next;
+
+    /*
+        additional post processing for editor mode    
+        RUNS ONCE AFTER ALL ENTITES ARE PAINTED
+    */
+    // if(YE_STATE.editor.editor_mode && YE_STATE.editor.scene_camera_bounds_visible && YE_STATE.editor.scene_default_camera != NULL){
+    //     // draw box around viewport of engine_runtime_state.scene_default_camera
+    //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    //     SDL_Rect scene_camera_rect = ye_get_position_rect(YE_STATE.editor.scene_default_camera,YE_COMPONENT_CAMERA);
+    //     scene_camera_rect.x = scene_camera_rect.x - camera_rect.x;
+    //     scene_camera_rect.y = scene_camera_rect.y - camera_rect.y;
+    //     scene_camera_rect.w = scene_camera_rect.w;
+    //     scene_camera_rect.h = scene_camera_rect.h;
+    //     SDL_RenderDrawRect(renderer, &scene_camera_rect);
+    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // }
+    // TODO: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     /*
         Additional render step to allow the game to perform custom behavior

@@ -22,4 +22,18 @@ struct ye_vec2f {
     float x, y;
 };
 
+/**
+ * @brief A 2D point made up of floats.
+ */
+struct ye_pointf {
+    float x, y;
+};
+
+/**
+ * @brief A rectangle made up float points.
+ */
+struct ye_point_rectf {
+    struct ye_pointf verticies[4];
+};
+
 #endif // YE_TYPES_H

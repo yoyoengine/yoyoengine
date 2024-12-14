@@ -22,6 +22,8 @@
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/logging.h>
 
+#include <Lilith.h>
+
 /**
  * @brief An enum that defines the alignment of an entity within its bounds.
 */
@@ -210,5 +212,30 @@ YE_API bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float
  * @param color The color of the rectangle.
 */
 YE_API void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color);
+
+/*
+    1---2
+    |   |
+    0---3
+*/
+YE_API struct ye_point_rectf ye_rect_to_point_rectf(struct ye_rectf rect);
+
+/**
+ * @brief Returns the cumulative matrix of all offsets and rotations for a given entity component
+ * 
+ * @param entity The entity to get the offset matrix for
+ * @param type The type of component to get the offset matrix for
+ * @return mat3_t The cumulative offset matrix
+ */
+YE_API mat3_t ye_get_offset_matrix(struct ye_entity *entity, enum ye_component_type type);
+
+/**
+ * @brief Checks if a point is within a rectangle.
+ * 
+ * @param point The point to check.
+ * @param rect The rectangle to check.
+ * @return bool Whether or not the point is within the rectangle.
+ */
+YE_API bool ye_pointf_in_point_rectf(struct ye_pointf point, struct ye_point_rectf rect);
 
 #endif

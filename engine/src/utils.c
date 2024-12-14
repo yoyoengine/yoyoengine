@@ -23,6 +23,8 @@
 
 #include <yoyoengine/types.h>
 
+#include <Lilith.h>
+
 void ye_auto_fit_bounds(struct ye_rectf* bounds_f, struct ye_rectf* obj_f, enum ye_alignment alignment, SDL_Point* center, bool should_grow_to_fit){
     SDL_Rect _bounds = ye_convert_rectf_rect(*bounds_f);
     SDL_Rect _obj = ye_convert_rectf_rect(*obj_f);
@@ -257,6 +259,101 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
             ye_logf(error, "Tried to get position for component on \"%s\" that does not have a position or size. returning (0,0,0,0)\n",entity->name);
             return pos;
     }
+}
+
+mat3_t ye_get_offset_matrix(struct ye_entity *entity, enum ye_component_type type){
+    if(entity == NULL){
+        ye_logf(error, "Tried to get position for null entity \"%s\". returning identity matrix\n",entity->name);
+        return lla_mat3_zero();
+    }
+
+    mat3_t pos = lla_mat3_identity();
+
+    /*
+        Rotation
+    */
+    if(entity->transform && entity->transform->rotation != 0)
+        pos = lla_mat3_rotate(pos, entity->transform->rotation);
+    if(entity->renderer && entity->renderer->rotation != 0)
+        pos = lla_mat3_rotate(pos, entity->renderer->rotation);
+
+    // if there is a transform, offset the identity by the transform
+    if(entity->transform)
+        pos = lla_mat3_translate(pos, (vec2_t){.data={entity->transform->x, entity->transform->y}});
+    
+    // component specific transform offsets
+    switch(type){
+        case YE_COMPONENT_RENDERER:
+            if(entity->renderer){
+                if(entity->renderer->relative)
+                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->renderer->rect.x, entity->renderer->rect.y}});
+            }
+            break;
+        case YE_COMPONENT_CAMERA:
+            if(entity->camera){
+                if(entity->camera->relative)
+                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->camera->view_field.x, entity->camera->view_field.y}});
+            }
+            break;
+        case YE_COMPONENT_COLLIDER:
+            if(entity->collider){
+                if(entity->collider->relative)
+                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->collider->x, entity->collider->y}});
+            }
+            break;
+        case YE_COMPONENT_AUDIOSOURCE:
+            if(entity->audiosource){
+                if(entity->audiosource->relative)
+                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->audiosource->range.x, entity->audiosource->range.y}});
+            }
+            break;
+        case YE_COMPONENT_BUTTON:
+            if(entity->button){
+                if(entity->button->relative)
+                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->button->rect.x, entity->button->rect.y}});
+            }
+            break;
+        default:
+            break;
+    }
+
+    return pos;
+}
+
+/*
+    1---2
+    |   |
+    0---3
+*/
+struct ye_point_rectf ye_rect_to_point_rectf(struct ye_rectf rect){
+    struct ye_point_rectf pointRect = {
+        .verticies = {
+            (struct ye_pointf){.x = rect.x,             .y = rect.y},
+            (struct ye_pointf){.x = rect.x,             .y = rect.y + rect.h},
+            (struct ye_pointf){.x = rect.x + rect.w,    .y = rect.y + rect.h},
+            (struct ye_pointf){.x = rect.x + rect.w,    .y = rect.y}
+        }
+    };
+    return pointRect;
+}
+
+bool ye_pointf_in_point_rectf(struct ye_pointf point, struct ye_point_rectf rect){
+    // check if point is within each edge of rect
+    for(int i = 0; i < 4; i++) {
+        vec2_t p1 = (vec2_t){.data={rect.verticies[i].x, rect.verticies[i].y}};
+        vec2_t p2 = (vec2_t){.data={rect.verticies[(i + 1) % 4].x, rect.verticies[(i + 1) % 4].y}};
+        
+        vec2_t edge = lla_vec2_sub(p2, p1);
+
+        vec2_t pointVec = lla_vec2_sub((vec2_t){.data={point.x, point.y}}, p1);
+
+        float cross = lla_vec2_cross(edge, pointVec);
+
+        if(cross < 0){
+            return false;
+        }
+    }
+    return true;
 }
 
 SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type type){

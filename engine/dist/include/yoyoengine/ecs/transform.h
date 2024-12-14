@@ -13,6 +13,8 @@
 #ifndef YE_TRANSFORM_H
 #define YE_TRANSFORM_H
 
+#include <Lilith.h>
+
 #include <yoyoengine/export.h>
 
 #include <yoyoengine/ecs/ecs.h>
