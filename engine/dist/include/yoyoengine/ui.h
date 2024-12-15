@@ -28,6 +28,9 @@
 
 #include <SDL.h>
 
+// forward declare nk_context
+struct nk_context;
+
 /*
     Some helpful macros to allow for easy text formatting.
 */
@@ -103,7 +106,7 @@ YE_API void ui_paint_debug_overlay(struct nk_context *ctx);
 /**
  * @brief Paints a overlay containing info on the active camera.
  */
-YE_API void ui_paint_cam_info();
+YE_API void ui_paint_cam_info(struct nk_context *ctx);
 
 /**
  * @brief Renders all registered windows in UI system onto the SDL frame buffer.

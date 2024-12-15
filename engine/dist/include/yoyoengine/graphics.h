@@ -64,7 +64,7 @@ YE_API SDL_Texture * ye_create_image_texture(const char *pPath);
  * @brief Creates a text texture with an outline.
  * @return The created SDL_Texture.
  */
-YE_API SDL_Texture *createTextTextureWithOutline();
+YE_API SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor);
 
 /*
     Untested rn.

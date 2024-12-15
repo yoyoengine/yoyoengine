@@ -471,10 +471,13 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
         return;
     }
 
+    // comply with mingw & clang, boo!
+    float w,h = 0;
+    float radius = 0;
+    
     switch(type) {
         case YE_COLLIDER_RECT:
             // validate the w,h fields
-            float w,h;
             if(!ye_json_float(impl,"w",&w) || !ye_json_float(impl,"h",&h)) {
                 ye_logf(warning,"Entity %s has a collider component, but it is missing the w or h field\n", entity_name);
                 return;
@@ -488,7 +491,6 @@ void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* en
             break;
         case YE_COLLIDER_CIRCLE:
             // validate the radius field
-            float radius;
             if(!ye_json_float(impl,"radius",&radius)) {
                 ye_logf(warning,"Entity %s has a collider component, but it is missing the radius field\n", entity_name);
                 return;
