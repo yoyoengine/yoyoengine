@@ -160,14 +160,10 @@ components have aspect ratio lock sensibly (button)
 - LUA API's for colliders and rigidbodies
 - triple check accounting for rotation in all the other systems... should button, audiosource, be effected? should relative spin around the center of the transform??
 
-## lin alg brainrot
-
-ok, lets just handle it this way:
-- we do not store matricies
-- when transformations are needed, we create a matrix and do the computation, modifying any default values that need it
-
 ## lskdjgfl kjdfjug klfdhgkldfhjg 
 
-- fix clang ci errors
-- finish renderer linalg port
+- renderer texture uv offsets for animation and tiles
+- renderer stretch / alignment (see comments)
+- paintbound refactor
+- count verticies and draw wireframe (debugging)
 - pass on each component for linalg (if needed)

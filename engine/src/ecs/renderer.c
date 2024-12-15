@@ -991,7 +991,7 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
     // TODO: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
-void ye_renderer2(SDL_Renderer *renderer) {
+void ye_renderer_v2(SDL_Renderer *renderer) {
     struct ye_entity *current_cam = YE_STATE.engine.target_camera;
     
     // check if we have a non-null, active camera targeted
@@ -1042,6 +1042,7 @@ void ye_renderer2(SDL_Renderer *renderer) {
         }
 
         struct ye_point_rectf entity_prect = ye_rect_to_point_rectf(current->entity->renderer->rect);
+        struct ye_point_rectf original_entity_prect = entity_prect;
         mat3_t entity_matrix = ye_get_offset_matrix(current->entity, YE_COMPONENT_RENDERER);
 
         // transform each vertex to get the final entity rect
@@ -1055,7 +1056,7 @@ void ye_renderer2(SDL_Renderer *renderer) {
         // if a single vertex is on camera, we will render it
         bool occluded = true;
         for(int i = 0; i < 4; i++) {
-            if(ye_pointf_in_point_rectf(cam_prect.verticies[i], entity_prect)){
+            if(ye_pointf_in_point_rectf(entity_prect.verticies[i], cam_prect)){
                 occluded = false;
                 break;
             }
@@ -1073,101 +1074,80 @@ void ye_renderer2(SDL_Renderer *renderer) {
         }
 
         // matrix which transforms back to "window" coordinates
-        mat3_t norm_mat = lla_mat3_sub(cam_matrix, entity_matrix);
-
-        // temp
-        (void)norm_mat;
+        // TODO: this might be why we need to offset camera location in util.c
+        mat3_t cam_matrix_inv = lla_mat3_inverse(cam_matrix);
+        mat3_t norm_mat = lla_mat3_mult(entity_matrix, cam_matrix_inv); 
 
         /*
         
             TODO: renderer2
 
-            - scale to window coordinates and RenderGeometry it (implicitely rotated)
             - tilemap tiles are a weird edge case you need to figure out... offsetting into the tilemap is odd
             - animation is also weird edge case offsetting into atlas
             - refactor the component paintbounds
             - alignment as far as stretch and fill are concerned is another wack edge case...
-            - flipped x and y are edge cases
+
+            idea: alignment is handled purely in the AABB and the vertified paint is just based on the computed rect
 
         */
 
-        // TODO: REFACTOR BELOW
+        /*
+            For rendering, afaict RenderGeometry only takes triangles,
+            so we need to port into SDL_Vertex and a list of indicies
 
+            TODO: tex coord shift for animation and tilemaps
+            TODO: AABB can use old system? (probably more optimized)
 
+            1---2
+            |   |
+            0---3
+        */
+        SDL_Vertex verticies[4];                // TODO: cache in renderer for easy access in paintbounds and others?
+        int indicies[6] = {0, 1, 2, 2, 3, 0};
 
+        // translate verticies
+        for(int i = 0; i < 4; i++){
+            // transform from world into camera space
+            vec2_t point = {.data = {original_entity_prect.verticies[i].x, original_entity_prect.verticies[i].y}};
+            
+            // debug: render dot at vertex
+            // printf("point: %f %f\n", point.data[0], point.data[1]);
+            // ye_debug_render_point((int)point.data[0], (int)point.data[1], (SDL_Color){255,0,0,255}, 5);
+            
+            point = lla_mat3_mult_vec2(norm_mat, point);
+            
+            // set SDL_Vertex
+            verticies[i].position.x = point.data[0];
+            verticies[i].position.y = point.data[1];
+            verticies[i].color.r = 255;
+            verticies[i].color.g = 255;
+            verticies[i].color.b = 255;
+            verticies[i].color.a = current->entity->renderer->alpha;
+        }
 
+        // set texcoord (shoutout gpt4 for the flipped_n computation)
+        bool flipped_x = current->entity->renderer->flipped_x;
+        bool flipped_y = current->entity->renderer->flipped_y;
+        float tex_coords[4][2] = {
+            {flipped_x ? 1 : 0, flipped_y ? 1 : 0},
+            {flipped_x ? 1 : 0, flipped_y ? 0 : 1},
+            {flipped_x ? 0 : 1, flipped_y ? 0 : 1},
+            {flipped_x ? 0 : 1, flipped_y ? 1 : 0}
+        };
+        for (int i = 0; i < 4; i++) {
+            verticies[i].tex_coord.x = tex_coords[i][0];
+            verticies[i].tex_coord.y = tex_coords[i][1];
+        }
 
-        // // scale it to be on screen and paint it
-        // entity_rect.x = entity_rect.x - camera_rect.x;
-        // entity_rect.y = entity_rect.y - camera_rect.y;
-
-        // /*
-        //     If the renderer is a tilemap tile, we need to set the src rect to the tilemap tile src rect
-        //     Else, just render the full source image
-
-        //     NOTE: in the future, this will probably also point to the correct frame of an animation
-        // */
-        // SDL_Rect *ent_src_rect = NULL;
-        // if(current->entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE){
-        //     ent_src_rect = &current->entity->renderer->renderer_impl.tile->src;
-        // }
-
-        // /*
-        //     For an animation, the src rect is
-        //     {
-        //         x: 0,
-        //         y: current_frame_index * frame_height,
-        //         w: frame_width,
-        //         h: frame_height
-        //     }
-        // */
-        // if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
-        //     struct ye_component_renderer * rend = current->entity->renderer;
-        //     ent_src_rect = &(SDL_Rect){
-        //         0,
-        //         rend->renderer_impl.animation->current_frame_index * rend->renderer_impl.animation->frame_height,
-        //         rend->renderer_impl.animation->frame_width,
-        //         rend->renderer_impl.animation->frame_height
-        //     };
-        //     // printf("ent_src_rect: %d %d %d %d\n", ent_src_rect->x, ent_src_rect->y, ent_src_rect->w, ent_src_rect->h);
-        // }
-
-        // if(current->entity->renderer->alignment == YE_ALIGN_STRETCH)
-        //     ent_src_rect = NULL;
-
-        // // if transform is flipped or rotated render it differently
-        // if(current->entity->renderer->flipped_x || current->entity->renderer->flipped_y){
-        //     SDL_RendererFlip flip = SDL_FLIP_NONE;
-        //     if(current->entity->renderer->flipped_x && current->entity->renderer->flipped_y){
-        //         flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
-        //     }
-        //     else if(current->entity->renderer->flipped_x){
-        //         flip = SDL_FLIP_HORIZONTAL;
-        //     }
-        //     else if(current->entity->renderer->flipped_y){
-        //         flip = SDL_FLIP_VERTICAL;
-        //     }
-        //     SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, NULL, flip);
-        // }
-        // else if(actual_rotation != 0.0){
-        //     SDL_RenderCopyEx(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect, actual_rotation, &current->entity->renderer->center, SDL_FLIP_NONE);
-        // }
-        // else{
-        //     SDL_RenderCopy(renderer, current->entity->renderer->texture, ent_src_rect, &entity_rect);
-        // }
-
-
-
-
-
-        // TODO: REFACTOR ABOVE ^^^^^
+        SDL_RenderGeometry(renderer, current->entity->renderer->texture, verticies, 4, indicies, 6);
 
         YE_STATE.runtime.painted_entity_count++;
         
         // TODO: prect refactor
         _paint_paintbounds(renderer, current);
+
+        current = current->next;
     }
-    current = current->next;
 
     /*
         additional post processing for editor mode    

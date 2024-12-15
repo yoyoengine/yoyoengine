@@ -282,7 +282,7 @@ void ye_render_all() {
         SDL_RenderSetLogicalSize(pRenderer, (int)YE_STATE.engine.target_camera->camera->view_field.w, (int)YE_STATE.engine.target_camera->camera->view_field.h);
     }
 
-    ye_system_renderer(pRenderer);
+    ye_renderer_v2(pRenderer);
 
     /*
         Reset the viewport and scale to render the ui on top.

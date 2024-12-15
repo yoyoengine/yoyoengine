@@ -271,11 +271,24 @@ mat3_t ye_get_offset_matrix(struct ye_entity *entity, enum ye_component_type typ
 
     /*
         Rotation
+
+        note: i ended up factoring in the camera position here,
+        which might be completely fucked and overcompensating for something in renderer v2...
+
+        it works for now though. TODO: look into this
     */
-    if(entity->transform && entity->transform->rotation != 0)
-        pos = lla_mat3_rotate(pos, entity->transform->rotation);
-    if(entity->renderer && entity->renderer->rotation != 0)
-        pos = lla_mat3_rotate(pos, entity->renderer->rotation);
+    if(entity->transform && entity->transform->rotation != 0){
+        vec2_t center = (vec2_t){.data={entity->transform->x, entity->transform->y}};
+        center.data[0] -= YE_STATE.engine.target_camera->transform->x;
+        center.data[1] -= YE_STATE.engine.target_camera->transform->y;
+        pos = lla_mat3_rotate_around(pos, center, entity->transform->rotation);
+    }
+    if(entity->renderer && entity->renderer->rotation != 0){
+        vec2_t center = (vec2_t){.data={(entity->renderer->rect.x+entity->renderer->rect.w)/2, (entity->renderer->rect.y+entity->renderer->rect.h)/2}};
+        center.data[0] -= YE_STATE.engine.target_camera->transform->x;
+        center.data[1] -= YE_STATE.engine.target_camera->transform->y;
+        pos = lla_mat3_rotate_around(pos, center, entity->renderer->rotation);
+    }   
 
     // if there is a transform, offset the identity by the transform
     if(entity->transform)
@@ -337,21 +350,30 @@ struct ye_point_rectf ye_rect_to_point_rectf(struct ye_rectf rect){
     return pointRect;
 }
 
+/*
+    https://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
+*/
 bool ye_pointf_in_point_rectf(struct ye_pointf point, struct ye_point_rectf rect){
-    // check if point is within each edge of rect
+    /*
+        check each edge of the polygon, assuming each edge is oriented in counterclockwise direction,
+        and test whether the point lies to the left of the edge (in the left-hand half-plane).
+        If all edges pass the test - the point is inside. If at least one fails - the point is outside.
+
+        D = (x2 - x1) * (yp - y1) - (xp - x1) * (y2 - y1)
+    */
+    float xp = point.x;
+    float yp = point.y;
+
     for(int i = 0; i < 4; i++) {
-        vec2_t p1 = (vec2_t){.data={rect.verticies[i].x, rect.verticies[i].y}};
-        vec2_t p2 = (vec2_t){.data={rect.verticies[(i + 1) % 4].x, rect.verticies[(i + 1) % 4].y}};
-        
-        vec2_t edge = lla_vec2_sub(p2, p1);
+        float x1 = rect.verticies[i].x;
+        float y1 = rect.verticies[i].y;
+        float x2 = rect.verticies[(i + 3) % 4].x;
+        float y2 = rect.verticies[(i + 3) % 4].y;
+        float D = ((x2 - x1) * (yp - y1)) - ((xp - x1) * (y2 - y1));
 
-        vec2_t pointVec = lla_vec2_sub((vec2_t){.data={point.x, point.y}}, p1);
-
-        float cross = lla_vec2_cross(edge, pointVec);
-
-        if(cross < 0){
+        if(D < 0){
             return false;
-        }
+        }    
     }
     return true;
 }

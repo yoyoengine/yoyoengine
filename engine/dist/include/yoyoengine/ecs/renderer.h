@@ -253,4 +253,10 @@ YE_API void ye_remove_renderer_component(struct ye_entity *entity);
  */
 YE_API void ye_system_renderer(SDL_Renderer *renderer);
 
+/**
+ * @brief yoyoengine renderer v2
+ * @param renderer The SDL renderer to use.
+ */
+YE_API void ye_renderer_v2(SDL_Renderer *renderer);
+
 #endif
