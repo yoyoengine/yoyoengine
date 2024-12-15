@@ -98,7 +98,7 @@ YE_API void ui_end_input_checks();
 /**
  * @brief Paints a debug overlay.
  */
-YE_API void ui_paint_debug_overlay();
+YE_API void ui_paint_debug_overlay(struct nk_context *ctx);
 
 /**
  * @brief Paints a overlay containing info on the active camera.

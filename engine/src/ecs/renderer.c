@@ -15,6 +15,7 @@
 #include <yoyoengine/cache.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
+#include <yoyoengine/graphics.h>
 #include <yoyoengine/version.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ecs/camera.h>

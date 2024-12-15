@@ -79,7 +79,7 @@ extern struct ye_console_command * cmd_head;
 /*
     Setup and validate data for the console
 */
-YE_API void ye_init_console();
+YE_API void ye_init_console(int buffer_size);
 
 /*
     Clear data and destroy the console
