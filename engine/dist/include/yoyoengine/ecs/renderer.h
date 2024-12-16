@@ -73,6 +73,13 @@ struct ye_component_renderer {
     } renderer_impl;
 
     bool lock_aspect_ratio; ///< locks the rect aspect ratio
+
+    /*
+        Renderer v2 cache
+    */
+
+    SDL_Vertex _verticies[4];    ///< verticies for the renderer
+    int _indicies[6];            ///< indicies for the renderer
 };
 
 /**

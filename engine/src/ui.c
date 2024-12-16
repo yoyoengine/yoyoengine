@@ -172,6 +172,8 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
 
     // put all the parameters into strings for display
     char fps_str[100];
+    char render_call_count_str[100];
+    char vertex_count_str[100];
     char event_count_str[100];
     char input_time_str[100];
     char physics_time_str[100];
@@ -183,6 +185,8 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     char audio_chunk_count_str[100];
     char log_line_count_str[100];
     sprintf(fps_str, "fps: %d", YE_STATE.runtime.fps);
+    sprintf(render_call_count_str, "render calls: %d", YE_STATE.runtime.render_v2.num_render_calls);
+    sprintf(vertex_count_str, "vertex count: %d", YE_STATE.runtime.render_v2.num_verticies);
     sprintf(event_count_str, "event count: %d", ye_get_num_events());
     sprintf(input_time_str, "input time: %dms", YE_STATE.runtime.input_time);
     sprintf(physics_time_str, "physics time: %dms", YE_STATE.runtime.physics_time);
@@ -210,7 +214,7 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     }
 
     // paint gui
-    if (nk_begin(ctx, "Metrics", nk_rect(10, 10, 220, 200),
+    if (nk_begin(ctx, "Metrics", nk_rect(10, 10, 230, 300),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {
         
         // fps chart
@@ -252,6 +256,8 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
 
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label(ctx, fps_str, NK_TEXT_LEFT);
+        nk_label(ctx, render_call_count_str, NK_TEXT_LEFT);
+        nk_label(ctx, vertex_count_str, NK_TEXT_LEFT);
         nk_label(ctx, event_count_str, NK_TEXT_LEFT);
         nk_label(ctx, input_time_str, NK_TEXT_LEFT);
         nk_label(ctx, physics_time_str, NK_TEXT_LEFT);

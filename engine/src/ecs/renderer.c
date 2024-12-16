@@ -899,6 +899,76 @@ void _attempt_tick_animation(struct ye_entity_node *current) {
     }
 }
 
+/*
+    Often, an renderer entity will request to be aligned in a bounding box.
+
+    This function looks at the AABB of the renderer and it's bound and returns a transformation matrix
+    to align the renderer in the bounding box.
+*/
+mat3_t _get_auto_bound(struct ye_rectf *bound_AABB, struct ye_rectf *child_AABB, enum ye_alignment alignment, bool should_grow_to_fit) {
+    // get the center of the bounding box
+    vec2_t bound_center = (vec2_t){.data={bound_AABB->x + (bound_AABB->w / 2), bound_AABB->y + (bound_AABB->h / 2)}};
+
+    // get the center of the child
+    vec2_t child_center = (vec2_t){.data={child_AABB->x + (child_AABB->w / 2), child_AABB->y + (child_AABB->h / 2)}};
+
+    // get the scale of the child
+    vec2_t scale;
+    if (should_grow_to_fit) {
+        scale = (vec2_t){.data={bound_AABB->w / child_AABB->w, bound_AABB->h / child_AABB->h}};
+    } else {
+        scale = (vec2_t){.data={1.0f, 1.0f}};
+    }
+
+    // get the translation to the center of the bounding box
+    vec2_t translation = (vec2_t){.data={bound_center.data[0] - child_center.data[0], bound_center.data[1] - child_center.data[1]}};
+
+    // Adjust translation based on alignment
+    switch (alignment) {
+        case YE_ALIGN_TOP_LEFT:
+            translation.data[0] -= (bound_AABB->w / 2) - (child_AABB->w / 2);
+            translation.data[1] -= (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_TOP_CENTER:
+            translation.data[1] -= (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_TOP_RIGHT:
+            translation.data[0] += (bound_AABB->w / 2) - (child_AABB->w / 2);
+            translation.data[1] -= (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_MID_LEFT:
+            translation.data[0] -= (bound_AABB->w / 2) - (child_AABB->w / 2);
+            break;
+        case YE_ALIGN_MID_CENTER:
+            // No additional translation needed for center alignment
+            break;
+        case YE_ALIGN_MID_RIGHT:
+            translation.data[0] += (bound_AABB->w / 2) - (child_AABB->w / 2);
+            break;
+        case YE_ALIGN_BOT_LEFT:
+            translation.data[0] -= (bound_AABB->w / 2) - (child_AABB->w / 2);
+            translation.data[1] += (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_BOT_CENTER:
+            translation.data[1] += (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_BOT_RIGHT:
+            translation.data[0] += (bound_AABB->w / 2) - (child_AABB->w / 2);
+            translation.data[1] += (bound_AABB->h / 2) - (child_AABB->h / 2);
+            break;
+        case YE_ALIGN_STRETCH:
+            scale = (vec2_t){.data={bound_AABB->w / child_AABB->w, bound_AABB->h / child_AABB->h}};
+            break;
+    }
+
+    // get the transformation matrix
+    mat3_t transform = lla_mat3_identity();
+    transform = lla_mat3_translate(transform, translation);
+    transform = lla_mat3_scale_vec2(transform, scale);
+
+    return transform;
+}
+
 // TODO: refactor for prect
 void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) {
     (void)renderer;
@@ -991,7 +1061,18 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
     // TODO: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 }
 
+/*
+    Renderer v2, based on RenderGeometry
+
+    TODO:
+    - would be nice to work straight from cache in component since other parts of the engine need the vertex info we compute here
+*/
 void ye_renderer_v2(SDL_Renderer *renderer) {
+
+    // reset stats
+    YE_STATE.runtime.render_v2.num_render_calls = 0;
+    YE_STATE.runtime.render_v2.num_verticies = 0;
+
     struct ye_entity *current_cam = YE_STATE.engine.target_camera;
     
     // check if we have a non-null, active camera targeted
@@ -1041,30 +1122,76 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             continue;
         }
 
+        /*
+            First, fit the AABB so we have a starting point to vertex-ify
+
+            pretty jank snippet straight from renderer v1
+
+            TODO: this naming convention is bad, "texture" rect is really just "unfit" rect
+        */
+        struct ye_component_renderer *rend = current->entity->renderer;
+
+        // struct ye_rectf temp_entity_rect = ye_get_position(current->entity,YE_COMPONENT_RENDERER);
+        // struct ye_rectf texture_rect;
+        // switch(rend->type) {
+        //     case YE_RENDERER_TYPE_ANIMATION:
+        //         texture_rect = (struct ye_rectf){
+        //             0,
+        //             0,
+        //             rend->renderer_impl.animation->frame_width,
+        //             rend->renderer_impl.animation->frame_height
+        //         };
+        //         break;
+        //     case YE_RENDERER_TYPE_TILEMAP_TILE:
+        //         texture_rect = (struct ye_rectf){
+        //             0,
+        //             0,
+        //             rend->renderer_impl.tile->src.w,
+        //             rend->renderer_impl.tile->src.h
+        //         };
+        //         break;
+        //     default:
+        //         texture_rect = ye_convert_rect_rectf(ye_get_real_texture_size_rect(rend->texture));
+        //         break;
+        // }
+        // ye_auto_fit_bounds(&temp_entity_rect, &texture_rect, current->entity->renderer->alignment, &current->entity->renderer->center, !current->entity->renderer->preserve_original_size);
+
+        // // Extract the translation component
+        // float translation_x = temp_entity_rect.x;
+        // float translation_y = temp_entity_rect.y;
+
+        /*
+            texture_rect is world space
+        */
+
+        // update computed bounds field //
+        // current->entity->renderer->computed_pos = texture_rect;
+        //////////////////////////////////
+
+        // entity rect is now a reflection of the actual calculated rect
+
+        // printf("texture_rect: %f %f %f %f\n", texture_rect.x, texture_rect.y, texture_rect.w, texture_rect.h);
+        // printf("entity->renderer->rect: %f %f %f %f\n", current->entity->renderer->rect.x, current->entity->renderer->rect.y, current->entity->renderer->rect.w, current->entity->renderer->rect.h);
+
         struct ye_point_rectf entity_prect = ye_rect_to_point_rectf(current->entity->renderer->rect);
-        struct ye_point_rectf original_entity_prect = entity_prect;
+        // struct ye_point_rectf entity_prect = ye_rect_to_point_rectf(texture_rect);
         mat3_t entity_matrix = ye_get_offset_matrix(current->entity, YE_COMPONENT_RENDERER);
 
-        // transform each vertex to get the final entity rect
-        for(int i = 0; i < 4; i++){
-            vec2_t point = {.data = {entity_prect.verticies[i].x, entity_prect.verticies[i].y}};
-            point = lla_mat3_mult_vec2(entity_matrix, point);
-            entity_prect.verticies[i].x = point.data[0];
-            entity_prect.verticies[i].y = point.data[1];
-        }
+        struct ye_rectf bound_AABB = (struct ye_rectf){
+            0,
+            0,
+            current->entity->renderer->rect.w,
+            current->entity->renderer->rect.h,
+        };
+        struct ye_rectf child_AABB = ye_convert_rect_rectf(ye_get_real_texture_size_rect(rend->texture));
 
-        // if a single vertex is on camera, we will render it
-        bool occluded = true;
-        for(int i = 0; i < 4; i++) {
-            if(ye_pointf_in_point_rectf(entity_prect.verticies[i], cam_prect)){
-                occluded = false;
-                break;
-            }
-        }
-        if(occluded) {
-            current = current->next;
-            continue;
-        }
+        mat3_t bound_mat = _get_auto_bound(&bound_AABB, &child_AABB, rend->alignment, !rend->preserve_original_size);
+
+        // // Apply the inverse translation to the vertices
+        // for (int i = 0; i < 4; i++) {
+        //     entity_prect.verticies[i].x -= translation_x;
+        //     entity_prect.verticies[i].y -= translation_y;
+        // }
 
         // set alpha (log failure) TODO: profile efficiency of this
         if (SDL_SetTextureAlphaMod(current->entity->renderer->texture, current->entity->renderer->alpha) != 0) {
@@ -1076,14 +1203,34 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         // matrix which transforms back to "window" coordinates
         // TODO: this might be why we need to offset camera location in util.c
         mat3_t cam_matrix_inv = lla_mat3_inverse(cam_matrix);
-        mat3_t norm_mat = lla_mat3_mult(entity_matrix, cam_matrix_inv); 
+        mat3_t norm_mat = lla_mat3_mult(bound_mat, entity_matrix); 
+        norm_mat = lla_mat3_mult(norm_mat, cam_matrix_inv); 
+
+        // printf("texture_rect: %f %f %f %f\n", texture_rect.x, texture_rect.y, texture_rect.w, texture_rect.h);
+        // printf("entity_matrix\n");
+        // printf("%s\n",lla_mat3_string(entity_matrix));
+        // printf("cam_matrix_inv\n");
+        // printf("%s\n",lla_mat3_string(cam_matrix_inv));
+        // printf("norm_mat\n");
+        // printf("%s\n",lla_mat3_string(norm_mat));
+
+        // // print all verticies in original vs transformed space
+        // printf("original\n");
+        // for(int i = 0; i < 4; i++){
+        //     printf("point: %f %f\n", original_entity_prect.verticies[i].x, original_entity_prect.verticies[i].y);
+        // }
+        
+        // printf("transformed\n");
+        // for(int i = 0; i < 4; i++){
+        //     vec2_t point = {.data = {original_entity_prect.verticies[i].x, original_entity_prect.verticies[i].y}};
+        //     point = lla_mat3_mult_vec2(norm_mat, point);
+        //     printf("point: %f %f\n", point.data[0], point.data[1]);
+        // }
 
         /*
         
             TODO: renderer2
 
-            - tilemap tiles are a weird edge case you need to figure out... offsetting into the tilemap is odd
-            - animation is also weird edge case offsetting into atlas
             - refactor the component paintbounds
             - alignment as far as stretch and fill are concerned is another wack edge case...
 
@@ -1102,19 +1249,21 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             |   |
             0---3
         */
-        SDL_Vertex verticies[4];                // TODO: cache in renderer for easy access in paintbounds and others?
+        SDL_Vertex verticies[4];
         int indicies[6] = {0, 1, 2, 2, 3, 0};
 
         // translate verticies
         for(int i = 0; i < 4; i++){
             // transform from world into camera space
-            vec2_t point = {.data = {original_entity_prect.verticies[i].x, original_entity_prect.verticies[i].y}};
+            vec2_t point = {.data = {entity_prect.verticies[i].x, entity_prect.verticies[i].y}};
             
             // debug: render dot at vertex
             // printf("point: %f %f\n", point.data[0], point.data[1]);
             // ye_debug_render_point((int)point.data[0], (int)point.data[1], (SDL_Color){255,0,0,255}, 5);
             
+            // (void)norm_mat;
             point = lla_mat3_mult_vec2(norm_mat, point);
+            // point = lla_mat3_mult_vec2(cam_matrix_inv, point);
             
             // set SDL_Vertex
             verticies[i].position.x = point.data[0];
@@ -1125,14 +1274,70 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             verticies[i].color.a = current->entity->renderer->alpha;
         }
 
+        /*
+            TODO: before we set UV's or render, we need to
+            check if at least one edge is intersecting the camera
+        */
+        // // if a single vertex is on camera, we will render it
+        // // TODO: change to an edge check
+        // bool occluded = true;
+        // for(int i = 0; i < 4; i++) {
+        //     if(ye_pointf_in_point_rectf(entity_prect.verticies[i], cam_prect)){
+        //         occluded = false;
+        //         break;
+        //     }
+        // }
+        // if(occluded) {
+        //     current = current->next;
+        //     continue;
+        // }
+        
+
+        /*
+            By default, our uvs span the whole texture,
+            but for animations and tilemaps we must compute
+            the normalized uv float
+        */
+        float tcx_start = 0;
+        float tcx_end   = 1;
+        float tcy_start = 0;
+        float tcy_end   = 1;
+
+        /*
+            Animations are comprised of vertical atlas, meaning w=frame_width h=frame_height*num_frames
+        */
+        if(current->entity->renderer->type == YE_RENDERER_TYPE_ANIMATION){
+            struct ye_component_renderer * rend = current->entity->renderer;
+            tcy_start = (float)rend->renderer_impl.animation->current_frame_index / (float)rend->renderer_impl.animation->frame_count;
+            tcy_end = (float)(rend->renderer_impl.animation->current_frame_index + 1) / (float)rend->renderer_impl.animation->frame_count;
+        }
+
+        /*
+            We lack the meta in struct ye_component_renderer to determine the size and offset of the tilemap in the image,
+            so this is a performance hit workaround.
+
+            TODO: cache this or wrap texture in a meta-preserving struct
+        */
+        if(current->entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE){
+            int w, h;
+            SDL_QueryTexture(current->entity->renderer->texture, NULL, NULL, &w, &h);
+        
+            SDL_Rect *src = &current->entity->renderer->renderer_impl.tile->src;
+            
+            tcx_start = (float)src->x / (float)w;
+            tcx_end = (float)(src->x + src->w) / (float)w;
+            tcy_start = (float)src->y / (float)h;
+            tcy_end = (float)(src->y + src->h) / (float)h;
+        }
+
         // set texcoord (shoutout gpt4 for the flipped_n computation)
         bool flipped_x = current->entity->renderer->flipped_x;
         bool flipped_y = current->entity->renderer->flipped_y;
         float tex_coords[4][2] = {
-            {flipped_x ? 1 : 0, flipped_y ? 1 : 0},
-            {flipped_x ? 1 : 0, flipped_y ? 0 : 1},
-            {flipped_x ? 0 : 1, flipped_y ? 0 : 1},
-            {flipped_x ? 0 : 1, flipped_y ? 1 : 0}
+            {flipped_x ? tcx_end : tcx_start, flipped_y ? tcy_end : tcy_start},
+            {flipped_x ? tcx_end : tcx_start, flipped_y ? tcy_start : tcy_end},
+            {flipped_x ? tcx_start : tcx_end, flipped_y ? tcy_start : tcy_end},
+            {flipped_x ? tcx_start : tcx_end, flipped_y ? tcy_end : tcy_start}
         };
         for (int i = 0; i < 4; i++) {
             verticies[i].tex_coord.x = tex_coords[i][0];
@@ -1140,6 +1345,17 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         }
 
         SDL_RenderGeometry(renderer, current->entity->renderer->texture, verticies, 4, indicies, 6);
+
+        /*
+            Update cached fields (used to avoid recomputing for paintbounds)
+
+            TODO: just work by reference from cache to avoid this overhead
+        */
+        memcpy(&current->entity->renderer->_verticies, verticies, sizeof(verticies));
+        memcpy(&current->entity->renderer->_indicies, indicies, sizeof(indicies));
+
+        YE_STATE.runtime.render_v2.num_render_calls++;
+        YE_STATE.runtime.render_v2.num_verticies += sizeof(verticies) / sizeof(SDL_Vertex);
 
         YE_STATE.runtime.painted_entity_count++;
         

@@ -173,6 +173,7 @@ struct ye_editor_config {
     bool freecam_enabled;
     bool audiorange_visible;
     bool button_bounds_visible;
+    bool wireframe_visible;
     /*
         Only work with editor_mode enabled:
     */
@@ -200,7 +201,7 @@ struct ye_runtime_data {
         be interested in at any given time:
     */
     int entity_count;           // scene entities
-    int painted_entity_count;   // scene entities actually painted
+    int painted_entity_count;   // scene entities actually painted (OBSOLETE? TODO)
     int fps;                    // our current fps (updated every frame)
     
     int paint_time;             // time in ms it took to paint the last frame
@@ -217,6 +218,11 @@ struct ye_runtime_data {
 
     int error_count;            // tracks the number of error level logs that have occurred
     int warning_count;          // same but for warnings
+
+    struct {
+        int num_render_calls;   // number of RenderGeometry calls made this frame
+        int num_verticies;      // number of verticies sent to RenderGeometry this frame
+    } render_v2;
 
     /*
         Meta on opened controllers

@@ -162,8 +162,17 @@ components have aspect ratio lock sensibly (button)
 
 ## lskdjgfl kjdfjug klfdhgkldfhjg 
 
-- renderer texture uv offsets for animation and tiles
 - renderer stretch / alignment (see comments)
 - paintbound refactor
 - count verticies and draw wireframe (debugging)
 - pass on each component for linalg (if needed)
+
+- LOL edge case (LITERALLY), we occlude verticies so if two verticies fall out of camera we stop rendering BUT there can be an edge between the two that would still be visible: check for this case, intersect a vector between the two somehow vec_in_rect
+
+## bruh refactors
+
+SDL_Image should be wrapped by ye_image which contain meta on size... we need this for stupid edge stuff like tilemap renderer
+
+## jhjfkdhgkjdfhgkjdfhg
+
+ok i left you with a mess, but the bounding stuff is more complicated than i thought... i think you have to bake it into get offset matrix somehow
