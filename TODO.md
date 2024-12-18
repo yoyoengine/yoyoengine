@@ -176,3 +176,9 @@ SDL_Image should be wrapped by ye_image which contain meta on size... we need th
 ## jhjfkdhgkjdfhgkjdfhg
 
 ok i left you with a mess, but the bounding stuff is more complicated than i thought... i think you have to bake it into get offset matrix somehow
+
+## osklflkdsfjhglkfdjgkldfjkg
+
+- fix alignment...
+- tmaps dont show up?
+- edge vector based occlusion

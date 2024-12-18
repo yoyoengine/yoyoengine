@@ -77,9 +77,9 @@ struct ye_component_renderer {
     /*
         Renderer v2 cache
     */
-
-    SDL_Vertex _verticies[4];    ///< verticies for the renderer
-    int _indicies[6];            ///< indicies for the renderer
+    SDL_Vertex _world_verts[4]; ///< verticies for the renderer
+    SDL_Vertex _cam_verts[4];   ///< verticies for the renderer
+    int _indicies[6];           ///< indicies for the renderer
 };
 
 /**
