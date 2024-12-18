@@ -986,7 +986,15 @@ mat3_t _get_auto_bound(struct ye_rectf *bound_AABB, struct ye_rectf *child_AABB,
             break;
     }
 
+    /*
+        shoutout claude for this one. We have to revert the scale because even
+        though there is no translation component it still skews the translation
+    */
+    translation.data[0] /= scale.data[0];
+    translation.data[1] /= scale.data[1];
+
     transform = lla_mat3_translate(transform, translation);
+
     return transform;
 }
 
@@ -1170,11 +1178,6 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         
         mat3_t align_mat = _get_auto_bound(&bound_AABB, &child_AABB, rend->alignment, !rend->preserve_original_size);
 
-        // After calculating align_mat
-        const char* align_str = lla_mat3_string(align_mat);
-        printf("align_mat:\n%s\n", align_str);
-        free((void*)align_str);
-
         /*
             Retrieve a rect comprised of floating point verticies in world space
         */
@@ -1246,23 +1249,11 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         indicies[4] = 3;
         indicies[5] = 0;
 
-        const char* world_str = lla_mat3_string(world_matrix);
-        const char* rot_str = lla_mat3_string(rotation_mat);
-        printf("world_matrix:\n%s\n", world_str);
-        printf("rotation_matrix:\n%s\n", rot_str);
-        free((void*)world_str);
-        free((void*)rot_str);
-
         for(int i = 0; i < 4; i++){
-            printf("Input vertex %d: %f,%f\n", i, entity_prect.verticies[i].x, entity_prect.verticies[i].y);
             vec2_t v = {.data = {entity_prect.verticies[i].x, entity_prect.verticies[i].y}};
-            printf("Before any transform: %f,%f\n", v.data[0], v.data[1]);
             v = lla_mat3_mult_vec2(align_mat, v);
-            printf("After align: %f,%f\n", v.data[0], v.data[1]);
             v = lla_mat3_mult_vec2(rotation_mat, v);
-            printf("After rotate: %f,%f\n", v.data[0], v.data[1]);
             v = lla_mat3_mult_vec2(world_matrix, v);
-            printf("After world: %f,%f\n", v.data[0], v.data[1]);
 
             world_verts[i].position.x = v.data[0];
             world_verts[i].position.y = v.data[1];
@@ -1271,15 +1262,6 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         // matrix which transforms back to "window" coordinates
         // TODO: this might be why we need to offset camera location in util.c
         mat3_t world2cam = lla_mat3_inverse(cam_matrix);
-
-        printf("Original vertices:\n");
-        for(int i = 0; i < 4; i++) {
-            printf("%d: %f,%f\n", i, entity_prect.verticies[i].x, entity_prect.verticies[i].y);
-        }
-
-        const char* cam_str = lla_mat3_string(cam_matrix);
-        printf("camera_matrix:\n%s\n", cam_str);
-        free((void*)cam_str);
 
         /*
         
@@ -1379,11 +1361,6 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         for (int i = 0; i < 4; i++) {
             cam_verts[i].tex_coord.x = tex_coords[i][0];
             cam_verts[i].tex_coord.y = tex_coords[i][1];
-        }
-
-        // debug: print final verticies
-        for(int i = 0; i < 4; i++){
-            printf("Final vertex %d: %f,%f\n", i, cam_verts[i].position.x, cam_verts[i].position.y);
         }
 
         SDL_RenderGeometry(renderer, current->entity->renderer->texture, cam_verts, 4, indicies, 6);

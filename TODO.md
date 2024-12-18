@@ -179,6 +179,5 @@ ok i left you with a mess, but the bounding stuff is more complicated than i tho
 
 ## osklflkdsfjhglkfdjgkldfjkg
 
-- fix alignment...
-- tmaps dont show up?
 - edge vector based occlusion
+- paintbounds fixes and editor outline fixes
