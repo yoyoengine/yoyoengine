@@ -177,3 +177,14 @@ SDL_Image should be wrapped by ye_image which contain meta on size... we need th
 
 - god, stupid annoying yep invalidation... you need to just solve this one and for all
   - idek, do like yep as a cli tool or something... then you ship the binary with the engine but that makes it so complicated. maybe just make it a library and link it with both the editor and engine? idek just think about it man
+
+## random way out there ideas
+
+it would be cool to have a nuklear inspector panel at runtime, to debug entities, also to freeze time and do other things, that debug menu could be expandable maybe
+
+## next up
+
+- draw wireframe
+  - add to editor and convar
+- bust out some of the renderer transformations into helper functions and re-use them to implement for buttons & camviews & audiosource etc
+- go through paintbounds and update each
