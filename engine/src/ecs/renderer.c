@@ -24,6 +24,8 @@
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/debug_renderer.h>
 
+#include <yoyoengine/tar_physics/solver.h>
+
 #include <yoyoengine/types.h>
 
 void ye_update_renderer_component(struct ye_entity *entity){
@@ -1279,6 +1281,9 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             0---3
         */
 
+        // compute ahead so we can use for collision detection
+        struct ye_point_rectf local_rect;
+
         // Translate all verticies from world to camera
         for(int i = 0; i < 4; i++){
             // transform from world into camera space
@@ -1292,25 +1297,30 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             cam_verts[i].color.g = 255;
             cam_verts[i].color.b = 255;
             cam_verts[i].color.a = current->entity->renderer->alpha;
+
+            // cache
+            local_rect.verticies[i].x = point.data[0];
+            local_rect.verticies[i].y = point.data[1];
         }
 
         /*
             TODO: before we set UV's or render, we need to
             check if at least one edge is intersecting the camera
         */
-        // // if a single vertex is on camera, we will render it
-        // // TODO: change to an edge check
-        // bool occluded = true;
-        // for(int i = 0; i < 4; i++) {
-        //     if(ye_pointf_in_point_rectf(entity_prect.verticies[i], cam_prect)){
-        //         occluded = false;
-        //         break;
-        //     }
-        // }
-        // if(occluded) {
-        //     current = current->next;
-        //     continue;
-        // }
+
+        // compute cam_prect in local space
+        struct ye_point_rectf local_cam_prect = cam_prect;
+        for(int i = 0; i < 4; i++){
+            vec2_t point = {.data = {cam_prect.verticies[i].x, cam_prect.verticies[i].y}};
+            point = lla_mat3_mult_vec2(world2cam, point);
+            local_cam_prect.verticies[i].x = point.data[0];
+            local_cam_prect.verticies[i].y = point.data[1];
+        }
+
+        if(!ye_detect_rect_rect_collision(local_rect, local_cam_prect)) {
+            current = current->next;
+            continue;
+        }
 
         /*
             By default, our uvs span the whole texture,

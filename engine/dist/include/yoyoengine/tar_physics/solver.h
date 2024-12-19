@@ -19,6 +19,6 @@ YE_API bool ye_detect_circle_circle_collision(struct ye_vec2f pos1, float radius
 
 YE_API bool ye_detect_circle_rect_collision(struct ye_vec2f circle_pos, float circle_radius, struct ye_rectf rect, float rotation);
 
-YE_API bool ye_detect_rect_rect_collision(struct ye_rectf rect1, float rotation1, struct ye_rectf rect2, float rotation2);
+YE_API bool ye_detect_rect_rect_collision(struct ye_point_rectf rect1, struct ye_point_rectf rect2);
 
 #endif // YE_SOLVER_H

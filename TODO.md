@@ -162,22 +162,18 @@ components have aspect ratio lock sensibly (button)
 
 ## lskdjgfl kjdfjug klfdhgkldfhjg 
 
-- renderer stretch / alignment (see comments)
-- paintbound refactor
 - count verticies and draw wireframe (debugging)
 - pass on each component for linalg (if needed)
-
-- LOL edge case (LITERALLY), we occlude verticies so if two verticies fall out of camera we stop rendering BUT there can be an edge between the two that would still be visible: check for this case, intersect a vector between the two somehow vec_in_rect
 
 ## bruh refactors
 
 SDL_Image should be wrapped by ye_image which contain meta on size... we need this for stupid edge stuff like tilemap renderer
 
-## jhjfkdhgkjdfhgkjdfhg
-
-ok i left you with a mess, but the bounding stuff is more complicated than i thought... i think you have to bake it into get offset matrix somehow
-
 ## osklflkdsfjhglkfdjgkldfjkg
 
-- edge vector based occlusion
 - paintbounds fixes and editor outline fixes
+
+## ldkjhfgkjdfhgkjdfhgd
+
+- god, stupid annoying yep invalidation... you need to just solve this one and for all
+  - idek, do like yep as a cli tool or something... then you ship the binary with the engine but that makes it so complicated. maybe just make it a library and link it with both the editor and engine? idek just think about it man
