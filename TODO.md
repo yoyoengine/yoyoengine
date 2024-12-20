@@ -184,7 +184,5 @@ it would be cool to have a nuklear inspector panel at runtime, to debug entities
 
 ## next up
 
-- draw wireframe
-  - add to editor and convar
 - bust out some of the renderer transformations into helper functions and re-use them to implement for buttons & camviews & audiosource etc
 - go through paintbounds and update each

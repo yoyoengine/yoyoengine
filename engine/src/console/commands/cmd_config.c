@@ -55,6 +55,7 @@ void ye_cmd_config(int argc, const char **argv) {
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [int]  sdl_quality_hint\n");
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] stretch_resolution\n");
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] paintbounds_visible\n");
+            ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] wireframe_visible\n");
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] colliders_visible\n");
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] display_names\n");
             ye_logf(_YE_RESERVED_LL_SYSTEM, "    [bool] freecam_enabled\n");
@@ -97,6 +98,9 @@ void ye_cmd_config(int argc, const char **argv) {
         
         else if(strcmp(argv[1], "paintbounds_visible") == 0)
             _config_get_bool("paintbounds_visible", &YE_STATE.editor.paintbounds_visible);
+        
+        else if(strcmp(argv[1], "wireframe_visible") == 0)
+            _config_get_bool("wireframe_visible", &YE_STATE.editor.wireframe_visible);
         
         else if(strcmp(argv[1], "colliders_visible") == 0)
             _config_get_bool("colliders_visible", &YE_STATE.editor.colliders_visible);
@@ -144,6 +148,9 @@ void ye_cmd_config(int argc, const char **argv) {
         else if(strcmp(argv[1], "stretch_resolution") == 0)
             _config_set_bool("stretch_resolution", &YE_STATE.engine.stretch_resolution, atoi(argv[2]));
         
+        else if(strcmp(argv[1], "wireframe_visible") == 0)
+            _config_set_bool("wireframe_visible", &YE_STATE.editor.wireframe_visible, atoi(argv[2]));
+
         else if(strcmp(argv[1], "paintbounds_visible") == 0)
             _config_set_bool("paintbounds_visible", &YE_STATE.editor.paintbounds_visible, atoi(argv[2]));
         

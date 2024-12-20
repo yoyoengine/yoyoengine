@@ -960,6 +960,31 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         }
 
         /*
+            If we are painting wireframes, skip all the overhead
+        */
+        if(YE_STATE.editor.wireframe_visible && current->entity->name != NULL && strcmp(current->entity->name, "origin") != 0) {
+
+            /*
+                To save cycles, we will just paint the quad outline, and then add the diagonal
+            */
+            for(int i = 0; i < 4; i++){
+                float x1 = cam_verts[i].position.x;
+                float y1 = cam_verts[i].position.y;
+                float x2 = cam_verts[(i + 1) % 4].position.x;
+                float y2 = cam_verts[(i + 1) % 4].position.y;
+
+                ye_draw_thick_line(renderer, x1, y1, x2, y2, 4, (SDL_Color){255, 0, 0, 255});
+            }
+            ye_draw_thick_line(renderer, cam_verts[0].position.x, cam_verts[0].position.y, cam_verts[2].position.x, cam_verts[2].position.y, 4, (SDL_Color){255, 0, 0, 255});
+
+            YE_STATE.runtime.render_v2.num_render_calls++;
+            YE_STATE.runtime.render_v2.num_verticies += 4; // TODO: dont think I can do sizeof because of pointer decay
+            YE_STATE.runtime.painted_entity_count++;
+            current = current->next;
+            continue;
+        }
+
+        /*
             By default, our uvs span the whole texture,
             but for animations and tilemaps we must compute
             the normalized uv float
