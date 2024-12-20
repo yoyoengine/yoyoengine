@@ -876,6 +876,8 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
 
             Initialize the verticies now.
         */
+        struct ye_point_rectf * local_rect = &rend->_local_rect;
+        struct ye_point_rectf * world_rect = &rend->_world_rect;
         SDL_Vertex * world_verts = rend->_world_verts;
         SDL_Vertex * cam_verts = rend->_cam_verts;
         int * indicies = rend->_indicies;
@@ -896,11 +898,16 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
 
             world_verts[i].position.x = v.data[0];
             world_verts[i].position.y = v.data[1];
+
+            // cache
+            world_rect->verticies[i].x = v.data[0];
+            world_rect->verticies[i].y = v.data[1];
         }
 
         // matrix which transforms back to "window" coordinates
         // TODO: this might be why we need to offset camera location in util.c
         mat3_t world2cam = lla_mat3_inverse(cam_matrix);
+        YE_STATE.runtime.world2cam = world2cam;
 
         /*
         
@@ -918,9 +925,6 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             0---3
         */
 
-        // compute ahead so we can use for collision detection
-        struct ye_point_rectf local_rect;
-
         // Translate all verticies from world to camera
         for(int i = 0; i < 4; i++){
             // transform from world into camera space
@@ -936,8 +940,8 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             cam_verts[i].color.a = current->entity->renderer->alpha;
 
             // cache
-            local_rect.verticies[i].x = point.data[0];
-            local_rect.verticies[i].y = point.data[1];
+            local_rect->verticies[i].x = point.data[0];
+            local_rect->verticies[i].y = point.data[1];
         }
 
         /*
@@ -954,7 +958,7 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             local_cam_prect.verticies[i].y = point.data[1];
         }
 
-        if(!ye_detect_rect_rect_collision(local_rect, local_cam_prect)) {
+        if(!ye_detect_rect_rect_collision(*local_rect, local_cam_prect)) {
             current = current->next;
             continue;
         }

@@ -15,6 +15,8 @@
 
 #include <yoyoengine/export.h>
 
+#include <Lilith.h>
+
 #include <stdbool.h>
 
 #include <SDL.h>
@@ -235,6 +237,11 @@ struct ye_runtime_data {
     */
     SDL_Window *window;
     SDL_Renderer *renderer;
+
+    /*
+        Cache/important globals
+    */
+    mat3_t world2cam; // the world to camera matrix
 }; // TODO: move a bunch more information here, audio capacity comes to mind. expose some stuff here just for usage.
 
 /*

@@ -213,6 +213,16 @@ YE_API bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float
 */
 YE_API void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float h, int thickness, SDL_Color color);
 
+/**
+ * @brief Draws a point rectangle with a specified thickness.
+ * 
+ * @param renderer The renderer to draw the rectangle on.
+ * @param rect The rectangle to draw.
+ * @param thickness The thickness of the rectangle.
+ * @param color The color of the rectangle.
+*/
+YE_API void ye_draw_thick_prect(SDL_Renderer *renderer, struct ye_point_rectf rect, int thickness, SDL_Color color);
+
 /*
     1---2
     |   |
@@ -237,5 +247,32 @@ YE_API mat3_t ye_get_offset_matrix(struct ye_entity *entity, enum ye_component_t
  * @return bool Whether or not the point is within the rectangle.
  */
 YE_API bool ye_pointf_in_point_rectf(struct ye_pointf point, struct ye_point_rectf rect);
+
+/**
+ * @brief Returns the point rectf position of a component on an entity.
+ * 
+ * @param entity The entity to get the position of.
+ * @param type The type of component to get the position of.
+ * @return struct ye_point_rectf The position of the component.
+ * 
+ * note: dont use this in renderer code because its using the last cached entry
+ */
+YE_API struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_component_type type);
+
+/**
+ * @brief Converts a world point rectf to a screen point rectf.
+ * 
+ * @param rect The world point rectf to convert.
+ * @return struct ye_point_rectf The converted screen point rectf.
+ */
+YE_API struct ye_point_rectf ye_world_prectf_to_screen(struct ye_point_rectf rect);
+
+/**
+ * @brief Returns the center point of a rectangle.
+ * 
+ * @param rect The rectangle to get the center of.
+ * @return struct ye_pointf The center point of the rectangle.
+ */
+YE_API struct ye_pointf ye_point_rectf_center(struct ye_point_rectf rect);
 
 #endif

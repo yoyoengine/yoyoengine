@@ -537,3 +537,118 @@ void ye_draw_thick_rect(SDL_Renderer *renderer, float x, float y, float w, float
     // draw left
     ye_draw_thick_line(renderer, x, y - half_thickness, x, y + h + half_thickness, thickness, color);
 }
+
+struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_component_type type) {
+    if(!entity) {
+        ye_logf(error, "Tried to get position2 for null entity. returning (0,0,0,0)\n");
+        struct ye_point_rectf ret = (struct ye_point_rectf){0};
+        return ret;
+    }
+
+    if(!ye_component_exists(entity, type)) {
+        ye_logf(error, "Tried to get position2 for entity \"%s\" that does not have requested component. returning (0,0,0,0)\n", entity->name);
+        struct ye_point_rectf ret = (struct ye_point_rectf){0};
+        return ret;
+    }
+    
+    if(type == YE_COMPONENT_RENDERER) {
+        return entity->renderer->_world_rect; // cached
+    }
+
+    
+
+    /*
+        All we have to do here is get the
+        rect and rotate it around the origin
+    */
+
+    struct ye_point_rectf ret = (struct ye_point_rectf){0};
+
+    switch(type) {
+        case YE_COMPONENT_COLLIDER:
+            ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_COLLIDER));
+            break;
+        /*
+            Special Case: Audiosource
+
+            x,y need computed but w,h are special reserved fields for range.
+
+            In this case, w represents the max range (radius) of the source, so w*2xw*2 is area
+        */
+        case YE_COMPONENT_AUDIOSOURCE:
+            struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_AUDIOSOURCE);
+            ret = (struct ye_point_rectf){
+                .verticies = {
+                    (struct ye_pointf){.x = pos.x,             .y = pos.y},
+                    (struct ye_pointf){.x = pos.x,             .y = pos.y + pos.w * 2},
+                    (struct ye_pointf){.x = pos.x + pos.w * 2, .y = pos.y + pos.w * 2},
+                    (struct ye_pointf){.x = pos.x + pos.w * 2, .y = pos.y}
+                }
+            };
+            break;
+        case YE_COMPONENT_BUTTON:
+            ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_BUTTON));
+            break;
+        case YE_COMPONENT_CAMERA:
+            ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_CAMERA));
+            break;
+        case YE_COMPONENT_TRANSFORM:
+            ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_TRANSFORM));
+            break;
+        default:
+            ye_logf(error, "Tried to get position2 for entity \"%s\" that does not have requested component. returning (0,0,0,0)\n", entity->name);
+            return ret;
+    }
+
+    mat3_t rot = lla_mat3_identity();
+    if(entity->transform) {
+        rot = lla_mat3_rotate_around(rot, (vec2_t){.data={entity->transform->x, entity->transform->y}}, entity->transform->rotation);
+    }
+
+    // if this is a renderer we also need to rotate as needed
+    // if(entity->renderer) {
+        // rot = lla_mat3_rotate_around(rot, (vec2_t){.data={entity->renderer->center.x,entity->renderer->center.y}}, entity->renderer->rotation);
+    // }
+
+    for(int i = 0; i < 4; i++) {
+        vec2_t p = (vec2_t){.data={ret.verticies[i].x, ret.verticies[i].y}};
+        p = lla_mat3_mult_vec2(rot, p);
+        ret.verticies[i].x = p.data[0];
+        ret.verticies[i].y = p.data[1];
+    }
+
+    return ret;
+}
+
+void ye_draw_thick_prect(SDL_Renderer *renderer, struct ye_point_rectf rect, int thickness, SDL_Color color) {
+    // draw top
+    ye_draw_thick_line(renderer, rect.verticies[0].x, rect.verticies[0].y, rect.verticies[1].x, rect.verticies[1].y, thickness, color);
+    // draw right
+    ye_draw_thick_line(renderer, rect.verticies[1].x, rect.verticies[1].y, rect.verticies[2].x, rect.verticies[2].y, thickness, color);
+    // draw bottom
+    ye_draw_thick_line(renderer, rect.verticies[2].x, rect.verticies[2].y, rect.verticies[3].x, rect.verticies[3].y, thickness, color);
+    // draw left
+    ye_draw_thick_line(renderer, rect.verticies[3].x, rect.verticies[3].y, rect.verticies[0].x, rect.verticies[0].y, thickness, color);
+}
+
+struct ye_point_rectf ye_world_prectf_to_screen(struct ye_point_rectf rect) {
+    for(int i = 0; i < 4; i++) {
+        vec2_t p = (vec2_t){.data={rect.verticies[i].x, rect.verticies[i].y}};
+        p = lla_mat3_mult_vec2(YE_STATE.runtime.world2cam, p);
+        rect.verticies[i].x = p.data[0];
+        rect.verticies[i].y = p.data[1];
+    }
+
+    return rect;
+}
+
+struct ye_pointf ye_point_rectf_center(struct ye_point_rectf rect) {
+    struct ye_pointf center = {0, 0};
+    for(int i = 0; i < 4; i++) {
+        center.x += rect.verticies[i].x;
+        center.y += rect.verticies[i].y;
+    }
+    center.x /= 4;
+    center.y /= 4;
+    return center;
+}

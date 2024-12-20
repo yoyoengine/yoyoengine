@@ -45,6 +45,16 @@ void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width
     immediate_render_head = new_node;
 }
 
+void ye_debug_render_prect(struct ye_point_rectf rect, SDL_Color color, int width){
+    struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
+    new_node->type = YE_DEBUG_RENDER_PRECT;
+    new_node->color = color;
+    new_node->data.prect = rect;
+    new_node->width = width;
+    new_node->next = immediate_render_head;
+    immediate_render_head = new_node;
+}
+
 void ye_debug_render_circle(int x, int y, int radius, SDL_Color color, int width){
     struct ye_debug_render_immediate_node * new_node = malloc(sizeof(struct ye_debug_render_immediate_node));
     new_node->type = YE_DEBUG_RENDER_CIRCLE;
@@ -115,6 +125,9 @@ void ye_debug_renderer_render(){
             case YE_DEBUG_RENDER_POINT:
                 // for points, we draw a pixel rect filled in
                 ye_draw_thick_point(renderer, itr->data.point.x - camera_rect.x, itr->data.point.y - camera_rect.y, itr->width);
+                break;
+            case YE_DEBUG_RENDER_PRECT:
+                ye_draw_thick_prect(renderer, itr->data.prect, itr->width, itr->color);
                 break;
             default:
                 break;

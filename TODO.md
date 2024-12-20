@@ -160,10 +160,10 @@ components have aspect ratio lock sensibly (button)
 - LUA API's for colliders and rigidbodies
 - triple check accounting for rotation in all the other systems... should button, audiosource, be effected? should relative spin around the center of the transform??
 
-## lskdjgfl kjdfjug klfdhgkldfhjg 
+## lskdjgfl kjdfjug klfdhgkldfhjg
 
-- count verticies and draw wireframe (debugging)
 - pass on each component for linalg (if needed)
+  - needed for button click detection rn
 
 ## bruh refactors
 
@@ -186,3 +186,13 @@ it would be cool to have a nuklear inspector panel at runtime, to debug entities
 
 - bust out some of the renderer transformations into helper functions and re-use them to implement for buttons & camviews & audiosource etc
 - go through paintbounds and update each
+
+## todo
+
+- click to cycle through by z order?
+
+debug renderer not respecting vert alphas (me, im the alpha!!!)
+
+URGENT: rotation on transform does not work and scales wonky when increasing x or y after rotating
+
+- i can tell you already it has to do with rotation_mat in renderer.

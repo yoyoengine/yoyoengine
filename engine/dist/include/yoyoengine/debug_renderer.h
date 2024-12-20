@@ -19,6 +19,7 @@ enum ye_debug_render_type {
     YE_DEBUG_RENDER_LINE,
     YE_DEBUG_RENDER_CIRCLE,
     YE_DEBUG_RENDER_RECT,
+    YE_DEBUG_RENDER_PRECT,
     YE_DEBUG_RENDER_POINT
 };
 
@@ -41,6 +42,8 @@ struct ye_debug_render_immediate_node {
             SDL_Point center;
             int radius;
         } circle;
+
+        struct ye_point_rectf prect;
     } data;
     int width;
     struct ye_debug_render_immediate_node * next;
@@ -80,6 +83,15 @@ YE_API void ye_debug_render_line(int x1, int y1, int x2, int y2, SDL_Color color
  * @param width The width of the line
 */
 YE_API void ye_debug_render_rect(int x, int y, int w, int h, SDL_Color color, int width);
+
+/**
+ * @brief Renders (THIS FRAME) a prect with the specified color
+ * 
+ * @param rect The prect to render
+ * @param color The color of the prect
+ * @param width The width of the line
+*/
+YE_API void ye_debug_render_prect(struct ye_point_rectf rect, SDL_Color color, int width);
 
 /**
  * @brief Renders (THIS FRAME) a circle at (x, y) with the specified radius and color
