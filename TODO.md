@@ -196,3 +196,11 @@ debug renderer not respecting vert alphas (me, im the alpha!!!)
 URGENT: rotation on transform does not work and scales wonky when increasing x or y after rotating
 
 - i can tell you already it has to do with rotation_mat in renderer.
+
+UNKNOWNS
+
+- should entities that ARE NOT relative have their own rotation or still inherit from parent?
+
+skjgdflksdjfgs
+
+sometime in the future we should make it so clicking on overstacked ents will cycle through them by z or other order

@@ -572,18 +572,16 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
         /*
             Special Case: Audiosource
 
-            x,y need computed but w,h are special reserved fields for range.
-
-            In this case, w represents the max range (radius) of the source, so w*2xw*2 is area
+            all 4 verticies will be the same x,y of the center
         */
         case YE_COMPONENT_AUDIOSOURCE:
             pos = ye_get_position(entity, YE_COMPONENT_AUDIOSOURCE);
             ret = (struct ye_point_rectf){
                 .verticies = {
-                    (struct ye_pointf){.x = pos.x,             .y = pos.y},
-                    (struct ye_pointf){.x = pos.x,             .y = pos.y + pos.w * 2},
-                    (struct ye_pointf){.x = pos.x + pos.w * 2, .y = pos.y + pos.w * 2},
-                    (struct ye_pointf){.x = pos.x + pos.w * 2, .y = pos.y}
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y}
                 }
             };
             break;
@@ -605,11 +603,6 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
     if(entity->transform) {
         rot = lla_mat3_rotate_around(rot, (vec2_t){.data={entity->transform->x, entity->transform->y}}, entity->transform->rotation);
     }
-
-    // if this is a renderer we also need to rotate as needed
-    // if(entity->renderer) {
-        // rot = lla_mat3_rotate_around(rot, (vec2_t){.data={entity->renderer->center.x,entity->renderer->center.y}}, entity->renderer->rotation);
-    // }
 
     for(int i = 0; i < 4; i++) {
         vec2_t p = (vec2_t){.data={ret.verticies[i].x, ret.verticies[i].y}};

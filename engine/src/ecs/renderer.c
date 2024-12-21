@@ -21,6 +21,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/audiosource.h>
 #include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/debug_renderer.h>
 
@@ -658,75 +659,72 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
             ye_draw_thick_line(renderer, x1, y1, x2, y2, 2, (SDL_Color){255, 0, 0, 255});
         }
 
+        for(int i = 0; i < 4; i++){
+            float x1 = current->entity->renderer->_paintbounds_full_verts.verticies[i].x;
+            float y1 = current->entity->renderer->_paintbounds_full_verts.verticies[i].y;
+            float x2 = current->entity->renderer->_paintbounds_full_verts.verticies[(i + 1) % 4].x;
+            float y2 = current->entity->renderer->_paintbounds_full_verts.verticies[(i + 1) % 4].y;
+
+            ye_draw_thick_line(renderer, x1, y1, x2, y2, 2, (SDL_Color){0, 255, 0, 255});
+        }
+
         // TODO: paint a center marker, renderer or transform center? todo: integrate renderer center tighter and fix computation from tex size rather than rect size
     }
 
-    // // button bounds
-    // if(current->entity->button != NULL && YE_STATE.editor.button_bounds_visible){
-    //     // paint the button bounds
-    //     SDL_Rect button_bounds = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_BUTTON));
-    //     // printf("button_bounds: %d %d %d %d\n", button_bounds.x, button_bounds.y, button_bounds.w, button_bounds.h);
-    //     button_bounds.x = button_bounds.x - camera_rect.x;
-    //     button_bounds.y = button_bounds.y - camera_rect.y;
-    //     SDL_SetRenderDrawColor(renderer, 235, 52, 235, 255);
-    //     SDL_RenderDrawRect(renderer, &button_bounds);
-    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // }
+    // button bounds
+    if(current->entity->button != NULL && YE_STATE.editor.button_bounds_visible){
 
-    // // audio range
-    // if(current->entity->audiosource != NULL && YE_STATE.editor.audiorange_visible){
-    //     SDL_Rect audio_range_rect = ye_convert_rectf_rect(
-    //         ye_get_position(current->entity,YE_COMPONENT_AUDIOSOURCE)
-    //     );
-    //     audio_range_rect.x = audio_range_rect.x - camera_rect.x;
-    //     audio_range_rect.y = audio_range_rect.y - camera_rect.y;
-    //     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        struct ye_point_rectf r = ye_world_prectf_to_screen(ye_get_position2(current->entity,YE_COMPONENT_BUTTON));
 
-    //     // use ye_draw_circle to draw the audio range, the width is the radius
-    //     ye_draw_circle(renderer, audio_range_rect.x + (audio_range_rect.w / 2), audio_range_rect.y + (audio_range_rect.h / 2), audio_range_rect.w / 2, 5);
+        ye_draw_thick_prect(renderer, r, 2, (SDL_Color){0, 0, 255, 255});
+    }
 
-    //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // }
+    // audio range
+    if(current->entity->audiosource != NULL && YE_STATE.editor.audiorange_visible){
+        struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity, YE_COMPONENT_AUDIOSOURCE));
+        
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        ye_draw_circle(renderer, pos.verticies[0].x, pos.verticies[0].y, (int)current->entity->audiosource->range.w, 2);
+        ye_draw_circle(renderer, pos.verticies[0].x, pos.verticies[0].y, (int)current->entity->audiosource->range.h, 2);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    }
 
-    // if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
-    //     // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
-    //     SDL_Color color = {255, 255, 255, 255};
+    if(YE_STATE.editor.editor_mode && YE_STATE.editor.display_names){
+        // paint the entity name - NOTE: I'm keeping this around because copilot generated it and its kinda cool lol
+        SDL_Color color = {255, 255, 255, 255};
 
-    //     // get the current engine font size
-    //     int og_size = TTF_FontHeight(YE_STATE.engine.pEngineFont);
+        // get the current engine font size
+        int og_size = TTF_FontHeight(YE_STATE.engine.pEngineFont);
 
-    //     // set the size to something way less for performance reasons
-    //     TTF_SetFontSize(YE_STATE.engine.pEngineFont, 32);
+        // set the size to something way less for performance reasons
+        TTF_SetFontSize(YE_STATE.engine.pEngineFont, 32);
 
-    //     SDL_Texture *text_texture = createTextTexture(current->entity->name, YE_STATE.engine.pEngineFont, &color);
-    //     SDL_Rect text_rect = {entity_rect.x, entity_rect.y - 20, 0, 0};
-    //     SDL_QueryTexture(text_texture, NULL, NULL, &text_rect.w, &text_rect.h);
-    //     SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
-    //     SDL_DestroyTexture(text_texture); // TODO: cache for reusability somewhere and invalidate when name changes?
+        SDL_Texture *text_texture = createTextTexture(current->entity->name, YE_STATE.engine.pEngineFont, &color);
+        
+        struct ye_point_rectf entity_prect = ye_world_prectf_to_screen(ye_get_position2(current->entity,YE_COMPONENT_TRANSFORM));
 
-    //     // set the font size back to the original size
-    //     TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
-    // }
+        int w,h;
+        SDL_QueryTexture(text_texture, NULL, NULL, &w, &h);
 
-    // if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
-    //     // paint the collider
-    //     SDL_Rect collider_rect = ye_convert_rectf_rect(ye_get_position(current->entity,YE_COMPONENT_COLLIDER));
-    //     collider_rect.x = collider_rect.x - camera_rect.x;
-    //     collider_rect.y = collider_rect.y - camera_rect.y;
-    //     // yellow trigger collider
-    //     if(current->entity->collider->is_trigger){
-    //         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    //         SDL_RenderDrawRect(renderer, &collider_rect);
-    //         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    //     }
-    //     // blue static collider
-    //     else{
-    //         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    //         SDL_RenderDrawRect(renderer, &collider_rect);
-    //         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    //     }
-    // }
-    // TODO: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        SDL_Rect entity_rect = {entity_prect.verticies[0].x - w / 2, entity_prect.verticies[0].y - 20, w, h};
+
+        SDL_RenderCopy(renderer, text_texture, NULL, &entity_rect);
+        SDL_DestroyTexture(text_texture); // TODO: cache for reusability somewhere and invalidate when name changes?
+
+        // set the font size back to the original size
+        TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
+    }
+
+    if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
+        struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity, YE_COMPONENT_COLLIDER));
+
+        if(current->entity->collider->is_trigger){
+            ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){255, 255, 0, 255});
+        }
+        else{
+            ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){0, 0, 255, 255});
+        }
+    }
 }
 
 /*
@@ -814,7 +812,7 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         if(rend->type == YE_RENDERER_TYPE_TILEMAP_TILE){
             child_AABB = (struct ye_rectf){0, 0, rend->renderer_impl.tile->src.w, rend->renderer_impl.tile->src.h};
         }
-        
+
         mat3_t align_mat = _get_auto_bound(&bound_AABB, &child_AABB, rend->alignment, !rend->preserve_original_size);
 
         /*
@@ -909,12 +907,20 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         mat3_t world2cam = lla_mat3_inverse(cam_matrix);
         YE_STATE.runtime.world2cam = world2cam;
 
-        /*
-        
-            TODO: renderer2
-
-            - refactor the component paintbounds
-        */
+        // if paintbounds is on, we want to cache the full rect translated
+        if(YE_STATE.editor.paintbounds_visible){
+            struct ye_point_rectf pbrf = ye_rect_to_point_rectf(bound_AABB);
+            for(int i = 0; i < 4; i++) {
+                vec2_t v = {.data = {pbrf.verticies[i].x, pbrf.verticies[i].y}};
+                v = lla_mat3_mult_vec2(rotation_mat, v);
+                v = lla_mat3_mult_vec2(world_matrix, v);
+                v = lla_mat3_mult_vec2(world2cam, v);
+                
+                // cache
+                rend->_paintbounds_full_verts.verticies[i].x = v.data[0];
+                rend->_paintbounds_full_verts.verticies[i].y = v.data[1];
+            }
+        }
 
         /*
             For rendering, afaict RenderGeometry only takes triangles,
