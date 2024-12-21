@@ -563,6 +563,7 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
     */
 
     struct ye_point_rectf ret = (struct ye_point_rectf){0};
+    struct ye_rectf pos;
 
     switch(type) {
         case YE_COMPONENT_COLLIDER:
@@ -576,7 +577,7 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
             In this case, w represents the max range (radius) of the source, so w*2xw*2 is area
         */
         case YE_COMPONENT_AUDIOSOURCE:
-            struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_AUDIOSOURCE);
+            pos = ye_get_position(entity, YE_COMPONENT_AUDIOSOURCE);
             ret = (struct ye_point_rectf){
                 .verticies = {
                     (struct ye_pointf){.x = pos.x,             .y = pos.y},
