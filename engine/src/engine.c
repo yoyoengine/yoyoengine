@@ -467,6 +467,9 @@ void ye_shutdown_engine(){
     // shutdown input
     ye_shutdown_input();
 
+    // Shutdown console
+    ye_shutdown_console();
+
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file
     ye_log_shutdown();
@@ -488,9 +491,4 @@ void ye_shutdown_engine(){
 
     // free all event memory
     ye_purge_events(true);
-
-    /*
-        Shutdown console last so we retain logs
-    */
-    ye_shutdown_console();
 }
