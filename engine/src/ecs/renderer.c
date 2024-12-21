@@ -834,39 +834,40 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         world_matrix = lla_mat3_translate(world_matrix, (vec2_t){.data = {rend->rect.x, rend->rect.y}}); // always offset renderer pos
 
         /*
-            Create rotation matrix, encompassing transform and renderer rotation.
-
-            These are performed by scaling to the origin (local) and rotating, then back.
+            Create the rotation matrix, taking into account
+            locality, transform positions, relativity, etc
         */
         mat3_t rotation_mat = lla_mat3_identity();
-        if(trans && trans->rotation != 0){
-            rotation_mat = lla_mat3_translate(rotation_mat, (vec2_t){.data = {trans->x, trans->y}});
-            rotation_mat = lla_mat3_rotate(rotation_mat, trans->rotation);
-            rotation_mat = lla_mat3_translate(rotation_mat, (vec2_t){.data = {-trans->x, -trans->y}});
+        // Calculate full offset from transform
+        float full_offset_x = rend->rect.x;
+        float full_offset_y = rend->rect.y;
+        if(trans) {
+            full_offset_x += trans->x;
+            full_offset_y += trans->y;
         }
+        // Transform rotation around transform center
+        if(trans && trans->rotation != 0) {
+            vec2_t transform_pivot;
+            if(rend->relative)
+                transform_pivot = (vec2_t){.data = {
+                    trans->x - full_offset_x,
+                    trans->y - full_offset_y
+                }};
+            else
+                transform_pivot = (vec2_t){.data = {0, 0}};
+            
+            rotation_mat = lla_mat3_translate(rotation_mat, transform_pivot);
+            rotation_mat = lla_mat3_rotate(rotation_mat, trans->rotation);
+            rotation_mat = lla_mat3_translate(rotation_mat, (vec2_t){.data = {-transform_pivot.data[0], -transform_pivot.data[1]}});
+        }
+        // local rotation around renderer's center
         if(rend->rotation != 0) {
-            vec2_t pivot;
-            if(rend->relative) {
-                // Relative rotation - pivot around center point relative to transform + renderer offset
-                pivot = (vec2_t){.data = {
-                    trans->x + rend->rect.x + rend->center.x,
-                    trans->y + rend->rect.y + rend->center.y
-                }};
-            } else {
-                // Absolute rotation - pivot around center point in world space
-                pivot = (vec2_t){.data = {
-                    rend->center.x,
-                    rend->center.y
-                }};
-            }
-        
-            // Translate to pivot point
-            rotation_mat = lla_mat3_translate(rotation_mat, pivot);
-            // Rotate around pivot
-            rotation_mat = lla_mat3_rotate(rotation_mat, rend->rotation);
-            // Translate back from pivot
-            rotation_mat = lla_mat3_translate(rotation_mat, 
-                (vec2_t){.data = {-pivot.data[0], -pivot.data[1]}});
+            vec2_t local_pivot = (vec2_t){.data = {
+                rend->center.x,
+                rend->center.y
+            }};
+            
+            rotation_mat = lla_mat3_rotate_around(rotation_mat, local_pivot, rend->rotation);
         }
 
         /*
@@ -888,6 +889,16 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         indicies[4] = 3;
         indicies[5] = 0;
 
+        /*
+            Cache a transformed center point in world space for use in other places
+        */
+        vec2_t center = {.data = {rend->center.x, rend->center.y}};
+        center = lla_mat3_mult_vec2(align_mat, center);
+        center = lla_mat3_mult_vec2(rotation_mat, center);
+        center = lla_mat3_mult_vec2(world_matrix, center);
+        rend->_world_center = (struct ye_pointf){center.data[0], center.data[1]};
+
+        // actually compute new world
         for(int i = 0; i < 4; i++){
             vec2_t v = {.data = {entity_prect.verticies[i].x, entity_prect.verticies[i].y}};
             v = lla_mat3_mult_vec2(align_mat, v);
@@ -907,8 +918,8 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         mat3_t world2cam = lla_mat3_inverse(cam_matrix);
         YE_STATE.runtime.world2cam = world2cam;
 
-        // if paintbounds is on, we want to cache the full rect translated
-        if(YE_STATE.editor.paintbounds_visible){
+        // we cache this regardless, because in editor we paint the unaligned AABB too
+        // if(YE_STATE.editor.paintbounds_visible){
             struct ye_point_rectf pbrf = ye_rect_to_point_rectf(bound_AABB);
             for(int i = 0; i < 4; i++) {
                 vec2_t v = {.data = {pbrf.verticies[i].x, pbrf.verticies[i].y}};
@@ -920,7 +931,7 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
                 rend->_paintbounds_full_verts.verticies[i].x = v.data[0];
                 rend->_paintbounds_full_verts.verticies[i].y = v.data[1];
             }
-        }
+        // }
 
         /*
             For rendering, afaict RenderGeometry only takes triangles,

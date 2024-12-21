@@ -324,6 +324,16 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
         e->renderer->flipped_y = flipped_y;
     }
 
+    // check for center_x and center_y and update
+    if(ye_json_has_key(renderer,"center_x")){
+        int center_x = 0;    ye_json_int(renderer,"center_x",&center_x);
+        e->renderer->center.x = center_x;
+    }
+    if(ye_json_has_key(renderer,"center_y")){
+        int center_y = 0;    ye_json_int(renderer,"center_y",&center_y);
+        e->renderer->center.y = center_y;
+    }
+
     // update the alignment (if exists)
     enum ye_alignment alignment;
     if(!ye_json_int(renderer,"alignment",(int*)&alignment)) {

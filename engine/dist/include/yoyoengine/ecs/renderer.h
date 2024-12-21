@@ -83,6 +83,7 @@ struct ye_component_renderer {
     struct ye_point_rectf _world_rect;   ///< world rect of the renderer
     int _indicies[6];           ///< indicies for the renderer
     struct ye_point_rectf _paintbounds_full_verts; ///< local verticies for the paintbounds
+    struct ye_pointf _world_center; ///< world center of the renderer
 };
 
 /**

@@ -169,10 +169,6 @@ components have aspect ratio lock sensibly (button)
 
 SDL_Image should be wrapped by ye_image which contain meta on size... we need this for stupid edge stuff like tilemap renderer
 
-## osklflkdsfjhglkfdjgkldfjkg
-
-- paintbounds fixes and editor outline fixes
-
 ## ldkjhfgkjdfhgkjdfhgd
 
 - god, stupid annoying yep invalidation... you need to just solve this one and for all
@@ -185,17 +181,12 @@ it would be cool to have a nuklear inspector panel at runtime, to debug entities
 ## next up
 
 - bust out some of the renderer transformations into helper functions and re-use them to implement for buttons & camviews & audiosource etc
-- go through paintbounds and update each
 
 ## todo
 
 - click to cycle through by z order?
 
 debug renderer not respecting vert alphas (me, im the alpha!!!)
-
-URGENT: rotation on transform does not work and scales wonky when increasing x or y after rotating
-
-- i can tell you already it has to do with rotation_mat in renderer.
 
 UNKNOWNS
 
@@ -204,3 +195,9 @@ UNKNOWNS
 skjgdflksdjfgs
 
 sometime in the future we should make it so clicking on overstacked ents will cycle through them by z or other order
+
+LAST FINAL BEFORE TAR:
+
+- change button bounds to check inside true computed location
+- change audiosource to check inside true computed location
+- etc
