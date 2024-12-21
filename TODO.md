@@ -198,6 +198,6 @@ sometime in the future we should make it so clicking on overstacked ents will cy
 
 LAST FINAL BEFORE TAR:
 
-- change button bounds to check inside true computed location
-- change audiosource to check inside true computed location
+- debug intro cutscene
+- change audiosource to check inside true computed location and test it (not playing at all rn)
 - etc

@@ -828,7 +828,7 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             Shift matrix to transfer from "local" to "world" space
         */
         mat3_t world_matrix = lla_mat3_identity();
-        if(rend->relative) {
+        if(rend->relative && trans) {
             world_matrix = lla_mat3_translate(world_matrix, (vec2_t){.data = {trans->x, trans->y}}); // apply transform if it's relative to it
         }
         world_matrix = lla_mat3_translate(world_matrix, (vec2_t){.data = {rend->rect.x, rend->rect.y}}); // always offset renderer pos

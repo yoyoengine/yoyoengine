@@ -53,19 +53,17 @@ void ye_system_button(SDL_Event event){
         struct ye_entity *entity = itr->entity;
         struct ye_component_button *button = entity->button;
 
-        // if the button is inactive, skip it
-        if(!button->active)
+        // if inactive, skip it
+        if(!button->active || !entity->active) {
+            itr = itr->next;
             continue;
+        }
 
         // get the position of the button
-        struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_BUTTON);
+        struct ye_point_rectf pos = ye_get_position2(entity, YE_COMPONENT_BUTTON);
 
         // check if the mouse is hovering over the button
-        if(
-            mouseX >= pos.x && mouseX <= pos.x + pos.w &&   // within width
-            mouseY >= pos.y && mouseY <= pos.y + pos.h      // within height
-        )
-        {
+        if(ye_pointf_in_point_rectf((struct ye_pointf){mouseX, mouseY}, pos)) {
             // if within the bounds, we are hovering
             button->is_hovered = true;
 
@@ -82,7 +80,7 @@ void ye_system_button(SDL_Event event){
             // update was_pressed for the next run
             button->_was_pressed = button->is_pressed;
         }
-        else{
+        else {
             button->is_hovered = false;
             button->is_pressed = false;
             button->is_clicked = false;
