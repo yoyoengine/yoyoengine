@@ -198,6 +198,18 @@ sometime in the future we should make it so clicking on overstacked ents will cy
 
 LAST FINAL BEFORE TAR:
 
-- debug intro cutscene
-- change audiosource to check inside true computed location and test it (not playing at all rn)
 - etc
+
+camera rotation??
+
+## sdklfukjdfhgkdfjhgdjkfhg
+
+ok you have some braindead design decisions where the editor is the one that builds the engine pack, so im thinking you need a build toolchain involving the yep that is NOT embedded in the editor.
+
+various paint overlays dont show when renderer not visible or being painted...
+
+## ideas
+
+expose in config a system panel which visualizes engine config settings at runtime
+
+when we editor select based on a comp, set that comp as the active comp in the inspector

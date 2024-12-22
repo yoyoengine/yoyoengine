@@ -82,10 +82,11 @@ void ye_system_audiosource(){
     /*
         We are considering the center of the active camera to be the audio listener
     */
-    struct ye_rectf camera = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
-    float listener_x, listener_y;
-    listener_x = camera.x + (camera.w / 2);
-    listener_y = camera.y + (camera.h / 2);
+    struct ye_point_rectf camera = ye_get_position2(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
+    struct ye_pointf cam_cent = ye_point_rectf_center(camera);
+    
+    float listener_x = cam_cent.x;
+    float listener_y = cam_cent.y;
 
     /*
         For every audiosource in the list, check if it is active and if it is spatial.
@@ -101,24 +102,32 @@ void ye_system_audiosource(){
         // get the audiosource component
         struct ye_component_audiosource *src = entity->audiosource;
 
+        if(!entity || !entity->active || !src || !src->active){
+            continue;
+        }
+
         if(src->active){
             if(src->simulated){
                 // sanity check to make sure the audiosource takes up space
                 if(src->range.w > 0 && src->range.h >= 0){
                     // get the position of the audiosource
-                    struct ye_rectf pos = ye_get_position(entity, YE_COMPONENT_AUDIOSOURCE);
+                    struct ye_point_rectf pos = ye_get_position2(entity, YE_COMPONENT_AUDIOSOURCE);
 
-                    // find the center float of the audio source
-                    float src_center_x = pos.x + (pos.w / 2);
-                    float src_center_y = pos.y + (pos.w / 2);
+                    /*
+                        Center, fallof start and max
+                    */
+                    float cx = pos.verticies[0].x;
+                    float cy = pos.verticies[0].y;
+                    float min_radius = src->range.h;
+                    float max_radius = src->range.w;
 
                     // find the distance between src center and listener
-                    float distance = ye_distance(listener_x, listener_y, src_center_x, src_center_y);
+                    float distance = ye_distance(listener_x, listener_y, cx, cy);
 
                     /*
                         If we are within falloff ring, play at full volume
                     */
-                    if(distance < src->range.h / 2){
+                    if(distance < min_radius){
                         distance = 0;
                     }
                     else {
@@ -130,14 +139,14 @@ void ye_system_audiosource(){
                             stupid hack to make sure the division
                             for distance_from_center_scaled is proper
                         */
-                        if(!(src->range.h / 2 >= src->range.w / 2)) // if the rings dont overlap, scale distance
-                            distance -= src->range.h / 2;
+                        if(!(min_radius >= max_radius)) // if the rings dont overlap, scale distance
+                            distance -= min_radius;
                         else // if rings overlap, erase fallback ring (hack)
                             src->range.h = 0;
                     }
 
                     // find the angle between src center and listener
-                    float angle = ye_angle(listener_x, listener_y, src_center_x, src_center_y);
+                    float angle = ye_angle(listener_x, listener_y, cx, cy);
 
                     // scale the angle to make sure due north is 0 degrees
                     angle -= 270;
@@ -147,7 +156,7 @@ void ye_system_audiosource(){
 
                     // SDL_Mixer takes in a uint8_t for the distance, so we need to scale the distance to 0-255
                     // scale taking into account the falloff ring
-                    int distance_from_center_scaled = (int)(distance / ((src->range.w / 2) - (src->range.h / 2)) * 255);
+                    int distance_from_center_scaled = (int)(distance / ((max_radius) - (min_radius)) * 255);
 
                     if(distance_from_center_scaled > 255){
                         // mute the channel
