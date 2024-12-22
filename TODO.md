@@ -41,9 +41,6 @@ Nothing!!!
   - Scrolling on panels should not scroll the viewport
   - zenity refocus causes us to need to click a second time (might be a DE thing)
   - we can actually change the active window inside nuklear.h:5674 with ctx->active.
-- Physics system rewrite
-  - Seperate simulation step parameters
-  - Actual physics solver with rigidbodies and gravity, velocity, drag, etc
 - Keyboard shortcut pass to do things like easily duplicate or delete
 - It would be nice to be able to move entities around and scale, rotate them freely by holding a certain key and dragging. Like if you click on them and start dragging.
 - Model tracking fonts and colors, so we can use a dropdown rather than typing in their key names
@@ -213,3 +210,21 @@ various paint overlays dont show when renderer not visible or being painted...
 expose in config a system panel which visualizes engine config settings at runtime
 
 when we editor select based on a comp, set that comp as the active comp in the inspector
+
+be suuuper clear about build platforms in editor dropdown... only enable installs if you have the toolchains or opt in idk
+
+## yep2
+
+creates datastructure tree with stamps for each file, selectively repacks only changed files... something like that to rapidly accelerate builds
+
+## lua binding slop
+
+- rigidbody
+- new renderer changes (center)
+
+## TAR!!!!
+
+- collision solver for rect rect
+- other detections and sovlers
+- expose and paint correctly collider sizes
+- expose settings in editor for default physics... move it to scene state?

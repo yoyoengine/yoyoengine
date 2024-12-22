@@ -318,6 +318,13 @@ void ye_init_engine() {
     YE_STATE.editor.editor_mode             = ye_config_bool(SETTINGS, "editor_mode", false);
     YE_STATE.engine.stretch_resolution      = ye_config_bool(SETTINGS, "stretch_resolution", false);
 
+    YE_STATE.engine.tar.gravity_x           = ye_config_float(SETTINGS, "gravity_x", 0.0f);
+    YE_STATE.engine.tar.gravity_y           = ye_config_float(SETTINGS, "gravity_y", 50.0f);
+    YE_STATE.engine.tar.terminal_velocity   = ye_config_float(SETTINGS, "terminal_velocity", 300.0f);
+
+    printf("Gravity: %f, %f\n", YE_STATE.engine.tar.gravity_x, YE_STATE.engine.tar.gravity_y);
+    printf("Terminal Velocity: %f\n", YE_STATE.engine.tar.terminal_velocity);
+
     // initialize some editor state
     YE_STATE.editor.scene_default_camera = NULL;
 

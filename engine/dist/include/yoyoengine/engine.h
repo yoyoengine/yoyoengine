@@ -152,6 +152,15 @@ struct ye_engine_config {
 
     // the nuklear context
     struct nk_context *ctx; // TODO: should maybe be moved to runtime but idgaf rn
+
+    /*
+        Global Physics Settings
+    */
+    struct {
+        float terminal_velocity; // the velocity at which gravity stops acting on an object
+        float gravity_x;
+        float gravity_y;
+    } tar;
 };
 
 /**
