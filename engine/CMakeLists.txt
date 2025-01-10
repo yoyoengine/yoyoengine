@@ -1,5 +1,5 @@
 # This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-# Copyright (C) 2024  Ryan Zmuda
+# Copyright (C) 2023-2025  Ryan Zmuda
 
 # Licensed under the MIT license. See LICENSE file in the project root for details.
 
@@ -22,6 +22,9 @@ cmake_minimum_required(VERSION 3.22.1)
 project(yoyoengine)
 
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
+
+# required (originated from p2d) but is allegedly (claude) standard for shared libs
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # If we're using MSVC (first of all, I'm so sorry!),
 # then instead of building the satellite libs into one DLL,
@@ -92,6 +95,22 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Lilith)
 target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lilith.h
+
+###############
+#     p2d     #
+###############
+
+set(P2D_HAS_YOYOENGINE ON CACHE BOOL "Enable YoyoEngine integration in p2d")
+
+# TODO: pin tag when stable
+FetchContent_Declare(
+    p2d
+    GIT_REPOSITORY https://github.com/yoyoengine/p2d.git
+    GIT_TAG main
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(p2d)
+target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
 
 ###############
 #   jansson   #
@@ -340,7 +359,9 @@ endif()
 
 if(YOYO_ENGINE_STATIC)
 	target_link_libraries(yoyoengine PUBLIC 
+        # TODO: is there lilith duplication in p2d?
         lilith
+        p2d
 		jansson
 		zlibstatic
 		SDL2-static
@@ -353,7 +374,9 @@ if(YOYO_ENGINE_STATIC)
 else()
     target_link_libraries(yoyoengine PRIVATE 
         -Wl,--whole-archive
+        # TODO: is there lilith duplication in p2d?
         lilith
+        p2d
         jansson
         zlibstatic
         SDL2-static

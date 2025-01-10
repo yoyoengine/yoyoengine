@@ -1,13 +1,12 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
 #include <lua.h>
 
-#include <yoyoengine/tar_physics/rigidbody.h>
 #include <yoyoengine/lua_api.h>
 #include <yoyoengine/logging.h>
 
@@ -39,10 +38,11 @@ int ye_lua_rigidbody_query(lua_State *L){
         return 0;
     }
 
-    lua_pushboolean(L, ent->rigidbody->active);
-    lua_pushnumber(L, ent->rigidbody->velocity.x);
-    lua_pushnumber(L, ent->rigidbody->velocity.y);
-    lua_pushnumber(L, ent->rigidbody->rotational_velocity);
+    // RB TODO
+    // lua_pushboolean(L, ent->rigidbody->active);
+    // lua_pushnumber(L, ent->rigidbody->velocity.x);
+    // lua_pushnumber(L, ent->rigidbody->velocity.y);
+    // lua_pushnumber(L, ent->rigidbody->rotational_velocity);
 
     return 4;
 }

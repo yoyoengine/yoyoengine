@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -20,13 +20,11 @@
 #include <yoyoengine/ecs/tag.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
-#include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
-
-#include <yoyoengine/tar_physics/rigidbody.h>
 
 // entity id counter (used to assign unique ids to entities)
 int eid = 0;
@@ -118,7 +116,6 @@ struct ye_entity_node *transform_list_head;
 struct ye_entity_node *renderer_list_head;
 struct ye_entity_node *camera_list_head;
 struct ye_entity_node *tag_list_head;
-struct ye_entity_node *collider_list_head;
 struct ye_entity_node *lua_script_list_head;
 struct ye_entity_node *audiosource_list_head;
 struct ye_entity_node *button_list_head;
@@ -144,7 +141,6 @@ struct ye_entity * ye_create_entity(){
     entity->camera = NULL;
     entity->lua_script = NULL;
     entity->button = NULL;
-    entity->collider = NULL;
     entity->tag = NULL;
     entity->audiosource = NULL;
     entity->rigidbody = NULL;
@@ -174,7 +170,6 @@ struct ye_entity * ye_create_entity_named(const char *name){
     entity->lua_script = NULL;
     entity->button = NULL;
     entity->rigidbody = NULL;
-    entity->collider = NULL;
     entity->tag = NULL;
     entity->audiosource = NULL;
 
@@ -249,27 +244,11 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->button->relative = entity->button->relative;
     }
     if(entity->rigidbody != NULL){
-        ye_add_rigidbody_component(new_entity, entity->rigidbody->mass, entity->rigidbody->restitution, entity->rigidbody->kinematic_friction, entity->rigidbody->rotational_kinematic_friction);
-        new_entity->rigidbody->active = entity->rigidbody->active;
-        new_entity->rigidbody->velocity = entity->rigidbody->velocity;
-        new_entity->rigidbody->rotational_velocity = entity->rigidbody->rotational_velocity;
+        // ye_add_rigidbody_component(new_entity, entity->rigidbody->mass, entity->rigidbody->restitution, entity->rigidbody->kinematic_friction, entity->rigidbody->rotational_kinematic_friction);
+        // new_entity->rigidbody->active = entity->rigidbody->active;
+        // new_entity->rigidbody->velocity = entity->rigidbody->velocity;
+        // new_entity->rigidbody->rotational_velocity = entity->rigidbody->rotational_velocity;
     }
-    if(entity->collider != NULL){
-        if(entity->collider->type == YE_COLLIDER_RECT){
-            if(entity->collider->is_trigger)
-                ye_add_trigger_rect_collider_component(new_entity, entity->collider->x, entity->collider->y, entity->collider->width, entity->collider->height);
-            else
-                ye_add_static_rect_collider_component(new_entity, entity->collider->x, entity->collider->y, entity->collider->width, entity->collider->height);
-        }
-        else if(entity->collider->type == YE_COLLIDER_CIRCLE){
-            if(entity->collider->is_trigger)
-                ye_add_trigger_circle_collider_component(new_entity, entity->collider->x, entity->collider->y, entity->collider->radius);
-            else
-                ye_add_static_circle_collider_component(new_entity, entity->collider->x, entity->collider->y, entity->collider->radius);
-        }
-        new_entity->collider->active = entity->collider->active;
-        new_entity->collider->is_trigger = entity->collider->is_trigger; // redundant
-    }    
     if(entity->tag != NULL){
         ye_add_tag_component(new_entity);
         for(int i = 0; i < YE_TAG_MAX_NUMBER; i++){
@@ -317,7 +296,6 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->tag != NULL) ye_remove_tag_component(entity);
     if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     if(entity->button != NULL) ye_remove_button_component(entity);
-    if(entity->collider != NULL) ye_remove_collider_component(entity);
     if(entity->audiosource != NULL) ye_remove_audiosource_component(entity);
     if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     // free the entity name
@@ -392,7 +370,6 @@ void ye_init_ecs(){
     renderer_list_head = ye_entity_list_create();
     camera_list_head = ye_entity_list_create();
     tag_list_head = ye_entity_list_create();
-    collider_list_head = ye_entity_list_create();
     audiosource_list_head = ye_entity_list_create();
     lua_script_list_head = ye_entity_list_create();
     button_list_head = ye_entity_list_create();
@@ -435,7 +412,6 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&renderer_list_head);
     ye_entity_list_destroy(&camera_list_head);
     ye_entity_list_destroy(&tag_list_head);
-    ye_entity_list_destroy(&collider_list_head);
     ye_entity_list_destroy(&lua_script_list_head);
     ye_entity_list_destroy(&audiosource_list_head);
     ye_entity_list_destroy(&button_list_head);
@@ -455,7 +431,7 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Btn:%d Scr:%d RB:%d Col:%d Tag:%d Aud:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Btn:%d Scr:%d RB:%d Tag:%d Aud:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
@@ -463,7 +439,6 @@ void ye_print_entities(){
             current->entity->button != NULL,
             current->entity->lua_script != NULL,
             current->entity->rigidbody != NULL,
-            current->entity->collider != NULL,
             current->entity->tag != NULL,
             current->entity->audiosource != NULL
         );

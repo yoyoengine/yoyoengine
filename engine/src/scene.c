@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -25,15 +25,11 @@
 #include <yoyoengine/ecs/tag.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
-#include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
-
-#include <yoyoengine/tar_physics/rigidbody.h>
-
 
 void ye_init_scene_manager(){
     YE_STATE.runtime.scene_name = NULL;
@@ -386,48 +382,51 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 }
 
 void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* entity_name){
-    float mass;
-    if(!ye_json_float(rigidbody,"mass",&mass)) {
-        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
-        return;
-    }
+    // float mass;
+    // if(!ye_json_float(rigidbody,"mass",&mass)) {
+    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
+    //     return;
+    // }
 
-    float restitution;
-    if(!ye_json_float(rigidbody,"restitution",&restitution)) {
-        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the restitution field\n", entity_name);
-        return;
-    }
+    // float restitution;
+    // if(!ye_json_float(rigidbody,"restitution",&restitution)) {
+    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the restitution field\n", entity_name);
+    //     return;
+    // }
 
-    float kinematic_friction;
-    if(!ye_json_float(rigidbody,"kinematic_friction",&kinematic_friction)) {
-        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the kinematic friction field\n", entity_name);
-        return;
-    }
+    // float kinematic_friction;
+    // if(!ye_json_float(rigidbody,"kinematic_friction",&kinematic_friction)) {
+    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the kinematic friction field\n", entity_name);
+    //     return;
+    // }
 
-    float rotational_kinematic_friction;
-    if(!ye_json_float(rigidbody,"rotational_kinematic_friction",&rotational_kinematic_friction)) {
-        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the rotational kinematic friction field\n", entity_name);
-        return;
-    }
+    // float rotational_kinematic_friction;
+    // if(!ye_json_float(rigidbody,"rotational_kinematic_friction",&rotational_kinematic_friction)) {
+    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the rotational kinematic friction field\n", entity_name);
+    //     return;
+    // }
 
-    // add the rigidbody component
-    ye_add_rigidbody_component(e,mass,restitution,kinematic_friction,rotational_kinematic_friction);
+    // // add the rigidbody component
+    // ye_add_rigidbody_component(e,mass,restitution,kinematic_friction,rotational_kinematic_friction);
 
-    float vx = 0;
-    float vy = 0;
-    float vr = 0;
-    if(!ye_json_float(rigidbody,"vx",&vx) || !ye_json_float(rigidbody,"vy",&vy) || !ye_json_float(rigidbody,"vr",&vr)) {
-        ye_logf(warning,"Entity %s has a rigidbody component with invalid velocity field\n", entity_name);
-    } else {
-        e->rigidbody->velocity = (struct ye_vec2f){vx,vy};
-        e->rigidbody->rotational_velocity = vr;
-    }
+    // float vx = 0;
+    // float vy = 0;
+    // float vr = 0;
+    // if(!ye_json_float(rigidbody,"vx",&vx) || !ye_json_float(rigidbody,"vy",&vy) || !ye_json_float(rigidbody,"vr",&vr)) {
+    //     ye_logf(warning,"Entity %s has a rigidbody component with invalid velocity field\n", entity_name);
+    // } else {
+    //     e->rigidbody->velocity = (struct ye_vec2f){vx,vy};
+    //     e->rigidbody->rotational_velocity = vr;
+    // }
 
-    // update the active state
-    if(ye_json_has_key(rigidbody,"active")){
-        bool active = true;    ye_json_bool(rigidbody,"active",&active);
-        e->rigidbody->active = active;
-    }
+    // // update the active state
+    // if(ye_json_has_key(rigidbody,"active")){
+    //     bool active = true;    ye_json_bool(rigidbody,"active",&active);
+    //     e->rigidbody->active = active;
+    // }
+    (void)e;
+    (void)rigidbody;
+    (void)entity_name;
 }
 
 void ye_construct_tag(struct ye_entity* e, json_t* tag){
@@ -450,87 +449,6 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag){
             const char *tag_name = NULL; ye_json_arr_string(tags,i,&tag_name);
             ye_add_tag(e,tag_name);
         }
-    }
-}
-
-void ye_construct_collider(struct ye_entity* e, json_t* collider, const char* entity_name){
-    // common
-    float x,y;
-    if(!ye_json_float(collider,"x",&x) || !ye_json_float(collider,"y",&y)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the x or y field\n", entity_name);
-        return;
-    }
-
-    // get the type
-    enum ye_collider_type type;
-    if(!ye_json_int(collider,"type",(int*)&type)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the type field\n", entity_name);
-        return;
-    }
-
-    // validate is_trigger field
-    bool is_trigger;
-    if(!ye_json_bool(collider,"is trigger",&is_trigger)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the is trigger field\n", entity_name);
-        is_trigger = false;
-    }
-
-    json_t *impl = NULL;
-    if(!ye_json_object(collider,"impl",&impl)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the impl field\n", entity_name);
-        return;
-    }
-
-    // comply with mingw & clang, boo!
-    float w,h = 0;
-    float radius = 0;
-    
-    switch(type) {
-        case YE_COLLIDER_RECT:
-            // validate the w,h fields
-            if(!ye_json_float(impl,"w",&w) || !ye_json_float(impl,"h",&h)) {
-                ye_logf(warning,"Entity %s has a collider component, but it is missing the w or h field\n", entity_name);
-                return;
-            }
-
-            if(is_trigger)
-                ye_add_trigger_rect_collider_component(e,x,y,w,h);
-            else
-                ye_add_static_rect_collider_component(e,x,y,w,h);
-            
-            break;
-        case YE_COLLIDER_CIRCLE:
-            // validate the radius field
-            if(!ye_json_float(impl,"radius",&radius)) {
-                ye_logf(warning,"Entity %s has a collider component, but it is missing the radius field\n", entity_name);
-                return;
-            }
-            
-            if(is_trigger)
-                ye_add_trigger_circle_collider_component(e,x,y,radius);
-            else
-                ye_add_static_circle_collider_component(e,x,y,radius);
-
-            break;
-        default:
-            ye_logf(warning,"Entity %s has a collider component, but it has an invalid type field\n", entity_name);
-            return;
-    }
-
-    if(e->collider == NULL) return;
-
-    // validate the relative field
-    bool relative;
-    if(!ye_json_bool(collider,"relative",&relative)) {
-        ye_logf(warning,"Entity %s has a collider component, but it is missing the relative field\n", entity_name);
-        relative = true;
-    }
-    e->collider->relative = relative;
-        
-    // update active state
-    if(ye_json_has_key(collider,"active")){
-        bool active = true;    ye_json_bool(collider,"active",&active);
-        e->collider->active = active;
     }
 }
 
@@ -770,16 +688,6 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_tag(e,tag);
-        }
-
-        // if we have a collider component on our entity
-        if(ye_json_has_key(components,"collider")){
-            json_t *collider = NULL; ye_json_object(components,"collider",&collider);
-            if(collider == NULL){
-                ye_logf(warning,"Entity %s has a collider field, but it's invalid.\n", entity_name);
-                continue;
-            }
-            ye_construct_collider(e,collider,entity_name);
         }
 
         // script component

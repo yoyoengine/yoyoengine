@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -9,6 +9,7 @@
 #define YE_DEBUG_RENDERER_H
 
 #include <yoyoengine/export.h>
+#include <yoyoengine/types.h>
 
 #include <stdbool.h>
 

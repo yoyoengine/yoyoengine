@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -31,8 +31,7 @@ void ye_cmd_entlist(int argc, const char **argv) {
     bool include_camera         = false;
     bool include_lua_script     = false;
     bool include_button         = false;
-    bool include_rigidbody        = false;
-    bool include_collider       = false;
+    bool include_rigidbody      = false;
     bool include_tag            = false;
     bool include_audiosource    = false;
 
@@ -57,15 +56,13 @@ void ye_cmd_entlist(int argc, const char **argv) {
                     include_button = true;
                 else if(strcmp(argv[i], "rigidbody") == 0)
                     include_rigidbody = true;
-                else if(strcmp(argv[i], "collider") == 0)
-                    include_collider = true;
                 else if(strcmp(argv[i], "tag") == 0)
                     include_tag = true;
                 else if(strcmp(argv[i], "audiosource") == 0)
                     include_audiosource = true;
                 else{
                     ye_logf(_YE_RESERVED_LL_SYSTEM, "Invalid -c specifier: %s\n", argv[i]);
-                    ye_logf(_YE_RESERVED_LL_SYSTEM, "Valid specifiers: transform, renderer, camera, lua_script, button, rigidbody, collider, tag, audiosource\n");
+                    ye_logf(_YE_RESERVED_LL_SYSTEM, "Valid specifiers: transform, renderer, camera, lua_script, button, rigidbody, tag, audiosource\n");
                     return;
                 }
             } else if(strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
@@ -100,8 +97,6 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 matches = false;
             if(include_rigidbody && !current->entity->rigidbody)
                 matches = false;
-            if(include_collider && !current->entity->collider)
-                matches = false;
             if(include_tag && !current->entity->tag)
                 matches = false;
             if(include_audiosource && !current->entity->audiosource)
@@ -129,8 +124,6 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Button]\n");
             if(current->entity->rigidbody)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Rigidbody]\n");
-            if(current->entity->collider)
-                ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Collider]\n");
             if(current->entity->tag)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Tag]\n");
             if(current->entity->audiosource)

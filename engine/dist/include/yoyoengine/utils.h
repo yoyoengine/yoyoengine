@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -87,7 +87,6 @@ enum ye_component_type {
     YE_COMPONENT_TRANSFORM,
     YE_COMPONENT_RENDERER,
     YE_COMPONENT_RIGIDBODY,
-    YE_COMPONENT_COLLIDER,
     YE_COMPONENT_LUA_SCRIPT,
     YE_COMPONENT_AUDIOSOURCE,
     YE_COMPONENT_CAMERA,
@@ -274,5 +273,7 @@ YE_API struct ye_point_rectf ye_world_prectf_to_screen(struct ye_point_rectf rec
  * @return struct ye_pointf The center point of the rectangle.
  */
 YE_API struct ye_pointf ye_point_rectf_center(struct ye_point_rectf rect);
+
+YE_API struct p2d_obb_verts ye_prect2obbverts(struct ye_point_rectf rect);
 
 #endif

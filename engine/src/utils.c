@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -16,7 +16,6 @@
 #include <yoyoengine/graphics.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
-#include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/audiosource.h>
@@ -191,36 +190,6 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
             }
             ye_logf(error,"Tried to get position of a null camera component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
             return pos;
-        case YE_COMPONENT_COLLIDER:
-            if(entity->collider != NULL){
-                // set x,y,w,h
-                pos.x = entity->collider->x;
-                pos.y = entity->collider->y;
-
-                if(entity->collider->type == YE_COLLIDER_RECT){
-                    pos.w = entity->collider->width;
-                    pos.h = entity->collider->height;
-                } else if(entity->collider->type == YE_COLLIDER_CIRCLE){
-                    pos.x -= entity->collider->radius;
-                    pos.y -= entity->collider->radius;
-                    pos.w = entity->collider->radius * 2;
-                    pos.h = entity->collider->radius * 2;
-                }
-
-                // printf("UTIL: found pos at x:%f y:%f w:%f h:%f\n",pos.x,pos.y,pos.w,pos.h);
-
-                // if relative adjust its position
-                if(entity->collider->relative && entity->transform != NULL){
-                    pos.x += entity->transform->x;
-                    pos.y += entity->transform->y;
-                }
-
-                // printf("UTIL: adjusted pos at x:%f y:%f w:%f h:%f\n",pos.x,pos.y,pos.w,pos.h);
-
-                return pos;
-            }
-            ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
-            return pos;
         case YE_COMPONENT_AUDIOSOURCE:
             if(entity->audiosource != NULL){
                 // set x,y,w,h
@@ -306,12 +275,6 @@ mat3_t ye_get_offset_matrix(struct ye_entity *entity, enum ye_component_type typ
             if(entity->camera){
                 if(entity->camera->relative)
                     pos = lla_mat3_translate(pos, (vec2_t){.data={entity->camera->view_field.x, entity->camera->view_field.y}});
-            }
-            break;
-        case YE_COMPONENT_COLLIDER:
-            if(entity->collider){
-                if(entity->collider->relative)
-                    pos = lla_mat3_translate(pos, (vec2_t){.data={entity->collider->x, entity->collider->y}});
             }
             break;
         case YE_COMPONENT_AUDIOSOURCE:
@@ -485,8 +448,6 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
             return entity->rigidbody != NULL;
         case YE_COMPONENT_TAG:
             return entity->tag != NULL;
-        case YE_COMPONENT_COLLIDER:
-            return entity->collider != NULL;
         case YE_COMPONENT_LUA_SCRIPT:
             return entity->lua_script != NULL;
         case YE_COMPONENT_AUDIOSOURCE:
@@ -566,9 +527,6 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
     struct ye_rectf pos;
 
     switch(type) {
-        case YE_COMPONENT_COLLIDER:
-            ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_COLLIDER));
-            break;
         /*
             Special Case: Audiosource
 
@@ -645,4 +603,14 @@ struct ye_pointf ye_point_rectf_center(struct ye_point_rectf rect) {
     center.x /= 4;
     center.y /= 4;
     return center;
+}
+
+struct p2d_obb_verts ye_prect2obbverts(struct ye_point_rectf rect) {
+    struct p2d_obb_verts verts = {{
+        {{rect.verticies[0].x, rect.verticies[0].y}},
+        {{rect.verticies[1].x, rect.verticies[1].y}},
+        {{rect.verticies[2].x, rect.verticies[2].y}},
+        {{rect.verticies[3].x, rect.verticies[3].y}}
+    }};
+    return verts;
 }

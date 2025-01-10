@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -16,6 +16,8 @@
 
 #include <jansson.h>
 
+#include <p2d/p2d.h>
+
 #include <yoyoengine/ui.h>
 #include <yoyoengine/yep.h>
 #include <yoyoengine/input.h>
@@ -28,6 +30,7 @@
 #include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/tricks.h>
+#include <yoyoengine/physics.h>
 #include <yoyoengine/console.h>
 #include <yoyoengine/version.h>
 #include <yoyoengine/logging.h>
@@ -41,8 +44,6 @@
 #include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
-
-#include <yoyoengine/tar_physics/tar.h>
 
 // buffer to hold filepath strings
 // will be modified by getPath()
@@ -141,7 +142,7 @@ void ye_process_frame(){
     int physics_time = SDL_GetTicks64();
     if(!YE_STATE.editor.editor_mode){
         // update physics
-        ye_physics_tick(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
+        p2d_step(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
 
@@ -318,12 +319,8 @@ void ye_init_engine() {
     YE_STATE.editor.editor_mode             = ye_config_bool(SETTINGS, "editor_mode", false);
     YE_STATE.engine.stretch_resolution      = ye_config_bool(SETTINGS, "stretch_resolution", false);
 
-    YE_STATE.engine.tar.gravity_x           = ye_config_float(SETTINGS, "gravity_x", 0.0f);
-    YE_STATE.engine.tar.gravity_y           = ye_config_float(SETTINGS, "gravity_y", 50.0f);
-    YE_STATE.engine.tar.terminal_velocity   = ye_config_float(SETTINGS, "terminal_velocity", 300.0f);
+    int p2d_grid_size = ye_config_int(SETTINGS, "p2d_grid_size", 250); 
 
-    printf("Gravity: %f, %f\n", YE_STATE.engine.tar.gravity_x, YE_STATE.engine.tar.gravity_y);
-    printf("Terminal Velocity: %f\n", YE_STATE.engine.tar.terminal_velocity);
 
     // initialize some editor state
     YE_STATE.editor.scene_default_camera = NULL;
@@ -371,6 +368,10 @@ void ye_init_engine() {
 
     // initialize entity component system
     ye_init_ecs();
+
+    // initialize physics
+    p2d_init(p2d_grid_size, ye_physics_collision_callback, ye_physics_trigger_callback);
+    YE_STATE.engine.p2d_state = &p2d_state;
 
     // if we are in debug mode
     if(YE_STATE.engine.debug_mode){
@@ -449,6 +450,9 @@ void ye_shutdown_engine(){
 
     // shutdown ECS
     ye_shutdown_ecs();
+
+    // shutdown physics
+    p2d_shutdown();
 
     // shutdown timers
     ye_shutdown_timers();

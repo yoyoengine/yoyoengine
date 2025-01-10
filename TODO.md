@@ -222,9 +222,10 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 - rigidbody
 - new renderer changes (center)
 
-## TAR!!!!
+## p2d integration
 
-- collision solver for rect rect
-- other detections and sovlers
-- expose and paint correctly collider sizes
-- expose settings in editor for default physics... move it to scene state?
+- ecs integrate
+- global configs for grid size and other params
+- rigidbody ecs duplication and other integration
+- editor ui integration
+- rigidbody lua integration

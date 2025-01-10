@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -39,6 +39,7 @@
 #include "uthash/uthash.h"
 #include "cache.h"
 #include "ui.h"
+#include "physics.h"
 
 // ecs //
 #include "ecs/ecs.h"
@@ -47,14 +48,8 @@
 #include "ecs/camera.h"
 #include "ecs/renderer.h"
 #include "ecs/transform.h"
-#include "ecs/collider.h"
 #include "ecs/tag.h"
 #include "ecs/lua_script.h"
-
-// physics //
-#include "tar_physics/tar.h"
-#include "tar_physics/solver.h"
-#include "tar_physics/rigidbody.h"
 
 #include "utils.h"
 #include "timer.h"

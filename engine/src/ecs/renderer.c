@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -22,10 +22,7 @@
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
-#include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/debug_renderer.h>
-
-#include <yoyoengine/tar_physics/solver.h>
 
 #include <yoyoengine/types.h>
 
@@ -715,16 +712,17 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
         TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
     }
 
-    if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
-        struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity, YE_COMPONENT_COLLIDER));
+    // TODO: move to rigidbody visible
+    // if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
+    //     struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity, YE_COMPONENT_COLLIDER));
 
-        if(current->entity->collider->is_trigger){
-            ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){255, 255, 0, 255});
-        }
-        else{
-            ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){0, 0, 255, 255});
-        }
-    }
+    //     if(current->entity->collider->is_trigger){
+    //         ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){255, 255, 0, 255});
+    //     }
+    //     else{
+    //         ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){0, 0, 255, 255});
+    //     }
+    // }
 }
 
 /*
@@ -975,7 +973,9 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             local_cam_prect.verticies[i].y = point.data[1];
         }
 
-        if(!ye_detect_rect_rect_collision(*local_rect, local_cam_prect)) {
+        struct p2d_obb_verts cam_obb_verts = ye_prect2obbverts(local_cam_prect);
+        struct p2d_obb_verts local_obb_verts = ye_prect2obbverts(*local_rect);
+        if(!p2d_obb_verts_intersects_obb_verts(cam_obb_verts, local_obb_verts)) {
             current = current->next;
             continue;
         }

@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2024  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,6 +12,8 @@
 
 #ifndef ENGINE_H
 #define ENGINE_H
+
+#include <p2d/p2d.h>
 
 #include <yoyoengine/export.h>
 
@@ -153,14 +155,8 @@ struct ye_engine_config {
     // the nuklear context
     struct nk_context *ctx; // TODO: should maybe be moved to runtime but idgaf rn
 
-    /*
-        Global Physics Settings
-    */
-    struct {
-        float terminal_velocity; // the velocity at which gravity stops acting on an object
-        float gravity_x;
-        float gravity_y;
-    } tar;
+    // TODO: p2d state
+    struct p2d_state *p2d_state;
 };
 
 /**

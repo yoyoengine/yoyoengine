@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023  Ryan Zmuda
+    Copyright (C) 2023-2025  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -19,8 +19,6 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/lua_script.h>
-#include <yoyoengine/tar_physics/rigidbody.h>
-#include <yoyoengine/ecs/collider.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
@@ -70,7 +68,6 @@ int ye_lua_check_component_exists(lua_State* L){
         entity->lua_script,
         entity->button,
         entity->rigidbody,
-        entity->collider,
         entity->tag,
         entity->audiosource
     };
@@ -141,11 +138,9 @@ int ye_lua_remove_component(lua_State* L){
             ye_remove_button_component(entity);
             break;
         case 5:
-            ye_remove_rigidbody_component(entity);
+            // ye_remove_rigidbody_component(entity);
             break;
-        case 6:
-            ye_remove_collider_component(entity);
-            break;
+        // TODO: where/how do we sync the removal of collider to lua?
         case 7:
             ye_remove_tag_component(entity);
             break;
@@ -199,11 +194,6 @@ void ye_register_lua_scripting_api(lua_State *state){
         Tag
     */
     ye_lua_tag_register(state);
-
-    /*
-        Collider
-    */
-    ye_lua_collider_register(state);
 
     /*
         Rigidbody
