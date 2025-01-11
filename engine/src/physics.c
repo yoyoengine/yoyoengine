@@ -10,6 +10,7 @@
 
 void ye_physics_collision_callback(struct p2d_cb_data* data) {
     (void)data;
+    // TODO: how to handle active states for rigidbodies?
 }
 
 void ye_physics_trigger_callback(struct p2d_cb_data* data) {

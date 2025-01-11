@@ -224,8 +224,10 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 
 ## p2d integration
 
-- ecs integrate
-- global configs for grid size and other params
-- rigidbody ecs duplication and other integration
-- editor ui integration
-- rigidbody lua integration
+- visualize colliders in all the places
+  - editor inspector highlighter
+  - collider in renderer flag
+- lua (ughhhhhhhhh)
+- global configs
+- ecs edge cases (duplication/deletion)
+- figure out "active" meshing with p2d... have wrap physics tick which checks for disabled?

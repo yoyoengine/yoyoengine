@@ -26,6 +26,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/debug_renderer.h>
@@ -382,51 +383,136 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 }
 
 void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* entity_name){
-    // float mass;
-    // if(!ye_json_float(rigidbody,"mass",&mass)) {
-    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
-    //     return;
-    // }
+    json_t *p2d_obj = NULL;
+    if(!ye_json_object(rigidbody,"p2d_object",&p2d_obj)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the p2d_object field\n", entity_name);
+        return;
+    }
+    
+    enum p2d_object_type type;
+    if(!ye_json_int(p2d_obj,"type",(int*)&type)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the type field\n", entity_name);
+        return;
+    }
 
-    // float restitution;
-    // if(!ye_json_float(rigidbody,"restitution",&restitution)) {
-    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the restitution field\n", entity_name);
-    //     return;
-    // }
+    // get the is_static field
+    bool is_static;
+    if(!ye_json_bool(p2d_obj,"is_static",&is_static)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the is_static field\n", entity_name);
+        return;
+    }
 
-    // float kinematic_friction;
-    // if(!ye_json_float(rigidbody,"kinematic_friction",&kinematic_friction)) {
-    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the kinematic friction field\n", entity_name);
-    //     return;
-    // }
+    // get the is_trigger field
+    bool is_trigger;
+    if(!ye_json_bool(p2d_obj,"is_trigger",&is_trigger)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the is_trigger field\n", entity_name);
+        return;
+    }
 
-    // float rotational_kinematic_friction;
-    // if(!ye_json_float(rigidbody,"rotational_kinematic_friction",&rotational_kinematic_friction)) {
-    //     ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the rotational kinematic friction field\n", entity_name);
-    //     return;
-    // }
+    // get the vx field
+    float vx;
+    if(!ye_json_float(p2d_obj,"vx",&vx)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the vx field\n", entity_name);
+        return;
+    }
 
-    // // add the rigidbody component
-    // ye_add_rigidbody_component(e,mass,restitution,kinematic_friction,rotational_kinematic_friction);
+    // get the vy field
+    float vy;
+    if(!ye_json_float(p2d_obj,"vy",&vy)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the vy field\n", entity_name);
+        return;
+    }
 
-    // float vx = 0;
-    // float vy = 0;
-    // float vr = 0;
-    // if(!ye_json_float(rigidbody,"vx",&vx) || !ye_json_float(rigidbody,"vy",&vy) || !ye_json_float(rigidbody,"vr",&vr)) {
-    //     ye_logf(warning,"Entity %s has a rigidbody component with invalid velocity field\n", entity_name);
-    // } else {
-    //     e->rigidbody->velocity = (struct ye_vec2f){vx,vy};
-    //     e->rigidbody->rotational_velocity = vr;
-    // }
+    // get the vr field
+    float vr;
+    if(!ye_json_float(p2d_obj,"vr",&vr)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the vr field\n", entity_name);
+        return;
+    }
 
-    // // update the active state
-    // if(ye_json_has_key(rigidbody,"active")){
-    //     bool active = true;    ye_json_bool(rigidbody,"active",&active);
-    //     e->rigidbody->active = active;
-    // }
-    (void)e;
-    (void)rigidbody;
-    (void)entity_name;
+    // get the mass field
+    float mass;
+    if(!ye_json_float(p2d_obj,"mass",&mass)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
+        return;
+    }
+
+    // get the restitution field
+    float restitution;
+    if(!ye_json_float(p2d_obj,"restitution",&restitution)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the restitution field\n", entity_name);
+        return;
+    }
+
+    // get the transform_offset_x field
+    float transform_offset_x;
+    if(!ye_json_float(rigidbody,"transform_offset_x",&transform_offset_x)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the transform_offset_x field\n", entity_name);
+        return;
+    }
+
+    // get the transform_offset_y field
+    float transform_offset_y;
+    if(!ye_json_float(rigidbody,"transform_offset_y",&transform_offset_y)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the transform_offset_y field\n", entity_name);
+        return;
+    }
+
+    struct p2d_object obj = {
+        .type = type,
+        .is_static = is_static,
+        .is_trigger = is_trigger,
+        .vx = vx,
+        .vy = vy,
+        .vr = vr,
+        .mass = mass,
+        .restitution = restitution,
+    };
+    
+    switch(type) {
+        case P2D_OBJECT_RECTANGLE:
+            // get the width field
+            float width;
+            if(!ye_json_float(p2d_obj,"width",&width)) {
+                ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the width field\n", entity_name);
+                return;
+            }
+
+            // get the height field
+            float height;
+            if(!ye_json_float(p2d_obj,"height",&height)) {
+                ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the height field\n", entity_name);
+                return;
+            }
+
+            obj.rectangle.width = width;
+            obj.rectangle.height = height;
+            break;
+        case P2D_OBJECT_CIRCLE:
+            // get the radius field
+            float radius;
+            if(!ye_json_float(p2d_obj,"radius",&radius)) {
+                ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the radius field\n", entity_name);
+                return;
+            }
+
+            obj.circle.radius = radius;
+            break;
+        default:
+            ye_logf(warning,"Entity %s has a rigidbody component, but it has an invalid type field\n", entity_name);
+            return;
+    }
+
+    ye_add_rigidbody_component(e,transform_offset_x,transform_offset_y,obj);
+
+    if(e->rigidbody == NULL) return;
+
+    bool active;
+    if(!ye_json_bool(rigidbody,"active",&active)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the active field\n", entity_name);
+        active = true;
+    }
+    e->rigidbody->active = active;
 }
 
 void ye_construct_tag(struct ye_entity* e, json_t* tag){

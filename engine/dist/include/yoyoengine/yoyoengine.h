@@ -47,6 +47,7 @@
 #include "ecs/audiosource.h"
 #include "ecs/camera.h"
 #include "ecs/renderer.h"
+#include "ecs/rigidbody.h"
 #include "ecs/transform.h"
 #include "ecs/tag.h"
 #include "ecs/lua_script.h"

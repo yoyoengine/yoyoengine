@@ -26,12 +26,18 @@ enum ye_rb_collider_type {
 struct ye_component_rigidbody {
     bool active;
 
-    struct p2d_object p2d_object;
+    float transform_offset_x, transform_offset_y;
 
-    enum ye_rb_collider_type type;
+    struct p2d_object p2d_object;
 };
 
-YE_API void ye_add_rigidbody_component(struct ye_entity *entity, struct p2d_object p2d_object);
+// TODO
+// struct ye_add_rigidbody_args {
+    // float transform_offset_x;
+    // float transform_offset_y;
+// };
+
+YE_API void ye_add_rigidbody_component(struct ye_entity *entity, float transform_offset_x, float transform_offset_y, struct p2d_object p2d_object);
 
 YE_API void ye_remove_rigidbody_component(struct ye_entity *entity);
 
