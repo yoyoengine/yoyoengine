@@ -14,6 +14,8 @@
 #include <SDL_ttf.h>
 #include <SDL_image.h>
 
+#include <Lilith.h>
+
 #include <jansson.h>
 
 #include <p2d/p2d.h>
@@ -141,8 +143,24 @@ void ye_process_frame(){
 
     int physics_time = SDL_GetTicks64();
     if(!YE_STATE.editor.editor_mode){
+        // test: discard running if delta time is too high
+        // if(YE_STATE.runtime.delta_time > 0.1f){
+        //     ye_logf(YE_LL_WARNING, "Discarding frame due to high delta time: %f\n", YE_STATE.runtime.delta_time);
+        //     return;
+        // }
+
         // update physics
         p2d_step(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
+
+        // printf("delta time: %f\n", YE_STATE.runtime.delta_time);
+        // printf("+---------------------+\n");
+        // printf("|        STATE        |\n");
+        // printf("+---------------------+\n");
+        // printf("objects: %d\n", p2d_state.p2d_object_count);
+        // printf("world nodes: %d\n", p2d_state.p2d_world_node_count);
+        // printf("contact checks: %d\n", p2d_state.p2d_contact_checks);
+        // printf("contacts found: %d\n", p2d_state.p2d_contacts_found);
+        // printf("collision pairs: %d\n", p2d_state.p2d_collision_pairs);
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
 
@@ -319,7 +337,9 @@ void ye_init_engine() {
     YE_STATE.editor.editor_mode             = ye_config_bool(SETTINGS, "editor_mode", false);
     YE_STATE.engine.stretch_resolution      = ye_config_bool(SETTINGS, "stretch_resolution", false);
 
-    int p2d_grid_size = ye_config_int(SETTINGS, "p2d_grid_size", 250); 
+    int p2d_grid_size = ye_config_int(SETTINGS, "p2d_grid_size", 250);
+    float p2d_gravity_x = ye_config_float(SETTINGS, "p2d_gravity_x", 0.0f);
+    float p2d_gravity_y = ye_config_float(SETTINGS, "p2d_gravity_y", 20.0f);
 
 
     // initialize some editor state
@@ -372,6 +392,7 @@ void ye_init_engine() {
     // initialize physics
     p2d_init(p2d_grid_size, ye_physics_collision_callback, ye_physics_trigger_callback);
     YE_STATE.engine.p2d_state = &p2d_state;
+    YE_STATE.engine.p2d_state->gravity = (vec2_t){{p2d_gravity_x, p2d_gravity_y}};
 
     // if we are in debug mode
     if(YE_STATE.engine.debug_mode){

@@ -15,14 +15,15 @@
 #include <yoyoengine/cache.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>
-#include <yoyoengine/graphics.h>
 #include <yoyoengine/version.h>
 #include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/graphics.h>
 #include <yoyoengine/ecs/camera.h>
-#include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/renderer.h>
-#include <yoyoengine/ecs/audiosource.h>
+#include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/debug_renderer.h>
+#include <yoyoengine/ecs/audiosource.h>
 
 #include <yoyoengine/types.h>
 
@@ -712,17 +713,30 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
         TTF_SetFontSize(YE_STATE.engine.pEngineFont, og_size);
     }
 
-    // TODO: move to rigidbody visible
-    // if(YE_STATE.editor.colliders_visible && current->entity->collider != NULL){
-    //     struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity, YE_COMPONENT_COLLIDER));
+    if(YE_STATE.editor.colliders_visible && current->entity->rigidbody != NULL){
+        SDL_Color color;
+        if(current->entity->rigidbody->p2d_object.is_trigger){
+            color = (SDL_Color){255, 255, 0, 255};
+        }
+        else{
+            color = (SDL_Color){0, 0, 255, 255};
+        }
 
-    //     if(current->entity->collider->is_trigger){
-    //         ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){255, 255, 0, 255});
-    //     }
-    //     else{
-    //         ye_draw_thick_prect(renderer, pos, 2, (SDL_Color){0, 0, 255, 255});
-    //     }
-    // }
+        if(current->entity->rigidbody->p2d_object.type == P2D_OBJECT_RECTANGLE){
+            struct ye_rectf pos = (struct ye_rectf){
+                current->entity->rigidbody->p2d_object.x + current->entity->rigidbody->transform_offset_x,
+                current->entity->rigidbody->p2d_object.y + current->entity->rigidbody->transform_offset_x,
+                current->entity->rigidbody->p2d_object.rectangle.width,
+                current->entity->rigidbody->p2d_object.rectangle.height
+            }; 
+            struct ye_point_rectf p = ye_world_prectf_to_screen(ye_rect_to_point_rectf(pos));
+            ye_draw_thick_prect(renderer, p, 2, color);
+        }
+        else if(current->entity->rigidbody->p2d_object.type == P2D_OBJECT_CIRCLE){
+            struct ye_point_rectf pos = ye_world_prectf_to_screen(ye_get_position2(current->entity,YE_COMPONENT_RIGIDBODY));
+            ye_draw_circle(renderer, pos.verticies[0].x, pos.verticies[0].y, current->entity->rigidbody->p2d_object.circle.radius, 2);
+        }
+    }
 }
 
 /*

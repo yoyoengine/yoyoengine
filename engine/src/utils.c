@@ -17,6 +17,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/ecs/audiosource.h>
 
@@ -206,6 +207,28 @@ struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type
                 return pos;
             }
             ye_logf(error,"Tried to get position of a null collider component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
+            return pos;
+        case YE_COMPONENT_RIGIDBODY:
+            if(entity->rigidbody != NULL){
+                // set x,y,w,h
+                pos.x = entity->rigidbody->p2d_object.x;
+                pos.y = entity->rigidbody->p2d_object.y;
+                if(entity->rigidbody->p2d_object.type == P2D_OBJECT_RECTANGLE){
+                    pos.w = entity->rigidbody->p2d_object.rectangle.width;
+                    pos.h = entity->rigidbody->p2d_object.rectangle.height;
+                }
+                else if(entity->rigidbody->p2d_object.type == P2D_OBJECT_CIRCLE){
+                    pos.w = entity->rigidbody->p2d_object.circle.radius;
+                    pos.h = entity->rigidbody->p2d_object.circle.radius;
+                }
+
+                // already included?
+                // pos.x += entity->transform->x + entity->rigidbody->transform_offset_x;
+                // pos.y += entity->transform->y + entity->rigidbody->transform_offset_y;
+
+                return pos;
+            }
+            ye_logf(error,"Tried to get position of a null rigidbody component on entity \"%s\". returning (0,0,0,0)\n",entity->name);
             return pos;
         case YE_COMPONENT_BUTTON:
             if(entity->button != NULL){
@@ -551,6 +574,25 @@ struct ye_point_rectf ye_get_position2(struct ye_entity *entity, enum ye_compone
             break;
         case YE_COMPONENT_TRANSFORM:
             ret = ye_rect_to_point_rectf(ye_get_position(entity, YE_COMPONENT_TRANSFORM));
+            break;
+        case YE_COMPONENT_RIGIDBODY:
+            /*
+                Special Case: Rigidbody
+
+                all 4 verticies will be the same x,y of the center,
+
+                when square the "center" is top left, circle its the actual geometric center
+                user is responsible for converting extents
+            */
+            pos = ye_get_position(entity, YE_COMPONENT_RIGIDBODY);
+            ret = (struct ye_point_rectf){
+                .verticies = {
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y},
+                    (struct ye_pointf){.x = pos.x, .y = pos.y}
+                }
+            };
             break;
         default:
             ye_logf(error, "Tried to get position2 for entity \"%s\" that does not have requested component. returning (0,0,0,0)\n", entity->name);

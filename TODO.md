@@ -222,12 +222,6 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 - rigidbody
 - new renderer changes (center)
 
-## p2d integration
+## misc
 
-- visualize colliders in all the places
-  - editor inspector highlighter
-  - collider in renderer flag
-- lua (ughhhhhhhhh)
-- global configs
-- ecs edge cases (duplication/deletion)
-- figure out "active" meshing with p2d... have wrap physics tick which checks for disabled?
+scene reload crash

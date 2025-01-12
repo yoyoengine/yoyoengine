@@ -244,10 +244,9 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->button->relative = entity->button->relative;
     }
     if(entity->rigidbody != NULL){
-        // ye_add_rigidbody_component(new_entity, entity->rigidbody->mass, entity->rigidbody->restitution, entity->rigidbody->kinematic_friction, entity->rigidbody->rotational_kinematic_friction);
-        // new_entity->rigidbody->active = entity->rigidbody->active;
-        // new_entity->rigidbody->velocity = entity->rigidbody->velocity;
-        // new_entity->rigidbody->rotational_velocity = entity->rigidbody->rotational_velocity;
+        ye_add_rigidbody_component(new_entity, entity->rigidbody->transform_offset_x, entity->rigidbody->transform_offset_y, entity->rigidbody->p2d_object);
+
+        new_entity->rigidbody->active = entity->rigidbody->active;
     }
     if(entity->tag != NULL){
         ye_add_tag_component(new_entity);

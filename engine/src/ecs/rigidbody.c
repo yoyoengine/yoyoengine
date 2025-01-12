@@ -38,13 +38,15 @@ void ye_add_rigidbody_component(struct ye_entity *entity, float transform_offset
     rb->transform_offset_y      = transform_offset_y;
 
     // p2d should use its computed position in sim
-    rb->p2d_object.x            = rb->transform_offset_x;
-    rb->p2d_object.y            = rb->transform_offset_y;
+    rb->p2d_object.x            = entity->transform->x + rb->transform_offset_x;
+    rb->p2d_object.y            = entity->transform->y + rb->transform_offset_y;
     rb->p2d_object.rotation     = entity->transform->rotation;
 
     rb->p2d_object.out_x        = &entity->transform->x;
     rb->p2d_object.out_y        = &entity->transform->y;
     rb->p2d_object.out_rotation = &entity->transform->rotation;
+
+    rb->p2d_object.in_active    = &entity->active; // active if the entity is active, no fine grained rigidbody control
 
     entity->rigidbody = rb;
 
