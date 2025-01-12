@@ -469,17 +469,18 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
         .restitution = restitution,
     };
     
+    // comply with clang >:(
+    float width;
+    float height;
     switch(type) {
         case P2D_OBJECT_RECTANGLE:
             // get the width field
-            float width;
             if(!ye_json_float(p2d_obj,"width",&width)) {
                 ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the width field\n", entity_name);
                 return;
             }
 
             // get the height field
-            float height;
             if(!ye_json_float(p2d_obj,"height",&height)) {
                 ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the height field\n", entity_name);
                 return;
