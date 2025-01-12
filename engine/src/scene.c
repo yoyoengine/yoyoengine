@@ -472,6 +472,7 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
     // comply with clang >:(
     float width;
     float height;
+    float radius;
     switch(type) {
         case P2D_OBJECT_RECTANGLE:
             // get the width field
@@ -491,7 +492,6 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
             break;
         case P2D_OBJECT_CIRCLE:
             // get the radius field
-            float radius;
             if(!ye_json_float(p2d_obj,"radius",&radius)) {
                 ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the radius field\n", entity_name);
                 return;
