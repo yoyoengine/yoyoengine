@@ -74,7 +74,7 @@ void ye_vector_push_back(struct ye_vector *vector, void *element) {
 
     _resize_as_needed(vector);
 
-    memcpy(vector->_data + vector->size * vector->element_size, element, vector->element_size);
+    memcpy((char *)vector->_data + vector->size * vector->element_size, element, vector->element_size);
     vector->size++;
 }
 
@@ -87,7 +87,7 @@ void ye_vector_push_front(struct ye_vector *vector, void *element) {
     _resize_as_needed(vector);
 
     for(size_t i = vector->size; i > 0; i--) {
-        memcpy(vector->_data + i * vector->element_size, vector->_data + (i - 1) * vector->element_size, vector->element_size);
+        memcpy((char *)vector->_data + i * vector->element_size, (char *)vector->_data + (i - 1) * vector->element_size, vector->element_size);
     }
 
     memcpy(vector->_data, element, vector->element_size);
@@ -105,7 +105,7 @@ void * ye_vector_get(struct ye_vector *vector, size_t index) {
         return NULL;
     }
 
-    return vector->_data + index * vector->element_size;
+    return (char *)vector->_data + index * vector->element_size;
 }
 
 void ye_vector_set(struct ye_vector *vector, size_t index, void *element) {
@@ -119,7 +119,7 @@ void ye_vector_set(struct ye_vector *vector, size_t index, void *element) {
         return;
     }
 
-    memcpy(vector->_data + index * vector->element_size, element, vector->element_size);
+    memcpy((char *)vector->_data + index * vector->element_size, element, vector->element_size);
 }
 
 void ye_vector_remove(struct ye_vector *vector, size_t index) {
@@ -134,7 +134,7 @@ void ye_vector_remove(struct ye_vector *vector, size_t index) {
     }
 
     for(size_t i = index; i < vector->size - 1; i++) {
-        memcpy(vector->_data + i * vector->element_size, vector->_data + (i + 1) * vector->element_size, vector->element_size);
+        memcpy((char *)vector->_data + i * vector->element_size, (char *)vector->_data + (i + 1) * vector->element_size, vector->element_size);
     }
 
     vector->size--;

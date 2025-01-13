@@ -158,7 +158,7 @@ void ye_vector_remove(struct ye_vector *vector, size_t index);
  * @param element The name for the element variable
  * @param idx The name for the index variable
  */
-#define YE_VECTOR_FOR_EACH_IDX(vector, type, element, idx) \
+#define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
     for (size_t idx = 0, _once = 1; \
         _once && idx < (vector)->size; \
         idx++) \
