@@ -225,3 +225,5 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 ## misc
 
 scene reload crash
+
+## physics state overlay

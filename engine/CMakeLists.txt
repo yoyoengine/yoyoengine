@@ -100,8 +100,6 @@ target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lil
 #     p2d     #
 ###############
 
-set(P2D_HAS_YOYOENGINE ON CACHE BOOL "Enable YoyoEngine integration in p2d")
-
 # TODO: pin tag when stable
 FetchContent_Declare(
     p2d

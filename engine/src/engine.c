@@ -390,7 +390,7 @@ void ye_init_engine() {
     ye_init_ecs();
 
     // initialize physics
-    p2d_init(p2d_grid_size, ye_physics_collision_callback, ye_physics_trigger_callback);
+    p2d_init(p2d_grid_size, ye_physics_collision_callback, ye_physics_trigger_callback, ye_p2d_logf_wrapper);
     YE_STATE.engine.p2d_state = &p2d_state;
     YE_STATE.engine.p2d_state->gravity = (vec2_t){{p2d_gravity_x, p2d_gravity_y}};
 

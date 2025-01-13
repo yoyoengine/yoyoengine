@@ -87,6 +87,11 @@ void ye_close_log(){
     }
 }
 
+void ye_p2d_logf_wrapper(int level, const char *format, ...) {
+    // forward into ye_logf with level cast to enum (i carefully designed P2D_LOG_LEVEL to line up)
+    ye_logf((enum logLevel)level, format);
+}
+
 void ye_logf(enum logLevel level, const char *format, ...){
     /*
         Format from varargs

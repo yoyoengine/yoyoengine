@@ -75,6 +75,8 @@ YE_API void ye_log_init(char *log_file_path);
  */
 YE_API void ye_log_shutdown();
 
+YE_API void ye_p2d_logf_wrapper(int level, const char *format, ...);
+
 /**
  * @brief Logs a message to the console and console buffer
  * 
