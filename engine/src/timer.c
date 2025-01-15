@@ -11,17 +11,7 @@
 
 #include <SDL.h>
 
-/*
-    On windows, we need nk fixed types to avoid errors...
-    not sure why but it originated in theriac era
-*/
-#ifdef _WIN32
-    #define NK_INCLUDE_FIXED_TYPES
-#endif
-
-#ifndef __cplusplus
-#include <Nuklear/nuklear.h>
-#endif
+#include <yoyoengine/ye_nk.h>
 
 #include <yoyoengine/timer.h>
 #include <yoyoengine/logging.h>

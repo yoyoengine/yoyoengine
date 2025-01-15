@@ -12,6 +12,8 @@
 
 #include <string.h>
 
+#include <yoyoengine/ye_nk.h>
+
 #include <yoyoengine/engine.h>
 #include <yoyoengine/console.h>
 #include <yoyoengine/commands.h>

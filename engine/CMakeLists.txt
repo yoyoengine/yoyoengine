@@ -89,11 +89,11 @@ endif()
 # TODO: pin tag when stable
 FetchContent_Declare(
     lilith
-    GIT_REPOSITORY https://github.com/yoyoengine/Lilith.git
+    GIT_REPOSITORY https://github.com/yoyoengine/lilith.git
     GIT_TAG main
     GIT_PROGRESS TRUE
 )
-FetchContent_MakeAvailable(Lilith)
+FetchContent_MakeAvailable(lilith)
 target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lilith.h
 
 ###############

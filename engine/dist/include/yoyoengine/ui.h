@@ -14,6 +14,7 @@
 #define UI_H
 
 #include <yoyoengine/export.h>
+#include <yoyoengine/ye_nk.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,9 +28,6 @@
 #include <stdbool.h>
 
 #include <SDL.h>
-
-// forward declare nk_context
-struct nk_context;
 
 /*
     Some helpful macros to allow for easy text formatting.

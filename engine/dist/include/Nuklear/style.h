@@ -1,10 +1,22 @@
 /*
     Yoinked from:
     https://github.com/vurtun/nuklear/blob/master/demo/style.c
+
+    TODO: update
+    https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/style_configurator.c
+    https://github.com/Immediate-Mode-UI/Nuklear/blob/master/demo/common/style.c
 */
 enum theme {THEME_BLACK, THEME_WHITE, THEME_RED, THEME_BLUE, THEME_DARK, THEME_AMOLED};
 
-static void
+#if defined(__GNUC__) || defined(__clang__)
+    #define YE_UNUSED __attribute__((unused))
+#elif defined(_MSC_VER)
+    #define YE_UNUSED __pragma(warning(disable:4505))
+#else
+    #define YE_UNUSED
+#endif
+
+YE_UNUSED static void
 set_style(struct nk_context *ctx, enum theme theme)
 {
     struct nk_color table[NK_COLOR_COUNT];

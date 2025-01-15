@@ -10,26 +10,11 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifndef __cplusplus
-#ifndef ye_nk
-#define ye_nk
-
-    /*
-        On windows, we need nk fixed types to avoid errors...
-        not sure why but it originated in theriac era
-    */
-    #ifdef _WIN32
-        #define NK_INCLUDE_FIXED_TYPES
-    #endif
-
-    #include <Nuklear/nuklear.h>
-
-#endif
-
 #ifdef _WIN32
     #include <windows.h>
 #endif
-#endif
+
+#include <yoyoengine/ye_nk.h>
 
 #include <yoyoengine/scene.h>
 #include <yoyoengine/engine.h>

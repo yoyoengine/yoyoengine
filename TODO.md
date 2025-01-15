@@ -227,3 +227,15 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 scene reload crash
 
 ## physics state overlay
+
+## overlay / ui overhaul / progress
+
+- fire the overlay events (i believe its done, but test it)
+- create a physics overlay! (maybe add a userdata pointer? it seems like we can store any state in the files that implement the panel though.)
+
+future:
+- ui.c could be used to create a nuklear docking generic solution...
+
+## way distant future
+
+localization

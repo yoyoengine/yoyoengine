@@ -20,37 +20,9 @@
 
 #include <yoyoengine/ui.h>
 #include <yoyoengine/event.h>
+#include <yoyoengine/overlays.h>
 
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_SDL_RENDERER_IMPLEMENTATION
-#define NK_INCLUDE_STANDARD_BOOL
-
-#ifndef ye_nk
-#define ye_nk
-
-/*
-    On windows, we need nk fixed types to avoid errors...
-    not sure why but it originated in theriac era
-*/
-#ifdef _WIN32
-    #define NK_INCLUDE_FIXED_TYPES
-#endif
-#ifndef __cplusplus
-#include <Nuklear/nuklear.h>
-#endif
-#endif
-
-#ifndef __cplusplus
-#include <Nuklear/nuklear_sdl_renderer.h>
-// #include <Nuklear/style.h>
-#endif
+#include <yoyoengine/ye_nk.h>
 
 #include <yoyoengine/yep.h>
 #include <yoyoengine/engine.h>

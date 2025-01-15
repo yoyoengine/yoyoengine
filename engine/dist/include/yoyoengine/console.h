@@ -21,7 +21,7 @@
 
 #include <yoyoengine/logging.h>
 
-#include <Nuklear/nuklear.h>
+#include <yoyoengine/ye_nk.h>
 
 #include <stdlib.h>
 #include <stdbool.h>
