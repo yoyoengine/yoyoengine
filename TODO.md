@@ -239,3 +239,9 @@ future:
 ## way distant future
 
 localization
+
+improved theme support: tag themes as "light" or "dark" and tint the icons before uploading to gpu
+
+extend all the custom yoyoengine colors to actually use the nuklear definitions for cohesion
+
+move theme support into the engine level, so we can theme the games too
