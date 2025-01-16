@@ -18,9 +18,9 @@
 
 #include <SDL.h>
 
-#include <yoyoengine/ui.h>
+#include <yoyoengine/ui/ui.h>
 #include <yoyoengine/event.h>
-#include <yoyoengine/overlays.h>
+#include <yoyoengine/ui/overlays.h>
 
 #include <yoyoengine/ye_nk.h>
 
@@ -286,6 +286,9 @@ void ui_render(){
             component->render_function(ctx);
         }
     }
+
+    // render all overlays
+    ye_fire_overlay_event(YE_OVERLAY_EVENT_RENDER_UI);
 
     // paint everything
     nk_sdl_render(NK_ANTI_ALIASING_ON);

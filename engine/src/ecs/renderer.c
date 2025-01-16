@@ -18,6 +18,7 @@
 #include <yoyoengine/version.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/graphics.h>
+#include <yoyoengine/ui/overlays.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
@@ -765,6 +766,9 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
 
     YE_STATE.runtime.painted_entity_count = 0;
 
+    // fire any overlay paints (pre-frame)
+    ye_fire_overlay_event(YE_OVERLAY_EVENT_RENDER_PRE_FRAME);
+
     /*
         Calculate verticies bounding camera
 
@@ -1106,6 +1110,9 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
         - 8/18/24, im just gonna leave for posterity
     */
     ye_fire_event(YE_EVENT_ADDITIONAL_RENDER, (union ye_event_args){NULL});
+
+    // fire any overlay paints (post-frame)
+    ye_fire_overlay_event(YE_OVERLAY_EVENT_RENDER_POST_FRAME);
 
     /*
         Perform additional immediate and callback based rendering on top of the frame we have just prepared

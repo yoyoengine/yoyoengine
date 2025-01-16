@@ -19,7 +19,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include <yoyoengine/ui.h>
+#include <yoyoengine/ui/ui.h>
 #include <yoyoengine/yep.h>
 #include <yoyoengine/cache.h>
 #include <yoyoengine/tricks.h>

@@ -245,3 +245,20 @@ improved theme support: tag themes as "light" or "dark" and tint the icons befor
 extend all the custom yoyoengine colors to actually use the nuklear definitions for cohesion
 
 move theme support into the engine level, so we can theme the games too
+
+iron out amoled and merge into nuklear
+
+## slkdjglsikdjf
+
+break up engine.c into multiple files in core/
+start shifting more globals into ye_state
+
+nk_window_is_any_hovered can tell when exiting viewport
+
+you need to just scroll through nuklear.h. badly
+
+## more overlay integration
+
+finish the physics paint
+
+console expose the overlay list and toggle on off. could provide "overlay panel" which is a checkbox version of the generated overlay list

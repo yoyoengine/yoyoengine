@@ -20,7 +20,7 @@
 
 #include <p2d/p2d.h>
 
-#include <yoyoengine/ui.h>
+#include <yoyoengine/ui/ui.h>
 #include <yoyoengine/yep.h>
 #include <yoyoengine/input.h>
 #include <yoyoengine/scene.h>
@@ -37,6 +37,7 @@
 #include <yoyoengine/version.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/ui/overlays.h>
 #include <yoyoengine/graphics.h>
 #include <yoyoengine/networking.h>
 #include <yoyoengine/ecs/camera.h>
@@ -347,6 +348,10 @@ void ye_init_engine() {
 
     // ----------------- Begin Setup -------------------
 
+    // initialize overlays
+    ye_init_overlays();
+    ye_register_default_overlays();
+
     // initialize graphics systems, creating window renderer, etc
     ye_init_graphics();
 
@@ -501,6 +506,9 @@ void ye_shutdown_engine(){
 
     // Shutdown console
     ye_shutdown_console();
+
+    // shutdown overlays
+    ye_shutdown_overlays();
 
     // shutdown logging
     // note: must happen before SDL because it relies on SDL path to open file

@@ -8,6 +8,8 @@
 /*
     A dynamic array type, in C!
 
+    NOTE: Unstable, so we do not gaurantee the items to remain at the same address during lifetime of the vector.
+
     Usage:
 
     // Create vector of integers
@@ -131,7 +133,7 @@ void ye_vector_set(struct ye_vector *vector, size_t index, void *element);
 void ye_vector_remove(struct ye_vector *vector, size_t index);
 
 /**
- * @brief A macro to iterate over a vector.
+ * @brief A macro to iterate over a vector. NOTE: "element" is a copy!!!
  * 
  * @param vector The vector to iterate over
  * @param type The type of elements in the vector

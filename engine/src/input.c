@@ -15,7 +15,7 @@
 
 #include <SDL.h>
 
-#include <yoyoengine/ui.h>
+#include <yoyoengine/ui/ui.h>
 #include <yoyoengine/input.h>
 #include <yoyoengine/event.h>
 #include <yoyoengine/engine.h>

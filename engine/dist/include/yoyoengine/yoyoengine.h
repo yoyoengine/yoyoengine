@@ -38,8 +38,14 @@
 #include "debug_renderer.h"
 #include "uthash/uthash.h"
 #include "cache.h"
-#include "ui.h"
 #include "physics.h"
+
+// ui //
+#include "ui/ui.h"
+#include "ui/overlays.h"
+
+// overlays //
+#include "overlays/physics_overlay.h"
 
 // ecs //
 #include "ecs/ecs.h"
