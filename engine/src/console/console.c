@@ -71,6 +71,7 @@ void _register_default_commands() {
     ye_register_console_command("config", ye_cmd_config);
     ye_register_console_command("quit", ye_cmd_quit);
     ye_register_console_command("clear", ye_cmd_clear);
+    ye_register_console_command("overlay", ye_cmd_overlay);
 }
 
 /*

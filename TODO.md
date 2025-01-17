@@ -226,13 +226,6 @@ creates datastructure tree with stamps for each file, selectively repacks only c
 
 scene reload crash
 
-## physics state overlay
-
-## overlay / ui overhaul / progress
-
-- fire the overlay events (i believe its done, but test it)
-- create a physics overlay! (maybe add a userdata pointer? it seems like we can store any state in the files that implement the panel though.)
-
 future:
 - ui.c could be used to create a nuklear docking generic solution...
 
@@ -257,8 +250,14 @@ nk_window_is_any_hovered can tell when exiting viewport
 
 you need to just scroll through nuklear.h. badly
 
-## more overlay integration
+## lksj flksdg
 
-finish the physics paint
+im not so sure the camera plays nice with rotation lol
 
-console expose the overlay list and toggle on off. could provide "overlay panel" which is a checkbox version of the generated overlay list
+scene camera viewport toggle useless
+remove stretch viewport?
+
+## future commands/improvements
+
+- overlay auto generated panel to nuklear checkbox toggle
+- info command with build details and credits for runtime core

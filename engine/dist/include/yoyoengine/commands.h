@@ -40,4 +40,6 @@ YE_API void ye_cmd_quit(int argc, const char **argv);
 
 YE_API void ye_cmd_clear(int argc, const char **argv);
 
+YE_API void ye_cmd_overlay(int argc, const char **argv);
+
 #endif

@@ -25,6 +25,7 @@
 #include <yoyoengine/ecs/tag.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
+#include <yoyoengine/ui/overlays.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/ecs/transform.h>
@@ -819,8 +820,14 @@ void ye_raw_scene_load(json_t *SCENE) {
     // purge all non persistant events
     ye_purge_events(false);
 
+    // disable all overlays
+    // ye_set_all_overlays(false);
+
     // shutdown and restart audio subsystem TODO: do some soft reset instead
     // ye_shutdown_audio();
+
+    // destroy the physics world
+    p2d_remove_all_objects();
 
     // wipe the ecs so its ready to be populated (this will destroy and re-create editor entities, but the editor will best effort recreate and attach them)
     ye_purge_ecs();

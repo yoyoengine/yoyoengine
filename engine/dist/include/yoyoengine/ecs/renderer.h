@@ -157,6 +157,8 @@ struct ye_component_renderer_tilemap_tile {
  */
 YE_API void ye_update_renderer_component(struct ye_entity *entity);
 
+YE_API void ye_draw_subsecting_lines(SDL_Renderer * renderer, SDL_Rect cam, int line_spacing, int thickness, SDL_Color color);
+
 /**
  * @brief Adds a renderer component to an entity.
  * @note Do not use this directly unless you know what you're doing.

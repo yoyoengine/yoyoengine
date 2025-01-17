@@ -425,7 +425,7 @@ void ye_remove_renderer_component(struct ye_entity *entity){
     ye_entity_list_remove(&renderer_list_head, entity);
 }
 
-void _draw_subsecting_lines(SDL_Renderer * renderer, SDL_Rect cam, int line_spacing, int thickness, SDL_Color color) {
+void ye_draw_subsecting_lines(SDL_Renderer * renderer, SDL_Rect cam, int line_spacing, int thickness, SDL_Color color) {
     int num_lines = cam.w / line_spacing;
     int x_offset = cam.x % line_spacing;
 
@@ -467,19 +467,19 @@ void _paint_viewport_lines(SDL_Renderer *renderer) {
         Grid of subsecting lines
     */
     if(cam.w < 2560)
-        _draw_subsecting_lines(renderer, cam, 50, 1, (SDL_Color){25, 25, 25, 255});
+        ye_draw_subsecting_lines(renderer, cam, 50, 1, (SDL_Color){25, 25, 25, 255});
     // if(cam.w < 3840)
     if(cam.w < 5000)
-        _draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 255});
+        ye_draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 255});
     if(cam.w < 9500)
-        _draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 255});
+        ye_draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 255});
     if(cam.w > 10000){
         int thickness = ((cam.w - 9500) / 2000) + 7;
         // printf("thickness: %d\n", thickness);
-        _draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 255});
+        ye_draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 255});
     }
     else{
-        _draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 255});
+        ye_draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 255});
     }
 
     /*

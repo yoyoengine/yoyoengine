@@ -115,3 +115,22 @@ void ye_register_default_overlays() {
     };
     ye_register_overlay(overlay);
 }
+
+void ye_set_all_overlays(bool state) {
+    for(size_t i = 0; i < overlays->size; i++) {
+        struct ye_overlay *overlay = (struct ye_overlay*)ye_vector_get(overlays, i);
+        overlay->active = state;
+    }
+}
+
+bool ye_get_overlay_state(const char *name) {
+    for(size_t i = 0; i < overlays->size; i++) {
+        struct ye_overlay *overlay = (struct ye_overlay*)ye_vector_get(overlays, i);
+        if(strcmp(overlay->name, name) == 0) {
+            return overlay->active;
+        }
+    }
+
+    ye_logf(YE_LL_ERROR, "Failed to get overlay active: %s\n", name);
+    return false;
+}

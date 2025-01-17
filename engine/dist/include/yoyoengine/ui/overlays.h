@@ -58,4 +58,8 @@ YE_API void ye_fire_overlay_event(enum ye_overlay_event event);
 
 YE_API void ye_register_default_overlays();
 
+YE_API void ye_set_all_overlays(bool state);
+
+YE_API bool ye_get_overlay_state(const char *name);
+
 #endif // YE_OVERLAYS_H

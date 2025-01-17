@@ -8,19 +8,30 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <yoyoengine/ecs/renderer.h>
+#include <yoyoengine/ecs/camera.h>
+#include <yoyoengine/types.h>
+#include <yoyoengine/utils.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/ye_nk.h>
 #include <yoyoengine/ui/chart.h>
 #include <yoyoengine/overlays/physics_overlay.h>
 
+/*
+    Print a grid of the physics world
+
+    TODO: expose p2d to see the active/culled tiles like in demo
+*/
 void ye_physics_overlay_pre_frame_paint() {
-    // printf("Physics overlay pre frame paint\n");
-    // TODO
-    return;
+    SDL_Rect cam = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
+
+    ye_draw_subsecting_lines(YE_STATE.runtime.renderer, cam, YE_STATE.engine.p2d_state->_cell_size, 3, (SDL_Color){255,165,0, 255});
 }
+
 void ye_physics_overlay_post_frame_paint() {
-    // printf("Physics overlay post frame paint\n");
-    // TODO
+    /*
+        TODO: maybe you can put some rects around OOBs
+    */
     return;
 }
 
@@ -93,6 +104,11 @@ void ye_physics_overlay_render_ui_panel(struct nk_context *ctx) {
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label_colored(ctx, "State", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
         
+        nk_layout_row_dynamic(ctx, 25, 2);
+        nk_label(ctx, "grid size: ", NK_TEXT_RIGHT);
+        snprintf(buf, 128, "%d", YE_STATE.engine.p2d_state->_cell_size);
+        nk_label(ctx, buf, NK_TEXT_CENTERED);
+
         nk_layout_row_dynamic(ctx, 25, 2);
         nk_label(ctx, "objects: ", NK_TEXT_RIGHT);
         snprintf(buf, 128, "%d", YE_STATE.engine.p2d_state->p2d_object_count);
