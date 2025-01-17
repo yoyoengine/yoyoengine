@@ -132,40 +132,40 @@ void ye_vector_set(struct ye_vector *vector, size_t index, void *element);
  */
 void ye_vector_remove(struct ye_vector *vector, size_t index);
 
-/**
- * @brief A macro to iterate over a vector. NOTE: "element" is a copy!!!
- * 
- * @param vector The vector to iterate over
- * @param type The type of elements in the vector
- * @param element The name for the element variable
- * 
- * @example
- * YE_VECTOR_FOR_EACH(my_vector, int, current) {
- *    printf("%d\n", current);
- * }
- */
-#define YE_VECTOR_FOR_EACH(vector, type, element) \
-    for (size_t _i __attribute__((unused)) = 0, _once = 1; \
-        _once && _i < (vector)->size; \
-        _i++) \
-    for (type element = *(type*)ye_vector_get((vector), _i); \
-        _once; \
-        _once = 0)
+#ifdef _MSC_VER
+    #define YE_VECTOR_FOR_EACH(vector, type, element) \
+        __pragma(warning(suppress:4456)) \
+        for (size_t _i = 0, _once = 1; \
+            _once && _i < (vector)->size; \
+            _i++) \
+        for (type element = *(type*)ye_vector_get((vector), _i); \
+            _once; \
+            _once = 0)
 
-/**
- * @brief A macro to iterate over a vector with index.
- * 
- * @param vector The vector to iterate over
- * @param type The type of elements in the vector
- * @param element The name for the element variable
- * @param idx The name for the index variable
- */
-#define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
-    for (size_t idx = 0, _once = 1; \
-        _once && idx < (vector)->size; \
-        idx++) \
-    for (type element = *(type*)ye_vector_get((vector), idx); \
-        _once; \
-        _once = 0)
+    #define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
+        __pragma(warning(suppress:4456)) \
+        for (size_t idx = 0, _once = 1; \
+            _once && idx < (vector)->size; \
+            idx++) \
+        for (type element = *(type*)ye_vector_get((vector), idx); \
+            _once; \
+            _once = 0)
+#else
+    #define YE_VECTOR_FOR_EACH(vector, type, element) \
+        for (size_t _i __attribute__((unused)) = 0, _once = 1; \
+            _once && _i < (vector)->size; \
+            _i++) \
+        for (type element = *(type*)ye_vector_get((vector), _i); \
+            _once; \
+            _once = 0)
+
+    #define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
+        for (size_t idx = 0, _once = 1; \
+            _once && idx < (vector)->size; \
+            idx++) \
+        for (type element = *(type*)ye_vector_get((vector), idx); \
+            _once; \
+            _once = 0)
+#endif
 
 #endif // YE_VECTOR_H
