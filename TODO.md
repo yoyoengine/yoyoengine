@@ -23,8 +23,6 @@ Nothing!!!
 - nuklear showing 1px margin scrollbars sometimes horizontally (depends on scaling)
 - There is not enough sanity checking (null checks and validity checks) in the ecs system
 - Get screen size uses only the primary monitor (sdl bug?)
-- Physics system MIGHT be broken with negative relative colliders
-- Physics system should compute axies seperately
 - Multiple colliders touching gets weird
 - valgrind runs weirdly for editor, serializing editor components and segaulting and gp faulting
 - Scrollbar resets when selecting entity in heiarchy
@@ -216,6 +214,9 @@ be suuuper clear about build platforms in editor dropdown... only enable install
 ## yep2
 
 creates datastructure tree with stamps for each file, selectively repacks only changed files... something like that to rapidly accelerate builds
+
+can also be used to have a header hash map structure open at runtime for each pack, for quick lookups.
+We can also probably just open each pack file since it doesnt require mapping every single one into memory fully. faster than open/close switching
 
 ## lua binding slop
 

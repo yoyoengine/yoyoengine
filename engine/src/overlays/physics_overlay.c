@@ -25,7 +25,7 @@
 void ye_physics_overlay_pre_frame_paint() {
     SDL_Rect cam = ye_get_position_rect(YE_STATE.engine.target_camera,YE_COMPONENT_CAMERA);
 
-    ye_draw_subsecting_lines(YE_STATE.runtime.renderer, cam, YE_STATE.engine.p2d_state->_cell_size, 3, (SDL_Color){255,165,0, 255});
+    ye_draw_subsecting_lines(YE_STATE.runtime.renderer, cam, YE_STATE.engine.p2d_state->p2d_cell_size, 3, (SDL_Color){255,165,0, 255});
 }
 
 void ye_physics_overlay_post_frame_paint() {
@@ -106,7 +106,7 @@ void ye_physics_overlay_render_ui_panel(struct nk_context *ctx) {
         
         nk_layout_row_dynamic(ctx, 25, 2);
         nk_label(ctx, "grid size: ", NK_TEXT_RIGHT);
-        snprintf(buf, 128, "%d", YE_STATE.engine.p2d_state->_cell_size);
+        snprintf(buf, 128, "%d", YE_STATE.engine.p2d_state->p2d_cell_size);
         nk_label(ctx, buf, NK_TEXT_CENTERED);
 
         nk_layout_row_dynamic(ctx, 25, 2);
@@ -138,7 +138,7 @@ void ye_physics_overlay_render_ui_panel(struct nk_context *ctx) {
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_layout_row_dynamic(ctx, 25, 1);
         nk_label_colored(ctx, "Gravity", NK_TEXT_CENTERED, nk_rgb(0, 255, 0));
-        snprintf(buf, 128, "<%f, %f>", YE_STATE.engine.p2d_state->gravity.x, YE_STATE.engine.p2d_state->gravity.y);
+        snprintf(buf, 128, "<%f, %f>", YE_STATE.engine.p2d_state->p2d_gravity.x, YE_STATE.engine.p2d_state->p2d_gravity.y);
         nk_label(ctx, buf, NK_TEXT_CENTERED);
 
         nk_end(ctx);

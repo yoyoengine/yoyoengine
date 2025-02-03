@@ -92,6 +92,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/yoyoengine/lilith.git
     GIT_TAG main
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(lilith)
 target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lilith.h
@@ -106,6 +107,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/yoyoengine/p2d.git
     GIT_TAG main
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(p2d)
 target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
@@ -122,6 +124,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/akheron/jansson.git
     GIT_TAG        v2.14
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
@@ -143,6 +146,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG        release-2.28.5
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 FetchContent_MakeAvailable(SDL2)
@@ -164,6 +168,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/madler/zlib.git
     GIT_TAG        v1.3
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
@@ -204,6 +209,7 @@ set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(simple_parse PROPERTIES EXCLUDE_FROM_ALL TRUE)
 if(WINDOWS) # these targets dont exist on windows or something
     set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
     set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -245,6 +251,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf
     GIT_TAG        release-2.20.2
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(SDL2_ttf)
 target_include_directories(yoyoengine PUBLIC ${SDL2_ttf_SOURCE_DIR}) # include is in the root of the repo
@@ -277,6 +284,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG        release-2.8.2
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(SDL2_image)
 target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/include)
@@ -308,6 +316,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
     GIT_TAG        release-2.6.3
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(SDL2_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL2_mixer_SOURCE_DIR}/include)
@@ -326,6 +335,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/walterschell/Lua.git
     GIT_TAG        v5.4.5
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(lua)
 target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
@@ -344,6 +354,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
     GIT_TAG        release-2.2.0
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(SDL2_net)
 target_include_directories(yoyoengine PUBLIC ${SDL2_net_SOURCE_DIR})
