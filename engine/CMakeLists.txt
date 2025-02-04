@@ -173,38 +173,40 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibstaticd.lib)
+    # target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibstaticd.lib) TODO: update for shared
 endif()
 
 # needed for zlib static
-set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
+# set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# Export zlib targets for SDL_ttf install
-install(TARGETS zlibstatic
-        EXPORT zlib-targets
-        ARCHIVE DESTINATION lib
-        INCLUDES DESTINATION include
-)
+# # Export zlib targets for SDL_ttf install
+# install(TARGETS zlibstatic
+#         EXPORT zlib-targets
+#         ARCHIVE DESTINATION lib
+#         INCLUDES DESTINATION include
+# )
 
-# Export zlib includes for SDL_ttf install
-install(DIRECTORY ${zlib_SOURCE_DIR}/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h*"
-)
+# # Export zlib includes for SDL_ttf install
+# install(DIRECTORY ${zlib_SOURCE_DIR}/
+#         DESTINATION include
+#         FILES_MATCHING PATTERN "*.h*"
+# )
 
-# Export zlib config for SDL_ttf install
-install(EXPORT zlib-targets
-        FILE zlib-targets.cmake
-        NAMESPACE zlib::
-        DESTINATION lib/cmake/zlib
-)
+# # Export zlib config for SDL_ttf install
+# install(EXPORT zlib-targets
+#         FILE zlib-targets.cmake
+#         NAMESPACE zlib::
+#         DESTINATION lib/cmake/zlib
+# )
 
 # we need to override some SDL_ttf vars to use our own impl of zlib for its freetype gzip
 set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
-set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE)
+# set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
+# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
+# set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
 
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)

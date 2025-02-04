@@ -262,3 +262,14 @@ remove stretch viewport?
 
 - overlay auto generated panel to nuklear checkbox toggle
 - info command with build details and credits for runtime core
+
+## crossplat!!!
+
+- valgrind it (bunch of errors)
+- turn on every sanitizer for dev builds
+
+## general improvements
+
+- refactor welcome panel networking hit to be in background (panel loading symbol)
+- refactor in general to not be gross
+- curl wrapper instead of hard coding
