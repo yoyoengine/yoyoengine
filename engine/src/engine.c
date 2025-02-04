@@ -113,13 +113,13 @@ char * ye_path_resources(const char * path){
 int last_frame_time = 0;
 void ye_process_frame(){
     // update time delta
-    YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
-    last_frame_time = SDL_GetTicks64();
+    YE_STATE.runtime.delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
+    last_frame_time = SDL_GetTicks();
 
     // check if a scene is deferred to be loaded and load it
     if(ye_scene_check_deferred_load()){
-        YE_STATE.runtime.delta_time = (SDL_GetTicks64() - last_frame_time) / 1000.0f;
-        last_frame_time = SDL_GetTicks64();
+        YE_STATE.runtime.delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
+        last_frame_time = SDL_GetTicks();
     }
 
     // update timers
@@ -128,7 +128,7 @@ void ye_process_frame(){
     // C pre frame callback
     ye_fire_event(YE_EVENT_PRE_FRAME, (union ye_event_args){NULL});
 
-    int input_time = SDL_GetTicks64();
+    int input_time = SDL_GetTicks();
     
     /*
         Let the input system handle the following:
@@ -139,10 +139,10 @@ void ye_process_frame(){
     */
     ye_system_input();
 
-    YE_STATE.runtime.input_time = SDL_GetTicks64() - input_time;
+    YE_STATE.runtime.input_time = SDL_GetTicks() - input_time;
 
 
-    int physics_time = SDL_GetTicks64();
+    int physics_time = SDL_GetTicks();
     if(!YE_STATE.editor.editor_mode){
         // test: discard running if delta time is too high
         // if(YE_STATE.runtime.delta_time > 0.1f){
@@ -163,7 +163,7 @@ void ye_process_frame(){
         // printf("contacts found: %d\n", p2d_state.p2d_contacts_found);
         // printf("collision pairs: %d\n", p2d_state.p2d_collision_pairs);
     }
-    YE_STATE.runtime.physics_time = SDL_GetTicks64() - physics_time;
+    YE_STATE.runtime.physics_time = SDL_GetTicks() - physics_time;
 
     // if we are in runtime, run callbacks
     if(!YE_STATE.editor.editor_mode){
@@ -181,7 +181,7 @@ void ye_process_frame(){
     if(!YE_STATE.editor.editor_mode)
         ye_system_audiosource();
 
-    YE_STATE.runtime.frame_time = SDL_GetTicks64() - last_frame_time;
+    YE_STATE.runtime.frame_time = SDL_GetTicks() - last_frame_time;
 
     // C post frame callback
     ye_fire_event(YE_EVENT_POST_FRAME, (union ye_event_args){NULL});
@@ -417,7 +417,7 @@ void ye_init_engine() {
     ye_init_tricks();
 
     // set our last frame time now because we might play the intro
-    last_frame_time = SDL_GetTicks64();
+    last_frame_time = SDL_GetTicks();
 
     /*
         Part of the engine startup which isnt configurable by the game is displaying

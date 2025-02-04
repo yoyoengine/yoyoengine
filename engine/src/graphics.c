@@ -84,9 +84,9 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     /* blit text onto its outline */ 
     SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND); 
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
-    SDL_FreeSurface(fg_surface); 
+    SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
-    SDL_FreeSurface(bg_surface);
+    SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
     if (pTexture == NULL) {
@@ -113,9 +113,9 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
     /* blit text onto its outline */ 
     SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND); 
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
-    SDL_FreeSurface(fg_surface); 
+    SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
-    SDL_FreeSurface(bg_surface);
+    SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
     if (pTexture == NULL) {
@@ -148,7 +148,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     }
 
     // free the surface memory
-    SDL_FreeSurface(pSurface);
+    SDL_DestroySurface(pSurface);
 
     // return the created texture
     return pTexture;
@@ -174,7 +174,7 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
     }
 
     // free the surface memory
-    SDL_FreeSurface(pSurface);
+    SDL_DestroySurface(pSurface);
 
     // return the created texture
     return pTexture;
@@ -206,7 +206,7 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
     }
 
     // release surface from memory
-    SDL_FreeSurface(pImage_surface);
+    SDL_DestroySurface(pImage_surface);
 
     // return the created texture
     return pTexture;
@@ -254,7 +254,7 @@ void ye_render_all() {
         viewport.y = 35;
         viewport.w = YE_STATE.engine.screen_width / 1.5;
         viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
-        SDL_RenderSetViewport(pRenderer, &viewport);
+        SDL_SetRenderViewport(pRenderer, &viewport);
         // note: this is in practice useless, because in editor set logical size is overwriting this and we are painting to full screen buffer
     }
     else{
@@ -264,10 +264,10 @@ void ye_render_all() {
             stretch res determines the value of need boxing on resize events and init
         */
         if(YE_STATE.engine.need_boxing){
-            SDL_RenderSetViewport(pRenderer, &YE_STATE.engine.letterbox);
+            SDL_SetRenderViewport(pRenderer, &YE_STATE.engine.letterbox);
         }
         else{
-            SDL_RenderSetViewport(pRenderer, NULL);
+            SDL_SetRenderViewport(pRenderer, NULL);
         }
     }
 
@@ -279,7 +279,10 @@ void ye_render_all() {
     */
     if(!YE_STATE.engine.stretch_viewport){
         // credit to my goat: github copilot for this one
-        SDL_RenderSetLogicalSize(pRenderer, (int)YE_STATE.engine.target_camera->camera->view_field.w, (int)YE_STATE.engine.target_camera->camera->view_field.h);
+        SDL_SetRenderLogicalPresentation(pRenderer,
+                                         (int)YE_STATE.engine.target_camera->camera->view_field.w,
+                                         (int)YE_STATE.engine.target_camera->camera->view_field.h,
+                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
 
     ye_renderer_v2(pRenderer);
@@ -289,8 +292,8 @@ void ye_render_all() {
 
         TODO: profile the performance of doing this even if these havent changed
     */
-    SDL_RenderSetViewport(pRenderer, NULL);
-    SDL_RenderSetScale(pRenderer, (float)1, (float)1);
+    SDL_SetRenderViewport(pRenderer, NULL);
+    SDL_SetRenderScale(pRenderer, (float)1, (float)1);
 
     ui_render();
 
@@ -379,7 +382,7 @@ void ye_recompute_boxing(){
 
 void ye_init_graphics(){
     // test for video init, alarm if failed
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) < 0) {
         ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
         exit(1);
     }
@@ -403,7 +406,13 @@ void ye_init_graphics(){
     }
 
     // test for window init, alarm if failed
-    pWindow = SDL_CreateWindow(YE_STATE.engine.window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, YE_STATE.engine.screen_width, YE_STATE.engine.screen_height, SDL_WINDOW_SHOWN | YE_STATE.engine.window_mode | SDL_WINDOW_ALLOW_HIGHDPI);
+    pWindow = SDL_CreateWindow(
+        YE_STATE.engine.window_title, 
+        YE_STATE.engine.screen_width,
+        YE_STATE.engine.screen_height,
+        YE_STATE.engine.window_mode | SDL_WINDOW_HIGH_PIXEL_DENSITY
+    );
+
     if (pWindow == NULL) {
         ye_logf(debug, "Window creation failed: %s\n", SDL_GetError());
         exit(1);
@@ -418,11 +427,11 @@ void ye_init_graphics(){
     // if vsync is on
     if(YE_STATE.engine.framecap == -1) {
         ye_logf(info, "Starting renderer with vsync... \n");
-        pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        pRenderer = SDL_CreateRenderer(pWindow, NULL, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     }
     else {
         ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
-        pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
+        pRenderer = SDL_CreateRenderer(pWindow, NULL, SDL_RENDERER_ACCELERATED);
     }
 
     if (pRenderer == NULL) {
@@ -443,7 +452,7 @@ void ye_init_graphics(){
         missing_surface = yep_engine_resource_image("missing.png");
     }
     missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
-    SDL_FreeSurface(missing_surface);
+    SDL_DestroySurface(missing_surface);
 
     // set the runtime window and renderer references
     YE_STATE.runtime.window = pWindow;
@@ -452,20 +461,11 @@ void ye_init_graphics(){
     init_ui(pWindow,pRenderer);
 
     // test for TTF init, alarm if failed
-    if (TTF_Init() == -1) {
+    if (!TTF_Init()) {
         ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
         exit(1);
     }
     ye_logf(info, "TTF initialized.\n");
-
-    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
-        ye_logf(error, "IMG_Init error: %s", IMG_GetError());
-        // print the img error
-        printf("IMG_Init error: %s", IMG_GetError());
-        exit(1);
-    }
-    ye_logf(info, "IMG initialized.\n");
 
     /*
         load icon to surface
@@ -502,7 +502,7 @@ void ye_init_graphics(){
     SDL_SetWindowIcon(pWindow, pIconSurface);
     
     // release surface
-    SDL_FreeSurface(pIconSurface);
+    SDL_DestroySurface(pIconSurface);
 
     ye_logf(info, "Window icon set.\n");
 }
@@ -511,10 +511,6 @@ void ye_shutdown_graphics(){
     // shutdown TTF
     TTF_Quit();
     ye_logf(info, "Shut down TTF.\n");
-
-    // shutdown IMG
-    IMG_Quit();
-    ye_logf(info, "Shut down IMG.\n");
 
     // free the missing texture
     SDL_DestroyTexture(missing_texture);

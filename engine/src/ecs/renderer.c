@@ -693,7 +693,7 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
         SDL_Color color = {255, 255, 255, 255};
 
         // get the current engine font size
-        int og_size = TTF_FontHeight(YE_STATE.engine.pEngineFont);
+        int og_size = TTF_GetFontHeight(YE_STATE.engine.pEngineFont);
 
         // set the size to something way less for performance reasons
         TTF_SetFontSize(YE_STATE.engine.pEngineFont, 32);
@@ -707,7 +707,7 @@ void _paint_paintbounds(SDL_Renderer *renderer, struct ye_entity_node *current) 
 
         SDL_Rect entity_rect = {entity_prect.verticies[0].x - w / 2, entity_prect.verticies[0].y - 20, w, h};
 
-        SDL_RenderCopy(renderer, text_texture, NULL, &entity_rect);
+        SDL_RenderTexture(renderer, text_texture, NULL, &entity_rect);
         SDL_DestroyTexture(text_texture); // TODO: cache for reusability somewhere and invalidate when name changes?
 
         // set the font size back to the original size

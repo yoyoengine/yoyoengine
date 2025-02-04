@@ -72,10 +72,10 @@ void ye_system_input() {
 
         switch(e.type) {
             // check for any reserved engine buttons (console, etc)
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN :
                 // if freecam is on (rare) TODO: allow changing of freecam scale
                 if(YE_STATE.editor.freecam_enabled){
-                    switch(e.key.keysym.sym){     
+                    switch(e.key.key){     
                         case SDLK_LEFT:
                             YE_STATE.engine.target_camera->transform->x -= 100.0;
                             break;
@@ -91,11 +91,11 @@ void ye_system_input() {
                     }
                 }
 
-                switch(e.key.keysym.sym) {
+                switch(e.key.key) {
 
                     // console toggle //
 
-                    case SDLK_BACKQUOTE:
+                    case SDLK_GRAVE :
                         if(console_visible){
                             console_visible = false;
                             remove_ui_component("ye_dev_console");
@@ -112,8 +112,8 @@ void ye_system_input() {
             // window events //
             case SDL_WINDOWEVENT:
                 switch(e.window.event){
-                    case SDL_WINDOWEVENT_RESIZED:
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                    case SDL_EVENT_WINDOW_RESIZED :
+                    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
                         resized = true;
                         break;
                 }
@@ -125,28 +125,31 @@ void ye_system_input() {
             switch(e.type){
 
                 // controller connect/disconnect events //
-                case SDL_CONTROLLERDEVICEREMOVED:
+                case SDL_EVENT_GAMEPAD_REMOVED :
                     // remove the controller from the list
                     for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
                         if(YE_STATE.runtime.controllers[i] != NULL){
-                            if(SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(YE_STATE.runtime.controllers[i])) == e.cdevice.which){
-                                SDL_GameControllerClose(YE_STATE.runtime.controllers[i]);
+                            if(SDL_GetJoystickID(SDL_GetGamepadJoystick(YE_STATE.runtime.controllers[i])) == e.gdevice.which){
+                                SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
                                 YE_STATE.runtime.controllers[i] = NULL;
                                 YE_STATE.runtime.num_controllers--;
-                                ye_logf(info, "Disconnected GameController %d.\n", e.cdevice.which);
+                                ye_logf(info, "Disconnected GameController %d.\n",
+                                        e.gdevice.which);
                             }
                         }
                     }
                     break;
 
-                case SDL_CONTROLLERDEVICEADDED:
+                case SDL_EVENT_GAMEPAD_ADDED :
                     // add the controller to the list
                     for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
                         if(YE_STATE.runtime.controllers[i] == NULL){
-                            YE_STATE.runtime.controllers[i] = SDL_GameControllerOpen(e.cdevice.which);
+                            YE_STATE.runtime.controllers[i] = SDL_OpenGamepad(e.gdevice.which);
                             if(YE_STATE.runtime.controllers[i] != NULL){
                                 YE_STATE.runtime.num_controllers++;
-                                ye_logf(info, "Connected GameController %d: %s\n", e.cdevice.which, SDL_GameControllerName(YE_STATE.runtime.controllers[i]));
+                                ye_logf(info, "Connected GameController %d: %s\n",
+                                        e.gdevice.which,
+                                        SDL_GetGamepadName(YE_STATE.runtime.controllers[i]));
                             }
                             break;
                         }
@@ -199,7 +202,7 @@ void ye_shutdown_input(){
     // close all controllers
     for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
         if(YE_STATE.runtime.controllers[i] != NULL){
-            SDL_GameControllerClose(YE_STATE.runtime.controllers[i]);
+            SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
         }
     }
 
