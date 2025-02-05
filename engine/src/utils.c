@@ -110,8 +110,8 @@ int ye_clamp(int value, int min, int max) {
 }
 
 SDL_Rect ye_get_real_texture_size_rect(SDL_Texture *pTexture){
-    int imgWidth, imgHeight;
-    SDL_QueryTexture(pTexture, NULL, NULL, &imgWidth, &imgHeight);
+    float imgWidth, imgHeight;
+    SDL_GetTextureSize(pTexture, &imgWidth, &imgHeight);
     SDL_Rect rect = {0,0,imgWidth,imgHeight};
     return rect;
 }
@@ -372,7 +372,7 @@ SDL_Rect ye_get_position_rect(struct ye_entity *entity, enum ye_component_type t
 
 void ye_draw_thick_point(SDL_Renderer* renderer, int x, int y, int thickness) {
     int half_thickness = thickness / 2;
-    SDL_Rect rect = {
+    SDL_FRect rect = {
         x - half_thickness,
         y - half_thickness,
         thickness,
@@ -423,7 +423,7 @@ void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t center_y,
     }
 }
 
-void ye_get_mouse_world_position(int *x, int *y){
+void ye_get_mouse_world_position(float *x, float *y){
     // get the true world position of the camera
     struct ye_rectf campos = ye_get_position(YE_STATE.engine.target_camera, YE_COMPONENT_CAMERA);
 
@@ -490,12 +490,14 @@ bool ye_draw_thick_line(SDL_Renderer *renderer, float x1, float y1, float x2, fl
     float offsetX = sin(angle) * thickness / 2;
     float offsetY = cos(angle) * thickness / 2;
 
+    SDL_FColor fcolor = ye_sdl_color_to_fcolor(color);
+
     // Define vertices for the line
     SDL_Vertex vertices[4];
-    vertices[0] = (SDL_Vertex){{x1 + offsetX, y1 - offsetY},color, {0, 0}};
-    vertices[1] = (SDL_Vertex){{x1 - offsetX, y1 + offsetY},color, {0, 0}};
-    vertices[2] = (SDL_Vertex){{x2 + offsetX, y2 - offsetY},color, {0, 0}};
-    vertices[3] = (SDL_Vertex){{x2 - offsetX, y2 + offsetY},color, {0, 0}};
+    vertices[0] = (SDL_Vertex){{x1 + offsetX, y1 - offsetY},fcolor, {0, 0}};
+    vertices[1] = (SDL_Vertex){{x1 - offsetX, y1 + offsetY},fcolor, {0, 0}};
+    vertices[2] = (SDL_Vertex){{x2 + offsetX, y2 - offsetY},fcolor, {0, 0}};
+    vertices[3] = (SDL_Vertex){{x2 - offsetX, y2 + offsetY},fcolor, {0, 0}};
 
     // Define indices for the line segments
     int indices[6] = {0, 1, 2, 1, 2, 3};
@@ -655,4 +657,20 @@ struct p2d_obb_verts ye_prect2obbverts(struct ye_point_rectf rect) {
         {{rect.verticies[3].x, rect.verticies[3].y}}
     }};
     return verts;
+}
+
+SDL_FColor ye_sdl_color_to_fcolor(SDL_Color color) {
+    return (SDL_FColor){color.r, color.g, color.b, color.a};
+}
+
+SDL_Color ye_sdl_fcolor_to_color(SDL_FColor color) {
+    return (SDL_Color){color.r, color.g, color.b, color.a};
+}
+
+SDL_FRect ye_sdl_rect_to_frect(SDL_Rect rect) {
+    return (SDL_FRect){rect.x, rect.y, rect.w, rect.h};
+}
+
+SDL_Rect ye_frect_to_sdl_rect(SDL_FRect rect) {
+    return (SDL_Rect){rect.x, rect.y, rect.w, rect.h};
 }

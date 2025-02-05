@@ -694,7 +694,8 @@ SDL_Surface * _yep_image(const char *handle, const char *path){
     }
 
     // create the surface
-    SDL_Surface *surface = IMG_Load_RW(SDL_IOFromMem(data.data, data.size), 1);
+    // TODO: MIGRATION: might be the wrong IO loader
+    SDL_Surface *surface = IMG_Load_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(surface == NULL){
         ye_logf(error,"Error: could not create surface for %s\n", handle);
         return NULL;
@@ -731,7 +732,7 @@ Mix_Chunk * _yep_audio(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the chunk
-    Mix_Chunk *chunk = Mix_LoadWAV_RW(SDL_IOFromMem(data.data, data.size), 1);
+    Mix_Chunk *chunk = Mix_LoadWAV_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(chunk == NULL){
         ye_logf(error,"Error: could not create chunk for %s\n", handle);
         return NULL;
@@ -749,7 +750,7 @@ Mix_Music * _yep_music(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the music
-    Mix_Music *music = Mix_LoadMUS_RW(SDL_IOFromMem(data.data, data.size), 1);
+    Mix_Music *music = Mix_LoadMUS_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(music == NULL){
         ye_logf(error,"Error: could not create music for %s\n", handle);
         return NULL;
@@ -767,7 +768,7 @@ TTF_Font * _yep_font(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the font
-    TTF_Font *font = TTF_OpenFontRW(SDL_IOFromMem(data.data, data.size), 1, 1);
+    TTF_Font *font = TTF_OpenFontIO(SDL_IOFromMem(data.data, data.size), 1, 1);
     if(font == NULL){
         ye_logf(error,"Error: could not create font for %s\n", handle);
         return YE_STATE.engine.pEngineFont;

@@ -27,25 +27,27 @@
     .rightClicked: Whether the right mouse button is clicked
 */
 int ye_lua_query_mouse_state(lua_State *L) {
-    int x, y;
-    float buttons = SDL_GetMouseState(&x, &y);
+    float x, y;
+    SDL_MouseButtonFlags buttons = SDL_GetMouseState(&x, &y);
 
-    int wx = x; int wy = y;
+    float wx = x; float wy = y;
     ye_get_mouse_world_position(&wx, &wy);
 
     lua_newtable(L);
 
+    // TODO: MIGRATION: RE-EVALUATE INTS IN THIS API
+
     // x
-    lua_pushinteger(L, x); lua_setfield(L, -2, "x");
+    lua_pushinteger(L, (int)x); lua_setfield(L, -2, "x");
 
     // y
-    lua_pushinteger(L, y); lua_setfield(L, -2, "y");
+    lua_pushinteger(L, (int)y); lua_setfield(L, -2, "y");
 
     // world x
-    lua_pushinteger(L, wx); lua_setfield(L, -2, "worldX");
+    lua_pushinteger(L, (int)wx); lua_setfield(L, -2, "worldX");
 
     // world y
-    lua_pushinteger(L, wy); lua_setfield(L, -2, "worldY");
+    lua_pushinteger(L, (int)wy); lua_setfield(L, -2, "worldY");
 
     // leftClicked
     lua_pushboolean(L, buttons & SDL_BUTTON_MASK(SDL_BUTTON_LEFT)); lua_setfield(L, -2, "leftClicked");
@@ -65,16 +67,18 @@ int ye_lua_query_key_state(lua_State *L) {
     int code = lua_tointeger(L, 2); // the code passed
 
     // get keyboard state
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    int num_keys;
+    const bool *state = SDL_GetKeyboardState(&num_keys);
 
     if (using_key) {
         SDL_Keycode key = code;
 
-        lua_pushboolean(L, state[SDL_GetScancodeFromKey(key)]);
+        // TODO: MIGRATION: new modstate param, should probably actually use this to determine the true char pressed
+        lua_pushboolean(L, state[SDL_GetScancodeFromKey(key, NULL)]);
     } else {
         SDL_Scancode key = code;
 
-        lua_pushboolean(L, SDL_GetKeyboardState(NULL)[key]);
+        lua_pushboolean(L, state[key]);
     }
 
     return 1;

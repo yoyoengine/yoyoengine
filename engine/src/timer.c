@@ -30,7 +30,7 @@ int timers_checked_this_frame = 0;
 void ye_timer_overlay(struct nk_context *ctx){
     char num_reg[40];   snprintf(num_reg, 40, "registered_timers:%d", num_registered_timers);
     char checked[40];   snprintf(checked, 40, "checked this frame:%d", timers_checked_this_frame);
-    char cur_ticks[40]; snprintf(cur_ticks, 40, "current_ticks:%d", SDL_GetTicks());
+    char cur_ticks[40]; snprintf(cur_ticks, 40, "current_ticks:%ld", SDL_GetTicks());
 
     if (nk_begin(ctx, "timer debug", nk_rect(10, 10, 220, 200),
                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_TITLE)) {

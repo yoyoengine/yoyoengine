@@ -55,7 +55,7 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
     }
     TTF_Font *pFont = TTF_OpenFont(fontpath, /*fontSize*/ 1); // lets just open this at size 1 since it will be reloaded later, this should take minimal time
     if (pFont == NULL) {
-        ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to load font: %s\n", SDL_GetError());
         return YE_STATE.engine.pEngineFont;
     }
     ye_logf(debug, "Loaded font: %s\n", pFontPath);
@@ -73,11 +73,11 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
 SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor) {
     int temp = TTF_GetFontOutline(pFont);
 
-    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, *pColor); 
+    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, 9, *pColor); 
 
     TTF_SetFontOutline(pFont, width);
     
-    SDL_Surface *bg_surface = TTF_RenderText_Blended(pFont, pText, *pOutlineColor); 
+    SDL_Surface *bg_surface = TTF_RenderText_Blended(pFont, pText, 0, *pOutlineColor); 
     
     SDL_Rect rect = {width, width, fg_surface->w, fg_surface->h}; 
 
@@ -102,11 +102,11 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
 SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength) {
     int temp = TTF_GetFontOutline(pFont);
 
-    SDL_Surface *fg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength); 
+    SDL_Surface *fg_surface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength); 
 
     TTF_SetFontOutline(pFont, width);
     
-    SDL_Surface *bg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pOutlineColor, wrapLength); 
+    SDL_Surface *bg_surface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pOutlineColor, wrapLength); 
     
     SDL_Rect rect = {width, width, fg_surface->w, fg_surface->h}; 
 
@@ -130,11 +130,11 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
 
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
-    SDL_Surface *pSurface = TTF_RenderUTF8_Blended(pFont, pText, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
+    SDL_Surface *pSurface = TTF_RenderText_Blended(pFont, pText, 0, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
     
     // error out if surface creation failed
     if (pSurface == NULL) {
-        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -156,11 +156,11 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
 
 SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength) {
     // create surface from parameters
-    SDL_Surface *pSurface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength);
+    SDL_Surface *pSurface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength);
 
     // error out if surface creation failed
     if (pSurface == NULL) {
-        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -192,7 +192,7 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
     
     // error out if surface load failed
     if (!pImage_surface) {
-        ye_logf(error, "Error loading image: %s\n", IMG_GetError());
+        ye_logf(error, "Error loading image: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -389,21 +389,22 @@ void ye_init_graphics(){
 
     ye_logf(info, "SDL initialized.\n");
 
-    // Set the texture filtering hint
-    switch(YE_STATE.engine.sdl_quality_hint){
-        case 0:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-            break;
-        case 1:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-            break;
-        case 2:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-            break;
-        default:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-            break;
-    }
+    // OBSOLETE in SDL3: we need to pass this to CreateTexture
+    // // Set the texture filtering hint
+    // switch(YE_STATE.engine.sdl_quality_hint){
+    //     case 0:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+    //         break;
+    //     case 1:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //         break;
+    //     case 2:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+    //         break;
+    //     default:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //         break;
+    // }
 
     // test for window init, alarm if failed
     pWindow = SDL_CreateWindow(
@@ -424,20 +425,21 @@ void ye_init_graphics(){
     // (-1) for vsync
     desired_frame_time = (int)(1000 / YE_STATE.engine.framecap);  
 
-    // if vsync is on
-    if(YE_STATE.engine.framecap == -1) {
-        ye_logf(info, "Starting renderer with vsync... \n");
-        pRenderer = SDL_CreateRenderer(pWindow, NULL, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    }
-    else {
-        ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
-        pRenderer = SDL_CreateRenderer(pWindow, NULL, SDL_RENDERER_ACCELERATED);
-    }
-
+    pRenderer = SDL_CreateRenderer(pWindow, NULL);
     if (pRenderer == NULL) {
         ye_logf(error, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
         exit(1);
     }
+    
+    /*
+        Enable vsync if specified
+    */
+    SDL_SetRenderVSync(pRenderer, YE_STATE.engine.framecap == -1);
+
+    if(YE_STATE.engine.framecap == -1)
+        ye_logf(info, "Starting renderer with vsync... \n");
+    else
+        ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
 
     /*
         load our missing texture into memory
@@ -462,7 +464,7 @@ void ye_init_graphics(){
 
     // test for TTF init, alarm if failed
     if (!TTF_Init()) {
-        ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
+        ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", SDL_GetError());
         exit(1);
     }
     ye_logf(info, "TTF initialized.\n");
@@ -495,7 +497,7 @@ void ye_init_graphics(){
     }
 
     if (pIconSurface == NULL) {
-        ye_logf(error, "IMG_Load error: %s", IMG_GetError());
+        ye_logf(error, "IMG_Load error: %s", SDL_GetError());
         exit(1);
     }
     // set icon
@@ -529,11 +531,10 @@ void ye_shutdown_graphics(){
 // helper function to get the current window size, if fullscreen it gets the monitor size
 struct ScreenSize ye_get_screen_size(){
     struct ScreenSize screenSize;
-    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP){
-        SDL_DisplayMode DM;
-        SDL_GetDesktopDisplayMode(0, &DM);
-        screenSize.width = DM.w;
-        screenSize.height = DM.h;
+    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
+        const SDL_DisplayMode * DM = SDL_GetDesktopDisplayMode(0);
+        screenSize.width = DM->w;
+        screenSize.height = DM->h;
     }
     else if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
         SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);

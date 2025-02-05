@@ -5,13 +5,15 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
+#include <stdlib.h>
+
 #include <SDL_net.h>
 
 #include <yoyoengine/logging.h>
 
 void ye_init_networking() {
     if (SDLNet_Init() < 0) {
-        ye_logf(error,"Failed to initialize networking: %s\n", SDLNet_GetError());
+        ye_logf(error,"Failed to initialize networking: %s\n", SDL_GetError());
         exit(1);
     }
     ye_logf(info,"Initialized networking.\n");

@@ -52,9 +52,6 @@
 // will be modified by getPath()
 char path_buffer[1024];
 
-// get the base path
-char *base_path = NULL;
-
 // expose our engine state data to the whole engine
 struct ye_engine_state YE_STATE = {0};
 
@@ -193,7 +190,8 @@ float ye_delta_time(){
 
 void ye_update_base_path(const char *path){
     // update the engine state
-    free(executable_path);
+    if(executable_path)
+        free(executable_path);
     executable_path = strdup(path);
 }
 
@@ -296,7 +294,7 @@ void ye_init_engine() {
     ye_init_console(YE_DEFAULT_CONSOLE_BUFFER_SIZE);
 
     // Get the path to our executable
-    executable_path = SDL_GetBasePath(); // Don't forget to free memory later
+    executable_path = strdup(SDL_GetBasePath()); // Don't forget to free memory later
     // printf("Executable path: %s\n", executable_path);
 
     // #ifdef __EMSCRIPTEN__
@@ -519,8 +517,7 @@ void ye_shutdown_engine(){
     free(YE_STATE.engine.game_resources_path);
     free(YE_STATE.engine.icon_path);
     // free(YE_STATE.engine.window_title); copilot added this but i havent checked if this is freed elsewhere
-    SDL_free(base_path); // free base path after (used by logging)
-    SDL_free(executable_path); // free base path after (used by logging)
+    free(executable_path); // free base path after (used by logging)
 
     // quit SDL (should destroy anything else i forget)
     SDL_Quit();

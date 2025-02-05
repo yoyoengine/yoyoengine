@@ -110,13 +110,9 @@ void ye_system_input() {
                 break; // breaks out of keydown
 
             // window events //
-            case SDL_WINDOWEVENT:
-                switch(e.window.event){
-                    case SDL_EVENT_WINDOW_RESIZED :
-                    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
-                        resized = true;
-                        break;
-                }
+            case SDL_EVENT_WINDOW_RESIZED:
+            case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED :
+                resized = true;
                 break;
         }
 

@@ -232,9 +232,9 @@ endif()
 # target_include_directories(SDL_gfx PUBLIC ${SDL2_SOURCE_DIR}/include) # give access to SDL.h
 # target_include_directories(yoyoengine PUBLIC ${SDL_gfx_SOURCE_DIR}) # include is in the root of the repo
 
-###############
-#  SDL3_ttf   #
-###############
+################
+#   SDL3_ttf   #
+################
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 # set(SDL2TTF_BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
@@ -261,9 +261,9 @@ if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${SDL3_ttf_BINARY_DIR}/SDL3_ttfd.lib)
 endif()
 
-###############
-# SDL3_image  #
-###############
+################
+#  SDL3_image  #
+################
 
 set(SDL3IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
 
@@ -297,9 +297,9 @@ endif()
 # include the zlib that SDL_image uses - this is for a stray header we are missing
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/external/zlib)
 
-###############
-#  SDL3_mixer #
-###############
+################
+#  SDL3_mixer  #
+################
 
 # disable annoying codecs we dont need that require dependencies i dont have
 set(SDLMIXER_OPUS  OFF CACHE BOOL "Enable Opus support")
@@ -359,7 +359,7 @@ FetchContent_Declare(
     GIT_SHALLOW     TRUE
 )
 FetchContent_MakeAvailable(SDL3_net)
-target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/SDL3_net)
+target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/include/SDL3_net)
 if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${SDL3_net_BINARY_DIR}/SDL3_net-staticd.lib)
 endif()
@@ -376,10 +376,10 @@ if(YOYO_ENGINE_STATIC)
 		jansson
 		zlibstatic
 		SDL3-static
-		SDL3_ttf
-		SDL3_image
-		SDL3_mixer
-		SDL3_net
+		SDL3_ttf-static
+		SDL3_image-static
+		SDL3_mixer-static
+		SDL3_net-static
 		lua_static
 	)
 else()
@@ -391,10 +391,10 @@ else()
         jansson
         zlibstatic
         SDL3-static
-        SDL3_ttf
-        SDL3_image
-        SDL3_mixer
-        SDL3_net
+        SDL3_ttf-static
+        SDL3_image-static
+        SDL3_mixer-static
+        SDL3_net-static
         lua_static
         -Wl,--no-whole-archive
     )
