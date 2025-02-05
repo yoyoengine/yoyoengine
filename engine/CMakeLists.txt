@@ -261,7 +261,6 @@ FetchContent_MakeAvailable(SDL3_ttf)
 
 # force TTF to not build the hash table! - causes issues when linking
 get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
-message("Sources: ${SOURCES_LIST}")
 list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
 set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
 
