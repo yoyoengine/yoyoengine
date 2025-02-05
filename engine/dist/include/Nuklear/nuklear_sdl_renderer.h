@@ -11,6 +11,8 @@
 #ifndef NK_SDL_RENDERER_H_
 #define NK_SDL_RENDERER_H_
 
+#include <stddef.h>
+
 #include <SDL.h>
 
 // zoogies: forward declare nk_font_atlas
@@ -23,14 +25,8 @@ NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
 NK_API void                 nk_sdl_render(enum nk_anti_aliasing);
 NK_API void                 nk_sdl_shutdown(void);
 
-#if SDL_COMPILEDVERSION < SDL_VERSIONNUM(2, 0, 22)
-/* Metal API does not support cliprects with negative coordinates or large
- * dimensions. The issue is fixed in SDL2 with version 2.0.22 but until
- * that version is released, the NK_SDL_CLAMP_CLIP_RECT flag can be used to
- * ensure the cliprect is itself clipped to the viewport.
- * See discussion at https://discourse.libsdl.org/t/rendergeometryraw-producing-different-results-in-metal-vs-opengl/34953
- */
-#define NK_SDL_CLAMP_CLIP_RECT
+#if SDL_MAJOR_VERSION < 3
+#error "nuklear_sdl3_renderer requires at least SDL 3.0.0"
 #endif
 
 #endif /* NK_SDL_RENDERER_H_ */
@@ -44,9 +40,9 @@ NK_API void                 nk_sdl_shutdown(void);
  */
 #ifdef NK_SDL_RENDERER_IMPLEMENTATION
 
-#ifdef __linux__
+#if defined __linux__ || defined __APPLE__ || defined __unix__
     #include <strings.h>
-#else
+#elif defined WIN32
     #include <platform/windows/strings.h>
 #endif
 
@@ -59,7 +55,7 @@ struct nk_sdl_device {
 struct nk_sdl_vertex {
     float position[2];
     float uv[2];
-    nk_byte col[4];
+    float col[4];
 };
 
 static struct nk_sdl {
@@ -95,10 +91,7 @@ nk_sdl_render(enum nk_anti_aliasing AA)
 
     {
         SDL_Rect saved_clip;
-#ifdef NK_SDL_CLAMP_CLIP_RECT
-        SDL_Rect viewport;
-#endif
-        SDL_bool clipping_enabled;
+        bool clipping_enabled;
         int vs = sizeof(struct nk_sdl_vertex);
         size_t vp = offsetof(struct nk_sdl_vertex, position);
         size_t vt = offsetof(struct nk_sdl_vertex, uv);
@@ -112,9 +105,9 @@ nk_sdl_render(enum nk_anti_aliasing AA)
         /* fill converting configuration */
         struct nk_convert_config config;
         static const struct nk_draw_vertex_layout_element vertex_layout[] = {
-            {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(struct nk_sdl_vertex, position)},
-            {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(struct nk_sdl_vertex, uv)},
-            {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, NK_OFFSETOF(struct nk_sdl_vertex, col)},
+            {NK_VERTEX_POSITION,    NK_FORMAT_FLOAT,                NK_OFFSETOF(struct nk_sdl_vertex, position)},
+            {NK_VERTEX_TEXCOORD,    NK_FORMAT_FLOAT,                NK_OFFSETOF(struct nk_sdl_vertex, uv)},
+            {NK_VERTEX_COLOR,       NK_FORMAT_R32G32B32A32_FLOAT,   NK_OFFSETOF(struct nk_sdl_vertex, col)},
             {NK_VERTEX_LAYOUT_END}
         };
         NK_MEMSET(&config, 0, sizeof(config));
@@ -137,39 +130,20 @@ nk_sdl_render(enum nk_anti_aliasing AA)
         /* iterate over and execute each draw command */
         offset = (const nk_draw_index*)nk_buffer_memory_const(&ebuf);
 
-        clipping_enabled = SDL_RenderIsClipEnabled(sdl.renderer);
-        SDL_RenderGetClipRect(sdl.renderer, &saved_clip);
-#ifdef NK_SDL_CLAMP_CLIP_RECT
-        SDL_RenderGetViewport(sdl.renderer, &viewport);
-#endif
+        clipping_enabled = SDL_RenderClipEnabled(sdl.renderer);
+        SDL_GetRenderClipRect(sdl.renderer, &saved_clip);
 
         nk_draw_foreach(cmd, &sdl.ctx, &dev->cmds)
         {
             if (!cmd->elem_count) continue;
 
             {
-                SDL_Rect r;
-                r.x = cmd->clip_rect.x;
-                r.y = cmd->clip_rect.y;
-                r.w = cmd->clip_rect.w;
-                r.h = cmd->clip_rect.h;
-#ifdef NK_SDL_CLAMP_CLIP_RECT
-                if (r.x < 0) {
-                    r.w += r.x;
-                    r.x = 0;
-                }
-                if (r.y < 0) {
-                    r.h += r.y;
-                    r.y = 0;
-                }
-                if (r.h > viewport.h) {
-                    r.h = viewport.h;
-                }
-                if (r.w > viewport.w) {
-                    r.w = viewport.w;
-                }
-#endif
-                SDL_RenderSetClipRect(sdl.renderer, &r);
+                SDL_Rect r = {0, 0, 1920, 1080};
+                // r.x = cmd->clip_rect.x;
+                // r.y = cmd->clip_rect.y;
+                // r.w = cmd->clip_rect.w;
+                // r.h = cmd->clip_rect.h;
+                SDL_SetRenderClipRect(sdl.renderer, &r);
             }
 
             {
@@ -178,18 +152,20 @@ nk_sdl_render(enum nk_anti_aliasing AA)
                 SDL_RenderGeometryRaw(sdl.renderer,
                         (SDL_Texture *)cmd->texture.ptr,
                         (const float*)((const nk_byte*)vertices + vp), vs,
-                        (const SDL_Color*)((const nk_byte*)vertices + vc), vs,
+                        (const SDL_FColor*)((const nk_byte*)vertices + vc), vs,
                         (const float*)((const nk_byte*)vertices + vt), vs,
                         (vbuf.needed / vs),
                         (void *) offset, cmd->elem_count, 2);
+
+                printf("clip rect: %f %f %f %f\n", cmd->clip_rect.x, cmd->clip_rect.y, cmd->clip_rect.w, cmd->clip_rect.h);
 
                 offset += cmd->elem_count;
             }
         }
 
-        SDL_RenderSetClipRect(sdl.renderer, &saved_clip);
+        SDL_SetRenderClipRect(sdl.renderer, &saved_clip);
         if (!clipping_enabled) {
-            SDL_RenderSetClipRect(sdl.renderer, NULL);
+            SDL_SetRenderClipRect(sdl.renderer, NULL);
         }
 
         nk_clear(&sdl.ctx);
@@ -224,25 +200,6 @@ nk_sdl_clipboard_copy(nk_handle usr, const char *text, int len)
 NK_API struct nk_context*
 nk_sdl_init(SDL_Window *win, SDL_Renderer *renderer)
 {
-#ifndef NK_SDL_CLAMP_CLIP_RECT
-    SDL_RendererInfo info;
-    SDL_version runtimeVer;
-
-    /* warn for cases where NK_SDL_CLAMP_CLIP_RECT should have been set but isn't */
-    SDL_GetRendererInfo(renderer, &info);
-    SDL_GetVersion(&runtimeVer);
-    if (strncmp("metal", info.name, 5) == 0 &&
-        SDL_VERSIONNUM(runtimeVer.major, runtimeVer.minor, runtimeVer.patch) < SDL_VERSIONNUM(2, 0, 22))
-    {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_APPLICATION,
-            "renderer is using Metal API but runtime SDL version %d.%d.%d is older than compiled version %d.%d.%d, "
-            "which may cause issues with rendering",
-            runtimeVer.major, runtimeVer.minor, runtimeVer.patch,
-            SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
-        );
-    }
-#endif
     sdl.win = win;
     sdl.renderer = renderer;
     nk_init_default(&sdl.ctx, 0);
@@ -277,66 +234,89 @@ nk_sdl_handle_event(SDL_Event *evt)
 {
     struct nk_context *ctx = &sdl.ctx;
 
-    // Note: this shit caused so many issues! fuck you!
-    // /* optional grabbing behavior */
-    // if (ctx->input.mouse.grab) {
-    //     SDL_SetRelativeMouseMode(SDL_TRUE);
-    //     ctx->input.mouse.grab = 0;
-    // } else if (ctx->input.mouse.ungrab) {
-    //     int x = (int)ctx->input.mouse.prev.x, y = (int)ctx->input.mouse.prev.y;
-    //     SDL_SetRelativeMouseMode(SDL_FALSE);
-    //     SDL_WarpMouseInWindow(sdl.win, x, y);
-    //     ctx->input.mouse.ungrab = 0;
-    // }
-
     switch(evt->type)
     {
-        case SDL_KEYUP: /* KEYUP & KEYDOWN share same routine */
-        case SDL_KEYDOWN:
+        case SDL_EVENT_KEY_UP: /* KEYUP & KEYDOWN share same routine */
+        case SDL_EVENT_KEY_DOWN:
             {
-                int down = evt->type == SDL_KEYDOWN;
-                const Uint8* state = SDL_GetKeyboardState(0);
-                switch(evt->key.keysym.sym)
-                {
-                    case SDLK_RSHIFT: /* RSHIFT & LSHIFT share same routine */
-                    case SDLK_LSHIFT:    nk_input_key(ctx, NK_KEY_SHIFT, down); break;
-                    case SDLK_DELETE:    nk_input_key(ctx, NK_KEY_DEL, down); break;
-                    case SDLK_RETURN:    nk_input_key(ctx, NK_KEY_ENTER, down); break;
-                    case SDLK_TAB:       nk_input_key(ctx, NK_KEY_TAB, down); break;
-                    case SDLK_BACKSPACE: nk_input_key(ctx, NK_KEY_BACKSPACE, down); break;
-                    case SDLK_HOME:      nk_input_key(ctx, NK_KEY_TEXT_START, down);
-                                         nk_input_key(ctx, NK_KEY_SCROLL_START, down); break;
-                    case SDLK_END:       nk_input_key(ctx, NK_KEY_TEXT_END, down);
-                                         nk_input_key(ctx, NK_KEY_SCROLL_END, down); break;
-                    case SDLK_PAGEDOWN:  nk_input_key(ctx, NK_KEY_SCROLL_DOWN, down); break;
-                    case SDLK_PAGEUP:    nk_input_key(ctx, NK_KEY_SCROLL_UP, down); break;
-                    case SDLK_z:         nk_input_key(ctx, NK_KEY_TEXT_UNDO, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_r:         nk_input_key(ctx, NK_KEY_TEXT_REDO, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_c:         nk_input_key(ctx, NK_KEY_COPY, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_v:         nk_input_key(ctx, NK_KEY_PASTE, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_x:         nk_input_key(ctx, NK_KEY_CUT, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_b:         nk_input_key(ctx, NK_KEY_TEXT_LINE_START, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_e:         nk_input_key(ctx, NK_KEY_TEXT_LINE_END, down && state[SDL_SCANCODE_LCTRL]); break;
-                    case SDLK_UP:        nk_input_key(ctx, NK_KEY_UP, down); break;
-                    case SDLK_DOWN:      nk_input_key(ctx, NK_KEY_DOWN, down); break;
-                    case SDLK_LEFT:
-                        if (state[SDL_SCANCODE_LCTRL])
-                            nk_input_key(ctx, NK_KEY_TEXT_WORD_LEFT, down);
-                        else nk_input_key(ctx, NK_KEY_LEFT, down);
-                        break;
-                    case SDLK_RIGHT:
-                        if (state[SDL_SCANCODE_LCTRL])
-                            nk_input_key(ctx, NK_KEY_TEXT_WORD_RIGHT, down);
-                        else nk_input_key(ctx, NK_KEY_RIGHT, down);
-                        break;
+                int down = evt->type == SDL_EVENT_KEY_DOWN;
+                int num_keys;
+                const bool* state = SDL_GetKeyboardState(&num_keys);
+                
+                if(state[SDL_SCANCODE_RSHIFT] || state[SDL_SCANCODE_LSHIFT])
+                    nk_input_key(ctx, NK_KEY_SHIFT, down);
+
+                if(state[SDL_SCANCODE_DELETE]) 
+                    nk_input_key(ctx, NK_KEY_DEL, down);
+
+                if(state[SDL_SCANCODE_RETURN]) 
+                    nk_input_key(ctx, NK_KEY_ENTER, down);
+
+                if(state[SDL_SCANCODE_TAB]) 
+                    nk_input_key(ctx, NK_KEY_TAB, down);
+
+                if(state[SDL_SCANCODE_BACKSPACE])
+                    nk_input_key(ctx, NK_KEY_BACKSPACE, down);
+
+                if(state[SDL_SCANCODE_HOME]) {
+                    nk_input_key(ctx, NK_KEY_TEXT_START, down);
+                    nk_input_key(ctx, NK_KEY_SCROLL_START, down);
                 }
+
+                if(state[SDL_SCANCODE_END]) {
+                    nk_input_key(ctx, NK_KEY_TEXT_END, down);
+                    nk_input_key(ctx, NK_KEY_SCROLL_END, down);
+                }
+
+                if(state[SDL_SCANCODE_PAGEDOWN]) 
+                    nk_input_key(ctx, NK_KEY_SCROLL_DOWN, down);
+
+                if(state[SDL_SCANCODE_PAGEUP])
+                    nk_input_key(ctx, NK_KEY_SCROLL_UP, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_Z])
+                    nk_input_key(ctx, NK_KEY_TEXT_UNDO, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_R])
+                    nk_input_key(ctx, NK_KEY_TEXT_REDO, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_C])
+                    nk_input_key(ctx, NK_KEY_COPY, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_V])
+                    nk_input_key(ctx, NK_KEY_PASTE, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_X])
+                    nk_input_key(ctx, NK_KEY_CUT, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_B])
+                    nk_input_key(ctx, NK_KEY_TEXT_LINE_START, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_E])
+                    nk_input_key(ctx, NK_KEY_TEXT_LINE_END, down);
+
+                if(state[SDL_SCANCODE_UP])
+                    nk_input_key(ctx, NK_KEY_UP, down);
+
+                if(state[SDL_SCANCODE_DOWN])
+                    nk_input_key(ctx, NK_KEY_DOWN, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_LEFT])
+                    nk_input_key(ctx, NK_KEY_TEXT_WORD_LEFT, down);
+                else if(state[SDL_SCANCODE_LEFT])
+                    nk_input_key(ctx, NK_KEY_LEFT, down);
+
+                if(state[SDL_SCANCODE_LCTRL] && state[SDL_SCANCODE_RIGHT])
+                    nk_input_key(ctx, NK_KEY_TEXT_WORD_RIGHT, down);
+                else if(state[SDL_SCANCODE_RIGHT])
+                    nk_input_key(ctx, NK_KEY_RIGHT, down);
             }
             return 1;
 
-        case SDL_MOUSEBUTTONUP: /* MOUSEBUTTONUP & MOUSEBUTTONDOWN share same routine */
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP: /* MOUSEBUTTONUP & MOUSEBUTTONDOWN share same routine */
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
-                int down = evt->type == SDL_MOUSEBUTTONDOWN;
+                int down = evt->type == SDL_EVENT_MOUSE_BUTTON_DOWN;
                 const int x = evt->button.x, y = evt->button.y;
                 switch(evt->button.button)
                 {
@@ -350,7 +330,7 @@ nk_sdl_handle_event(SDL_Event *evt)
             }
             return 1;
 
-        case SDL_MOUSEMOTION:
+        case SDL_EVENT_MOUSE_MOTION:
             if (ctx->input.mouse.grabbed) {
                 int x = (int)ctx->input.mouse.prev.x, y = (int)ctx->input.mouse.prev.y;
                 nk_input_motion(ctx, x + evt->motion.xrel, y + evt->motion.yrel);
@@ -358,7 +338,7 @@ nk_sdl_handle_event(SDL_Event *evt)
             else nk_input_motion(ctx, evt->motion.x, evt->motion.y);
             return 1;
 
-        case SDL_TEXTINPUT:
+        case SDL_EVENT_TEXT_INPUT:
             {
                 nk_glyph glyph;
                 memcpy(glyph, evt->text.text, NK_UTF_SIZE);
@@ -366,7 +346,7 @@ nk_sdl_handle_event(SDL_Event *evt)
             }
             return 1;
 
-        case SDL_MOUSEWHEEL:
+        case SDL_EVENT_MOUSE_WHEEL:
             nk_input_scroll(ctx,nk_vec2((float)evt->wheel.x,(float)evt->wheel.y));
             return 1;
     }

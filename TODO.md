@@ -273,3 +273,9 @@ remove stretch viewport?
 - refactor welcome panel networking hit to be in background (panel loading symbol)
 - refactor in general to not be gross
 - curl wrapper instead of hard coding
+
+## cmake improvements
+
+- sdl3 seems to build zlib itself- try to make it so this only happens once
+- nuke all of the vendored deps which you dont use that the satellite libs are pulling in for file types
+- Lilith might be duplicating in P2D, maybe you can just do something like the satellites where you can specify it already exists to propogate

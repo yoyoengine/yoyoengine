@@ -1,0 +1,15 @@
+# SDL3 MIGRATION
+
+## New Possibilities (ideas from during porting process)
+
+- SDL_gpu new renderer with shaders and lighting
+- drag and drop events to enable unity style references
+    - or also opening scene files
+- SDL_SetRenderLogicalPresentation might do the letterboxing auto
+- SDL_ttf LCD, solid, etc WHAT IS THIS?
+
+## TODO
+
+- honestly, you should take the chance to deprecate old logging and error enums, etc
+- you probably have to update the lua key bindings
+- double triple check the nuklear thing- I totally made that fix up and still cant test because it wont compile LOL

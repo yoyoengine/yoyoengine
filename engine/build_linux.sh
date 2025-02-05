@@ -7,15 +7,19 @@ mkdir "./build/linux"
 # Navigate into the build directory
 cd "./build/linux"
 
-# Run cmake to configure the project
-echo "Running cmake..."
-cmake -DCMAKE_BUILD_TYPE=Debug ../..
-if [ $? -eq 0 ]
-then
-    echo "cmake configuration succeeded."
+# Run cmake only if CMakeCache.txt is not present
+if [ ! -f CMakeCache.txt ]; then
+    echo "Running cmake..."
+    cmake -DCMAKE_BUILD_TYPE=Debug ../..
+    if [ $? -eq 0 ]
+    then
+        echo "cmake configuration succeeded."
+    else
+        echo "cmake configuration failed."
+        exit 1
+    fi
 else
-    echo "cmake configuration failed."
-    exit 1
+    echo "CMakeCache.txt found. Skipping cmake configuration."
 fi
 
 # Run make to build the project

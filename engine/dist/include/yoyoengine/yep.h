@@ -18,11 +18,14 @@
 
 #include <sys/stat.h>       // - stat
 
-#ifdef __linux__
+#if defined __linux__
     #include <linux/limits.h>   // - PATH_MAX
     #include <dirent.h>         // directory functions
-#else
+#elif defined WIN32
     #include <platform/windows/dirent.h>
+#elif defined __APPLE__
+    #include <limits.h>         // - PATH_MAX
+    #include <dirent.h>         // directory functions
 #endif
 
 #include <jansson.h> // jansson
@@ -44,6 +47,11 @@
     // 1 byte - data type
     // repeat for entry count
     // data begins
+*/
+
+/*
+    TODO: add a byte or two for name length, which saves space and allows for longer paths,
+    BUT you wont be able to calculate offsets anymore without pre-parsing
 */
 
 #define YEP_CURRENT_FORMAT_VERSION 1

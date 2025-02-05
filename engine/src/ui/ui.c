@@ -295,17 +295,17 @@ void ui_render(){
 }
 
 void init_ui(SDL_Window *win, SDL_Renderer *renderer){
-    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
+    // SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0"); TODO: MIGRATION: SDL3 DEPRECATES THIS
     /* scale the renderer output for High-DPI displays */
     {
         int render_w, render_h;
         int window_w, window_h;
         float scale_x, scale_y;
-        SDL_GetRendererOutputSize(renderer, &render_w, &render_h);
+        SDL_GetCurrentRenderOutputSize(renderer, &render_w, &render_h);
         SDL_GetWindowSize(win, &window_w, &window_h);
         scale_x = (float)(render_w) / (float)(window_w);
         scale_y = (float)(render_h) / (float)(window_h);
-        SDL_RenderSetScale(renderer, scale_x, scale_y);
+        SDL_SetRenderScale(renderer, scale_x, scale_y);
         font_scale = scale_y;
     }
     ctx = nk_sdl_init(win, renderer);

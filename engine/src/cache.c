@@ -339,7 +339,7 @@ SDL_Texture * ye_cache_texture(const char *path){
     }
     else{
         texture = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, sur);
-        SDL_FreeSurface(sur);
+        SDL_DestroySurface(sur);
     }
 
     // cache the texture

@@ -40,11 +40,11 @@ void ye_remove_button_component(struct ye_entity *entity){
 
 void ye_system_button(SDL_Event event){
     // filter non relevant events
-    if(event.type != SDL_MOUSEMOTION && event.type != SDL_MOUSEBUTTONDOWN && event.type != SDL_MOUSEBUTTONUP)
+    if(event.type != SDL_EVENT_MOUSE_MOTION && event.type != SDL_EVENT_MOUSE_BUTTON_DOWN && event.type != SDL_EVENT_MOUSE_BUTTON_UP)
         return;
 
     // get the world space position 
-    int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY);
+    float mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY);
     ye_get_mouse_world_position(&mouseX, &mouseY);
 
     // iterate over button list
@@ -68,12 +68,12 @@ void ye_system_button(SDL_Event event){
             button->is_hovered = true;
 
             // if the mouse is down, we are pressing
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
                 button->is_pressed = true;
             }
 
             // if the mouse is up after a press we are clicking
-            if (button->_was_pressed && event.type == SDL_MOUSEBUTTONUP) {
+            if (button->_was_pressed && event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                 button->is_clicked = true;
             }
 

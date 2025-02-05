@@ -181,10 +181,10 @@ void ye_init_audio(){
     audio_mix_allocated_channels = 0;
     audio_mix_busy_channels = 0;
 
-    // opens mixer to stereo with default frequency and format and 2048 chunk size
-    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048) < 0) 
+    if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK) )
     {
-        ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
+        exit(1);
     }
 
     // allocate our desired max channels to the mixer
@@ -226,7 +226,7 @@ void ye_shutdown_audio(){
     audio_mix_busy_channels = 0;
 
     // Close the audio mixer
-    Mix_CloseAudio();
+    Mix_Quit();
     ye_logf(info, "Shut down audio.\n");
 
     mid_audio_shutdown = false;
