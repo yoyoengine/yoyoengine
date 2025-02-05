@@ -150,6 +150,7 @@ FetchContent_Declare(
 )
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 FetchContent_MakeAvailable(SDL3)
+target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/) # this one is for editor
 target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/SDL3)
 if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${SDL3_BINARY_DIR}/SDL3-staticd.lib)
@@ -257,6 +258,13 @@ FetchContent_Declare(
     GIT_SHALLOW     TRUE
 )
 FetchContent_MakeAvailable(SDL3_ttf)
+
+# force TTF to not build the hash table! - causes issues when linking
+get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
+message("Sources: ${SOURCES_LIST}")
+list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
+set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
+
 target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
 if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${SDL3_ttf_BINARY_DIR}/SDL3_ttfd.lib)
