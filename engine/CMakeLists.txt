@@ -212,6 +212,7 @@ set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(simple_parse PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(SDL3_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
 if(WINDOWS) # these targets dont exist on windows or something
     set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
     set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)

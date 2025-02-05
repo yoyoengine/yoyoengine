@@ -7,9 +7,9 @@
 
 #include <stdio.h>
 
-#ifdef __linux__
+#if defined __linux__ || defined __APPLE__ || defined __unix__
     #include <unistd.h>
-#else
+#elif WIN32
     #include <platform/windows/unistd.h>
 #endif
 
@@ -382,7 +382,7 @@ void ye_recompute_boxing(){
 
 void ye_init_graphics(){
     // test for video init, alarm if failed
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
         exit(1);
     }

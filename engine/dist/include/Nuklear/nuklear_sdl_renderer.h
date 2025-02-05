@@ -46,9 +46,9 @@ NK_API void                 nk_sdl_shutdown(void);
  */
 #ifdef NK_SDL_RENDERER_IMPLEMENTATION
 
-#ifdef __linux__
+#if defined __linux__ || defined __APPLE__ || defined __unix__
     #include <strings.h>
-#else
+#elif defined WIN32
     #include <platform/windows/strings.h>
 #endif
 

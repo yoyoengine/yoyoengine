@@ -12,7 +12,7 @@
 #include <yoyoengine/logging.h>
 
 void ye_init_networking() {
-    if (SDLNet_Init() < 0) {
+    if (!SDLNet_Init()) {
         ye_logf(error,"Failed to initialize networking: %s\n", SDL_GetError());
         exit(1);
     }
