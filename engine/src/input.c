@@ -42,6 +42,8 @@ void ye_init_input(){
 
     // ^ now that we observe disconnects and connects, we dont need this initialization... leaving for posterity
 
+    SDL_StartTextInput(YE_STATE.runtime.window);
+
     ye_logf(info, "Initialized Input Subsystem.\n");
 }
 

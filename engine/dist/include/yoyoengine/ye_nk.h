@@ -22,8 +22,10 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_INCLUDE_STANDARD_BOOL
 
-#include <Nuklear/nuklear.h>
-#include <Nuklear/nuklear_sdl_renderer.h>
+#include <SDL.h>
+
+#include <nuklear.h>
+#include <nuklear_sdl3_renderer.h>
 #include <Nuklear/style.h>
 
 #endif // __cplusplus

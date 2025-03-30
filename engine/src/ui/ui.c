@@ -33,8 +33,6 @@
 #define MAX_UI_COMPONENTS 30
 #define MAX_KEY_LENGTH 100
 
-float font_scale = 1;
-
 struct nk_context *ctx;
 
 struct nk_font *_ye_font_p;
@@ -119,7 +117,7 @@ bool ui_component_exists(char *key) {
 // }
 
 void ui_handle_input(SDL_Event *evt){
-    nk_sdl_handle_event(evt);
+    nk_sdl_handle_event(YE_STATE.engine.ctx, evt);
 }
 
 void ui_begin_input_checks(){
@@ -291,12 +289,12 @@ void ui_render(){
     ye_fire_overlay_event(YE_OVERLAY_EVENT_RENDER_UI);
 
     // paint everything
-    nk_sdl_render(NK_ANTI_ALIASING_ON);
+    nk_sdl_render(YE_STATE.engine.ctx, NK_ANTI_ALIASING_ON);
 }
 
 void init_ui(SDL_Window *win, SDL_Renderer *renderer){
-    // SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0"); TODO: MIGRATION: SDL3 DEPRECATES THIS
-    /* scale the renderer output for High-DPI displays */
+    
+    float font_scale = 1;
     {
         int render_w, render_h;
         int window_w, window_h;
@@ -308,16 +306,18 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         SDL_SetRenderScale(renderer, scale_x, scale_y);
         font_scale = scale_y;
     }
+
     ctx = nk_sdl_init(win, renderer);
+    YE_STATE.engine.ctx = ctx;
+
     /* GUI */
     /* Load Fonts: if none of these are loaded a default font will be used  */
     /* Load Cursor: if you uncomment cursor loading please hide the cursor */
-    struct nk_font_atlas *atlas;
     struct nk_font_config config = nk_font_config(0);
 
     /* set up the font atlas and add desired font; note that font sizes are
         * multiplied by font_scale to produce better results at higher DPIs */
-    nk_sdl_font_stash_begin(&atlas);
+    struct nk_font_atlas *atlas = nk_sdl_font_stash_begin(YE_STATE.engine.ctx);
     
     /*
         If in editor mode, we load from engine resource file. If at runtime load from the packed engine resource yep
@@ -340,7 +340,7 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         free(font_data.data); // GUESSING: nuklear seems to make its own copy of atlas when supplied this buffer so we are ok to free it
     }
     
-    nk_sdl_font_stash_end();
+    nk_sdl_font_stash_end(YE_STATE.engine.ctx);
 
     /* this hack makes the font appear to be scaled down to the desired
         * size and is only necessary when font_scale > 1 */
@@ -357,12 +357,10 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
         ui_register_component("cam_info",ui_paint_cam_info);
     }
 
-    YE_STATE.engine.ctx = ctx;
-
     ye_logf(info, "ui initialized\n");
 }
 
 void shutdown_ui(){
-    nk_sdl_shutdown();
+    nk_sdl_shutdown(YE_STATE.engine.ctx);
     ye_logf(info, "Shut down UI\n");
 }

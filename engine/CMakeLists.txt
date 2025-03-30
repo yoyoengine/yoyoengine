@@ -113,6 +113,22 @@ FetchContent_MakeAvailable(p2d)
 target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
 
 ###############
+#   Nuklear   #
+###############
+
+# going to use custom branch ref so we dont have to add a populate command to `make nuke`
+FetchContent_Declare(
+    nuklear
+    GIT_REPOSITORY https://github.com/yoyoengine/Nuklear.git
+    GIT_TAG yoyoengine # WIP SDL3 Nuklear port
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(nuklear)
+target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR})
+target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR}/demo/sdl3)
+
+###############
 #   jansson   #
 ###############
 
@@ -144,7 +160,7 @@ set(SDL_STATIC_PIC ON CACHE BOOL "Build static libraries with PIC (Position Inde
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
-    GIT_TAG         release-3.2.2
+    GIT_TAG         release-3.2.8
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
@@ -253,16 +269,17 @@ set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
 FetchContent_Declare(
     SDL3_ttf
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_ttf
-    GIT_TAG         main # TODO: pin when ready
+    GIT_TAG         release-3.2.0
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
 FetchContent_MakeAvailable(SDL3_ttf)
 
-# force TTF to not build the hash table! - causes issues when linking
-get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
-list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
-set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
+# PATCHED NOW :)
+# # force TTF to not build the hash table! - causes issues when linking
+# get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
+# list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
+# set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
 
 target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
 if(MSVC)
@@ -292,7 +309,7 @@ set(SDL3IMAGE_LBM OFF CACHE BOOL "Enable LBM support")
 FetchContent_Declare(
     SDL3_image
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG         release-3.2.0
+    GIT_TAG         release-3.2.4
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
