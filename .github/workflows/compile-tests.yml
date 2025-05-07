@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/engine/build
           cd ${{ github.workspace }}/engine/build
-          CC=gcc cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
+          CC=gcc cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
 
       - name: Build with GCC
         run: |
@@ -60,7 +60,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/engine/build
           cd ${{ github.workspace }}/engine/build
-          CC=clang cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
+          CC=clang cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
       
       - name: Build with Clang
         run: |
@@ -86,7 +86,7 @@ jobs:
           run: |
             New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\engine\\build"
             cd ${{ github.workspace }}\\engine\\build
-            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE ..
+            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
         
         - name: Build with MSVC
           run: |
