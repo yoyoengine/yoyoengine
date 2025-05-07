@@ -8,64 +8,51 @@ on:
     branches:
       - main
 
+env:
+  CMAKE_FLAGS: -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON
+
 jobs:
-  build-gcc:
-    name: Build with GCC
+  build-linux:
+    name: Build with ${{ matrix.compiler }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        include:
+          - compiler: gcc
+            cc: gcc
+          - compiler: clang
+            cc: clang
 
     steps:
       - name: Install dependencies
-        run: sudo apt update && sudo apt-get install -y gcc cmake make
+        run: sudo apt update && sudo apt-get install -y ${{ matrix.compiler }} cmake make
 
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Set up dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdrm-dev libgbm-dev libfreetype6-dev libharfbuzz-dev nasm
 
       - name: Cache Fetchcontent
         id: cache-fetchcontent
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/engine/build/_deps/*-src
-          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
 
       - name: Configure with CMake
         run: |
           mkdir -p ${{ github.workspace }}/engine/build
           cd ${{ github.workspace }}/engine/build
-          CC=gcc cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
+          CC=${{ matrix.cc }} cmake ${{ env.CMAKE_FLAGS }} ..
 
-      - name: Build with GCC
+      - name: Build
         run: |
           cd ${{ github.workspace }}/engine/build
-          make -j${nproc}
-
-  build-clang:
-    name: Build with Clang
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Install dependencies
-        run: sudo apt update && sudo apt-get install -y clang cmake make
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Cache Fetchcontent
-        id: cache-fetchcontent
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/engine/build/_deps/*-src
-          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
-      
-      - name: Configure with CMake
-        run: |
-          mkdir -p ${{ github.workspace }}/engine/build
-          cd ${{ github.workspace }}/engine/build
-          CC=clang cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
-      
-      - name: Build with Clang
-        run: |
-          cd ${{ github.workspace }}/engine/build
-          make -j${nproc}
+          make -j$(nproc)
 
   build-msvc:
       name: Build with MSVC
@@ -79,16 +66,21 @@ jobs:
           id: cache-fetchcontent
           uses: actions/cache@v4
           with:
-            path: ${{ github.workspace }}\\engine\\build\\_deps\\*-src
-            key: windows-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+            path: ${{ github.workspace }}\engine\build\_deps\*-src
+            key: windows-msvc-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+            
         - uses: ilammy/msvc-dev-cmd@v1.13.0
+
+        - name: Install NASM with Chocolatey
+          run: choco install nasm -y
+
         - name: Configure with CMake
           run: |
-            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\\engine\\build"
-            cd ${{ github.workspace }}\\engine\\build
-            cmake -DBUILD_LUA_RUNTIME=OFF -DZOOGIES_DEVELOPMENT_BUILD=TRUE -DSDL_UNIX_CONSOLE_BUILD=ON ..
+            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\engine\build"
+            cd ${{ github.workspace }}\engine\build
+            cmake ${{ env.CMAKE_FLAGS }} ..
         
         - name: Build with MSVC
           run: |
-            cd ${{ github.workspace }}\\engine\\build
+            cd ${{ github.workspace }}\engine\build
             cmake --build . --config Release
