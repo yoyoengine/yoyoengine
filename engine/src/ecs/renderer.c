@@ -470,16 +470,16 @@ void _paint_viewport_lines(SDL_Renderer *renderer) {
         ye_draw_subsecting_lines(renderer, cam, 50, 1, (SDL_Color){25, 25, 25, 255});
     // if(cam.w < 3840)
     if(cam.w < 5000)
-        ye_draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 255});
+        ye_draw_subsecting_lines(renderer, cam, 250, 3, (SDL_Color){50, 50, 50, 225});
     if(cam.w < 9500)
-        ye_draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 255});
+        ye_draw_subsecting_lines(renderer, cam, 500, 5, (SDL_Color){75, 75, 75, 200});
     if(cam.w > 10000){
         int thickness = ((cam.w - 9500) / 2000) + 7;
         // printf("thickness: %d\n", thickness);
-        ye_draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 255});
+        ye_draw_subsecting_lines(renderer, cam, 1500, thickness, (SDL_Color){100, 100, 100, 175});
     }
     else{
-        ye_draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 255});
+        ye_draw_subsecting_lines(renderer, cam, 1500, 5, (SDL_Color){100, 100, 100, 150});
     }
 
     /*
@@ -967,9 +967,9 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             cam_verts[i].position.y = point.data[1];
 
             // set color
-            cam_verts[i].color.r = 255;
-            cam_verts[i].color.g = 255;
-            cam_verts[i].color.b = 255;
+            cam_verts[i].color.r = 1.0f;
+            cam_verts[i].color.g = 1.0f;
+            cam_verts[i].color.b = 1.0f;
             cam_verts[i].color.a = current->entity->renderer->alpha;
 
             // cache

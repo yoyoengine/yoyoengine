@@ -660,11 +660,11 @@ struct p2d_obb_verts ye_prect2obbverts(struct ye_point_rectf rect) {
 }
 
 SDL_FColor ye_sdl_color_to_fcolor(SDL_Color color) {
-    return (SDL_FColor){color.r, color.g, color.b, color.a};
+    return (SDL_FColor){color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a/255.0f};
 }
 
 SDL_Color ye_sdl_fcolor_to_color(SDL_FColor color) {
-    return (SDL_Color){color.r, color.g, color.b, color.a};
+    return (SDL_Color){color.r*255, color.g*255, color.b*255, color.a*255};
 }
 
 SDL_FRect ye_sdl_rect_to_frect(SDL_Rect rect) {
