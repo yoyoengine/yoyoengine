@@ -128,6 +128,11 @@ Nothing!!!
 - Pipe between running game and editor to live debug and monitor
 - launcher: there should be local update option rather than installer from github so you can dist prereleases
 
+### wishlist
+
+- hot reload
+- crash reporter
+
 ## Nuklear fixes / enhancements (give back)
 
 - label icon buttons which have flag to collapse back into just icons depending on resizing

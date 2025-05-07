@@ -76,7 +76,7 @@ jobs:
         - uses: ilammy/msvc-dev-cmd@v1.13.0
 
         - name: Install NASM with Chocolatey
-          run: choco install nasm -y
+          run: choco install yasm pkgconfiglite -y
 
         - name: Configure with CMake
           run: |
