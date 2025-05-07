@@ -42,7 +42,7 @@ void ye_init_input(){
 
     // ^ now that we observe disconnects and connects, we dont need this initialization... leaving for posterity
 
-    SDL_StartTextInput(YE_STATE.runtime.window);
+    SDL_StartTextInput(YE_STATE.runtime.window); // TODO: might cause big problem when used with Nuklear after update
 
     ye_logf(info, "Initialized Input Subsystem.\n");
 }
@@ -59,6 +59,7 @@ bool resized = false;
 void ye_system_input() {
     // allow nuklear to intercept events to track ui changes
     ui_begin_input_checks();
+    // ui_end_input_checks();
 
     // main event handler
     while (SDL_PollEvent(&e)) {
@@ -173,6 +174,7 @@ void ye_system_input() {
 
     // end nuklear input feeding
     ui_end_input_checks();
+    // ui_begin_input_checks();
 
     // if we resized, update all the meta that we need so we can render a new clean frame
     if(resized){

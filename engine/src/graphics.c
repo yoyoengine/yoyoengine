@@ -280,9 +280,9 @@ void ye_render_all() {
     if(!YE_STATE.engine.stretch_viewport){
         // credit to my goat: github copilot for this one
         SDL_SetRenderLogicalPresentation(pRenderer,
-                                         (int)YE_STATE.engine.target_camera->camera->view_field.w,
-                                         (int)YE_STATE.engine.target_camera->camera->view_field.h,
-                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
+                                        (int)YE_STATE.engine.target_camera->camera->view_field.w,
+                                        (int)YE_STATE.engine.target_camera->camera->view_field.h,
+                                        SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
 
     ye_renderer_v2(pRenderer);
@@ -294,6 +294,12 @@ void ye_render_all() {
     */
     SDL_SetRenderViewport(pRenderer, NULL);
     SDL_SetRenderScale(pRenderer, (float)1, (float)1);
+
+    // undo the logical presentation
+    SDL_SetRenderLogicalPresentation(pRenderer,
+                                    (int)YE_STATE.engine.screen_width,
+                                    (int)YE_STATE.engine.screen_height,
+                                    SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     ui_render();
 
