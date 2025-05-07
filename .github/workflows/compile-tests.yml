@@ -41,7 +41,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/engine/build/_deps/*-src
-          key: ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-${{ hashFiles('**/engine/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-
 
       - name: Configure with CMake
         run: |
@@ -67,12 +69,14 @@ jobs:
           uses: actions/cache@v4
           with:
             path: ${{ github.workspace }}\engine\build\_deps\*-src
-            key: windows-msvc-fetchcontent-${{ hashFiles('**/yoyoengine/engine/CMakeLists.txt') }}
+            key: windows-msvc-fetchcontent-${{ hashFiles('**/engine/CMakeLists.txt') }}
+            restore-keys: |
+              windows-msvc-fetchcontent-
             
         - uses: ilammy/msvc-dev-cmd@v1.13.0
 
-        # - name: Install NASM with Chocolatey
-        #   run: choco install nasm -y
+        - name: Install NASM with Chocolatey
+          run: choco install nasm -y
 
         - name: Configure with CMake
           run: |
