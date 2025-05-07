@@ -221,9 +221,9 @@ set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
 set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
-# set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
-# set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
+set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
+set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
+set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
 
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
