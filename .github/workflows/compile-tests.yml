@@ -90,4 +90,4 @@ jobs:
         - name: Build with MSVC
           run: |
             cd ${{ github.workspace }}\engine\build
-            cmake --build . --config Release
+            cmake --build . --config Release --parallel
