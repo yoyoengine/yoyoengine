@@ -284,3 +284,14 @@ remove stretch viewport?
 - sdl3 seems to build zlib itself- try to make it so this only happens once
 - nuke all of the vendored deps which you dont use that the satellite libs are pulling in for file types
 - Lilith might be duplicating in P2D, maybe you can just do something like the satellites where you can specify it already exists to propogate
+
+## TTODO
+
+- Go add file picker to all the places its needed (scene open)
+- Use SDL3 for all the file access thats not cross platform
+- TODO NOTCROSSPLATFORM
+
+## maybe
+
+- could rewrite some of the editor picker callbacks to just be normal ptr writes, they already have validation in the main func
+- move file picker capabilities into the engine, so it can be extended whenever

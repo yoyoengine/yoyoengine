@@ -201,7 +201,7 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
             chart_color = nk_rgb(0, 255, 0);
         }
 
-        if(nk_chart_begin_colored(ctx, NK_CHART_LINES, chart_color, nk_rgb(255,255,255), 60, 0, 144)){
+        if(nk_chart_begin_colored(ctx, NK_CHART_LINES, chart_color, nk_rgb(255,255,255), 60, 0, 244)){ // TODO: don't hard code refresh rate
             for(int i = framerate_log_index; i < framerate_log_index + 60; i++){
                 int current_index = i % 60;
                 nk_flags res = nk_chart_push(ctx, framerate_log[current_index].value);
