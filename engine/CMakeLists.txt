@@ -221,8 +221,8 @@ set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
 set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
-set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
+# set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
+# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
 set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
 
 # Remove the example targets
@@ -379,7 +379,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 FetchContent_Declare(
     SDL3_net
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_net.git
-    GIT_TAG         main # TODO: pin when ready
+    GIT_TAG         7de8a14 # TODO: SDL3 pin when ready
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
