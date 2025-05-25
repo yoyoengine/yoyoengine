@@ -304,7 +304,7 @@ void ye_render_all() {
     ui_render();
 
     SDL_RenderPresent(pRenderer);
-    SDL_UpdateWindowSurface(pWindow);
+    // SDL_UpdateWindowSurface(pWindow);
 
     // set the end of the render frame
     int frameEnd = SDL_GetTicks();

@@ -295,3 +295,7 @@ remove stretch viewport?
 
 - could rewrite some of the editor picker callbacks to just be normal ptr writes, they already have validation in the main func
 - move file picker capabilities into the engine, so it can be extended whenever
+
+## brain
+
+- color and font just be drop down
