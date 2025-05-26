@@ -39,6 +39,8 @@
 #include "uthash/uthash.h"
 #include "cache.h"
 #include "physics.h"
+#include "filesystem.h"     // filesystem operations
+#include "file_picker.h"    // file picker
 
 // ui //
 #include "ui/ui.h"

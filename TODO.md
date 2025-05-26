@@ -299,3 +299,21 @@ remove stretch viewport?
 ## brain
 
 - color and font just be drop down
+
+## Roadmap
+
+- Replace NOTCROSSPLATFORM
+  - Threading builds
+  - Yep
+
+## skldjgskfdjhkdfjghkdfjhg
+
+- Decide on pattern for threading/pipeing from running games in editor
+- yep platform stuff (replace iteration)
+
+
+## long future
+
+- rework plugin system
+- rework scripting
+  - add references in scripts
