@@ -370,24 +370,24 @@ if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${lua_BINARY_DIR}/lua-5.4.5/lua_static.lib)
 endif()
 
-###############
-#   SDL3_net  #
-###############
+# ###############
+# #   SDL3_net  #
+# ###############
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
+# set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 
-FetchContent_Declare(
-    SDL3_net
-    GIT_REPOSITORY  https://github.com/libsdl-org/SDL_net.git
-    GIT_TAG         7de8a144c3d2322a755ec881976bcdc7e882e03c # TODO: SDL3 pin when ready
-    GIT_PROGRESS    TRUE
-    GIT_SHALLOW     TRUE
-)
-FetchContent_MakeAvailable(SDL3_net)
-target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/include/SDL3_net)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_net_BINARY_DIR}/SDL3_net-staticd.lib)
-endif()
+# FetchContent_Declare(
+#     SDL3_net
+#     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_net.git
+#     GIT_TAG         7de8a144c3d2322a755ec881976bcdc7e882e03c # TODO: SDL3 pin when ready
+#     GIT_PROGRESS    TRUE
+#     GIT_SHALLOW     TRUE
+# )
+# FetchContent_MakeAvailable(SDL3_net)
+# target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/include/SDL3_net)
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC ${SDL3_net_BINARY_DIR}/SDL3_net-staticd.lib)
+# endif()
 
 ###############
 #   linking   #
@@ -404,7 +404,7 @@ if(YOYO_ENGINE_STATIC)
 		SDL3_ttf-static
 		SDL3_image-static
 		SDL3_mixer-static
-		SDL3_net-static
+		# SDL3_net-static
 		lua_static
 	)
 else()
@@ -419,7 +419,7 @@ else()
         SDL3_ttf-static
         SDL3_image-static
         SDL3_mixer-static
-        SDL3_net-static
+        # SDL3_net-static
         lua_static
         -Wl,--no-whole-archive
     )

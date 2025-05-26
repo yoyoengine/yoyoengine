@@ -29,7 +29,7 @@
 #include "version.h"        // version info
 #include "engine.h"         // init and core
 #include "config.h"         // jansson wrapper for config files
-#include "networking.h"
+// #include "networking.h"  // UNUSED
 #include "event.h"          // event handling
 #include "input.h"
 #include "yep.h"            // custom binary format parser/packer
