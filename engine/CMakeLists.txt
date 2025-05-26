@@ -379,7 +379,7 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 FetchContent_Declare(
     SDL3_net
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_net.git
-    GIT_TAG         7de8a14 # TODO: SDL3 pin when ready
+    GIT_TAG         7de8a144c3d2322a755ec881976bcdc7e882e03c # TODO: SDL3 pin when ready
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
