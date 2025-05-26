@@ -187,21 +187,8 @@ bool ye_chdir(const char *path) {
     #endif
 }
 
-static SDL_EnumerationResult SDLCALL _recurse_delete_callback(void *userdata, const char *dirname, const char *fname) {
-    (void)userdata; // unused
-    
-    char path[512];
-    snprintf(path, sizeof(path), "%s/%s", dirname, fname);
-
-    if (SDL_RemovePath(path)) {
-        ye_logf(debug, "Deleted path: %s\n", path);
-    } else {
-        ye_logf(error, "Failed to delete path: %s. %s\n", path, SDL_GetError());
-        return SDL_ENUM_FAILURE;
-    }
-
-    return SDL_ENUM_CONTINUE;
-}
+// forward decl
+static SDL_EnumerationResult SDLCALL _recurse_delete_callback(void *userdata, const char *dirname, const char *fname);
 
 bool ye_recurse_delete_dir(const char *path) {
     bool res = SDL_EnumerateDirectory(path, _recurse_delete_callback, NULL);
@@ -219,4 +206,46 @@ bool ye_recurse_delete_dir(const char *path) {
     }
 
     return true;
+}
+
+static SDL_EnumerationResult SDLCALL _recurse_delete_callback(void *userdata, const char *dirname, const char *fname) {
+    (void)userdata; // unused
+    
+    char path[2038];
+    snprintf(path, sizeof(path), "%s/%s", dirname, fname);
+
+    SDL_PathInfo path_info;
+    if (!ye_get_path_info(path, &path_info)) {
+        ye_logf(error, "Failed to get path info for: %s. %s\n", path, SDL_GetError());
+        return SDL_ENUM_FAILURE;
+    }
+
+    if(path_info.type == SDL_PATHTYPE_DIRECTORY) {
+        // if its a directory: recurse into it
+        if (!ye_recurse_delete_dir(path)) {
+            ye_logf(error, "Failed to delete directory: %s. %s\n", path, SDL_GetError());
+            return SDL_ENUM_FAILURE;
+        }
+    }
+    else if (path_info.type != SDL_PATHTYPE_FILE) {
+        ye_logf(debug, "Skipping non-file path: %s\n", path);
+        return SDL_ENUM_CONTINUE;
+    }
+
+    if (!ye_file_exists(path)) {
+        ye_logf(debug, "File does not exist, skipping deletion: %s\n", path);
+        return SDL_ENUM_CONTINUE;
+    }
+    if (path_info.type == SDL_PATHTYPE_FILE) {
+        if (SDL_RemovePath(path)) {
+            ye_logf(debug, "Deleted file: %s\n", path);
+        }
+        else {
+            ye_logf(error, "Failed to delete file: %s. %s\n", path, SDL_GetError());
+            return SDL_ENUM_FAILURE;
+        }
+        return SDL_ENUM_CONTINUE;
+    }
+
+    return SDL_ENUM_CONTINUE;
 }

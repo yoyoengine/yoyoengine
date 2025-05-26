@@ -317,3 +317,8 @@ remove stretch viewport?
 - rework plugin system
 - rework scripting
   - add references in scripts
+
+## lkdjfglkdfjg
+
+- probably need a is_resources_changed recursion that checks every file or something.
+  - current check doesnt care if we modify a existing file in resources for some reason (i think, you should check)

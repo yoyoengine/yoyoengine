@@ -16,18 +16,6 @@
 #include <string.h>     // string functions
 #include <stdlib.h>     // malloc
 
-#include <sys/stat.h>       // - stat
-
-#if defined __linux__
-    #include <linux/limits.h>   // - PATH_MAX
-    #include <dirent.h>         // directory functions
-#elif defined WIN32
-    #include <platform/windows/dirent.h>
-#elif defined __APPLE__
-    #include <limits.h>         // - PATH_MAX
-    #include <dirent.h>         // directory functions
-#endif
-
 #include <jansson.h> // jansson
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
