@@ -16,15 +16,6 @@
 #include <string.h>     // string functions
 #include <stdlib.h>     // malloc
 
-#include <sys/stat.h>       // - stat
-
-#ifdef __linux__
-    #include <linux/limits.h>   // - PATH_MAX
-    #include <dirent.h>         // directory functions
-#else
-    #include <platform/windows/dirent.h>
-#endif
-
 #include <jansson.h> // jansson
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
@@ -44,6 +35,11 @@
     // 1 byte - data type
     // repeat for entry count
     // data begins
+*/
+
+/*
+    TODO: add a byte or two for name length, which saves space and allows for longer paths,
+    BUT you wont be able to calculate offsets anymore without pre-parsing
 */
 
 #define YEP_CURRENT_FORMAT_VERSION 1

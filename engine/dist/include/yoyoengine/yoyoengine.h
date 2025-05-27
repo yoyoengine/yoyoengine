@@ -29,7 +29,7 @@
 #include "version.h"        // version info
 #include "engine.h"         // init and core
 #include "config.h"         // jansson wrapper for config files
-#include "networking.h"
+// #include "networking.h"  // UNUSED
 #include "event.h"          // event handling
 #include "input.h"
 #include "yep.h"            // custom binary format parser/packer
@@ -39,6 +39,8 @@
 #include "uthash/uthash.h"
 #include "cache.h"
 #include "physics.h"
+#include "filesystem.h"     // filesystem operations
+#include "file_picker.h"    // file picker
 
 // ui //
 #include "ui/ui.h"
@@ -64,6 +66,6 @@
 #include "logging.h"        // logging
 #include "lua_api.h"        // scripting api
 #include "scene.h"          // scene manager
-#include "tricks.h"         // plugin system
+// #include "tricks.h"         // plugin system
 
 #endif // YE_ENGINE_MAIN_H

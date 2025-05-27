@@ -128,6 +128,11 @@ Nothing!!!
 - Pipe between running game and editor to live debug and monitor
 - launcher: there should be local update option rather than installer from github so you can dist prereleases
 
+### wishlist
+
+- hot reload
+- crash reporter
+
 ## Nuklear fixes / enhancements (give back)
 
 - label icon buttons which have flag to collapse back into just icons depending on resizing
@@ -273,3 +278,47 @@ remove stretch viewport?
 - refactor welcome panel networking hit to be in background (panel loading symbol)
 - refactor in general to not be gross
 - curl wrapper instead of hard coding
+
+## cmake improvements
+
+- sdl3 seems to build zlib itself- try to make it so this only happens once
+- nuke all of the vendored deps which you dont use that the satellite libs are pulling in for file types
+- Lilith might be duplicating in P2D, maybe you can just do something like the satellites where you can specify it already exists to propogate
+
+## TTODO
+
+- Go add file picker to all the places its needed (scene open)
+- Use SDL3 for all the file access thats not cross platform
+- TODO NOTCROSSPLATFORM
+
+## maybe
+
+- could rewrite some of the editor picker callbacks to just be normal ptr writes, they already have validation in the main func
+- move file picker capabilities into the engine, so it can be extended whenever
+
+## brain
+
+- color and font just be drop down
+
+## Roadmap
+
+- Replace NOTCROSSPLATFORM
+  - Threading builds
+  - Yep
+
+## skldjgskfdjhkdfjghkdfjhg
+
+- Decide on pattern for threading/pipeing from running games in editor
+- yep platform stuff (replace iteration)
+
+
+## long future
+
+- rework plugin system
+- rework scripting
+  - add references in scripts
+
+## lkdjfglkdfjg
+
+- probably need a is_resources_changed recursion that checks every file or something.
+  - current check doesnt care if we modify a existing file in resources for some reason (i think, you should check)

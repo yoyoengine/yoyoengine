@@ -174,7 +174,7 @@ YE_API void ye_draw_circle(SDL_Renderer * renderer, int32_t center_x, int32_t ce
  * 
  * @note offsets based on letterboxing, target scaling, and camera positioning
  */
-YE_API void ye_get_mouse_world_position(int *x, int *y);
+YE_API void ye_get_mouse_world_position(float *x, float *y);
 
 /**
  * @brief Checks if a specified component exists on an entity
@@ -275,5 +275,37 @@ YE_API struct ye_point_rectf ye_world_prectf_to_screen(struct ye_point_rectf rec
 YE_API struct ye_pointf ye_point_rectf_center(struct ye_point_rectf rect);
 
 YE_API struct p2d_obb_verts ye_prect2obbverts(struct ye_point_rectf rect);
+
+/**
+ * @brief Converts an SDL_Color to an SDL_FColor.
+ * 
+ * @param color The color to convert.
+ * @return SDL_FColor The converted color.
+ */
+YE_API SDL_FColor ye_sdl_color_to_fcolor(SDL_Color color);
+
+/**
+ * @brief Converts an SDL_FColor to an SDL_Color.
+ * 
+ * @param color The color to convert.
+ * @return SDL_Color The converted color.
+ */
+YE_API SDL_Color ye_sdl_fcolor_to_color(SDL_FColor color);
+
+/**
+ * @brief Converts an SDL_Rect to an SDL_FRect.
+ * 
+ * @param rect The rectangle to convert.
+ * @return SDL_FRect The converted rectangle.
+ */
+YE_API SDL_FRect ye_sdl_rect_to_frect(SDL_Rect rect);
+
+/**
+ * @brief Converts an SDL_FRect to an SDL_Rect.
+ * 
+ * @param rect The rectangle to convert.
+ * @return SDL_Rect The converted rectangle.
+ */
+YE_API SDL_Rect ye_frect_to_sdl_rect(SDL_FRect rect);
 
 #endif

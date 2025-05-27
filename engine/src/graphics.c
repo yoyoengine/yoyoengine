@@ -7,9 +7,9 @@
 
 #include <stdio.h>
 
-#ifdef __linux__
+#if defined __linux__ || defined __APPLE__ || defined __unix__
     #include <unistd.h>
-#else
+#elif WIN32
     #include <platform/windows/unistd.h>
 #endif
 
@@ -22,7 +22,7 @@
 #include <yoyoengine/ui/ui.h>
 #include <yoyoengine/yep.h>
 #include <yoyoengine/cache.h>
-#include <yoyoengine/tricks.h>
+// #include <yoyoengine/tricks.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -55,7 +55,7 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
     }
     TTF_Font *pFont = TTF_OpenFont(fontpath, /*fontSize*/ 1); // lets just open this at size 1 since it will be reloaded later, this should take minimal time
     if (pFont == NULL) {
-        ye_logf(error, "Failed to load font: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to load font: %s\n", SDL_GetError());
         return YE_STATE.engine.pEngineFont;
     }
     ye_logf(debug, "Loaded font: %s\n", pFontPath);
@@ -73,20 +73,20 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
 SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor) {
     int temp = TTF_GetFontOutline(pFont);
 
-    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, *pColor); 
+    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, 9, *pColor); 
 
     TTF_SetFontOutline(pFont, width);
     
-    SDL_Surface *bg_surface = TTF_RenderText_Blended(pFont, pText, *pOutlineColor); 
+    SDL_Surface *bg_surface = TTF_RenderText_Blended(pFont, pText, 0, *pOutlineColor); 
     
     SDL_Rect rect = {width, width, fg_surface->w, fg_surface->h}; 
 
     /* blit text onto its outline */ 
     SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND); 
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
-    SDL_FreeSurface(fg_surface); 
+    SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
-    SDL_FreeSurface(bg_surface);
+    SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
     if (pTexture == NULL) {
@@ -102,20 +102,20 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
 SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor, int wrapLength) {
     int temp = TTF_GetFontOutline(pFont);
 
-    SDL_Surface *fg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength); 
+    SDL_Surface *fg_surface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength); 
 
     TTF_SetFontOutline(pFont, width);
     
-    SDL_Surface *bg_surface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pOutlineColor, wrapLength); 
+    SDL_Surface *bg_surface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pOutlineColor, wrapLength); 
     
     SDL_Rect rect = {width, width, fg_surface->w, fg_surface->h}; 
 
     /* blit text onto its outline */ 
     SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND); 
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
-    SDL_FreeSurface(fg_surface); 
+    SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
-    SDL_FreeSurface(bg_surface);
+    SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
     if (pTexture == NULL) {
@@ -130,11 +130,11 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
 
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
-    SDL_Surface *pSurface = TTF_RenderUTF8_Blended(pFont, pText, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
+    SDL_Surface *pSurface = TTF_RenderText_Blended(pFont, pText, 0, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
     
     // error out if surface creation failed
     if (pSurface == NULL) {
-        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -148,7 +148,7 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     }
 
     // free the surface memory
-    SDL_FreeSurface(pSurface);
+    SDL_DestroySurface(pSurface);
 
     // return the created texture
     return pTexture;
@@ -156,11 +156,11 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
 
 SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Color *pColor, int wrapLength) {
     // create surface from parameters
-    SDL_Surface *pSurface = TTF_RenderUTF8_Blended_Wrapped(pFont, pText, *pColor, wrapLength);
+    SDL_Surface *pSurface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength);
 
     // error out if surface creation failed
     if (pSurface == NULL) {
-        ye_logf(error, "Failed to render text: %s\n", TTF_GetError());
+        ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -174,7 +174,7 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
     }
 
     // free the surface memory
-    SDL_FreeSurface(pSurface);
+    SDL_DestroySurface(pSurface);
 
     // return the created texture
     return pTexture;
@@ -192,7 +192,7 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
     
     // error out if surface load failed
     if (!pImage_surface) {
-        ye_logf(error, "Error loading image: %s\n", IMG_GetError());
+        ye_logf(error, "Error loading image: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -206,7 +206,7 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
     }
 
     // release surface from memory
-    SDL_FreeSurface(pImage_surface);
+    SDL_DestroySurface(pImage_surface);
 
     // return the created texture
     return pTexture;
@@ -254,7 +254,7 @@ void ye_render_all() {
         viewport.y = 35;
         viewport.w = YE_STATE.engine.screen_width / 1.5;
         viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
-        SDL_RenderSetViewport(pRenderer, &viewport);
+        SDL_SetRenderViewport(pRenderer, &viewport);
         // note: this is in practice useless, because in editor set logical size is overwriting this and we are painting to full screen buffer
     }
     else{
@@ -264,10 +264,10 @@ void ye_render_all() {
             stretch res determines the value of need boxing on resize events and init
         */
         if(YE_STATE.engine.need_boxing){
-            SDL_RenderSetViewport(pRenderer, &YE_STATE.engine.letterbox);
+            SDL_SetRenderViewport(pRenderer, &YE_STATE.engine.letterbox);
         }
         else{
-            SDL_RenderSetViewport(pRenderer, NULL);
+            SDL_SetRenderViewport(pRenderer, NULL);
         }
     }
 
@@ -279,7 +279,10 @@ void ye_render_all() {
     */
     if(!YE_STATE.engine.stretch_viewport){
         // credit to my goat: github copilot for this one
-        SDL_RenderSetLogicalSize(pRenderer, (int)YE_STATE.engine.target_camera->camera->view_field.w, (int)YE_STATE.engine.target_camera->camera->view_field.h);
+        SDL_SetRenderLogicalPresentation(pRenderer,
+                                        (int)YE_STATE.engine.target_camera->camera->view_field.w,
+                                        (int)YE_STATE.engine.target_camera->camera->view_field.h,
+                                        SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
 
     ye_renderer_v2(pRenderer);
@@ -289,13 +292,19 @@ void ye_render_all() {
 
         TODO: profile the performance of doing this even if these havent changed
     */
-    SDL_RenderSetViewport(pRenderer, NULL);
-    SDL_RenderSetScale(pRenderer, (float)1, (float)1);
+    SDL_SetRenderViewport(pRenderer, NULL);
+    SDL_SetRenderScale(pRenderer, (float)1, (float)1);
+
+    // undo the logical presentation
+    SDL_SetRenderLogicalPresentation(pRenderer,
+                                    (int)YE_STATE.engine.screen_width,
+                                    (int)YE_STATE.engine.screen_height,
+                                    SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     ui_render();
 
     SDL_RenderPresent(pRenderer);
-    SDL_UpdateWindowSurface(pWindow);
+    // SDL_UpdateWindowSurface(pWindow);
 
     // set the end of the render frame
     int frameEnd = SDL_GetTicks();
@@ -379,31 +388,38 @@ void ye_recompute_boxing(){
 
 void ye_init_graphics(){
     // test for video init, alarm if failed
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         ye_logf(debug, "SDL initialization failed: %s\n", SDL_GetError());
         exit(1);
     }
 
     ye_logf(info, "SDL initialized.\n");
 
-    // Set the texture filtering hint
-    switch(YE_STATE.engine.sdl_quality_hint){
-        case 0:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-            break;
-        case 1:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-            break;
-        case 2:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-            break;
-        default:
-            SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-            break;
-    }
+    // OBSOLETE in SDL3: we need to pass this to CreateTexture
+    // // Set the texture filtering hint
+    // switch(YE_STATE.engine.sdl_quality_hint){
+    //     case 0:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+    //         break;
+    //     case 1:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //         break;
+    //     case 2:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+    //         break;
+    //     default:
+    //         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //         break;
+    // }
 
     // test for window init, alarm if failed
-    pWindow = SDL_CreateWindow(YE_STATE.engine.window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, YE_STATE.engine.screen_width, YE_STATE.engine.screen_height, SDL_WINDOW_SHOWN | YE_STATE.engine.window_mode | SDL_WINDOW_ALLOW_HIGHDPI);
+    pWindow = SDL_CreateWindow(
+        YE_STATE.engine.window_title, 
+        YE_STATE.engine.screen_width,
+        YE_STATE.engine.screen_height,
+        YE_STATE.engine.window_mode | SDL_WINDOW_HIGH_PIXEL_DENSITY
+    );
+
     if (pWindow == NULL) {
         ye_logf(debug, "Window creation failed: %s\n", SDL_GetError());
         exit(1);
@@ -415,20 +431,21 @@ void ye_init_graphics(){
     // (-1) for vsync
     desired_frame_time = (int)(1000 / YE_STATE.engine.framecap);  
 
-    // if vsync is on
-    if(YE_STATE.engine.framecap == -1) {
-        ye_logf(info, "Starting renderer with vsync... \n");
-        pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    }
-    else {
-        ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
-        pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED);
-    }
-
+    pRenderer = SDL_CreateRenderer(pWindow, NULL);
     if (pRenderer == NULL) {
         ye_logf(error, "Renderer could not be created! SDL Error: %s\n", SDL_GetError());
         exit(1);
     }
+    
+    /*
+        Enable vsync if specified
+    */
+    SDL_SetRenderVSync(pRenderer, YE_STATE.engine.framecap == -1);
+
+    if(YE_STATE.engine.framecap == -1)
+        ye_logf(info, "Starting renderer with vsync... \n");
+    else
+        ye_logf(debug, "Starting renderer with maxfps %d... \n",YE_STATE.engine.framecap);
 
     /*
         load our missing texture into memory
@@ -443,7 +460,7 @@ void ye_init_graphics(){
         missing_surface = yep_engine_resource_image("missing.png");
     }
     missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
-    SDL_FreeSurface(missing_surface);
+    SDL_DestroySurface(missing_surface);
 
     // set the runtime window and renderer references
     YE_STATE.runtime.window = pWindow;
@@ -452,20 +469,11 @@ void ye_init_graphics(){
     init_ui(pWindow,pRenderer);
 
     // test for TTF init, alarm if failed
-    if (TTF_Init() == -1) {
-        ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", TTF_GetError());
+    if (!TTF_Init()) {
+        ye_logf(error, "SDL2_ttf could not initialize! SDL2_ttf Error: %s\n", SDL_GetError());
         exit(1);
     }
     ye_logf(info, "TTF initialized.\n");
-
-    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-    if ((IMG_Init(imgFlags) & imgFlags) != imgFlags) {
-        ye_logf(error, "IMG_Init error: %s", IMG_GetError());
-        // print the img error
-        printf("IMG_Init error: %s", IMG_GetError());
-        exit(1);
-    }
-    ye_logf(info, "IMG initialized.\n");
 
     /*
         load icon to surface
@@ -495,14 +503,14 @@ void ye_init_graphics(){
     }
 
     if (pIconSurface == NULL) {
-        ye_logf(error, "IMG_Load error: %s", IMG_GetError());
+        ye_logf(error, "IMG_Load error: %s", SDL_GetError());
         exit(1);
     }
     // set icon
     SDL_SetWindowIcon(pWindow, pIconSurface);
     
     // release surface
-    SDL_FreeSurface(pIconSurface);
+    SDL_DestroySurface(pIconSurface);
 
     ye_logf(info, "Window icon set.\n");
 }
@@ -511,10 +519,6 @@ void ye_shutdown_graphics(){
     // shutdown TTF
     TTF_Quit();
     ye_logf(info, "Shut down TTF.\n");
-
-    // shutdown IMG
-    IMG_Quit();
-    ye_logf(info, "Shut down IMG.\n");
 
     // free the missing texture
     SDL_DestroyTexture(missing_texture);
@@ -533,11 +537,10 @@ void ye_shutdown_graphics(){
 // helper function to get the current window size, if fullscreen it gets the monitor size
 struct ScreenSize ye_get_screen_size(){
     struct ScreenSize screenSize;
-    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP){
-        SDL_DisplayMode DM;
-        SDL_GetDesktopDisplayMode(0, &DM);
-        screenSize.width = DM.w;
-        screenSize.height = DM.h;
+    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
+        const SDL_DisplayMode * DM = SDL_GetDesktopDisplayMode(0);
+        screenSize.width = DM->w;
+        screenSize.height = DM->h;
     }
     else if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
         SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);

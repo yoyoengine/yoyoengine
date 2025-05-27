@@ -36,7 +36,6 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
 
 - Easy to use visual editor
 - Multi platform support (Windows, Linux, Web)
-- Basic Networking through **SDL_net**
 - Asset bundling by default, for optimized builds.
 - A plugin system, with a few premade plugins for things like Discord RPC (see [yoyo-rpc](https://github.com/zoogies/yoyo-rpc))
 - Generic Gamepad and Controller abstraction layer

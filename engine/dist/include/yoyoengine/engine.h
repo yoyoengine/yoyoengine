@@ -234,7 +234,7 @@ struct ye_runtime_data {
     /*
         Meta on opened controllers
     */
-    SDL_GameController *controllers[YE_MAX_CONTROLLERS];
+    SDL_Gamepad *controllers[YE_MAX_CONTROLLERS];
     int num_controllers;
 
     /*

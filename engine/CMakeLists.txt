@@ -113,6 +113,22 @@ FetchContent_MakeAvailable(p2d)
 target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
 
 ###############
+#   Nuklear   #
+###############
+
+# going to use custom branch ref so we dont have to add a populate command to `make nuke`
+FetchContent_Declare(
+    nuklear
+    GIT_REPOSITORY https://github.com/yoyoengine/Nuklear.git
+    GIT_TAG yoyoengine # WIP SDL3 Nuklear port
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(nuklear)
+target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR})
+target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR}/demo/sdl3)
+
+###############
 #   jansson   #
 ###############
 
@@ -133,27 +149,28 @@ if(MSVC)
 endif()
 
 ###############
-#    SDL2     #
+#    SDL3     #
 ###############
 
-set(SDL2_DISABLE_INSTALL OFF CACHE BOOL "Disable installation of SDL2") # i forget why this is necessary but im assuming it wont work without
+set(SDL3_DISABLE_INSTALL OFF CACHE BOOL "Disable installation of SDL3") # i forget why this is necessary but im assuming it wont work without
 set(SDL_STATIC ON CACHE BOOL "Build a static library")
 set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 set(SDL_TEST OFF CACHE BOOL "Build the test programs")
 set(SDL_STATIC_PIC ON CACHE BOOL "Build static libraries with PIC (Position Independent Code)")
 FetchContent_Declare(
-    SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        release-2.28.5
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
+    SDL3
+    GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
+    GIT_TAG         release-3.2.8
+    GIT_PROGRESS    TRUE
+    GIT_SHALLOW     TRUE
 )
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
-FetchContent_MakeAvailable(SDL2)
-target_include_directories(yoyoengine PUBLIC ${SDL2_SOURCE_DIR}/include)
+FetchContent_MakeAvailable(SDL3)
+target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/) # this one is for editor
+target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/SDL3)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_BINARY_DIR}/SDL2-staticd.lib)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_BINARY_DIR}/SDL2maind.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL3_BINARY_DIR}/SDL3-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL3_BINARY_DIR}/SDL3maind.lib)
 endif()
 
 ###############
@@ -206,12 +223,13 @@ list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
 # set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
 # set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
-# set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
+set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
 
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set_target_properties(simple_parse PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(SDL3_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
 if(WINDOWS) # these targets dont exist on windows or something
     set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
     set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -232,15 +250,15 @@ endif()
 # target_include_directories(SDL_gfx PUBLIC ${SDL2_SOURCE_DIR}/include) # give access to SDL.h
 # target_include_directories(yoyoengine PUBLIC ${SDL_gfx_SOURCE_DIR}) # include is in the root of the repo
 
-###############
-#  SDL2_ttf   #
-###############
+################
+#   SDL3_ttf   #
+################
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 # set(SDL2TTF_BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
-set(SDL2TTF_SAMPLES OFF CACHE BOOL "Build the SDL2_ttf sample program(s)")
+set(SDL3TTF_SAMPLES OFF CACHE BOOL "Build the SDL3_ttf sample program(s)")
 # let it know it needs to get its vendored deps
-set(SDL2TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
+set(SDL3TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
 
 # force requiring zlib and override anything else that might try to change that
 set(FT_REQUIRE_ZLIB TRUE CACHE INTERNAL "" FORCE)
@@ -249,81 +267,88 @@ set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
 # set(SDL2TTF_INSTALL OFF CACHE BOOL "Generate installation target")
 
 FetchContent_Declare(
-    SDL2_ttf
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf
-    GIT_TAG        release-2.20.2
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
+    SDL3_ttf
+    GIT_REPOSITORY  https://github.com/libsdl-org/SDL_ttf
+    GIT_TAG         release-3.2.0
+    GIT_PROGRESS    TRUE
+    GIT_SHALLOW     TRUE
 )
-FetchContent_MakeAvailable(SDL2_ttf)
-target_include_directories(yoyoengine PUBLIC ${SDL2_ttf_SOURCE_DIR}) # include is in the root of the repo
+FetchContent_MakeAvailable(SDL3_ttf)
+
+# PATCHED NOW :)
+# # force TTF to not build the hash table! - causes issues when linking
+# get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
+# list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
+# set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
+
+target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_ttf_BINARY_DIR}/SDL2_ttfd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL3_ttf_BINARY_DIR}/SDL3_ttfd.lib)
 endif()
 
-###############
-#  SDL_image  #
-###############
+################
+#  SDL3_image  #
+################
 
-set(SDL2IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
+set(SDL3IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
 
 set(PNG_SHARED OFF CACHE BOOL "Build a shared version of the library")
 
 set(PNG_BUILD_ZLIB ON CACHE BOOL "Build zlib")
 
 # only allow bmp, gif, png, jpg
-set(SDL2IMAGE_XV OFF CACHE BOOL "Enable Xv support")
-set(SDL2IMAGE_XPM OFF CACHE BOOL "Enable XPM support")
-set(SDL2IMAGE_XCF OFF CACHE BOOL "Enable XCF support")
-set(SDL2IMAGE_TGA OFF CACHE BOOL "Enable TGA support")
-set(SDL2IMAGE_QOI OFF CACHE BOOL "Enable QOI support")
-set(SDL2IMAGE_PNM OFF CACHE BOOL "Enable PNM support")
-set(SDL2IMAGE_PCX OFF CACHE BOOL "Enable PCX support")
-set(SDL2IMAGE_LBM OFF CACHE BOOL "Enable LBM support")
+set(SDL3IMAGE_XV OFF CACHE BOOL "Enable Xv support")
+set(SDL3IMAGE_XPM OFF CACHE BOOL "Enable XPM support")
+set(SDL3IMAGE_XCF OFF CACHE BOOL "Enable XCF support")
+set(SDL3IMAGE_TGA OFF CACHE BOOL "Enable TGA support")
+set(SDL3IMAGE_QOI OFF CACHE BOOL "Enable QOI support")
+set(SDL3IMAGE_PNM OFF CACHE BOOL "Enable PNM support")
+set(SDL3IMAGE_PCX OFF CACHE BOOL "Enable PCX support")
+set(SDL3IMAGE_LBM OFF CACHE BOOL "Enable LBM support")
 
 FetchContent_Declare(
-    SDL2_image
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG        release-2.8.2
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
+    SDL3_image
+    GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image.git
+    GIT_TAG         release-3.2.4
+    GIT_PROGRESS    TRUE
+    GIT_SHALLOW     TRUE
 )
-FetchContent_MakeAvailable(SDL2_image)
-target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/include)
+FetchContent_MakeAvailable(SDL3_image)
+target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/include/SDL3_image)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_image_BINARY_DIR}/SDL2_image-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL3_image_BINARY_DIR}/SDL3_image-staticd.lib)
 endif()
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
-target_include_directories(yoyoengine PUBLIC ${SDL2_image_SOURCE_DIR}/external/zlib)
+target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/external/zlib)
 
-###############
-#  SDL_mixer  #
-###############
+################
+#  SDL3_mixer  #
+################
 
 # disable annoying codecs we dont need that require dependencies i dont have
-set(SDL2MIXER_OPUS OFF CACHE BOOL "Enable Opus support")
-set(SDL2MIXER_FLAC OFF CACHE BOOL "Enable FLAC support")
-set(SDL2MIXER_MOD OFF CACHE BOOL "Enable Mod support")
-set(SDL2MIXER_MIDI OFF CACHE BOOL "Enable MIDI support")
+set(SDLMIXER_OPUS  OFF CACHE BOOL "Enable Opus support")
+set(SDLMIXER_FLAC  OFF CACHE BOOL "Enable FLAC support")
+set(SDLMIXER_MOD   OFF CACHE BOOL "Enable Mod support")
+set(SDLMIXER_MIDI  OFF CACHE BOOL "Enable MIDI support")
 
 # mp3 enabled
-set(SDL2MIXER_MP3 ON CACHE BOOL "Enable MP3 support")
+set(SDLMIXER_MP3 ON CACHE BOOL "Enable MP3 support")
 
 # wav enabled
-set(SDL2MIXER_WAV ON CACHE BOOL "Enable WAV support")
+set(SDLMIXER_WAV ON CACHE BOOL "Enable WAV support")
 
 FetchContent_Declare(
-    SDL2_mixer
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG        release-2.6.3
+    SDL3_mixer
+    GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
+    GIT_TAG         main # TODO: pin when ready
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
-FetchContent_MakeAvailable(SDL2_mixer)
-target_include_directories(yoyoengine PUBLIC ${SDL2_mixer_SOURCE_DIR}/include)
+FetchContent_MakeAvailable(SDL3_mixer)
+target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_mixer_BINARY_DIR}/SDL2_mixer-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC ${SDL3_mixer_BINARY_DIR}/SDL3_mixer-staticd.lib)
 endif()
 
 ###############
@@ -345,24 +370,24 @@ if(MSVC)
     target_link_libraries(yoyoengine PUBLIC ${lua_BINARY_DIR}/lua-5.4.5/lua_static.lib)
 endif()
 
-###############
-#   SDL2_net  #
-###############
+# ###############
+# #   SDL3_net  #
+# ###############
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
+# set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 
-FetchContent_Declare(
-    SDL2_net
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_net.git
-    GIT_TAG        release-2.2.0
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(SDL2_net)
-target_include_directories(yoyoengine PUBLIC ${SDL2_net_SOURCE_DIR})
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL2_net_BINARY_DIR}/SDL2_net-staticd.lib)
-endif()
+# FetchContent_Declare(
+#     SDL3_net
+#     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_net.git
+#     GIT_TAG         7de8a144c3d2322a755ec881976bcdc7e882e03c # TODO: SDL3 pin when ready
+#     GIT_PROGRESS    TRUE
+#     GIT_SHALLOW     TRUE
+# )
+# FetchContent_MakeAvailable(SDL3_net)
+# target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/include/SDL3_net)
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC ${SDL3_net_BINARY_DIR}/SDL3_net-staticd.lib)
+# endif()
 
 ###############
 #   linking   #
@@ -375,11 +400,11 @@ if(YOYO_ENGINE_STATIC)
         p2d
 		jansson
 		zlibstatic
-		SDL2-static
-		SDL2_ttf
-		SDL2_image
-		SDL2_mixer
-		SDL2_net
+		SDL3-static
+		SDL3_ttf-static
+		SDL3_image-static
+		SDL3_mixer-static
+		# SDL3_net-static
 		lua_static
 	)
 else()
@@ -390,11 +415,11 @@ else()
         p2d
         jansson
         zlibstatic
-        SDL2-static
-        SDL2_ttf
-        SDL2_image
-        SDL2_mixer
-        SDL2_net
+        SDL3-static
+        SDL3_ttf-static
+        SDL3_image-static
+        SDL3_mixer-static
+        # SDL3_net-static
         lua_static
         -Wl,--no-whole-archive
     )

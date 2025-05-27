@@ -15,6 +15,7 @@
 #include <yoyoengine/yep.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
+#include <yoyoengine/filesystem.h>
 
 #include <zlib.h>   // zlib compression
 
@@ -110,28 +111,38 @@ int decompress_data(const char* input, size_t input_size, char** output, size_t 
 */
 
 bool is_dir_outofdate(const char *target_directory, const char *yep_file_path){
-    // get the last modified time of the directory
-    struct stat dir_stat;
-    if(stat(target_directory, &dir_stat) != 0){
-        ye_logf(error,"Error: could not get last modified time of directory %s\n", target_directory);
+    
+    SDL_PathInfo dir_info;
+    // check if the directory exists
+    if(!ye_get_path_info(target_directory, &dir_info)){
+        ye_logf(error,"Error: directory %s does not exist\n", target_directory);
+        return false;
+    }
+    // if the directory is not a directory, return false
+    if(dir_info.type != SDL_PATHTYPE_DIRECTORY){
+        ye_logf(error,"Error: %s is not a directory\n", target_directory);
         return false;
     }
 
-    // get the last modified time of the yep file
-    struct stat yep_stat;
-    if(stat(yep_file_path, &yep_stat) != 0){
-        ye_logf(error,"Error: could not get last modified time of yep file %s\n", yep_file_path);
+    // check if the yep file exists
+    SDL_PathInfo yep_info;
+    if(!ye_get_path_info(yep_file_path, &yep_info)){
+        ye_logf(error,"Error: yep file %s does not exist\n", yep_file_path);
         return false;
     }
-
-    // ye_logf(debug,"Dir: %ld\n", dir_stat.st_mtime);
-    // ye_logf(debug,"Yep: %ld\n", yep_stat.st_mtime);
+    // if the yep file is not a file, return false
+    if(yep_info.type != SDL_PATHTYPE_FILE){
+        ye_logf(error,"Error: %s is not a file\n", yep_file_path);
+        return false;
+    }
 
     // if the directory is newer than the yep file, return true
-    if(dir_stat.st_mtime > yep_stat.st_mtime){
+    if(dir_info.modify_time > yep_info.modify_time){
+        ye_logf(debug,"Directory %s is newer than yep file %s\n", target_directory, yep_file_path);
         return true;
     }
 
+    ye_logf(debug,"Directory %s is not newer than yep file %s\n", target_directory, yep_file_path);
     return false;
 }
 
@@ -354,71 +365,98 @@ void yep_shutdown(){
     ye_logf(info,"Shutting down yep subsystem...\n");
 }
 
+// forward decl
+void _ye_walk_directory_v2(char *dir_path);
+
+// Global variable to store the original root directory path for relative path calculation
+static char *yep_pack_root_path = NULL;
+
+static SDL_EnumerationResult SDLCALL _recurse_dir_callback(void *userdata, const char *dirname, const char *fname) {
+    (void)userdata; // unused
+    
+    char full_path[4096];
+    snprintf(full_path, sizeof(full_path), "%s%s", dirname, fname);
+
+    // Check if path is a file
+    SDL_PathInfo path_info;
+    if (!ye_get_path_info(full_path, &path_info)) {
+        ye_logf(error,"yep traverse: Error getting path info for file %s\n", full_path);
+        return SDL_ENUM_CONTINUE;
+    }
+    if (path_info.type == SDL_PATHTYPE_FILE) {
+        // Calculate the relative path from the original root directory
+        char *relative_path;
+        if (yep_pack_root_path != NULL) {
+            // Calculate relative path from the original root
+            size_t root_len = strlen(yep_pack_root_path);
+            if (strncmp(full_path, yep_pack_root_path, root_len) == 0) {
+                relative_path = full_path + root_len;
+                // Skip leading slash if present
+                if (*relative_path == '/') {
+                    relative_path++;
+                }
+            } else {
+                ye_logf(error,"Error: file %s is not within the root directory %s\n", full_path, yep_pack_root_path);
+                return SDL_ENUM_CONTINUE;
+            }
+        } else {
+            // Fallback to old behavior if root path is not set
+            relative_path = full_path + strlen(dirname) + 1;
+        }
+
+        // if the relative path plus its null terminator is greater than 64 bytes, we reject packing this and alert the user
+        if(strlen(relative_path) + 1 > 64){
+            ye_logf(error,"Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
+            return SDL_ENUM_CONTINUE;
+        }
+
+        // add a yep header node with the relative path
+        struct yep_header_node *node = malloc(sizeof(struct yep_header_node));
+
+        // set the name field to zeros so I dont lose my mind reading hex output
+        memset(node->name, 0, 64);
+
+        // set the full path
+        node->fullpath = strdup(full_path);
+
+        // set the name
+        sprintf(node->name, "%s", relative_path);
+        node->name[strlen(relative_path)] = '\0'; // ensure null termination
+
+        // add the node to the LL
+        node->next = yep_pack_list.head;
+        yep_pack_list.head = node;
+
+        // increment the entry count
+        yep_pack_list.entry_count++;
+    }
+    else if (path_info.type == SDL_PATHTYPE_DIRECTORY) {
+        // If it's a directory, recurse into it
+        _ye_walk_directory_v2(full_path);
+    } else {
+        ye_logf(debug,"yep traverse: Skipping non-file path %s\n", full_path);
+    }
+
+    return SDL_ENUM_CONTINUE;
+}
+
 /*
     Recursively walk the target pack directory and create a LL of files to be packed
 */
-void _ye_walk_directory(char *root_path, char *directory_path){
-    // printf("Walking directory %s...\n", directory_path);
-
-    DIR *dir;
-    struct dirent *entry;
-    struct stat file_stat;
-
-    if ((dir = opendir(directory_path)) == NULL) {
-        ye_logf(error,"Could not open directory %s\n", directory_path);
+void _ye_walk_directory_v2(char *dir_path) {
+    SDL_PathInfo path_info;
+    if(!ye_get_path_info(dir_path, &path_info)) {
+        ye_logf(error,"yep traverse: Error getting path info for directory %s\n", dir_path);
         return;
     }
 
-    while ((entry = readdir(dir)) != NULL) {
-        char full_path[PATH_MAX];
-        snprintf(full_path, sizeof(full_path), "%s/%s", directory_path, entry->d_name);
-
-        if (stat(full_path, &file_stat) == -1) {
-            ye_logf(error,"Could not stat %s\n", full_path);
-            continue;
-        }
-
-        if (S_ISREG(file_stat.st_mode)) {
-            // Calculate the relative path
-            char *relative_path = full_path + strlen(root_path) + 1; // this literally offsets the char * to the beginning by the original input
-            // ^^^ the +1 here is to get rid of the / in front of the path
-
-            // if the relative path plus its null terminator is greater than 64 bytes, we reject packing this and alert the user
-            if(strlen(relative_path) + 1 > 64){
-                ye_logf(error,"Error: file %s has a relative path that is too long to pack into a yep file\n", full_path);
-                continue;
-            }
-
-            // printf("%s\n", relative_path);
-
-            // add a yep header node with the relative path
-            struct yep_header_node *node = malloc(sizeof(struct yep_header_node));
-
-            // set the name field to zeros so I dont lose my mind reading hex output
-            memset(node->name, 0, 64);
-
-            // set the full path
-            node->fullpath = strdup(full_path);
-
-            // set the name
-            sprintf(node->name, "%s", relative_path);
-            node->name[strlen(relative_path)] = '\0'; // ensure null termination
-
-            // add the node to the LL
-            node->next = yep_pack_list.head;
-            yep_pack_list.head = node;
-
-            // increment the entry count
-            yep_pack_list.entry_count++;
-        }
-        else if (S_ISDIR(file_stat.st_mode)) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                _ye_walk_directory(root_path, full_path);
-            }
-        }
+    // Check if the path is a directory
+    if (path_info.type != SDL_PATHTYPE_DIRECTORY) {
+        ye_logf(error,"yep traverse: Path %s is not a directory\n", dir_path);
+        return;
     }
 
-    closedir(dir);
+    SDL_EnumerateDirectory(dir_path, _recurse_dir_callback, NULL);
 }
 
 /*
@@ -564,8 +602,14 @@ void write_pack_file(FILE *pack_file) {
 bool _yep_pack_directory(char *directory_path, char *output_name){
     ye_logf(debug,"Packing directory %s...\n", directory_path);
 
+    // Set the root path for relative path calculation
+    yep_pack_root_path = directory_path;
+
     // call walk directory (first arg is root, second is current - this is for recursive relative path knowledge)
-    _ye_walk_directory(directory_path,directory_path);
+    _ye_walk_directory_v2(directory_path);
+
+    // Clear the root path after traversal
+    yep_pack_root_path = NULL;
 
     ye_logf(debug,"Built pack list...\n");
 
@@ -694,7 +738,8 @@ SDL_Surface * _yep_image(const char *handle, const char *path){
     }
 
     // create the surface
-    SDL_Surface *surface = IMG_Load_RW(SDL_RWFromMem(data.data, data.size), 1);
+    // TODO: MIGRATION: might be the wrong IO loader
+    SDL_Surface *surface = IMG_Load_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(surface == NULL){
         ye_logf(error,"Error: could not create surface for %s\n", handle);
         return NULL;
@@ -731,7 +776,7 @@ Mix_Chunk * _yep_audio(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the chunk
-    Mix_Chunk *chunk = Mix_LoadWAV_RW(SDL_RWFromMem(data.data, data.size), 1);
+    Mix_Chunk *chunk = Mix_LoadWAV_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(chunk == NULL){
         ye_logf(error,"Error: could not create chunk for %s\n", handle);
         return NULL;
@@ -749,7 +794,7 @@ Mix_Music * _yep_music(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the music
-    Mix_Music *music = Mix_LoadMUS_RW(SDL_RWFromMem(data.data, data.size), 1);
+    Mix_Music *music = Mix_LoadMUS_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(music == NULL){
         ye_logf(error,"Error: could not create music for %s\n", handle);
         return NULL;
@@ -767,7 +812,7 @@ TTF_Font * _yep_font(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
     // create the font
-    TTF_Font *font = TTF_OpenFontRW(SDL_RWFromMem(data.data, data.size), 1, 1);
+    TTF_Font *font = TTF_OpenFontIO(SDL_IOFromMem(data.data, data.size), 1, 1);
     if(font == NULL){
         ye_logf(error,"Error: could not create font for %s\n", handle);
         return YE_STATE.engine.pEngineFont;

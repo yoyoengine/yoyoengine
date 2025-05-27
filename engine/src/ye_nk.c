@@ -22,9 +22,13 @@
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
-#define NK_SDL_RENDERER_IMPLEMENTATION
+#define NK_SDL3_RENDERER_IMPLEMENTATION
+#define NK_INCLUDE_COMMAND_USERDATA
 #define NK_INCLUDE_STANDARD_BOOL
 
-#include <Nuklear/nuklear.h>
-#include <Nuklear/nuklear_sdl_renderer.h>
+// include before so Nuklear SDL renderer is aware
+#include <SDL.h>
+
+#include <nuklear.h>
+#include <nuklear_sdl3_renderer.h>
 #include <Nuklear/style.h>
