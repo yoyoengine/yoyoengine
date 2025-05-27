@@ -31,7 +31,7 @@
 #include <yoyoengine/cache.h>
 #include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
-#include <yoyoengine/tricks.h>
+// #include <yoyoengine/tricks.h>
 #include <yoyoengine/physics.h>
 #include <yoyoengine/console.h>
 #include <yoyoengine/version.h>
@@ -165,7 +165,7 @@ void ye_process_frame(){
     // if we are in runtime, run callbacks
     if(!YE_STATE.editor.editor_mode){
         // run all trick update callbacks
-        ye_run_trick_updates();
+        // ye_run_trick_updates();
     
         // run all scripting before the frame is rendered
         ye_system_lua_scripting();
@@ -412,7 +412,7 @@ void ye_init_engine() {
     // ye_init_networking();
 
     // initialize and load tricks (modules/plugins)
-    ye_init_tricks();
+    // ye_init_tricks();
 
     // set our last frame time now because we might play the intro
     last_frame_time = SDL_GetTicks();
@@ -464,7 +464,7 @@ void ye_shutdown_engine(){
     ye_logf(YE_LL_INFO, "Shutting down engine...\n");
 
     // shut tricks down
-    ye_shutdown_tricks();
+    // ye_shutdown_tricks();
 
     // shutdown networking
     // ye_shutdown_networking();

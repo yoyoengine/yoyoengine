@@ -66,6 +66,6 @@
 #include "logging.h"        // logging
 #include "lua_api.h"        // scripting api
 #include "scene.h"          // scene manager
-#include "tricks.h"         // plugin system
+// #include "tricks.h"         // plugin system
 
 #endif // YE_ENGINE_MAIN_H
