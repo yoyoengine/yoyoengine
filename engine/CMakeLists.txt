@@ -145,7 +145,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${jansson_BINARY_DIR}/lib/jansson_d.lib)
+    target_link_libraries(yoyoengine PUBLIC jansson)
 endif()
 
 ###############
@@ -169,8 +169,8 @@ FetchContent_MakeAvailable(SDL3)
 target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/) # this one is for editor
 target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/SDL3)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_BINARY_DIR}/SDL3-staticd.lib)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_BINARY_DIR}/SDL3maind.lib)
+    target_link_libraries(yoyoengine PUBLIC SDL3-static)
+    # target_link_libraries(yoyoengine PUBLIC SDL3main)
 endif()
 
 ###############
@@ -190,7 +190,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
 if(MSVC)
-    # target_link_libraries(yoyoengine PUBLIC ${zlib_BINARY_DIR}/zlibstaticd.lib) TODO: update for shared
+    target_link_libraries(yoyoengine PUBLIC zlibstaticd)
 endif()
 
 # needed for zlib static
@@ -222,7 +222,7 @@ set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
 # set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
+set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
 set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
 
 # Remove the example targets
@@ -283,7 +283,7 @@ FetchContent_MakeAvailable(SDL3_ttf)
 
 target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_ttf_BINARY_DIR}/SDL3_ttfd.lib)
+    target_link_libraries(yoyoengine PUBLIC SDL3_ttf-static)
 endif()
 
 ################
@@ -316,7 +316,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3_image)
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/include/SDL3_image)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_image_BINARY_DIR}/SDL3_image-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC SDL3_image-static)
 endif()
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
@@ -348,7 +348,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${SDL3_mixer_BINARY_DIR}/SDL3_mixer-staticd.lib)
+    target_link_libraries(yoyoengine PUBLIC SDL3_mixer-static)
 endif()
 
 ###############
@@ -367,7 +367,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(lua)
 target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
 if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC ${lua_BINARY_DIR}/lua-5.4.5/lua_static.lib)
+    target_link_libraries(yoyoengine PUBLIC lua_static)
 endif()
 
 # ###############
