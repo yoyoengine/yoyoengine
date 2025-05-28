@@ -58,7 +58,7 @@ jobs:
 
   build-msvc:
       name: Build with MSVC
-      runs-on: windows-latest
+      runs-on: windows-2025
 
       steps:
         - name: Checkout code
