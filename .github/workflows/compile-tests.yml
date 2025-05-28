@@ -85,9 +85,9 @@ jobs:
           run: |
             New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\engine\build"
             cd ${{ github.workspace }}\engine\build
-            cmake ${{ env.CMAKE_FLAGS }} -DAOM_TARGET_CPU=generic ..
+            cmake ${{ env.CMAKE_FLAGS }} -DCMAKE_ASM_NASM_COMPILER=nasm ..
         
         - name: Build with MSVC
           run: |
             cd ${{ github.workspace }}\engine\build
-            cmake --build . --config Release --parallel
+            cmake --build . --config Debug --parallel

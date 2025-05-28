@@ -138,7 +138,7 @@ set(JANSSON_BUILD_DOCS OFF CACHE INTERNAL "")
 FetchContent_Declare(
     jansson
     GIT_REPOSITORY https://github.com/akheron/jansson.git
-    GIT_TAG        v2.14
+    GIT_TAG        v2.14.1
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -269,7 +269,7 @@ set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
 FetchContent_Declare(
     SDL3_ttf
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_ttf
-    GIT_TAG         release-3.2.0
+    GIT_TAG         release-3.2.2
     GIT_PROGRESS    TRUE
     GIT_SHALLOW     TRUE
 )
