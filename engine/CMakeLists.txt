@@ -26,21 +26,29 @@ file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
 # required (originated from p2d) but is allegedly (claude) standard for shared libs
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# If we're using MSVC (first of all, I'm so sorry!),
-# then instead of building the satellite libs into one DLL,
-# we will let the GAME build them into its own exe
-if(MSVC OR YOYO_ENGINE_STATIC)
-    # Only set the cache variable if it hasn't been defined yet
-    if(NOT DEFINED YOYO_ENGINE_STATIC)
-        set(YOYO_ENGINE_STATIC TRUE CACHE BOOL "Building YOYOENGINE with the worst compiler ever designed")
-    endif()
-    add_library(yoyoengine STATIC ${SOURCES})
-else()
-    if(NOT DEFINED YOYO_ENGINE_STATIC)
-        set(YOYO_ENGINE_STATIC FALSE CACHE BOOL "Building YOYOENGINE the way it was intended")
-    endif()
-    add_library(yoyoengine SHARED ${SOURCES})
-endif()
+# # If we're using MSVC (first of all, I'm so sorry!),
+# # then instead of building the satellite libs into one DLL,
+# # we will let the GAME build them into its own exe
+# if(MSVC OR YOYO_ENGINE_STATIC)
+#     # Only set the cache variable if it hasn't been defined yet
+#     if(NOT DEFINED YOYO_ENGINE_STATIC)
+#         set(YOYO_ENGINE_STATIC TRUE CACHE BOOL "Building YOYOENGINE with the worst compiler ever designed")
+#     endif()
+#     add_library(yoyoengine STATIC ${SOURCES})
+# else()
+#     if(NOT DEFINED YOYO_ENGINE_STATIC)
+#         set(YOYO_ENGINE_STATIC FALSE CACHE BOOL "Building YOYOENGINE the way it was intended")
+#     endif()
+#     add_library(yoyoengine SHARED ${SOURCES})
+# endif()
+
+# if(MSVC)
+#     add_library(yoyoengine STATIC ${SOURCES})
+# else()
+#     add_library(yoyoengine SHARED ${SOURCES})
+# endif()
+
+add_library(yoyoengine SHARED ${SOURCES})
 
 target_compile_definitions(yoyoengine PRIVATE YOYO_ENGINE_BUILDING)
 set_target_properties(yoyoengine PROPERTIES LINKER_LANGUAGE C)
@@ -144,9 +152,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC jansson)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC jansson)
+# endif()
 
 ###############
 #    SDL3     #
@@ -168,10 +176,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3)
 target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/) # this one is for editor
 target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/SDL3)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC SDL3-static)
-    # target_link_libraries(yoyoengine PUBLIC SDL3main)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC SDL3-static)
+#     # target_link_libraries(yoyoengine PUBLIC SDL3main)
+# endif()
 
 ###############
 #    zlib     #
@@ -189,13 +197,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC zlibstaticd)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC zlibstaticd)
+# endif()
 
 # needed for zlib static
-# set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
-set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
+# set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 # # Export zlib targets for SDL_ttf install
 # install(TARGETS zlibstatic
@@ -221,9 +229,9 @@ set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
 set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
 list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
-# set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
-set(ZLIB_VERSION_STRING 1.2.11 CACHE INTERNAL "" FORCE) # TODO: this doesnt match the fetchcontent, lol
+set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
+# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
+set(ZLIB_VERSION_STRING 1.3 CACHE INTERNAL "" FORCE)
 
 # Remove the example targets
 set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -275,16 +283,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_ttf)
 
-# PATCHED NOW :)
-# # force TTF to not build the hash table! - causes issues when linking
-# get_target_property(SOURCES_LIST SDL3_ttf-static SOURCES)
-# list(REMOVE_ITEM SOURCES_LIST "src/SDL_hashtable.c")
-# set_target_properties(SDL3_ttf-static PROPERTIES SOURCES "${SOURCES_LIST}")
-
 target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC SDL3_ttf-static)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC SDL3_ttf-static)
+# endif()
 
 ################
 #  SDL3_image  #
@@ -292,19 +294,30 @@ endif()
 
 set(SDL3IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
 
-set(PNG_SHARED OFF CACHE BOOL "Build a shared version of the library")
+# set(PNG_SHARED OFF CACHE BOOL "Build a shared version of the library")
 
-set(PNG_BUILD_ZLIB ON CACHE BOOL "Build zlib")
+# set(PNG_BUILD_ZLIB ON CACHE BOOL "Build zlib")
 
-# only allow bmp, gif, png, jpg
-set(SDL3IMAGE_XV OFF CACHE BOOL "Enable Xv support")
-set(SDL3IMAGE_XPM OFF CACHE BOOL "Enable XPM support")
-set(SDL3IMAGE_XCF OFF CACHE BOOL "Enable XCF support")
-set(SDL3IMAGE_TGA OFF CACHE BOOL "Enable TGA support")
-set(SDL3IMAGE_QOI OFF CACHE BOOL "Enable QOI support")
-set(SDL3IMAGE_PNM OFF CACHE BOOL "Enable PNM support")
-set(SDL3IMAGE_PCX OFF CACHE BOOL "Enable PCX support")
-set(SDL3IMAGE_LBM OFF CACHE BOOL "Enable LBM support")
+set(SDLIMAGE_PNG ON CACHE BOOL "Support loading PNG images")
+set(SDLIMAGE_JPG ON CACHE BOOL "Support loading JPEG images")
+
+set(SDLIMAGE_AVIF_VENDORED OFF CACHE BOOL "Use the vendored version of libavif")
+
+set(SDLIMAGE_AVIF OFF CACHE BOOL  "Support loading AVIF images")
+set(SDLIMAGE_BMP OFF CACHE BOOL "Support loading BMP images")
+set(SDLIMAGE_GIF OFF CACHE BOOL "Support loading GIF images")
+set(SDLIMAGE_JXL OFF CACHE BOOL "Support loading JXL images" )
+set(SDLIMAGE_LBM OFF CACHE BOOL "Support loading LBM images")
+set(SDLIMAGE_PCX OFF CACHE BOOL "Support loading PCX images")
+set(SDLIMAGE_PNM OFF CACHE BOOL "Support loading PNM images")
+set(SDLIMAGE_QOI OFF CACHE BOOL "Support loading QOI images")
+set(SDLIMAGE_SVG OFF CACHE BOOL "Support loading SVG images")
+set(SDLIMAGE_TGA OFF CACHE BOOL "Support loading TGA images")
+set(SDLIMAGE_TIF OFF CACHE BOOL "Support loading TIFF images")
+set(SDLIMAGE_WEBP OFF CACHE BOOL  "Support loading WEBP images")
+set(SDLIMAGE_XCF OFF CACHE BOOL "Support loading XCF images")
+set(SDLIMAGE_XPM OFF CACHE BOOL "Support loading XPM images")
+set(SDLIMAGE_XV OFF CACHE BOOL "Support loading XV images")
 
 FetchContent_Declare(
     SDL3_image
@@ -315,9 +328,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_image)
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/include/SDL3_image)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC SDL3_image-static)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC SDL3_image-static)
+# endif()
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/external/zlib)
@@ -347,9 +360,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC SDL3_mixer-static)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC SDL3_mixer-static)
+# endif()
 
 ###############
 #     lua     #
@@ -366,9 +379,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(lua)
 target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
-if(MSVC)
-    target_link_libraries(yoyoengine PUBLIC lua_static)
-endif()
+# if(MSVC)
+#     target_link_libraries(yoyoengine PUBLIC lua_static)
+# endif()
 
 # ###############
 # #   SDL3_net  #
@@ -393,21 +406,23 @@ endif()
 #   linking   #
 ###############
 
-if(YOYO_ENGINE_STATIC)
-	target_link_libraries(yoyoengine PUBLIC 
+if(MSVC)
+    # On MSVC, link static libraries normally
+    target_link_libraries(yoyoengine PRIVATE 
         # TODO: is there lilith duplication in p2d?
         lilith
         p2d
-		jansson
-		zlibstatic
-		SDL3-static
-		SDL3_ttf-static
-		SDL3_image-static
-		SDL3_mixer-static
-		# SDL3_net-static
-		lua_static
-	)
+        jansson
+        zlibstatic
+        SDL3-static
+        SDL3_ttf-static
+        SDL3_image-static
+        SDL3_mixer-static
+        # SDL3_net-static
+        lua_static
+    )
 else()
+    # On GCC/Clang, use whole-archive to ensure all symbols are included in shared lib
     target_link_libraries(yoyoengine PRIVATE 
         -Wl,--whole-archive
         # TODO: is there lilith duplication in p2d?
@@ -425,38 +440,41 @@ else()
     )
 endif()
 
-# create an output dir based on platform
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+# # create an output dir based on platform
+# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
 
-# set the output directory for the executable
-if(UNIX)
-    set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-else()
-    set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-endif()
+# # set the output directory for the executable
+# if(UNIX)
+#     set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+# else()
+#     set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+# endif()
 
 ###############
 #    libs     #
 ###############
 
-# Set the output directory for libraries, on linux this is lib, on windows its bin
-if(UNIX)
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-else()
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-endif()
+# # Set the output directory for libraries, on linux this is lib, on windows its bin
+# if(UNIX)
+#     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+# else()
+#     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+# endif()
 
-# Copy libraries to the output directory after build
-add_custom_command(
-    TARGET yoyoengine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
-    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2-static> ${LIBRARY_OUTPUT_PATH}
-    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_ttf> ${LIBRARY_OUTPUT_PATH}
-    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_image> ${LIBRARY_OUTPUT_PATH}
-    # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_mixer> ${LIBRARY_OUTPUT_PATH}
-    # COMMENT "Copying libraries to platform-specific directory"
-    COMMENT "Creating platform-specific bin directory"
-)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+# # Copy libraries to the output directory after build
+# add_custom_command(
+#     TARGET yoyoengine POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
+#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2-static> ${LIBRARY_OUTPUT_PATH}
+#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_ttf> ${LIBRARY_OUTPUT_PATH}
+#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_image> ${LIBRARY_OUTPUT_PATH}
+#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_mixer> ${LIBRARY_OUTPUT_PATH}
+#     # COMMENT "Copying libraries to platform-specific directory"
+#     COMMENT "Creating platform-specific bin directory"
+# )
 
 # WIP: ability to concat all lua files into one runtime file
 # maybe in the future we have this as a seperate target, its
@@ -478,7 +496,7 @@ message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
 if(BUILD_LUA_RUNTIME)
     
     # where we will output the runtime
-    option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/ye_runtime.lua)
+    option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/ye_runtime.lua")
     message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
     # create full path to runtime output so it exists
@@ -552,14 +570,14 @@ endif()
 ###############
 
 # configure option
-option(YOYO_CMAKE_COPY_ENGINE_RESOURCES "Copy engine resources to the output directory" OFF)
+# option(YOYO_CMAKE_COPY_ENGINE_RESOURCES "Copy engine resources to the output directory" OFF)
 
-if(YOYO_CMAKE_COPY_ENGINE_RESOURCES)
+# TODO: this doesn't account for "old" engine resources
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources)
     add_custom_command(
         TARGET yoyoengine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/engine_resources
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/engine_resources
-
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources
         COMMENT "Copying engine resources"
     )
 endif()
@@ -571,7 +589,7 @@ endif()
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/LICENSE.md)
     add_custom_command(
         TARGET yoyoengine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/LICENSE.md
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/LICENSE.md
         COMMENT "Copying license to build directory"
     )
 endif()
