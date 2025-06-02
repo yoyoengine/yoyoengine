@@ -10,12 +10,13 @@
 
 #include <SDL3/SDL.h>
 
+#include <yoyoengine/export.h>
 #include <yoyoengine/file_picker.h>
 
 /*
     File picker response wrapper modes.
 */
-enum ye_picker_response_mode {
+YE_API enum ye_picker_response_mode {
     YE_PICKER_WRITE_CHAR_PTR,
     YE_PICKER_WRITE_CHAR_BUF,
     YE_PICKER_FWD_CB
@@ -25,7 +26,7 @@ enum ye_picker_response_mode {
     Wrap SDL_FilePicker parameters with some custom
     response modes.
 */
-struct ye_picker_data {
+YE_API struct ye_picker_data {
     SDL_DialogFileFilter *filter;
     int *num_filters;
     const char *default_location;
@@ -49,7 +50,7 @@ struct ye_picker_data {
 /*
     Pick a single file, use struct args to set parameters.
 */
-void ye_pick_file(struct ye_picker_data data);
+YE_API void ye_pick_file(struct ye_picker_data data);
 
 /*
     Pick a single file, use struct args to set parameters, but do not set
@@ -57,12 +58,12 @@ void ye_pick_file(struct ye_picker_data data);
 
     Returns the truncated file path relative to the resource folder.
 */
-void ye_pick_resource_file(struct ye_picker_data data);
+YE_API void ye_pick_resource_file(struct ye_picker_data data);
 
 /*
     Pick a folder, use struct args to set parameters.
 */
-void ye_pick_folder(struct ye_picker_data data);
+YE_API void ye_pick_folder(struct ye_picker_data data);
 
 /*
     DEFS

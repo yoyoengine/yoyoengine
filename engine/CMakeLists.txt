@@ -6,15 +6,6 @@
 
 
 ###############
-#    notes    #
-###############
-
-# - all of the headers that the engine links to are PUBLIC, so that the editor and any games automatically get them
-# - the engine itself builds deps statically and into one singular shared library
-# - the engine copies its resources to the output as well
-# - at the end of this file, a shared lib exists alongside a partially populated game build output with the engine resources
-
-###############
 #    setup    #
 ###############
 
@@ -23,49 +14,53 @@ project(yoyoengine)
 
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS src/*.c)
 
-# required (originated from p2d) but is allegedly (claude) standard for shared libs
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if(MSVC)
+    # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    # # MSVC sucks ^
 
-# # If we're using MSVC (first of all, I'm so sorry!),
-# # then instead of building the satellite libs into one DLL,
-# # we will let the GAME build them into its own exe
-# if(MSVC OR YOYO_ENGINE_STATIC)
-#     # Only set the cache variable if it hasn't been defined yet
-#     if(NOT DEFINED YOYO_ENGINE_STATIC)
-#         set(YOYO_ENGINE_STATIC TRUE CACHE BOOL "Building YOYOENGINE with the worst compiler ever designed")
-#     endif()
-#     add_library(yoyoengine STATIC ${SOURCES})
-# else()
-#     if(NOT DEFINED YOYO_ENGINE_STATIC)
-#         set(YOYO_ENGINE_STATIC FALSE CACHE BOOL "Building YOYOENGINE the way it was intended")
-#     endif()
-#     add_library(yoyoengine SHARED ${SOURCES})
-# endif()
+    set(YOYO_ENGINE_STATIC ON CACHE BOOL "Building YOYOENGINE statically")
+    set(YOYO_ENGINE_INTERFACE OFF CACHE BOOL "YOYOENGINE set as an interface target")
+endif()
 
-# if(MSVC)
-#     add_library(yoyoengine STATIC ${SOURCES})
-# else()
-#     add_library(yoyoengine SHARED ${SOURCES})
-# endif()
+option(YOYO_ENGINE_STATIC "Build YOYOENGINE as a static library" OFF)
+option(YOYO_ENGINE_INTERFACE "Configure YOYOENGINE as an interface target" OFF)
 
-add_library(yoyoengine SHARED ${SOURCES})
+if(YOYO_ENGINE_INTERFACE)
+    message(STATUS "Configuring yoyoengine as an interface target")
+    add_library(yoyoengine INTERFACE ${SOURCES})
+    set(YOYO_ENGINE_LINK_TERM "INTERFACE" CACHE STRING "The link type for yoyoengine")
+else()
+    if(YOYO_ENGINE_STATIC)
+        message(STATUS "Configuring yoyoengine as a static library")
+        add_library(yoyoengine STATIC ${SOURCES})
+        set(YOYO_ENGINE_LINK_TERM "PUBLIC" CACHE STRING "The link type for yoyoengine")
+    else()
+        message(STATUS "Configuring yoyoengine as a shared library")
+        add_library(yoyoengine SHARED ${SOURCES})
 
-target_compile_definitions(yoyoengine PRIVATE YOYO_ENGINE_BUILDING)
+        # required (originated from p2d) but is allegedly (claude) standard for shared libs
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+        set(YOYO_ENGINE_LINK_TERM "PUBLIC" CACHE STRING "The link type for yoyoengine")
+    endif()
+endif()
+
+# TODO: right now this would only be applicable on a shared build on windows, which doesn't exist
+# target_compile_definitions(yoyoengine PRIVATE YOYO_ENGINE_BUILDING)
+# TODO: how does this fit in with declspec? ^
+
 set_target_properties(yoyoengine PROPERTIES LINKER_LANGUAGE C)
-
 target_include_directories(yoyoengine PUBLIC dist/include/)
 
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
-# dont build tests
-set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
-
 # if not in release mode, build in debug mode which sets cflags for max warnings and debug sigs
 option(YOYO_ENGINE_BUILD_RELEASE "Build the engine in release mode" ON)
 if(NOT YOYO_ENGINE_BUILD_RELEASE)
     if(MSVC)
-        target_compile_options(yoyoengine PRIVATE -Wall -g)
+        # TODO: make these proper
+        # target_compile_options(yoyoengine PRIVATE -Wall -g)
     else()
         target_compile_options(yoyoengine PRIVATE -Wall -Wextra -g)
     endif()
@@ -80,7 +75,8 @@ endif()
 option(ZOOGIES_DEVELOPMENT_BUILD "Enable all warnings" OFF)
 if(ZOOGIES_DEVELOPMENT_BUILD)
     if(MSVC)
-        target_compile_options(yoyoengine PRIVATE)
+        # TODO: make these proper
+        # target_compile_options(yoyoengine PRIVATE)
     else()
         target_compile_options(yoyoengine PRIVATE -Werror -Wall -Wextra)
     endif()
@@ -141,8 +137,11 @@ target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR}/demo/sdl3)
 ###############
 
 # Build as shared and without docs - NOTE: jansson doesnt give af about the shared param and builds static anyways
-set(BUILD_SHARED 1 CACHE INTERNAL "")
+# set(BUILD_SHARED 1 CACHE INTERNAL "")
+# dont build tests
+set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
 set(JANSSON_BUILD_DOCS OFF CACHE INTERNAL "")
+set(JANSSON_BUILD_MAN OFF CACHE INTERNAL "")
 FetchContent_Declare(
     jansson
     GIT_REPOSITORY https://github.com/akheron/jansson.git
@@ -152,9 +151,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC jansson)
-# endif()
 
 ###############
 #    SDL3     #
@@ -185,78 +181,20 @@ target_include_directories(yoyoengine PUBLIC ${SDL3_SOURCE_DIR}/include/SDL3)
 #    zlib     #
 ###############
 
-set(ZLIB_USE_STATIC_LIBS ON CACHE BOOL "Use static libraries for zlib")
-set(ZLIB_USE_SHARED_LIBS OFF CACHE BOOL "Use shared libraries for zlib")
+# set(ZLIB_USE_STATIC_LIBS ON CACHE BOOL "Use static libraries for zlib")
+# set(ZLIB_USE_SHARED_LIBS OFF CACHE BOOL "Use shared libraries for zlib")
+
+set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "Disable building of zlib examples")
 
 FetchContent_Declare(
     zlib
     GIT_REPOSITORY https://github.com/madler/zlib.git
-    GIT_TAG        v1.3
+    GIT_TAG        v1.3.1
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC zlibstaticd)
-# endif()
-
-# needed for zlib static
-set_property(TARGET zlibstatic PROPERTY POSITION_INDEPENDENT_CODE ON)
-# set_property(TARGET zlib PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-# # Export zlib targets for SDL_ttf install
-# install(TARGETS zlibstatic
-#         EXPORT zlib-targets
-#         ARCHIVE DESTINATION lib
-#         INCLUDES DESTINATION include
-# )
-
-# # Export zlib includes for SDL_ttf install
-# install(DIRECTORY ${zlib_SOURCE_DIR}/
-#         DESTINATION include
-#         FILES_MATCHING PATTERN "*.h*"
-# )
-
-# # Export zlib config for SDL_ttf install
-# install(EXPORT zlib-targets
-#         FILE zlib-targets.cmake
-#         NAMESPACE zlib::
-#         DESTINATION lib/cmake/zlib
-# )
-
-# we need to override some SDL_ttf vars to use our own impl of zlib for its freetype gzip
-set(ZLIB_FOUND TRUE CACHE BOOL "ZLIB found")
-list(APPEND ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
-set(ZLIB_LIBRARY zlibstatic CACHE INTERNAL "" FORCE)
-# set(ZLIB_LIBRARY zlib CACHE INTERNAL "" FORCE)
-set(ZLIB_VERSION_STRING 1.3 CACHE INTERNAL "" FORCE)
-
-# Remove the example targets
-set_target_properties(example PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set_target_properties(minigzip PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set_target_properties(simple_parse PROPERTIES EXCLUDE_FROM_ALL TRUE)
-set_target_properties(SDL3_test PROPERTIES EXCLUDE_FROM_ALL TRUE)
-if(WINDOWS) # these targets dont exist on windows or something
-    set_target_properties(example64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-    set_target_properties(minigzip64 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-endif()
-
-###############
-#   SDL_gfx   #
-###############
-
-# NOTE: SDL_gfx is extremely deprecated, and not worth bothering with anymore. I'm leaving this here just in case
-
-# FetchContent_Declare(
-#     SDL_gfx
-#     GIT_REPOSITORY https://github.com/zoogies/SDL_gfx-cmake
-#     GIT_PROGRESS TRUE
-# )
-# FetchContent_MakeAvailable(SDL_gfx)
-# target_include_directories(SDL_gfx PUBLIC ${SDL2_SOURCE_DIR}/include) # give access to SDL.h
-# target_include_directories(yoyoengine PUBLIC ${SDL_gfx_SOURCE_DIR}) # include is in the root of the repo
 
 ################
 #   SDL3_ttf   #
@@ -264,13 +202,13 @@ endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 # set(SDL2TTF_BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
-set(SDL3TTF_SAMPLES OFF CACHE BOOL "Build the SDL3_ttf sample program(s)")
+set(SDLTTF_SAMPLES OFF CACHE BOOL "Build the SDL3_ttf sample program(s)")
 # let it know it needs to get its vendored deps
-set(SDL3TTF_VENDORED ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
+set(SDLTTF_VENDORED  ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
 
 # force requiring zlib and override anything else that might try to change that
-set(FT_REQUIRE_ZLIB TRUE CACHE INTERNAL "" FORCE)
-set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
+# set(FT_REQUIRE_ZLIB TRUE CACHE INTERNAL "" FORCE)
+# set(FT_DISABLE_ZLIB FALSE CACHE INTERNAL "" FORCE)
 
 # set(SDL2TTF_INSTALL OFF CACHE BOOL "Generate installation target")
 
@@ -284,9 +222,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3_ttf)
 
 target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3_ttf) # include is in the root of the repo
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC SDL3_ttf-static)
-# endif()
 
 ################
 #  SDL3_image  #
@@ -328,9 +263,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_image)
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/include/SDL3_image)
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC SDL3_image-static)
-# endif()
 
 # include the zlib that SDL_image uses - this is for a stray header we are missing
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/external/zlib)
@@ -360,9 +292,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC SDL3_mixer-static)
-# endif()
 
 ###############
 #     lua     #
@@ -379,9 +308,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(lua)
 target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC lua_static)
-# endif()
 
 # ###############
 # #   SDL3_net  #
@@ -398,17 +324,13 @@ target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include
 # )
 # FetchContent_MakeAvailable(SDL3_net)
 # target_include_directories(yoyoengine PUBLIC ${SDL3_net_SOURCE_DIR}/include/SDL3_net)
-# if(MSVC)
-#     target_link_libraries(yoyoengine PUBLIC ${SDL3_net_BINARY_DIR}/SDL3_net-staticd.lib)
-# endif()
 
 ###############
 #   linking   #
 ###############
 
-if(MSVC)
-    # On MSVC, link static libraries normally
-    target_link_libraries(yoyoengine PRIVATE 
+if(YOYO_ENGINE_STATIC)
+    target_link_libraries(yoyoengine ${YOYO_ENGINE_LINK_TERM} 
         # TODO: is there lilith duplication in p2d?
         lilith
         p2d
@@ -423,7 +345,7 @@ if(MSVC)
     )
 else()
     # On GCC/Clang, use whole-archive to ensure all symbols are included in shared lib
-    target_link_libraries(yoyoengine PRIVATE 
+    target_link_libraries(yoyoengine ${YOYO_ENGINE_LINK_TERM}  
         -Wl,--whole-archive
         # TODO: is there lilith duplication in p2d?
         lilith
@@ -440,130 +362,98 @@ else()
     )
 endif()
 
-# # create an output dir based on platform
-# file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-
-# # set the output directory for the executable
-# if(UNIX)
-#     set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-# else()
-#     set_target_properties(yoyoengine PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-# endif()
-
 ###############
 #    libs     #
 ###############
 
-# # Set the output directory for libraries, on linux this is lib, on windows its bin
-# if(UNIX)
-#     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-# else()
-#     set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-# endif()
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-# # Copy libraries to the output directory after build
-# add_custom_command(
-#     TARGET yoyoengine POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
-#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2-static> ${LIBRARY_OUTPUT_PATH}
-#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_ttf> ${LIBRARY_OUTPUT_PATH}
-#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_image> ${LIBRARY_OUTPUT_PATH}
-#     # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SDL2_mixer> ${LIBRARY_OUTPUT_PATH}
-#     # COMMENT "Copying libraries to platform-specific directory"
-#     COMMENT "Creating platform-specific bin directory"
-# )
+# ###############
+# # lua runtime #
+# ###############
 
-# WIP: ability to concat all lua files into one runtime file
-# maybe in the future we have this as a seperate target, its
-# hard to combine this as a pre-step since we have such a convoluted
-# build process (especially for individual games)
+# # Expose the option to build the lua runtime, which the editor will enable.
+# # The editor creates packs for the games based off of its own engine_resources folder,
+# # so we will have it build the lua runtime there.
 
-###############
-# lua runtime #
-###############
+# option(BUILD_LUA_RUNTIME "Build the Lua runtime" OFF)
 
-# Expose the option to build the lua runtime, which the editor will enable.
-# The editor creates packs for the games based off of its own engine_resources folder,
-# so we will have it build the lua runtime there.
+# message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
 
-option(BUILD_LUA_RUNTIME "Build the Lua runtime" OFF)
-
-message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
-
-if(BUILD_LUA_RUNTIME)
+# if(BUILD_LUA_RUNTIME)
     
-    # where we will output the runtime
-    option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/ye_runtime.lua")
-    message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
+#     # where we will output the runtime
+#     option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/ye_runtime.lua")
+#     message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
 
-    # create full path to runtime output so it exists
-    get_filename_component(LUA_RUNTIME_OUTPUT_DIR ${LUA_RUNTIME_OUTPUT} DIRECTORY)
-    file(MAKE_DIRECTORY ${LUA_RUNTIME_OUTPUT_DIR})
+#     # create full path to runtime output so it exists
+#     get_filename_component(LUA_RUNTIME_OUTPUT_DIR ${LUA_RUNTIME_OUTPUT} DIRECTORY)
+#     file(MAKE_DIRECTORY ${LUA_RUNTIME_OUTPUT_DIR})
 
-    # variable to hold runtime source file location
-    set(LUA_RUNTIME_SRC
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
-        # ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/lua_runtime
-    )
+#     # variable to hold runtime source file location
+#     set(LUA_RUNTIME_SRC
+#         ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
+#         # ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/lua_runtime
+#     )
 
-    # all the files that make up the runtime
-    set(LUA_RUNTIME_FILES
-        # ${LUA_RUNTIME_SRC}/api.lua
-        ${LUA_RUNTIME_SRC}/runtime.lua
-        ${LUA_RUNTIME_SRC}/definitions/input_codes.lua
-        ${LUA_RUNTIME_SRC}/subsystems/audio.lua
-        ${LUA_RUNTIME_SRC}/subsystems/scene.lua
-        ${LUA_RUNTIME_SRC}/subsystems/input.lua
-        ${LUA_RUNTIME_SRC}/subsystems/timer.lua
-        ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
-        ${LUA_RUNTIME_SRC}/ecs/button.lua
-        ${LUA_RUNTIME_SRC}/ecs/camera.lua
-        ${LUA_RUNTIME_SRC}/ecs/collider.lua
-        ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
-        ${LUA_RUNTIME_SRC}/ecs/physics.lua
-        ${LUA_RUNTIME_SRC}/ecs/renderer.lua
-        ${LUA_RUNTIME_SRC}/ecs/tag.lua
-        ${LUA_RUNTIME_SRC}/ecs/transform.lua
-        ${LUA_RUNTIME_SRC}/ecs/entity.lua
-    )
+#     # all the files that make up the runtime
+#     set(LUA_RUNTIME_FILES
+#         # ${LUA_RUNTIME_SRC}/api.lua
+#         ${LUA_RUNTIME_SRC}/runtime.lua
+#         ${LUA_RUNTIME_SRC}/definitions/input_codes.lua
+#         ${LUA_RUNTIME_SRC}/subsystems/audio.lua
+#         ${LUA_RUNTIME_SRC}/subsystems/scene.lua
+#         ${LUA_RUNTIME_SRC}/subsystems/input.lua
+#         ${LUA_RUNTIME_SRC}/subsystems/timer.lua
+#         ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
+#         ${LUA_RUNTIME_SRC}/ecs/button.lua
+#         ${LUA_RUNTIME_SRC}/ecs/camera.lua
+#         ${LUA_RUNTIME_SRC}/ecs/collider.lua
+#         ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
+#         ${LUA_RUNTIME_SRC}/ecs/physics.lua
+#         ${LUA_RUNTIME_SRC}/ecs/renderer.lua
+#         ${LUA_RUNTIME_SRC}/ecs/tag.lua
+#         ${LUA_RUNTIME_SRC}/ecs/transform.lua
+#         ${LUA_RUNTIME_SRC}/ecs/entity.lua
+#     )
 
-    # Concatenate all the runtime source into one file
+#     # Concatenate all the runtime source into one file
 
-    # Clear the output file first
-    add_custom_command(
-        OUTPUT ${LUA_RUNTIME_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
-        COMMENT "Clearing Lua runtime output file..."
-    )
+#     # Clear the output file first
+#     add_custom_command(
+#         OUTPUT ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
+#         COMMENT "Clearing Lua runtime output file..."
+#     )
 
-    # Concatenate each Lua file with a newline after each
-    foreach(LUA_FILE ${LUA_RUNTIME_FILES})
-    add_custom_command(
-        OUTPUT ${LUA_RUNTIME_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
-        COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
-        DEPENDS ${LUA_FILE}
-        APPEND
-        COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
-    )
-    endforeach()
+#     # Concatenate each Lua file with a newline after each
+#     foreach(LUA_FILE ${LUA_RUNTIME_FILES})
+#     add_custom_command(
+#         OUTPUT ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
+#         COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
+#         DEPENDS ${LUA_FILE}
+#         APPEND
+#         COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
+#     )
+#     endforeach()
 
-    # Final step to touch the output file and print a message
-    add_custom_command(
-        OUTPUT ${LUA_RUNTIME_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
-        COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
-        APPEND
-        COMMENT "Finalizing Lua runtime concatenation..."
-    )
+#     # Final step to touch the output file and print a message
+#     add_custom_command(
+#         OUTPUT ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
+#         COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
+#         APPEND
+#         COMMENT "Finalizing Lua runtime concatenation..."
+#     )
 
-    # make our engine depend on this command
-    add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
-endif()
+#     # make our engine depend on this command
+#     add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
+# endif()
+
+# TODO: these two dont not work for INTERFACE
 
 ###############
 #  resources  #
