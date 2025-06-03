@@ -26,6 +26,7 @@
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
+#include <yoyoengine/filesystem.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
@@ -49,7 +50,7 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
         }
     */
     const char *fontpath = pFontPath;
-    if(access(fontpath, F_OK) == -1){
+    if(!ye_file_exists(fontpath)){
         ye_logf(error, "Could not access file '%s'.\n", fontpath);
         return YE_STATE.engine.pEngineFont;
     }
@@ -182,7 +183,7 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
 
 SDL_Texture * ye_create_image_texture(const char *pPath) {
     // check the file exists
-    if(access(pPath, F_OK) == -1){
+    if(!ye_file_exists(pPath)) {
         ye_logf(error, "Could not access file '%s'.\n", pPath);
         return missing_texture; // return missing texture, error has been logged
     }

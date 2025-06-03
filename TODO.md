@@ -322,3 +322,7 @@ remove stretch viewport?
 
 - probably need a is_resources_changed recursion that checks every file or something.
   - current check doesnt care if we modify a existing file in resources for some reason (i think, you should check)
+
+## WINDOWS PORT
+
+- lla_vec_magnitude sigsegvs
