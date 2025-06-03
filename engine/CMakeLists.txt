@@ -25,6 +25,9 @@ endif()
 option(YOYO_ENGINE_STATIC "Build YOYOENGINE as a static library" OFF)
 option(YOYO_ENGINE_INTERFACE "Configure YOYOENGINE as an interface target" OFF)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
 if(YOYO_ENGINE_INTERFACE)
     message(STATUS "Configuring yoyoengine as an interface target")
     add_library(yoyoengine INTERFACE ${SOURCES})
@@ -362,13 +365,6 @@ else()
     )
 endif()
 
-###############
-#    libs     #
-###############
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
-
 # ###############
 # # lua runtime #
 # ###############
@@ -476,7 +472,7 @@ endif()
 #   license   #
 ###############
 
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/LICENSE.md)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/LICENSE.md)
     add_custom_command(
         TARGET yoyoengine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE.md ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/LICENSE.md
