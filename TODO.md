@@ -326,3 +326,7 @@ remove stretch viewport?
 ## WINDOWS PORT
 
 - lla_vec_magnitude sigsegvs
+
+## QOL
+
+- add SDL_GetError wrappers literally everywhere in logs

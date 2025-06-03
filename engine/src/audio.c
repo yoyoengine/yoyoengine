@@ -181,11 +181,18 @@ void ye_init_audio(){
     audio_mix_allocated_channels = 0;
     audio_mix_busy_channels = 0;
 
-    if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK) )
-    {
+    // if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK) )
+    // {
+    //     ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
+    //     exit(1);
+    // }
+
+    // will call Mix_Init internally
+    if(!Mix_OpenAudio(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL)){
         ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
         exit(1);
     }
+    ye_logf(info, "Initialized SDL_mixer.\n");
 
     // allocate our desired max channels to the mixer
     if(YE_MIXER_DEFAULT_CHANNELS > 0)
