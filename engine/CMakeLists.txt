@@ -59,8 +59,7 @@ include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
 # if not in release mode, build in debug mode which sets cflags for max warnings and debug sigs
-option(YOYO_ENGINE_BUILD_RELEASE "Build the engine in release mode" ON)
-if(NOT YOYO_ENGINE_BUILD_RELEASE)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(MSVC)
         # TODO: make these proper
         # target_compile_options(yoyoengine PRIVATE -Wall -g)
@@ -289,7 +288,8 @@ set(SDLMIXER_WAV ON CACHE BOOL "Enable WAV support")
 FetchContent_Declare(
     SDL3_mixer
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG         main # TODO: pin when ready
+    # GIT_TAG       main # TODO: pin when ready
+    GIT_TAG         daf0503cea6d9a521f585d37e785d88c2f066cd0
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
