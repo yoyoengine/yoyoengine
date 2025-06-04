@@ -458,8 +458,11 @@ endif()
 # configure option
 # option(YOYO_CMAKE_COPY_ENGINE_RESOURCES "Copy engine resources to the output directory" OFF)
 
+option(YOYO_ENGINE_COPY_ENGINE_RESOURCES "Copy engine resources to the output directory" OFF)
+
+# TODO: this should just be pack files at some point
 # TODO: this doesn't account for "old" engine resources
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources)
+if(YOYO_ENGINE_COPY_ENGINE_RESOURCES AND NOT EXISTS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources)
     add_custom_command(
         TARGET yoyoengine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine_resources
