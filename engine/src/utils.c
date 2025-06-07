@@ -148,7 +148,7 @@ float ye_angle(float x1, float y1, float x2, float y2){
 
 struct ye_rectf ye_get_position(struct ye_entity *entity, enum ye_component_type type){
     if(entity == NULL){
-        ye_logf(error, "Tried to get position for null entity \"%s\". returning (0,0,0,0)\n",entity->name);
+        ye_logf(error, "Tried to get position for null entity. returning (0,0,0,0)\n");
         return (struct ye_rectf){0,0,0,0};
     }
 
