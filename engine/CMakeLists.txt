@@ -289,7 +289,7 @@ FetchContent_Declare(
     SDL3_mixer
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
     # GIT_TAG       main # TODO: pin when ready
-    GIT_TAG         daf0503cea6d9a521f585d37e785d88c2f066cd0
+    GIT_TAG         main
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
