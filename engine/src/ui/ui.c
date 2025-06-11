@@ -64,7 +64,7 @@ void ui_register_component(const char* key, void (*render_function)()) {
         UIComponent new_component;
         strncpy(new_component.key, key, MAX_KEY_LENGTH - 1);  // Copy the key
 
-        new_component.render_function = render_function;
+        new_component.render_function = (void(*)(struct nk_context))render_function;
         // Add any other relevant initialization here
 
         ui_components[num_ui_components++] = new_component;
@@ -353,8 +353,8 @@ void init_ui(SDL_Window *win, SDL_Renderer *renderer){
 
     // ui_register_component("test",paint_test);
     if(YE_STATE.engine.debug_mode){
-        ui_register_component("debug_overlay",ui_paint_debug_overlay);
-        ui_register_component("cam_info",ui_paint_cam_info);
+        ui_register_component("debug_overlay",(void *)ui_paint_debug_overlay);
+        ui_register_component("cam_info",(void *)ui_paint_cam_info);
     }
 
     ye_logf(info, "ui initialized\n");

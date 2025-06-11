@@ -277,7 +277,7 @@ void setup_splash_screen(){
     splash_timer->start_ticks = -1;
     splash_timer->loops = 0;
     splash_timer->length_ms = 5000;
-    splash_timer->callback = teardown_splash_screen;
+    splash_timer->callback = (void(*)(void))teardown_splash_screen;
     ye_register_timer(splash_timer);
 }
 

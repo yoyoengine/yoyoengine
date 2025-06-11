@@ -105,7 +105,7 @@ void ye_system_input() {
                         }
                         else{
                             console_visible = true;
-                            ui_register_component("ye_dev_console", ye_paint_developer_console); // TODO: prob decouple this from here
+                            ui_register_component("ye_dev_console", (void *)ye_paint_developer_console); // TODO: prob decouple this from here
                             ye_console_reset_scroll = true;
                         }
                         break;
