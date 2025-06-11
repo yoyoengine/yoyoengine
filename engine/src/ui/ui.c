@@ -64,7 +64,7 @@ void ui_register_component(const char* key, void (*render_function)()) {
         UIComponent new_component;
         strncpy(new_component.key, key, MAX_KEY_LENGTH - 1);  // Copy the key
 
-        new_component.render_function = (void(*)(struct nk_context))render_function;
+        new_component.render_function = (void(*)(struct nk_context *))render_function;
         // Add any other relevant initialization here
 
         ui_components[num_ui_components++] = new_component;
