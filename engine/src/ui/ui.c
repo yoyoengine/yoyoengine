@@ -59,7 +59,7 @@ typedef struct {
 UIComponent ui_components[MAX_UI_COMPONENTS];
 int num_ui_components = 0;  // Track the number of registered components
 
-void ui_register_component(const char* key, void (*render_function)()) {
+void ui_register_component(const char* key, void (*render_function)(struct nk_context *ctx)) {
     if (num_ui_components < MAX_UI_COMPONENTS) {
         UIComponent new_component;
         strncpy(new_component.key, key, MAX_KEY_LENGTH - 1);  // Copy the key

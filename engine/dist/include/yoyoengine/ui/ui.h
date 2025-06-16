@@ -122,7 +122,7 @@ YE_API void shutdown_ui();
  * @param key The key to register the component under.
  * @param render_function The function to call to render the component.
  */
-YE_API void ui_register_component(const char* key, void (*render_function)());
+YE_API void ui_register_component(const char* key, void (*render_function)(struct nk_context *ctx));
 
 /**
  * @brief Remove a component from the UI system.
