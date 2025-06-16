@@ -87,7 +87,7 @@ void remove_ui_component(const char* key) {
     }
 }
 
-void ui_toggle_component(char* key, void (*render_function)()) {
+void ui_toggle_component(char* key, void (*render_function)(struct nk_context *ctx)) {
     if (ui_component_exists(key)) {
         remove_ui_component(key);
     } else {

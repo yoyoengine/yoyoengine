@@ -139,7 +139,7 @@ YE_API void remove_ui_component(const char* key);
  * 
  * The component renderer function pointer assumes it takes in a nk_context pointer.
 */
-YE_API void ui_toggle_component(char* key, void (*render_function)());
+YE_API void ui_toggle_component(char* key, void (*render_function)(struct nk_context *ctx));
 
 /**
  * @brief Checks if a component exists in the UI system.
