@@ -267,6 +267,29 @@ bool _yep_seek_header(const char *handle, char *name, uint32_t *offset, uint32_t
     return false;
 }
 
+bool yep_item_exists(const char* file, const char* handle) {
+    // open the file
+    if (!_yep_open_file(file)) {
+        ye_logf(YE_LL_WARNING, "Error opening yep file %s\n", file);
+        return false;
+    }
+
+    // setup the data we will seek out of the yep file
+    char name[64];
+    uint32_t offset;
+    uint32_t size;
+    uint8_t compression_type;
+    uint32_t uncompressed_size;
+    uint8_t data_type;
+
+    // try to get our header
+    if (!_yep_seek_header(handle, name, &offset, &size, &compression_type, &uncompressed_size, &data_type)) {
+        return false;
+    }
+
+    return true;
+}
+
 struct yep_data_info yep_extract_data(const char *file, const char *handle){
     if(!_yep_open_file(file)){
         ye_logf(warning,"Error opening yep file %s\n", file);

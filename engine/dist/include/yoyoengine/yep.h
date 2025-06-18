@@ -100,6 +100,8 @@ YE_API bool yep_force_pack_directory(char *directory_path, char *output_name);
 // _yep_open_file(char *file); which will open the file into the yep global file pointer
 // _yep_close_file(); which will close the file on shutdown
 
+YE_API bool yep_item_exists(const char* file, const char* handle);
+
 /**
  * @brief Initializes the yep subsystem
  */
