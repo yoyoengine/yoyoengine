@@ -1074,6 +1074,18 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             cam_verts[i].tex_coord.y = tex_coords[i][1];
         }
 
+        /*
+            TODO: FIXME: REALLY DUMB HACK
+            SDL3 removed the render quality hint, but we can replicate
+            it by manually setting a prop on each texture. To simplify,
+            we will do this FOR EVERY TEXTURE IN EVERY FRAME!
+            This seems really bad, and you should profile this.
+        */
+        if(YE_STATE.engine.sdl_quality_hint == 0)
+            SDL_SetTextureScaleMode(rend->texture, SDL_SCALEMODE_NEAREST);
+        else
+            SDL_SetTextureScaleMode(rend->texture, SDL_SCALEMODE_LINEAR);
+
         SDL_RenderGeometry(renderer, current->entity->renderer->texture, cam_verts, 4, indicies, 6);
 
         YE_STATE.runtime.render_v2.num_render_calls++;
