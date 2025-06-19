@@ -970,7 +970,7 @@ void ye_renderer_v2(SDL_Renderer *renderer) {
             cam_verts[i].color.r = 1.0f;
             cam_verts[i].color.g = 1.0f;
             cam_verts[i].color.b = 1.0f;
-            cam_verts[i].color.a = current->entity->renderer->alpha;
+            cam_verts[i].color.a = ((float)current->entity->renderer->alpha / 255.0f);
 
             // cache
             local_rect->verticies[i].x = point.data[0];
