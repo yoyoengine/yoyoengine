@@ -40,7 +40,8 @@ SDL_Renderer *pRenderer = NULL;
 /*
     Texture used for missing textures
 */
-SDL_Texture *missing_texture = NULL;
+SDL_Surface *missing_surface = NULL;
+// SDL_Texture *missing_texture = NULL;
 
 TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
     /*
@@ -133,6 +134,8 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderText_Blended(pFont, pText, 0, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
     
+    SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
+
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
@@ -159,6 +162,8 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength);
 
+    SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
+
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
@@ -182,6 +187,8 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
 }
 
 SDL_Texture * ye_create_image_texture(const char *pPath) {
+    SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
+    
     // check the file exists
     if(!ye_file_exists(pPath)) {
         ye_logf(error, "Could not access file '%s'.\n", pPath);
@@ -453,15 +460,14 @@ void ye_init_graphics(){
 
         If we are the edtior, it exists as a loose file
     */
-    SDL_Surface *missing_surface = NULL;
     if(YE_STATE.editor.editor_mode){
         missing_surface = IMG_Load(ye_get_engine_resource_static("missing.png"));
     }
     else{
         missing_surface = yep_engine_resource_image("missing.png");
     }
-    missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
-    SDL_DestroySurface(missing_surface);
+    // missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
+    // SDL_DestroySurface(missing_surface);
 
     // set the runtime window and renderer references
     YE_STATE.runtime.window = pWindow;
@@ -522,7 +528,7 @@ void ye_shutdown_graphics(){
     ye_logf(info, "Shut down TTF.\n");
 
     // free the missing texture
-    SDL_DestroyTexture(missing_texture);
+    // SDL_DestroyTexture(missing_texture);
 
     shutdown_ui();
 
