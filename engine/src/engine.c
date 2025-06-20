@@ -148,7 +148,8 @@ void ye_process_frame(){
         // }
 
         // update physics
-        p2d_step(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
+        if(YE_STATE.runtime.delta_time > 0.0f)
+            p2d_step(YE_STATE.runtime.delta_time); // TODO: decouple from framerate
 
         // printf("delta time: %f\n", YE_STATE.runtime.delta_time);
         // printf("+---------------------+\n");
