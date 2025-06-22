@@ -324,7 +324,7 @@ void ye_init_engine() {
     YE_STATE.engine.window_title            = ye_config_string(SETTINGS, "window_title", "Yoyo Engine Window");
     ye_config_string(SETTINGS, "engine_version", YOYO_ENGINE_VERSION_STRING); // overwrite the version with what we opened it with
 
-    YE_STATE.engine.window_mode             = ye_config_int(SETTINGS, "window_mode", 0);
+    YE_STATE.engine.fullscreen              = ye_config_int(SETTINGS, "fullscreen", 0);
     YE_STATE.engine.volume                  = ye_config_int(SETTINGS, "volume", 64);
     YE_STATE.engine.log_level               = ye_config_int(SETTINGS, "log_level", 4);
     YE_STATE.engine.screen_width            = ye_config_int(SETTINGS, "screen_width", 1920);

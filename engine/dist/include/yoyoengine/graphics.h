@@ -153,10 +153,10 @@ YE_API struct ScreenSize ye_get_screen_size();
 */
 
 /**
- * @brief Sets the window mode
+ * @brief Sets the fullscreen state
  * 
- * @param mode The SDL window mode to change to
+ * @param state The desired fullscreen state (true for fullscreen, false for windowed).
  */
-YE_API void ye_set_window_mode(int mode);
+YE_API void ye_set_fullscreen(bool state);
 
 #endif

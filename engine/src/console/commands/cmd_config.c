@@ -81,8 +81,8 @@ void ye_cmd_config(int argc, const char **argv) {
         else if(strcmp(argv[1], "screen_height") == 0)
             _config_get_int("screen_height", &YE_STATE.engine.screen_height);
         
-        else if(strcmp(argv[1], "window_mode") == 0)
-            _config_get_int("window_mode", &YE_STATE.engine.window_mode);
+        else if(strcmp(argv[1], "fullscreen") == 0)
+            _config_get_int("fullscreen", &YE_STATE.engine.fullscreen);
         
         else if(strcmp(argv[1], "volume") == 0)
             _config_get_int("volume", &YE_STATE.engine.volume);
@@ -133,8 +133,8 @@ void ye_cmd_config(int argc, const char **argv) {
         else if(strcmp(argv[1], "screen_height") == 0)
             _config_set_int("screen_height", &YE_STATE.engine.screen_height, atoi(argv[2]));
         
-        else if(strcmp(argv[1], "window_mode") == 0)
-            _config_set_int("window_mode", &YE_STATE.engine.window_mode, atoi(argv[2]));
+        else if(strcmp(argv[1], "fullscreen") == 0)
+            _config_set_int("fullscreen", &YE_STATE.engine.fullscreen, atoi(argv[2]));
         
         else if(strcmp(argv[1], "volume") == 0)
             _config_set_int("volume", &YE_STATE.engine.volume, atoi(argv[2]));

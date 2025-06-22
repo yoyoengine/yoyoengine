@@ -87,7 +87,7 @@ struct ye_engine_config {
     int screen_width;
     int screen_height;
     int volume;
-    int window_mode;
+    bool fullscreen;
     int framecap;
     char *window_title;
     char *icon_path;

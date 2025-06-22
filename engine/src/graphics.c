@@ -425,7 +425,7 @@ void ye_init_graphics(){
         YE_STATE.engine.window_title, 
         YE_STATE.engine.screen_width,
         YE_STATE.engine.screen_height,
-        YE_STATE.engine.window_mode | SDL_WINDOW_HIGH_PIXEL_DENSITY
+        YE_STATE.engine.fullscreen | false
     );
 
     if (pWindow == NULL) {
@@ -544,16 +544,16 @@ void ye_shutdown_graphics(){
 // helper function to get the current window size, if fullscreen it gets the monitor size
 struct ScreenSize ye_get_screen_size(){
     struct ScreenSize screenSize;
-    if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
-        const SDL_DisplayMode * DM = SDL_GetDesktopDisplayMode(0);
-        screenSize.width = DM->w;
-        screenSize.height = DM->h;
-    }
-    else if(SDL_GetWindowFlags(pWindow) & SDL_WINDOW_FULLSCREEN){
-        SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
-    }
-    else {
-        SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
+
+    // fullscreen
+    if (YE_STATE.engine.fullscreen) {
+        // if we are in fullscreen mode, get the desktop display mode
+		const SDL_DisplayMode *DM = SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay());
+		screenSize.width = DM->w;
+		screenSize.height = DM->h;
+	} else {
+		// if we are not in fullscreen mode, get the window size
+		SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
     }
     return screenSize;
 }
@@ -562,8 +562,8 @@ struct ScreenSize ye_get_screen_size(){
     API
 */
 
-void ye_set_window_mode(int mode){
-    SDL_SetWindowFullscreen(pWindow, mode);
-    YE_STATE.engine.window_mode = mode;
+void ye_set_fullscreen(bool state){
+    SDL_SetWindowFullscreen(pWindow, state);
+    YE_STATE.engine.fullscreen = state;
     ye_recompute_boxing();
 }
