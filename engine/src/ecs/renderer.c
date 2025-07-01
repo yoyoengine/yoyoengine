@@ -122,6 +122,7 @@ void ye_add_renderer_component(
     ){
 
     entity->renderer = malloc(sizeof(struct ye_component_renderer));
+    memset(entity->renderer, 0, sizeof(struct ye_component_renderer));
     entity->renderer->active = true;
     entity->renderer->type = type;
     entity->renderer->alpha = 255; // by default renderer is fully opaque
@@ -166,6 +167,7 @@ void ye_add_renderer_component(
 
 void ye_add_image_renderer_component(struct ye_entity *entity, int z, const char *src){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
+    memset(image, 0, sizeof(struct ye_component_renderer_image));
     // copy src to image->src
     image->src = malloc(sizeof(char) * (strlen(src) + 1));
     strcpy(image->src, src);
@@ -187,6 +189,7 @@ void ye_add_image_renderer_component(struct ye_entity *entity, int z, const char
 
 void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, SDL_Texture *texture){
     struct ye_component_renderer_image *image = malloc(sizeof(struct ye_component_renderer_image));
+    memset(image, 0, sizeof(struct ye_component_renderer_image));
     image->src = NULL;
 
     // create the renderer top level
@@ -203,6 +206,7 @@ void ye_add_image_renderer_component_preloaded(struct ye_entity *entity, int z, 
 
 void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char *text, const char* font, int font_size, const char *color, int wrap_width){
     struct ye_component_renderer_text *text_renderer = malloc(sizeof(struct ye_component_renderer_text));
+    memset(text_renderer, 0, sizeof(struct ye_component_renderer_text));
     text_renderer->text = strdup(text);
 
     text_renderer->font = ye_font(font, font_size);
@@ -233,6 +237,7 @@ void ye_add_text_renderer_component(struct ye_entity *entity, int z, const char 
 
 void ye_add_text_outlined_renderer_component(struct ye_entity *entity, int z, const char *text, const char *font, int font_size, const char *color, const char *outline_color, int outline_size, int wrap_width){
     struct ye_component_renderer_text_outlined *text_renderer = malloc(sizeof(struct ye_component_renderer_text_outlined));
+    memset(text_renderer, 0, sizeof(struct ye_component_renderer_text_outlined));
     text_renderer->text = strdup(text);
 
     text_renderer->font = ye_font(font, font_size);
@@ -333,6 +338,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
     }
 
     struct ye_component_renderer_animation *animation = malloc(sizeof(struct ye_component_renderer_animation));
+    memset(animation, 0, sizeof(struct ye_component_renderer_animation));
     animation->frame_count = frame_count;
     animation->frame_delay = frame_delay;
     animation->loops = loops;
@@ -362,6 +368,7 @@ void ye_add_animation_renderer_component(struct ye_entity *entity, int z, const 
 
 void ye_add_tilemap_renderer_component(struct ye_entity *entity, int z, const char * handle, SDL_Rect src){
     struct ye_component_renderer_tilemap_tile *tile = malloc(sizeof(struct ye_component_renderer_tilemap_tile));
+    memset(tile, 0, sizeof(struct ye_component_renderer_tilemap_tile));
     tile->handle = strdup(handle);
     tile->src = src;
 

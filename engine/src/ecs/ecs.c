@@ -380,22 +380,22 @@ void ye_purge_ecs(){
     ye_shutdown_ecs();
     ye_init_ecs();
     ye_logf(info, "Purged ECS\n");
-    if(YE_STATE.editor.editor_mode){
-        struct ye_entity * editor_camera = ye_create_entity_named("editor_camera");
-        ye_add_transform_component(editor_camera, 0, 0);
-        ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
-        ye_set_camera(editor_camera);
+    //if(YE_STATE.editor.editor_mode){
+    //    struct ye_entity * editor_camera = ye_create_entity_named("editor_camera");
+    //    ye_add_transform_component(editor_camera, 0, 0);
+    //    ye_add_camera_component(editor_camera, 999, (struct ye_rectf){0, 0, 2560, 1440});
+    //    ye_set_camera(editor_camera);
 
-        struct ye_entity * origin = ye_create_entity_named("origin");
-        ye_add_transform_component(origin, -50, -50);
+    //    struct ye_entity * origin = ye_create_entity_named("origin");
+    //    ye_add_transform_component(origin, -50, -50);
 
-        // load the origin texture
-        SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
-        ye_cache_texture_manual(orgn_tex, "originwhite.png");
-        ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
-        origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
-    }
-    ye_logf(info, "Re-created editor entities.\n");
+    //    // load the origin texture
+    //    SDL_Texture *orgn_tex = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, yep_engine_resource_image("originwhite.png"));
+    //    ye_cache_texture_manual(orgn_tex, "originwhite.png");
+    //    ye_add_image_renderer_component_preloaded(origin, 0, orgn_tex);
+    //    origin->renderer->rect = (struct ye_rectf){0, 0, 100, 100};
+    //}
+    //ye_logf(info, "Re-created editor entities.\n");
 }
 
 void ye_shutdown_ecs(){
