@@ -16,6 +16,7 @@ void ye_add_transform_component(struct ye_entity *entity, int x,int y){
     // entity->transform->active = true; transform doesnt need active
     entity->transform->x = x;
     entity->transform->y = y;
+    entity->transform->rotation = 0.0f;
 
     // add this entity to the transform component list
     ye_entity_list_add(&transform_list_head, entity);
