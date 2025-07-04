@@ -30,6 +30,7 @@ void ye_add_rigidbody_component(struct ye_entity *entity, float transform_offset
     if(!rb) {
         ye_logf(YE_LL_ERROR, "could not add rigidbody component: failed to allocate memory\n");
     }
+    memset(rb, 0, sizeof(struct ye_component_rigidbody));
 
     rb->active = true;
     rb->p2d_object = p2d_object;

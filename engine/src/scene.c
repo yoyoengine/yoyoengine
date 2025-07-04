@@ -431,11 +431,15 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
         return;
     }
 
-    // get the mass field
-    float mass;
-    if(!ye_json_float(p2d_obj,"mass",&mass)) {
-        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mass field\n", entity_name);
+    // get the density field
+    float density;
+    if(!ye_json_float(p2d_obj,"density",&density)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the density field\n", entity_name);
         return;
+    }
+    if(density < P2D_MIN_DENSITY || density > P2D_MAX_DENSITY) {
+        ye_logf(warning,"Entity %s has a rigidbody component with invalid density field: %f. Clamping between [%f, %f]\n", entity_name, density, P2D_MIN_DENSITY, P2D_MAX_DENSITY);
+        density = ye_clamp(density, P2D_MIN_DENSITY, P2D_MAX_DENSITY);
     }
 
     // get the restitution field
@@ -459,6 +463,13 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
         return;
     }
 
+    int mask;
+    if(!ye_json_int(p2d_obj,"mask",&mask)) {
+        ye_logf(warning,"Entity %s has a rigidbody component, but it is missing the mask field\n", entity_name);
+        mask = 0; // dont collide with anything
+        printf("WARNING: Entity %s has a rigidbody component, but it is missing the mask field. Defaulting to 0 (no collisions).\n", entity_name);
+    }
+
     struct p2d_object obj = {
         .type = type,
         .is_static = is_static,
@@ -466,8 +477,9 @@ void ye_construct_rigidbody(struct ye_entity* e, json_t* rigidbody, const char* 
         .vx = vx,
         .vy = vy,
         .vr = vr,
-        .mass = mass,
+        .density = density,
         .restitution = restitution,
+        .mask = mask,
     };
     
     // comply with clang >:(
