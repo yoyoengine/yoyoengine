@@ -340,6 +340,12 @@ void ye_init_engine() {
     int p2d_grid_size = ye_config_int(SETTINGS, "p2d_grid_size", 250);
     float p2d_gravity_x = ye_config_float(SETTINGS, "p2d_gravity_x", 0.0f);
     float p2d_gravity_y = ye_config_float(SETTINGS, "p2d_gravity_y", 20.0f);
+    float p2d_air_density = ye_config_float(SETTINGS, "p2d_air_density", 1.0f);
+    int p2d_substeps = ye_config_int(SETTINGS, "p2d_substeps", 1);
+    int p2d_joint_substeps = ye_config_int(SETTINGS, "p2d_joint_substeps", 1);
+    // TODO: requires us to track active camera or do lookup from p2d (im too lazy rn)
+    // bool p2d_frustum_sleeping = ye_config_bool(SETTINGS, "p2d_frustum_sleeping", false);
+    float mass_scale = ye_config_float(SETTINGS, "p2d_mass_scaling", P2D_DEFAULT_MASS_SCALE);
 
 
     // initialize some editor state
@@ -397,6 +403,12 @@ void ye_init_engine() {
     p2d_init(p2d_grid_size, ye_physics_collision_callback, ye_physics_trigger_callback, ye_p2d_logf_wrapper);
     YE_STATE.engine.p2d_state = &p2d_state;
     YE_STATE.engine.p2d_state->p2d_gravity = (vec2_t){{p2d_gravity_x, p2d_gravity_y}};
+    YE_STATE.engine.p2d_state->p2d_air_density = p2d_air_density;
+    YE_STATE.engine.p2d_state->p2d_substeps = p2d_substeps;
+    YE_STATE.engine.p2d_state->p2d_joint_iterations = p2d_joint_substeps;
+    // TODO: requires us to track active camera or do lookup from p2d (im too lazy rn)
+    // YE_STATE.engine.p2d_state->p2d_frustum_sleeping = p2d_frustum_sleeping;
+    YE_STATE.engine.p2d_state->p2d_mass_scaling = mass_scale;
 
     // if we are in debug mode
     if(YE_STATE.engine.debug_mode){
