@@ -288,10 +288,9 @@ set(SDLMIXER_WAV ON CACHE BOOL "Enable WAV support")
 FetchContent_Declare(
     SDL3_mixer
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
-    # GIT_TAG       main # TODO: pin when ready
-    GIT_TAG         main
+    GIT_TAG         05099c5ff7493f80a90b1fd18103697715f412d0  # TODO: update when SDL3; random version that works
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
+    GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
