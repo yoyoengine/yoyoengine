@@ -306,12 +306,6 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
         ye_json_bool(renderer,"lock aspect ratio",&e->renderer->lock_aspect_ratio);
     }
 
-    // update the aplha (if exists)
-    if(ye_json_has_key(renderer,"alpha")){
-        int alpha = 255;    ye_json_int(renderer,"alpha",&alpha);
-        e->renderer->alpha = alpha;
-    }
-
     // check for flipped_x and flipped_y and update
     if(ye_json_has_key(renderer,"flipped_x")){
         bool flipped_x = false;    ye_json_bool(renderer,"flipped_x",&flipped_x);
@@ -378,8 +372,12 @@ void ye_construct_renderer(struct ye_entity* e, json_t* renderer, const char* en
 
     // update the alpha
     if(ye_json_has_key(renderer,"alpha")){
-        int alpha = 255;    ye_json_int(renderer,"alpha",&alpha);
-        e->renderer->alpha = alpha;
+        int alpha = 255;
+        if(ye_json_int(renderer,"alpha",&alpha)){
+            e->renderer->alpha = alpha;
+        } else {
+            ye_logf(warning,"Entity %s has a renderer component with invalid alpha field\n", entity_name);
+        }
     }
 }
 

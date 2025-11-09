@@ -339,6 +339,7 @@ SDL_Texture * ye_cache_texture(const char *path){
     }
     else{
         texture = SDL_CreateTextureFromSurface(YE_STATE.runtime.renderer, sur);
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_DestroySurface(sur);
     }
 

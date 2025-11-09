@@ -88,6 +88,7 @@ SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
     SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
+    SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
     SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
@@ -117,6 +118,7 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
     SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect); 
     SDL_DestroySurface(fg_surface); 
     SDL_Texture *pTexture = SDL_CreateTextureFromSurface(pRenderer, bg_surface);
+    SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
     SDL_DestroySurface(bg_surface);
     
     // error out if texture creation failed
@@ -151,6 +153,9 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
         return missing_texture; // return missing texture, error has been logged
     }
 
+    // set blend mode for proper alpha blending
+    SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
+
     // free the surface memory
     SDL_DestroySurface(pSurface);
 
@@ -178,6 +183,9 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
         ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
+
+    // set blend mode for proper alpha blending
+    SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
 
     // free the surface memory
     SDL_DestroySurface(pSurface);
@@ -212,6 +220,9 @@ SDL_Texture * ye_create_image_texture(const char *pPath) {
         ye_logf(error, "Error creating texture: %s\n", SDL_GetError());
         return missing_texture; // return missing texture, error has been logged
     }
+
+    // set blend mode for proper alpha blending
+    SDL_SetTextureBlendMode(pTexture, SDL_BLENDMODE_BLEND);
 
     // release surface from memory
     SDL_DestroySurface(pImage_surface);
