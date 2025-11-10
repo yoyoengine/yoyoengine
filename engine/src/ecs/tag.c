@@ -165,14 +165,48 @@ bool ye_entity_has_tag(struct ye_entity *entity, const char *tag){
 }
 
 void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent)){
+    /*
+        To avoid users mangling state (deleting entities in the callback),
+        we track visited entities and begin iteration from the HEAD after each callback.
+    */
+    int *processed_ids = NULL;
+    int processed_count = 0;
+    int processed_capacity = 0;
+    
     struct ye_entity_node *itr = tag_list_head;
     while(itr != NULL){
         if(itr->entity == NULL){
             ye_logf(error, "??? Entity node in tag list is NULL\n");
+            free(processed_ids);
             return;
         }
 
-        if(ye_entity_has_tag(itr->entity,tag)){
+        if(ye_entity_has_tag(itr->entity, tag)){
+            bool already_processed = false;
+            for(int i = 0; i < processed_count; i++){
+                if(processed_ids[i] == itr->entity->id){
+                    already_processed = true;
+                    break;
+                }
+            }
+            
+            if(already_processed){
+                itr = itr->next;
+                continue;
+            }
+            
+            if(processed_count >= processed_capacity){
+                processed_capacity = processed_capacity == 0 ? 8 : processed_capacity * 2;
+                int *new_ids = realloc(processed_ids, processed_capacity * sizeof(int));
+                if(new_ids == NULL){
+                    ye_logf(error, "Failed to allocate memory for processed entity tracking\n");
+                    free(processed_ids);
+                    return;
+                }
+                processed_ids = new_ids;
+            }
+            processed_ids[processed_count++] = itr->entity->id;
+            
             /*
                 In order to mitigate the risk of a callback
                 destroying our list state (like if they remove
@@ -189,4 +223,6 @@ void ye_for_matching_tag(const char * tag, void(*callback)(struct ye_entity *ent
 
         itr = itr->next;
     }
+    
+    free(processed_ids);
 }
