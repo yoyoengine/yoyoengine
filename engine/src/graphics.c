@@ -75,7 +75,7 @@ TTF_Font * ye_load_font(const char *pFontPath/*, int fontSize*/) {
 SDL_Texture *createTextTextureWithOutline(const char *pText, int width, TTF_Font *pFont, SDL_Color *pColor, SDL_Color *pOutlineColor) {
     int temp = TTF_GetFontOutline(pFont);
 
-    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, 9, *pColor); 
+    SDL_Surface *fg_surface = TTF_RenderText_Blended(pFont, pText, 0, *pColor);
 
     TTF_SetFontOutline(pFont, width);
     
