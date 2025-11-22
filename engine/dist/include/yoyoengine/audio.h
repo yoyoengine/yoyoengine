@@ -64,4 +64,25 @@ YE_API void ye_play_music(const char *handle, int loops, float volume_scale);
  */
 YE_API void ye_set_volume(float volume);
 
+/**
+ * @brief Get the number of allocated audio channels
+ * 
+ * @return The total number of channels allocated
+ */
+YE_API int ye_get_audio_allocated_channels();
+
+/**
+ * @brief Get the number of busy (playing) audio channels
+ * 
+ * @return The number of channels currently playing audio
+ */
+YE_API int ye_get_audio_busy_channels();
+
+/**
+ * @brief Get the number of items in the mixer cache
+ * 
+ * @return The count of cached audio chunks
+ */
+YE_API int ye_get_mixer_cache_count();
+
 #endif

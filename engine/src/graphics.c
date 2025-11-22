@@ -135,12 +135,11 @@ SDL_Texture *createTextTextureWithOutlineWrapped(const char *pText, int width, T
 SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pColor) {
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderText_Blended(pFont, pText, 0, *pColor); // MEMLEAK: valgrind says so but its not my fault, internal in TTF
-    
-    SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
 
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
+        SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -150,6 +149,8 @@ SDL_Texture *createTextTexture(const char *pText, TTF_Font *pFont, SDL_Color *pC
     // error out if texture creation failed
     if (pTexture == NULL) {
         ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
+        SDL_DestroySurface(pSurface);
+        SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -167,11 +168,10 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
     // create surface from parameters
     SDL_Surface *pSurface = TTF_RenderText_Blended_Wrapped(pFont, pText, 0, *pColor, wrapLength);
 
-    SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
-
     // error out if surface creation failed
     if (pSurface == NULL) {
         ye_logf(error, "Failed to render text: %s\n", SDL_GetError());
+        SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
         return missing_texture; // return missing texture, error has been logged
     }
 
@@ -181,6 +181,8 @@ SDL_Texture *createTextTextureWrapped(const char *pText, TTF_Font *pFont, SDL_Co
     // error out if texture creation failed
     if (pTexture == NULL) {
         ye_logf(error, "Failed to create texture: %s\n", SDL_GetError());
+        SDL_DestroySurface(pSurface);
+        SDL_Texture *missing_texture = SDL_CreateTextureFromSurface(pRenderer, missing_surface);
         return missing_texture; // return missing texture, error has been logged
     }
 

@@ -29,6 +29,8 @@
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/transform.h>
+#include <yoyoengine/cache.h>
+#include <yoyoengine/audio.h>
 
 #define MAX_UI_COMPONENTS 30
 #define MAX_KEY_LENGTH 100
@@ -154,6 +156,11 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     char entity_count_str[100];
     char audio_chunk_count_str[100];
     char log_line_count_str[100];
+    char cache_textures_str[100];
+    char cache_fonts_str[100];
+    char cache_colors_str[100];
+    char audio_channels_str[100];
+    char mixer_cache_str[100];
     sprintf(fps_str, "fps: %d", YE_STATE.runtime.fps);
     sprintf(render_call_count_str, "render calls: %d", YE_STATE.runtime.render_v2.num_render_calls);
     sprintf(vertex_count_str, "vertex count: %d", YE_STATE.runtime.render_v2.num_verticies);
@@ -167,6 +174,11 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
     sprintf(entity_count_str, "entity count: %d", YE_STATE.runtime.entity_count);
     sprintf(audio_chunk_count_str, "audio chunk count: %d", YE_STATE.runtime.audio_chunk_count);
     sprintf(log_line_count_str, "log line count: %d", YE_STATE.runtime.log_line_count);
+    sprintf(cache_textures_str, "cached textures: %d", ye_get_cache_texture_count());
+    sprintf(cache_fonts_str, "cached fonts: %d", ye_get_cache_font_count());
+    sprintf(cache_colors_str, "cached colors: %d", ye_get_cache_color_count());
+    sprintf(audio_channels_str, "audio channels: %d/%d", ye_get_audio_busy_channels(), ye_get_audio_allocated_channels());
+    sprintf(mixer_cache_str, "mixer cache: %d", ye_get_mixer_cache_count());
 
     // update chart logs
 
@@ -238,6 +250,11 @@ void ui_paint_debug_overlay(struct nk_context *ctx){
         nk_label(ctx, entity_count_str, NK_TEXT_LEFT);
         nk_label(ctx, audio_chunk_count_str, NK_TEXT_LEFT);
         nk_label(ctx, log_line_count_str, NK_TEXT_LEFT);
+        nk_label(ctx, cache_textures_str, NK_TEXT_LEFT);
+        nk_label(ctx, cache_fonts_str, NK_TEXT_LEFT);
+        nk_label(ctx, cache_colors_str, NK_TEXT_LEFT);
+        nk_label(ctx, audio_channels_str, NK_TEXT_LEFT);
+        nk_label(ctx, mixer_cache_str, NK_TEXT_LEFT);
     }
     nk_end(ctx);
 }

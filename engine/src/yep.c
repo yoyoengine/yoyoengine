@@ -765,11 +765,13 @@ SDL_Surface * _yep_image(const char *handle, const char *path){
     SDL_Surface *surface = IMG_Load_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(surface == NULL){
         ye_logf(error,"Error: could not create surface for %s\n", handle);
+        // If creation fails, we need to free since SDL won't
+        free(data.data);
         return NULL;
     }
 
-    // free the data
-    free(data.data);
+    // DO NOT free the data - SDL_IOFromMem with closeio=1 takes ownership
+    // and will free it when the surface is destroyed
 
     // return the surface
     return surface;
@@ -802,11 +804,13 @@ Mix_Chunk * _yep_audio(const char *handle, const char *path){
     Mix_Chunk *chunk = Mix_LoadWAV_IO(SDL_IOFromMem(data.data, data.size), 1);
     if(chunk == NULL){
         ye_logf(error,"Error: could not create chunk for %s\n", handle);
+        // If creation fails, we need to free since SDL won't
+        free(data.data);
         return NULL;
     }
 
-    // free the data
-    free(data.data);
+    // DO NOT free the data - SDL_IOFromMem with closeio=1 takes ownership
+    // SDL_Mixer will free it when Mix_FreeChunk is called
 
     // return the chunk
     return chunk;

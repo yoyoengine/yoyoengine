@@ -400,3 +400,100 @@ SDL_Color * ye_cache_color(const char *name, SDL_Color color){
     // ye_logf(debug,"Cached color: %s\n",name);
     return &new_node->color;
 }
+
+int ye_get_cache_texture_count(){
+    unsigned int count = HASH_COUNT(cached_textures_head);
+    return (int)count;
+}
+
+int ye_get_cache_font_count(){
+    unsigned int count = HASH_COUNT(cached_fonts_head);
+    return (int)count;
+}
+
+int ye_get_cache_color_count(){
+    unsigned int count = HASH_COUNT(cached_colors_head);
+    return (int)count;
+}
+
+void ye_destroy_texture(const char *path){
+    if(path == NULL){
+        ye_logf(warning,"%s","Attempted to destroy texture with NULL path.\n");
+        return;
+    }
+
+    struct ye_texture_node *node = NULL;
+    HASH_FIND_STR(cached_textures_head, path, node);
+    
+    if(node != NULL){
+        // Remove from hash table
+        HASH_DEL(cached_textures_head, node);
+        
+        // Destroy the SDL texture
+        if(node->texture != NULL){
+            SDL_DestroyTexture(node->texture);
+        }
+        
+        // Free the path string and node
+        free(node->path);
+        free(node);
+        
+        // ye_logf(debug,"Destroyed cached texture: %s\n",path);
+    }
+    else{
+        ye_logf(warning,"Attempted to destroy non-cached texture: %s\n",path);
+    }
+}
+
+void ye_destroy_font(const char *name){
+    if(name == NULL){
+        ye_logf(warning,"%s","Attempted to destroy font with NULL name.\n");
+        return;
+    }
+
+    struct ye_font_node *node = NULL;
+    HASH_FIND_STR(cached_fonts_head, name, node);
+    
+    if(node != NULL){
+        // Remove from hash table
+        HASH_DEL(cached_fonts_head, node);
+        
+        // Close the TTF font (but not if it's the engine fallback font)
+        if(node->font != NULL && node->font != YE_STATE.engine.pEngineFont){
+            TTF_CloseFont(node->font);
+        }
+        
+        // Free the name string and node
+        free(node->name);
+        free(node);
+        
+        // ye_logf(debug,"Destroyed cached font: %s\n",name);
+    }
+    else{
+        ye_logf(warning,"Attempted to destroy non-cached font: %s\n",name);
+    }
+}
+
+void ye_destroy_color(const char *name){
+    if(name == NULL){
+        ye_logf(warning,"%s","Attempted to destroy color with NULL name.\n");
+        return;
+    }
+
+    struct ye_color_node *node = NULL;
+    HASH_FIND_STR(cached_colors_head, name, node);
+    
+    if(node != NULL){
+        // Remove from hash table
+        HASH_DEL(cached_colors_head, node);
+        
+        // Free the name string and node
+        free(node->name);
+        free(node);
+        
+        // ye_logf(debug,"Destroyed cached color: %s\n",name);
+    }
+    else{
+        ye_logf(warning,"Attempted to destroy non-cached color: %s\n",name);
+    }
+}

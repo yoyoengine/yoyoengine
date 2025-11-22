@@ -101,6 +101,27 @@ YE_API void ye_clear_font_cache();
 YE_API void ye_clear_color_cache();
 
 /**
+ * @brief Get the number of textures in cache.
+ * 
+ * @return The count of cached textures.
+ */
+YE_API int ye_get_cache_texture_count();
+
+/**
+ * @brief Get the number of fonts in cache.
+ * 
+ * @return The count of cached fonts.
+ */
+YE_API int ye_get_cache_font_count();
+
+/**
+ * @brief Get the number of colors in cache.
+ * 
+ * @return The count of cached colors.
+ */
+YE_API int ye_get_cache_color_count();
+
+/**
  * @brief Initializes the caches.
  * 
  * After this, any color font or texture can be cached at any time, or pre-cached before a scene load.

@@ -276,11 +276,13 @@ int ye_play_sound(const char *handle, int loops, float volume_scale){ // loops w
     // allocate a new channel to play audio on if full
     int channel;
     if(audio_mix_allocated_channels - audio_mix_busy_channels <= 0){
-        channel = Mix_AllocateChannels(Mix_AllocateChannels(-1) + 1);
-        if(channel == 0){
+        int new_channel_count = Mix_AllocateChannels(Mix_AllocateChannels(-1) + 1);
+        if(new_channel_count <= 0){
             ye_logf(error, "Failed to allocate new audio channel.\n");
             return -2; // nonexistant channel
         }
+        audio_mix_allocated_channels = new_channel_count; // Update our tracking
+        ye_logf(debug, "Allocated new audio channel. Total channels: %d\n", audio_mix_allocated_channels);
     }
 
     // Free audio memory when channel finishes
@@ -289,7 +291,13 @@ int ye_play_sound(const char *handle, int loops, float volume_scale){ // loops w
     // play the chunk on the channel
     channel = Mix_PlayChannel(-1, chunk, loops);
 
-    totalChunks = audio_mix_busy_channels++;
+    if(channel < 0){
+        ye_logf(error, "Failed to play audio on channel.\n");
+        return -2;
+    }
+
+    audio_mix_busy_channels++;
+    totalChunks = audio_mix_busy_channels;
 
     // adjust the channel volume
     Mix_Volume(channel, (int)(YE_STATE.engine.volume * volume_scale));
@@ -341,4 +349,17 @@ void ye_set_volume(float volume){
     Mix_VolumeMusic((128 * volume));
     Mix_Volume(-1, (128 * volume));
     ye_logf(debug, "Set audio volume to %d.\n", (int)(128 * volume));
+}
+
+int ye_get_audio_allocated_channels(){
+    return audio_mix_allocated_channels;
+}
+
+int ye_get_audio_busy_channels(){
+    return audio_mix_busy_channels;
+}
+
+int ye_get_mixer_cache_count(){
+    unsigned int count = HASH_COUNT(mix_cache_table);
+    return (int)count;
 }

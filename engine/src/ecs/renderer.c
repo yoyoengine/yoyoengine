@@ -38,7 +38,10 @@ void ye_update_renderer_component(struct ye_entity *entity){
             break;
         case YE_RENDERER_TYPE_TEXT:
             // destroy old text texture (not managed in cache)
-            SDL_DestroyTexture(entity->renderer->texture);
+            if(entity->renderer->texture != NULL){
+                SDL_DestroyTexture(entity->renderer->texture);
+                entity->renderer->texture = NULL;
+            }
 
             // fetch new colors and fonts from cache
             entity->renderer->renderer_impl.text->font = ye_font(entity->renderer->renderer_impl.text->font_name, entity->renderer->renderer_impl.text->font_size);
@@ -52,7 +55,10 @@ void ye_update_renderer_component(struct ye_entity *entity){
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             // destroy old text texture (not managed in cache)
-            SDL_DestroyTexture(entity->renderer->texture);
+            if(entity->renderer->texture != NULL){
+                SDL_DestroyTexture(entity->renderer->texture);
+                entity->renderer->texture = NULL;
+            }
 
             // fetch new colors and fonts from cache
             entity->renderer->renderer_impl.text_outlined->font = ye_font(entity->renderer->renderer_impl.text_outlined->font_name, entity->renderer->renderer_impl.text_outlined->font_size);
@@ -398,7 +404,10 @@ void ye_remove_renderer_component(struct ye_entity *entity){
             free(entity->renderer->renderer_impl.text);
 
             // text textures are not stored in cache, manually remove them
-            SDL_DestroyTexture(entity->renderer->texture);
+            if(entity->renderer->texture != NULL){
+                SDL_DestroyTexture(entity->renderer->texture);
+                entity->renderer->texture = NULL;
+            }
             break;
         case YE_RENDERER_TYPE_TEXT_OUTLINED:
             free(entity->renderer->renderer_impl.text_outlined->text);
@@ -409,7 +418,10 @@ void ye_remove_renderer_component(struct ye_entity *entity){
             free(entity->renderer->renderer_impl.text_outlined);
 
             // text textures are not stored in cache, manually remove them
-            SDL_DestroyTexture(entity->renderer->texture);
+            if(entity->renderer->texture != NULL){
+                SDL_DestroyTexture(entity->renderer->texture);
+                entity->renderer->texture = NULL;
+            }
             break;
         case YE_RENDERER_TYPE_ANIMATION:
             // cache will handle freeing the frame map as needed
