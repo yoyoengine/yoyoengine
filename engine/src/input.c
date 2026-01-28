@@ -120,43 +120,46 @@ void ye_system_input() {
         }
 
         // controller stuff that only applies in game mode
-        if(!YE_STATE.editor.editor_mode){
-            switch(e.type){
+        // TODO: disabling because it's stupid for the engine to track and
+        // manage these, and is making my life harder
+        // if(!YE_STATE.editor.editor_mode){
+        //     switch(e.type){
 
-                // controller connect/disconnect events //
-                case SDL_EVENT_GAMEPAD_REMOVED :
-                    // remove the controller from the list
-                    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
-                        if(YE_STATE.runtime.controllers[i] != NULL){
-                            if(SDL_GetJoystickID(SDL_GetGamepadJoystick(YE_STATE.runtime.controllers[i])) == e.gdevice.which){
-                                SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
-                                YE_STATE.runtime.controllers[i] = NULL;
-                                YE_STATE.runtime.num_controllers--;
-                                ye_logf(info, "Disconnected GameController %d.\n",
-                                        e.gdevice.which);
-                            }
-                        }
-                    }
-                    break;
+        //         // controller connect/disconnect events //
+                
+        //         case SDL_EVENT_GAMEPAD_REMOVED :
+        //             // remove the controller from the list
+        //             for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+        //                 if(YE_STATE.runtime.controllers[i] != NULL){
+        //                     if(SDL_GetJoystickID(SDL_GetGamepadJoystick(YE_STATE.runtime.controllers[i])) == e.gdevice.which){
+        //                         SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
+        //                         YE_STATE.runtime.controllers[i] = NULL;
+        //                         YE_STATE.runtime.num_controllers--;
+        //                         ye_logf(info, "Disconnected GameController %d.\n",
+        //                                 e.gdevice.which);
+        //                     }
+        //                 }
+        //             }
+        //             break;
 
-                case SDL_EVENT_GAMEPAD_ADDED :
-                    // add the controller to the list
-                    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
-                        if(YE_STATE.runtime.controllers[i] == NULL){
-                            YE_STATE.runtime.controllers[i] = SDL_OpenGamepad(e.gdevice.which);
-                            if(YE_STATE.runtime.controllers[i] != NULL){
-                                YE_STATE.runtime.num_controllers++;
-                                ye_logf(info, "Connected GameController %d: %s\n",
-                                        e.gdevice.which,
-                                        SDL_GetGamepadName(YE_STATE.runtime.controllers[i]));
-                            }
-                            break;
-                        }
-                    }
-                    break;
+        //         case SDL_EVENT_GAMEPAD_ADDED :
+        //             // add the controller to the list
+        //             for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+        //                 if(YE_STATE.runtime.controllers[i] == NULL){
+        //                     YE_STATE.runtime.controllers[i] = SDL_OpenGamepad(e.gdevice.which);
+        //                     if(YE_STATE.runtime.controllers[i] != NULL){
+        //                         YE_STATE.runtime.num_controllers++;
+        //                         ye_logf(info, "Connected GameController %d: %s\n",
+        //                                 e.gdevice.which,
+        //                                 SDL_GetGamepadName(YE_STATE.runtime.controllers[i]));
+        //                     }
+        //                     break;
+        //                 }
+        //             }
+        //             break;
 
-            }
-        }
+        //     }
+        // }
 
         // poll for ECS button events
         if(!YE_STATE.editor.editor_mode){
@@ -199,15 +202,16 @@ void ye_system_input() {
 }
 
 void ye_shutdown_input(){
-    // close all controllers
-    for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
-        if(YE_STATE.runtime.controllers[i] != NULL){
-            SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
-        }
-    }
+    // TODO: see above note
+    // // close all controllers
+    // for(int i = 0; i < YE_MAX_CONTROLLERS; i++){
+    //     if(YE_STATE.runtime.controllers[i] != NULL){
+    //         SDL_CloseGamepad(YE_STATE.runtime.controllers[i]);
+    //     }
+    // }
 
-    // might not be needed but whatever
-    YE_STATE.runtime.num_controllers = 0;
+    // // might not be needed but whatever
+    // YE_STATE.runtime.num_controllers = 0;
 
     ye_logf(info, "Shut down input.\n");
 }

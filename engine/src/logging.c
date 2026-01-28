@@ -206,6 +206,9 @@ void _ye_lua_logf(enum logLevel level, const char *format, ...){
 void ye_log_init(char * log_file_path){
     logpath = log_file_path;
 
+    // set stdout to line-buffered mode so logs flush on newlines
+    setvbuf(stdout, NULL, _IOLBF, 0);
+
     // windows specific tweak to enable ansi colors
     #ifdef _WIN32
     ye_enable_virtual_terminal();
