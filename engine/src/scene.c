@@ -982,6 +982,34 @@ void ye_load_scene(const char *scene_path){
     json_decref(SCENE);
 }
 
+void ye_load_scene_additive(const char *scene_path){
+    json_t *SCENE = NULL; 
+    if(YE_STATE.editor.editor_mode){
+        SCENE = ye_json_read(ye_path_resources(scene_path));
+    }
+    else{
+        SCENE = yep_resource_json(scene_path);
+    }
+
+    if(SCENE == NULL){
+        ye_logf(error,"Failed to load scene %s\n", scene_path);
+        json_decref(SCENE);
+        return;
+    }
+
+    // construct the scene additively (dont wipe ecs or anything)
+    json_t *scene = NULL; ye_json_object(SCENE, "scene", &scene);
+    json_t *entities = NULL; ye_json_array(scene,"entities",&entities);
+    if(entities == NULL){
+        ye_logf(error,"%s","Failed to read entities from scene.\n");
+        return;
+    }
+    ye_construct_scene(entities);
+
+    // deref the scene file.
+    json_decref(SCENE);
+}
+
 char *ye_get_scene_name(){
     return YE_STATE.runtime.scene_name;
 }

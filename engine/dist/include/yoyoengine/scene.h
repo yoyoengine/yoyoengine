@@ -33,6 +33,13 @@ YE_API void ye_init_scene_manager();
 YE_API void ye_load_scene(const char *scene_name);
 
 /**
+ * @brief Loads a scene from file (.json, .yoyo, etc) on top of the existing scene.
+ * 
+ * @param scene_name The relative path of the scene to load
+ */
+YE_API void ye_load_scene_additive(const char *scene_path);
+
+/**
  * @brief Reloads the current scene from disk
  */
 YE_API void ye_reload_scene();
