@@ -997,8 +997,19 @@ void ye_load_scene_additive(const char *scene_path){
         return;
     }
 
-    // construct the scene additively (dont wipe ecs or anything)
+    // pre cache all of its colors, fonts (TODO: thread this?)
+    json_t *styles; ye_json_array(SCENE, "styles", &styles);
+    // cache each styles file in array
+    for(int i = 0; i < (int)json_array_size(styles); i++){
+        const char *path; ye_json_arr_string(styles, i, &path);
+        ye_pre_cache_styles(path);
+    }
+
+    // pre cache all of a scenes assets (TODO: thread this?)
     json_t *scene = NULL; ye_json_object(SCENE, "scene", &scene);
+    ye_pre_cache_scene(scene); // lowercase scene is the actual key
+
+    // construct the scene additively (dont wipe ecs or anything)
     json_t *entities = NULL; ye_json_array(scene,"entities",&entities);
     if(entities == NULL){
         ye_logf(error,"%s","Failed to read entities from scene.\n");
