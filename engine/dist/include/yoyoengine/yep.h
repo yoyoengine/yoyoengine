@@ -17,7 +17,7 @@
 #include <stdlib.h>     // malloc
 
 #include <jansson.h> // jansson
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include <SDL_ttf.h>
 
 /*
@@ -52,7 +52,7 @@
 enum YEP_DATATYPE {
     YEP_DATATYPE_MISC,          // loose files, .yoyo .txt etc
     YEP_DATATYPE_IMAGE,         // dont need to differentiate formats because it will be a pixel array from SDL_Image
-    YEP_DATATYPE_PCM,           // raw PCM data from SDL_Mixer
+    YEP_DATATYPE_PCM,           // raw PCM data from SDL3_mixer
     YEP_DATATYPE_LUA_BYTECODE,  // lua bytecode (DO NOT COMPRESS)
 };
 
@@ -165,23 +165,23 @@ YE_API json_t * yep_resource_json(const char *handle);
 
 /**
  * @brief Load a audio file stored inside of resources.yep
- * 
+ *
  * @param handle The key storing the audio file in the file
- * @return Mix_Chunk* The loaded audio file (NULL if not found)
- * 
- * !!! YOU MUST FREE THE CHUNK YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ * @return MIX_Audio* The loaded audio file (NULL if not found)
+ *
+ * !!! YOU MUST CALL MIX_UnrefAudio YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-YE_API Mix_Chunk * yep_resource_audio(const char *handle);
+YE_API MIX_Audio * yep_resource_audio(const char *handle);
 
 /**
  * @brief Load a music file stored inside of resources.yep
- * 
+ *
  * @param handle The key storing the music file in the file
- * @return Mix_Music* The loaded music file (NULL if not found)
- * 
- * !!! YOU MUST FREE THE MUSIC YOURSELF WHEN YOU ARE DONE WITH IT !!!
+ * @return MIX_Audio* The loaded music file (NULL if not found)
+ *
+ * !!! YOU MUST CALL MIX_UnrefAudio YOURSELF WHEN YOU ARE DONE WITH IT !!!
  */
-YE_API Mix_Music * yep_resource_music(const char *handle);
+YE_API MIX_Audio * yep_resource_music(const char *handle);
 
 /**
  * @brief Load a font file stored inside of resources.yep
@@ -211,9 +211,9 @@ YE_API SDL_Surface * yep_engine_resource_image(const char *handle);
 
 YE_API json_t * yep_engine_resource_json(const char *handle);
 
-YE_API Mix_Chunk * yep_engine_resource_audio(const char *handle);
+YE_API MIX_Audio * yep_engine_resource_audio(const char *handle);
 
-YE_API Mix_Music * yep_engine_resource_music(const char *handle);
+YE_API MIX_Audio * yep_engine_resource_music(const char *handle);
 
 YE_API TTF_Font * yep_engine_resource_font(const char * handle);
 

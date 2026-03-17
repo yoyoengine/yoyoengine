@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 #include <SDL_image.h>
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include <jansson.h> // jansson
 
@@ -16,6 +16,7 @@
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/filesystem.h>
+#include <yoyoengine/audio.h>
 
 #include <zlib.h>   // zlib compression
 
@@ -796,42 +797,23 @@ json_t * _yep_json(const char *handle, const char *path){
     return json;
 }
 
-Mix_Chunk * _yep_audio(const char *handle, const char *path){
-    // load the data
+MIX_Audio * _yep_audio(const char *handle, const char *path){
     struct yep_data_info data = _yep_misc(handle, path);
 
-    // create the chunk
-    Mix_Chunk *chunk = Mix_LoadWAV_IO(SDL_IOFromMem(data.data, data.size), 1);
-    if(chunk == NULL){
-        ye_logf(error,"Error: could not create chunk for %s\n", handle);
-        // If creation fails, we need to free since SDL won't
+    if(data.data == NULL || data.size == 0){
+        ye_logf(error, "Error: could not get audio data for %s\n", handle);
+        return NULL;
+    }
+
+    MIX_Audio *audio = MIX_LoadAudio_IO(ye_get_mixer(), SDL_IOFromMem(data.data, data.size), false, true);
+    if(audio == NULL){
+        ye_logf(error, "Error: could not create audio for %s\n", handle);
         free(data.data);
         return NULL;
     }
 
-    // DO NOT free the data - SDL_IOFromMem with closeio=1 takes ownership
-    // SDL_Mixer will free it when Mix_FreeChunk is called
-
-    // return the chunk
-    return chunk;
-}
-
-Mix_Music * _yep_music(const char *handle, const char *path){
-    // load the data
-    struct yep_data_info data = _yep_misc(handle, path);
-
-    // create the music
-    Mix_Music *music = Mix_LoadMUS_IO(SDL_IOFromMem(data.data, data.size), 1);
-    if(music == NULL){
-        ye_logf(error,"Error: could not create music for %s\n", handle);
-        return NULL;
-    }
-
-    // free the data
-    // free(data.data); CAUSES PAGE FAULT ON WINDOWS!!!
-
-    // return the music
-    return music;
+    // DO NOT free data.data — SDL_IOFromMem with closeio=true takes ownership
+    return audio;
 }
 
 TTF_Font * _yep_font(const char *handle, const char *path){
@@ -866,12 +848,12 @@ json_t * yep_resource_json(const char *handle){
     return _yep_json(handle, ye_path("resources.yep"));
 }
 
-Mix_Chunk * yep_resource_audio(const char *handle){
+MIX_Audio * yep_resource_audio(const char *handle){
     return _yep_audio(handle, ye_path("resources.yep"));
 }
 
-Mix_Music * yep_resource_music(const char *handle){
-    return _yep_music(handle, ye_path("resources.yep"));
+MIX_Audio * yep_resource_music(const char *handle){
+    return _yep_audio(handle, ye_path("resources.yep"));  // same impl now
 }
 
 TTF_Font * yep_resource_font(const char * handle){
@@ -920,37 +902,29 @@ json_t * yep_engine_resource_json(const char *handle){
     }
 }
 
-Mix_Chunk * yep_engine_resource_audio(const char *handle){
-    /*
-        If in editor mode, we need to load from loose file
-    */
+MIX_Audio * yep_engine_resource_audio(const char *handle){
     if(YE_STATE.editor.editor_mode){
-        Mix_Chunk *chunk = Mix_LoadWAV(ye_get_engine_resource_static(handle));
-        if(chunk == NULL){
-            ye_logf(error,"Error: could not create chunk for %s\n", handle);
+        MIX_Audio *audio = MIX_LoadAudio(ye_get_mixer(), ye_get_engine_resource_static(handle), true);
+        if(audio == NULL){
+            ye_logf(error, "Error: could not create audio for %s\n", handle);
             return NULL;
         }
-        return chunk;
-    }
-    else{
+        return audio;
+    } else {
         return _yep_audio(handle, ye_path("engine.yep"));
     }
 }
 
-Mix_Music * yep_engine_resource_music(const char *handle){
-    /*
-        If in editor mode, we need to load from loose file
-    */
+MIX_Audio * yep_engine_resource_music(const char *handle){
     if(YE_STATE.editor.editor_mode){
-        Mix_Music *music = Mix_LoadMUS(ye_get_engine_resource_static(handle));
-        if(music == NULL){
-            ye_logf(error,"Error: could not create music for %s\n", handle);
+        MIX_Audio *audio = MIX_LoadAudio(ye_get_mixer(), ye_get_engine_resource_static(handle), true);
+        if(audio == NULL){
+            ye_logf(error, "Error: could not create audio for %s\n", handle);
             return NULL;
         }
-        return music;
-    }
-    else{
-        return _yep_music(handle, ye_path("engine.yep"));
+        return audio;
+    } else {
+        return _yep_audio(handle, ye_path("engine.yep"));
     }
 }
 

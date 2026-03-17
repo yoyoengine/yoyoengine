@@ -15,7 +15,7 @@
 
 #include <yoyoengine/export.h>
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include <uthash/uthash.h>
 
@@ -24,7 +24,7 @@ extern int totalChunks;
 
 struct ye_mixer_cache_item {
     char *handle;           // the handle of the resource
-    Mix_Chunk *chunk;       // the chunk of the resource
+    MIX_Audio *audio;       // the audio of the resource
     UT_hash_handle hh;      // the hash handle
 };
 
@@ -39,11 +39,16 @@ YE_API void _ye_mixer_engine_cache(char *handle);
 
 /**
  * @brief Load an audio chunk by handle into the cache and return a pointer to it
- * 
- * @param handle 
- * @return Mix_Chunk* 
+ *
+ * @param handle
+ * @return MIX_Audio*
  */
-YE_API Mix_Chunk *ye_audio(const char *handle);
+YE_API MIX_Audio *ye_audio(const char *handle);
+
+/**
+ * @brief Get the global MIX_Mixer device (needed by yep.c for loading audio)
+ */
+YE_API MIX_Mixer *ye_get_mixer();
 
 /*
     AUDIO SYSTEM
@@ -52,7 +57,7 @@ YE_API Mix_Chunk *ye_audio(const char *handle);
 YE_API void ye_init_audio();
 YE_API void ye_shutdown_audio();
 
-YE_API int ye_play_sound(const char *handle, int loops, float volume_scale);
+YE_API MIX_Track *ye_play_sound(const char *handle, int loops, float volume_scale);
 YE_API void ye_play_music(const char *handle, int loops, float volume_scale);
 
 /**
@@ -84,5 +89,7 @@ YE_API int ye_get_audio_busy_channels();
  * @return The count of cached audio chunks
  */
 YE_API int ye_get_mixer_cache_count();
+
+YE_API void _ye_audio_decrement_busy();
 
 #endif

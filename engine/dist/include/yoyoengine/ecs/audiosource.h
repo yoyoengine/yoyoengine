@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/utils.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 struct ye_component_audiosource {
     bool active;            // whether or not the audio source is active
@@ -35,7 +36,7 @@ struct ye_component_audiosource {
     bool play_on_awake;     // whether or not the audio source should play on awake
     int loops;              // the number of times to loop the audio source
 
-    int channel;            // holds the channel the audio source is playing on (assigned by the engine)
+    MIX_Track *track;       // holds the track the audio source is playing on (assigned by the engine)
     bool playing;           // whether or not the audio source is playing (triggered by player but this value is tracked by the engine)
 };
 
@@ -63,7 +64,7 @@ YE_API void ye_play_audiosource(struct ye_entity *entity);
  * 
  * @param entity The target entity
  * 
- * @note This function will reset the audio source to its initial state (like loops) and will dereference the channel in the mixcache
+ * @note This function will reset the audio source to its initial state (like loops) and will stop and destroy the active MIX_Track if one exists
  */
 YE_API void ye_pause_audiosource(struct ye_entity *entity);
 
@@ -78,12 +79,5 @@ YE_API void ye_remove_audiosource_component(struct ye_entity *entity);
  * @brief The system in charge of processing audiosource components
  */
 YE_API void ye_system_audiosource();
-
-/**
- * @brief Called from audio.c when a channel finishes, this function is in charge of re-scheduling audio chunks
- * 
- * @param channel The channel that finished
- */
-YE_API void ye_audiosource_channel_finished(int channel);
 
 #endif

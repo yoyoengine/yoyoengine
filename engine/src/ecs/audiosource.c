@@ -7,11 +7,24 @@
 
 #include <string.h>
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 
 #include <yoyoengine/audio.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/ecs/audiosource.h>
+
+/*
+    Per-track stopped callback for audiosource components.
+    Fires when a track finishes all its loops.
+    userdata is the ye_component_audiosource* that owns the track.
+*/
+static void ye_audiosource_track_stopped(void *userdata, MIX_Track *track){
+    struct ye_component_audiosource *src = (struct ye_component_audiosource *)userdata;
+    src->track = NULL;
+    src->playing = false;
+    MIX_DestroyTrack(track);
+    _ye_audio_decrement_busy();
+}
 
 void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range){
     /*
@@ -39,10 +52,10 @@ void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, 
 
     if(play_on_awake && !YE_STATE.editor.editor_mode){
         // play the sound
-        newsrc->channel = -10; // ye_play_sound(handle, loops, volume);
+        newsrc->track = NULL; // ye_play_sound(handle, loops, volume);
         newsrc->playing = true;
     } else {
-        newsrc->channel = -10;
+        newsrc->track = NULL;
         newsrc->playing = false;
     }
 
@@ -56,22 +69,48 @@ void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, 
     // ye_logf(info, "    simulated: %d\n", simulated);
     // ye_logf(info, "    range: %f, %f, %f, %f\n", range.x, range.y, range.w, range.h);
     // ye_logf(info, "    relative: %d\n", true);
-    // ye_logf(info, "    channel: %d\n", newsrc->channel);
+    // ye_logf(info, "    track: %p\n", (void*)newsrc->track);
     // ye_logf(info, "    playing: %d\n", newsrc->playing);
 }
 
 void ye_remove_audiosource_component(struct ye_entity *entity){
-    /*
-        Remove an audiosource component from the entity
-    */
-    free(entity->audiosource->handle);
-    free(entity->audiosource);
+    struct ye_component_audiosource *src = entity->audiosource;
+
+    // Stop any active track before freeing to prevent the callback from
+    // firing on freed memory
+    if(src->track != NULL){
+        MIX_SetTrackStoppedCallback(src->track, NULL, NULL);
+        MIX_StopTrack(src->track, 0);
+        MIX_DestroyTrack(src->track);
+        src->track = NULL;
+        _ye_audio_decrement_busy();
+    }
+
+    free(src->handle);
+    free(src);
     entity->audiosource = NULL;
 
-    // remove the entity from the audiosource list
     ye_entity_list_remove(&audiosource_list_head, entity);
+}
 
-    // mixer cache takes care of removing chunk as needed
+void ye_play_audiosource(struct ye_entity *entity){
+    if(!entity || !entity->audiosource) return;
+    entity->audiosource->playing = true;
+}
+
+void ye_pause_audiosource(struct ye_entity *entity){
+    if(!entity || !entity->audiosource) return;
+    struct ye_component_audiosource *src = entity->audiosource;
+
+    if(src->track != NULL){
+        // Clear the callback before stopping to avoid it firing on already-handled state
+        MIX_SetTrackStoppedCallback(src->track, NULL, NULL);
+        MIX_StopTrack(src->track, 0);
+        MIX_DestroyTrack(src->track);
+        src->track = NULL;
+        _ye_audio_decrement_busy();
+    }
+    src->playing = false;
 }
 
 /*
@@ -145,76 +184,53 @@ void ye_system_audiosource(){
                             src->range.h = 0;
                     }
 
-                    // find the angle between src center and listener
-                    float angle = ye_angle(listener_x, listener_y, cx, cy);
-
-                    // scale the angle to make sure due north is 0 degrees
-                    angle -= 270;
-                    if(angle < 0){
-                        angle += 360;
-                    }
-
                     // SDL_Mixer takes in a uint8_t for the distance, so we need to scale the distance to 0-255
                     // scale taking into account the falloff ring
                     int distance_from_center_scaled = (int)(distance / ((max_radius) - (min_radius)) * 255);
 
                     if(distance_from_center_scaled > 255){
-                        // mute the channel
-                        Mix_Volume(src->channel, 0);
+                        // outside max range — mute if playing
+                        if(src->track != NULL){
+                            MIX_SetTrackGain(src->track, 0.0f);
+                        }
                     }
                     else{
-                        if(src->playing && src->channel == -10){
-                            src->channel = ye_play_sound(src->handle, src->loops, src->volume);
+                        if(src->playing && src->track == NULL){
+                            src->track = ye_play_sound(src->handle, src->loops, src->volume);
+                            if(src->track != NULL){
+                                // Override the default fire-and-forget callback with our own
+                                MIX_SetTrackStoppedCallback(src->track, ye_audiosource_track_stopped, src);
+                            }
                         }
 
-                        // adjust the volume of the channel
-                        Mix_Volume(src->channel, (int)(YE_STATE.engine.volume * src->volume));
+                        if(src->track != NULL){
+                            // Volume: engine volume * component volume * distance falloff
+                            float gain = ((float)YE_STATE.engine.volume / 128.0f)
+                                       * src->volume
+                                       * (1.0f - (float)distance_from_center_scaled / 255.0f);
+                            MIX_SetTrackGain(src->track, gain);
 
-                        // set the position of the channel
-                        Mix_SetPosition(src->channel, (Sint16)angle, (Uint8)distance_from_center_scaled);
+                            // Spatial position relative to listener (listener is at origin)
+                            MIX_Point3D source_pos = {cx - listener_x, cy - listener_y, 0.0f};
+                            MIX_SetTrack3DPosition(src->track, &source_pos);
+                        }
                     }
                 }
             }
             else{
                 // global sound effect (not simulated)
-                if(src->playing && src->channel == -10){
-                    src->channel = ye_play_sound(src->handle, src->loops, src->volume);
+                if(src->playing && src->track == NULL){
+                    src->track = ye_play_sound(src->handle, src->loops, src->volume);
+                    if(src->track != NULL){
+                        MIX_SetTrackStoppedCallback(src->track, ye_audiosource_track_stopped, src);
+                    }
                 }
-                Mix_Volume(src->channel, (int)(YE_STATE.engine.volume * src->volume));
-                // remove any spatial mix
-                Mix_SetPosition(src->channel, 0, 0);
+                if(src->track != NULL){
+                    MIX_SetTrackGain(src->track, ((float)YE_STATE.engine.volume / 128.0f) * src->volume);
+                    MIX_SetTrack3DPosition(src->track, NULL);  // NULL disables 3D positioning
+                }
             }
         }
     }
 }
 
-/*
-    Fired from audio.c when a channel finishes
-*/
-void ye_audiosource_channel_finished(int channel){
-    struct ye_entity_node *node;
-    for(node = audiosource_list_head; node != NULL; node = node->next){
-        // get the entity
-        struct ye_entity *entity = node->entity;
-
-        // get the audiosource component
-        struct ye_component_audiosource *src = entity->audiosource;
-
-        if(src->channel == channel){
-            // if the audiosource is set to loop, we will play it again
-            if(src->loops == -1){
-                // infinite looping
-                src->channel = ye_play_sound(src->handle, src->loops, src->volume);
-                src->playing = true;
-            } else if(src->loops > 0){
-                // finite looping
-                src->loops--;
-                src->playing = true;
-                src->channel = ye_play_sound(src->handle, src->loops, src->volume);
-            } else {
-                // no looping
-                src->playing = false;
-            }
-        }
-    }
-}

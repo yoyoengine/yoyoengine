@@ -5,7 +5,7 @@
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include <uthash/uthash.h>
 
 #include <yoyoengine/yep.h>
@@ -16,7 +16,10 @@
 
 int totalChunks = 0;
 
-Mix_Music *music = NULL;
+static MIX_Mixer *mixer = NULL;
+static MIX_Audio *music_audio = NULL;
+static MIX_Track *music_track = NULL;
+static int audio_mix_busy_channels = 0;
 
 /*
     ==========================================
@@ -47,8 +50,8 @@ void ye_purge_mixer_cache(){
         // remove the item from the cache
         HASH_DEL(mix_cache_table, item);
 
-        // free the chunk
-        Mix_FreeChunk(item->chunk);
+        // free the audio
+        MIX_DestroyAudio(item->audio);
 
         // free the item
         free(item->handle);
@@ -73,16 +76,17 @@ void ye_mixer_cache(const char *handle)
     // if in editor mode, retrieve from disk, if runtime load from pack
     if(YE_STATE.editor.editor_mode){
         // load from disk
-        item->chunk = Mix_LoadWAV(ye_path_resources(handle));
+        item->audio = MIX_LoadAudio(mixer, ye_path_resources(handle), true);
 
     } else {
         // load from pack
-        item->chunk = yep_resource_audio(handle);
+        item->audio = yep_resource_audio(handle);
     }
 
-    // check if the chunk is null
-    if(item->chunk == NULL){
+    // check if the audio is null
+    if(item->audio == NULL){
         ye_logf(error, "Failed to load audio chunk %s.\n", handle);
+        free(item->handle);
         free(item);
         return;
     }
@@ -105,16 +109,17 @@ void _ye_mixer_engine_cache(char *handle)
     // if in editor mode, retrieve from disk, if runtime load from pack
     if(YE_STATE.editor.editor_mode){
         // load from disk
-        item->chunk = Mix_LoadWAV(ye_get_engine_resource_static(handle));
+        item->audio = MIX_LoadAudio(mixer, ye_get_engine_resource_static(handle), true);
 
     } else {
         // load from pack
-        item->chunk = yep_engine_resource_audio(handle);
+        item->audio = yep_engine_resource_audio(handle);
     }
 
-    // check if the chunk is null
-    if(item->chunk == NULL){
+    // check if the audio is null
+    if(item->audio == NULL){
         ye_logf(error, "Failed to load engine audio chunk %s.\n", handle);
+        free(item->handle);
         free(item);
         return;
     }
@@ -124,10 +129,10 @@ void _ye_mixer_engine_cache(char *handle)
 }
 
 /*
-    Api to return a mix chunk from a handle, and load it if not existant
+    Api to return a mix audio from a handle, and load it if not existant
 */
-Mix_Chunk *ye_audio(const char *handle){
-    // check if the cache has an existing chunk by this handle
+MIX_Audio *ye_audio(const char *handle){
+    // check if the cache has an existing audio by this handle
     struct ye_mixer_cache_item *item = NULL;
     HASH_FIND_STR(mix_cache_table, handle, item);
 
@@ -140,8 +145,8 @@ Mix_Chunk *ye_audio(const char *handle){
         HASH_FIND_STR(mix_cache_table, handle, item);
     }
 
-    // return the chunk
-    return item->chunk;
+    if(item == NULL) return NULL;
+    return item->audio;
 }
 
 /*
@@ -151,11 +156,15 @@ Mix_Chunk *ye_audio(const char *handle){
 
 
 
+MIX_Mixer *ye_get_mixer(){
+    return mixer;
+}
 
-
-
-
-
+void _ye_audio_decrement_busy(){
+    if(audio_mix_busy_channels > 0)
+        audio_mix_busy_channels--;
+    totalChunks = audio_mix_busy_channels;
+}
 
 /*
     ==========================================
@@ -163,47 +172,25 @@ Mix_Chunk *ye_audio(const char *handle){
     ==========================================
 */
 
-/*
-    This is the mechanism by which the engine routes audio to SDL_Mixer.
-    We will dynamically manage the number of channels open at any given time, as we
-    can have as many as we want to.
-*/
-
-#ifndef YE_MIXER_DEFAULT_CHANNELS
-    // do not allocate channels by default
-    #define YE_MIXER_DEFAULT_CHANNELS 0
-#endif
-
-int audio_mix_allocated_channels = 0;
-int audio_mix_busy_channels = 0;
-
 void ye_init_audio(){
-    audio_mix_allocated_channels = 0;
     audio_mix_busy_channels = 0;
 
-    // if (!Mix_Init(MIX_INIT_MP3 | MIX_INIT_WAVPACK) )
-    // {
-    //     ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
-    //     exit(1);
-    // }
-
-    // will call Mix_Init internally
-    if(!Mix_OpenAudio(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL)){
+    if(!MIX_Init()){
         ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    if(!mixer){
+        ye_logf(error, "SDL_mixer could not create mixer device! SDL_mixer Error: %s\n", SDL_GetError());
         exit(1);
     }
     ye_logf(info, "Initialized SDL_mixer.\n");
 
-    // allocate our desired max channels to the mixer
-    if(YE_MIXER_DEFAULT_CHANNELS > 0)
-        audio_mix_allocated_channels = Mix_AllocateChannels(YE_MIXER_DEFAULT_CHANNELS);
-
     ye_init_mixer_cache();
 
-    // make all channels capped at the engine volume
-    Mix_MasterVolume(YE_STATE.engine.volume);
+    MIX_SetMixerGain(mixer, (float)YE_STATE.engine.volume / 128.0f);
 
-    // debug: acknowledge audio initialization
     ye_logf(info, "Initialized audio.\n");
 }
 
@@ -212,132 +199,128 @@ void ye_init_audio(){
     free chunks and let audiosource system tentatively reschedule
     them without knowledge that we are done with those sources
 */
-bool mid_audio_shutdown = false;
+static bool mid_audio_shutdown = false;
 
 // stop playing and clear mixer cache, shutdown mixer
 void ye_shutdown_audio(){
     mid_audio_shutdown = true;
 
-    // Halt all playing channels
-    Mix_HaltChannel(-1);
-    // ye_logf(debug, "Halted playing all channels.\n");
+    MIX_StopAllTracks(mixer, 0);
 
-    // free all chunks
+    if(music_track != NULL){
+        MIX_DestroyTrack(music_track);
+        music_track = NULL;
+    }
+    if(music_audio != NULL){
+        MIX_DestroyAudio(music_audio);
+        music_audio = NULL;
+    }
+
     ye_shutdown_mixer_cache();
-    // free music
-    Mix_FreeMusic(music);
-    music = NULL;
 
-    // reset channel counts
-    audio_mix_allocated_channels = 0;
+    MIX_DestroyMixer(mixer);
+    mixer = NULL;
+
     audio_mix_busy_channels = 0;
 
-    // Close the audio mixer
-    Mix_Quit();
+    MIX_Quit();
     ye_logf(info, "Shut down audio.\n");
 
     mid_audio_shutdown = false;
 }
 
 /*
-    Callback for when a channel finishes playing
+    Stopped callback for the music track.
+    When music finishes naturally, clean up the track object.
 */
-void ye_finished_channel(int channel){
-    audio_mix_busy_channels--;
-
-    /*
-        if we are about to load a new scene, we actually DO NOT
-        want audiosource to begin scheduling new sounds, since
-        this callback simulates a natural channel end
-    */
+static void ye_music_track_stopped(void *userdata, MIX_Track *track){
+    (void)userdata;
     if(!mid_audio_shutdown){
-        // reach out to audiosource manager and let it know a channel finished,
-        // it can go through and re-request a repeat sound if it wants to
-        ye_audiosource_channel_finished(channel);
+        music_track = NULL;
+        MIX_DestroyTrack(track);
     }
+}
 
-    // SDL_Mixer will free the empty channels later as needed
+/*
+    Default fire-and-forget stopped callback for sounds not owned by an audiosource.
+    Decrements the busy counter and destroys the track.
+*/
+static void ye_default_track_stopped(void *userdata, MIX_Track *track){
+    (void)userdata;
+    if(!mid_audio_shutdown){
+        _ye_audio_decrement_busy();
+        MIX_DestroyTrack(track);
+    }
 }
 
 /*
     Play a sound by its handle.
-    retrieves from cache, creates new channel for it
+    retrieves from cache, creates new track for it
 */
-int ye_play_sound(const char *handle, int loops, float volume_scale){ // loops will be decreased and passed to the channel finished callback to replay
-    // retrieve the chunk from the mixer cache
-    Mix_Chunk *chunk = ye_audio(handle);
+MIX_Track *ye_play_sound(const char *handle, int loops, float volume_scale){
+    MIX_Audio *audio = ye_audio(handle);
 
-    // if the chunk is null, we failed to load it
-    if(chunk == NULL){
+    if(audio == NULL){
         ye_logf(error, "Failed to play audio chunk %s.\n", handle);
-        return -2; // nonexistant channel
+        return NULL;
     }
 
-    // allocate a new channel to play audio on if full
-    int channel;
-    if(audio_mix_allocated_channels - audio_mix_busy_channels <= 0){
-        int new_channel_count = Mix_AllocateChannels(Mix_AllocateChannels(-1) + 1);
-        if(new_channel_count <= 0){
-            ye_logf(error, "Failed to allocate new audio channel.\n");
-            return -2; // nonexistant channel
-        }
-        audio_mix_allocated_channels = new_channel_count; // Update our tracking
-        ye_logf(debug, "Allocated new audio channel. Total channels: %d\n", audio_mix_allocated_channels);
+    MIX_Track *track = MIX_CreateTrack(mixer);
+    if(track == NULL){
+        ye_logf(error, "Failed to create audio track for %s.\n", handle);
+        return NULL;
     }
 
-    // Free audio memory when channel finishes
-    Mix_ChannelFinished(ye_finished_channel);
+    MIX_SetTrackAudio(track, audio);
+    MIX_SetTrackLoops(track, loops);
+    MIX_SetTrackGain(track, (float)YE_STATE.engine.volume / 128.0f * volume_scale);
 
-    // play the chunk on the channel
-    channel = Mix_PlayChannel(-1, chunk, loops);
+    // Default fire-and-forget cleanup. Audiosource may override this after calling ye_play_sound.
+    MIX_SetTrackStoppedCallback(track, ye_default_track_stopped, NULL);
 
-    if(channel < 0){
-        ye_logf(error, "Failed to play audio on channel.\n");
-        return -2;
-    }
+    MIX_PlayTrack(track, 0);
 
     audio_mix_busy_channels++;
     totalChunks = audio_mix_busy_channels;
 
-    // adjust the channel volume
-    Mix_Volume(channel, (int)(YE_STATE.engine.volume * volume_scale));
-
-    return channel;
+    return track;
 }
 
-/*
-    Currently, I disabled freeing that data that the rwops for ye_music
-    uses because it caused a windows page fault. TODO: investigate
-*/
 void ye_play_music(const char *handle, int loops, float volume_scale){
-
-    // #ifdef __linux__
-
-    // if music is already playing, stop it and free it
-    if(music != NULL){
-        Mix_FreeMusic(music);
-        music = NULL;
+    if(music_track != NULL){
+        MIX_StopTrack(music_track, 0);
+        MIX_DestroyTrack(music_track);
+        music_track = NULL;
+    }
+    if(music_audio != NULL){
+        MIX_DestroyAudio(music_audio);
+        music_audio = NULL;
     }
 
-    // if in editor mode, retrieve from disk, if runtime load from pack
     if(YE_STATE.editor.editor_mode){
-        music = Mix_LoadMUS(ye_path_resources(handle));
+        music_audio = MIX_LoadAudio(mixer, ye_path_resources(handle), true);
+    } else {
+        music_audio = yep_resource_music(handle);
     }
-    else{
-        music = yep_resource_music(handle);
-    }
-    
-    // if the music is null, we failed to load it
-    if(music == NULL){
+
+    if(music_audio == NULL){
         ye_logf(error, "Failed to play music %s.\n", handle);
         return;
     }
 
-    // play the music
-    Mix_PlayMusic(music, loops);
+    music_track = MIX_CreateTrack(mixer);
+    if(music_track == NULL){
+        ye_logf(error, "Failed to create music track.\n");
+        MIX_DestroyAudio(music_audio);
+        music_audio = NULL;
+        return;
+    }
 
-    // adjust the music volume
-    Mix_VolumeMusic((int)((YE_STATE.engine.volume * volume_scale)));
+    MIX_SetTrackAudio(music_track, music_audio);
+    MIX_SetTrackLoops(music_track, loops);
+    MIX_SetTrackGain(music_track, (float)YE_STATE.engine.volume / 128.0f * volume_scale);
+    MIX_PlayTrack(music_track, 0);
+    MIX_SetTrackStoppedCallback(music_track, ye_music_track_stopped, NULL);
 }
 
 /*
@@ -345,14 +328,13 @@ void ye_play_music(const char *handle, int loops, float volume_scale){
 */
 
 void ye_set_volume(float volume){
-    YE_STATE.engine.volume = (128 * volume);
-    Mix_VolumeMusic((128 * volume));
-    Mix_Volume(-1, (128 * volume));
-    ye_logf(debug, "Set audio volume to %d.\n", (int)(128 * volume));
+    YE_STATE.engine.volume = (int)(128 * volume);
+    MIX_SetMixerGain(mixer, volume);
+    ye_logf(debug, "Set audio volume to %f.\n", volume);
 }
 
 int ye_get_audio_allocated_channels(){
-    return audio_mix_allocated_channels;
+    return audio_mix_busy_channels;  // tracks are created on demand; allocated == busy
 }
 
 int ye_get_audio_busy_channels(){
