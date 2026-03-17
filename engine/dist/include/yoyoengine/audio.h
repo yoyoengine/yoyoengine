@@ -92,4 +92,17 @@ YE_API int ye_get_mixer_cache_count();
 
 YE_API void _ye_audio_decrement_busy();
 
+/**
+ * @brief Queue a track for deferred destruction from the main thread.
+ *        Use this instead of MIX_DestroyTrack when inside a stopped callback
+ *        (which fires from the audio thread).
+ */
+YE_API void _ye_queue_track_destroy(MIX_Track *track);
+
+/**
+ * @brief Destroy all tracks that were queued for deferred destruction from audio thread callbacks.
+ *        Must be called from the main thread once per frame (done automatically by ye_system_audiosource).
+ */
+YE_API void ye_flush_pending_track_destroys();
+
 #endif

@@ -23,6 +23,46 @@ static int audio_mix_busy_channels = 0;
 
 /*
     ==========================================
+        DEFERRED TRACK DESTRUCTION
+    ==========================================
+    Stopped callbacks fire from the audio thread (inside SDL_GetAudioStreamDataAdjustGain),
+    which holds output_stream's lock. Calling MIX_DestroyTrack there frees the stream
+    and its queue out from under the caller, causing a use-after-free SIGSEGV.
+    Instead, we queue tracks here and destroy them from the main thread.
+*/
+
+#define YE_MAX_PENDING_TRACK_DESTROYS 128
+static MIX_Track *pending_track_destroys[YE_MAX_PENDING_TRACK_DESTROYS];
+static int pending_track_destroy_count = 0;
+static SDL_Mutex *pending_track_destroy_lock = NULL;
+
+void _ye_queue_track_destroy(MIX_Track *track)
+{
+    SDL_LockMutex(pending_track_destroy_lock);
+    if(pending_track_destroy_count < YE_MAX_PENDING_TRACK_DESTROYS){
+        pending_track_destroys[pending_track_destroy_count++] = track;
+    } else {
+        ye_logf(warning, "Pending track destroy queue full! Track leak possible.\n");
+    }
+    SDL_UnlockMutex(pending_track_destroy_lock);
+}
+
+void ye_flush_pending_track_destroys()
+{
+    SDL_LockMutex(pending_track_destroy_lock);
+    for(int i = 0; i < pending_track_destroy_count; i++){
+        MIX_DestroyTrack(pending_track_destroys[i]);
+    }
+    pending_track_destroy_count = 0;
+    SDL_UnlockMutex(pending_track_destroy_lock);
+}
+
+/*
+    ==========================================
+*/
+
+/*
+    ==========================================
                 MIXER CACHE IMPL
     ==========================================
 */
@@ -175,6 +215,9 @@ void _ye_audio_decrement_busy(){
 void ye_init_audio(){
     audio_mix_busy_channels = 0;
 
+    pending_track_destroy_count = 0;
+    pending_track_destroy_lock = SDL_CreateMutex();
+
     if(!MIX_Init()){
         ye_logf(error, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", SDL_GetError());
         exit(1);
@@ -207,6 +250,12 @@ void ye_shutdown_audio(){
 
     MIX_StopAllTracks(mixer, 0);
 
+    // Flush any tracks that were queued for deferred destruction before shutdown began
+    ye_flush_pending_track_destroys();
+
+    SDL_DestroyMutex(pending_track_destroy_lock);
+    pending_track_destroy_lock = NULL;
+
     if(music_track != NULL){
         MIX_DestroyTrack(music_track);
         music_track = NULL;
@@ -232,24 +281,28 @@ void ye_shutdown_audio(){
 /*
     Stopped callback for the music track.
     When music finishes naturally, clean up the track object.
+    NOTE: This fires from the audio thread. Do NOT call MIX_DestroyTrack here —
+    we are inside SDL_GetAudioStreamDataAdjustGain which still holds output_stream's
+    lock and queue reference. Queue for deferred destruction on the main thread.
 */
 static void ye_music_track_stopped(void *userdata, MIX_Track *track){
     (void)userdata;
     if(!mid_audio_shutdown){
         music_track = NULL;
-        MIX_DestroyTrack(track);
+        _ye_queue_track_destroy(track);
     }
 }
 
 /*
     Default fire-and-forget stopped callback for sounds not owned by an audiosource.
-    Decrements the busy counter and destroys the track.
+    NOTE: This fires from the audio thread. Do NOT call MIX_DestroyTrack here —
+    queue for deferred destruction on the main thread.
 */
 static void ye_default_track_stopped(void *userdata, MIX_Track *track){
     (void)userdata;
     if(!mid_audio_shutdown){
         _ye_audio_decrement_busy();
-        MIX_DestroyTrack(track);
+        _ye_queue_track_destroy(track);
     }
 }
 
@@ -272,13 +325,16 @@ MIX_Track *ye_play_sound(const char *handle, int loops, float volume_scale){
     }
 
     MIX_SetTrackAudio(track, audio);
-    MIX_SetTrackLoops(track, loops);
     MIX_SetTrackGain(track, (float)YE_STATE.engine.volume / 128.0f * volume_scale);
 
     // Default fire-and-forget cleanup. Audiosource may override this after calling ye_play_sound.
     MIX_SetTrackStoppedCallback(track, ye_default_track_stopped, NULL);
 
-    MIX_PlayTrack(track, 0);
+    // MIX_SetTrackLoops has no effect on stopped tracks; loops must be passed via properties
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loops);
+    MIX_PlayTrack(track, props);
+    SDL_DestroyProperties(props);
 
     audio_mix_busy_channels++;
     totalChunks = audio_mix_busy_channels;
@@ -317,10 +373,13 @@ void ye_play_music(const char *handle, int loops, float volume_scale){
     }
 
     MIX_SetTrackAudio(music_track, music_audio);
-    MIX_SetTrackLoops(music_track, loops);
     MIX_SetTrackGain(music_track, (float)YE_STATE.engine.volume / 128.0f * volume_scale);
-    MIX_PlayTrack(music_track, 0);
     MIX_SetTrackStoppedCallback(music_track, ye_music_track_stopped, NULL);
+
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loops);
+    MIX_PlayTrack(music_track, props);
+    SDL_DestroyProperties(props);
 }
 
 /*

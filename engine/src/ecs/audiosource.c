@@ -17,13 +17,16 @@
     Per-track stopped callback for audiosource components.
     Fires when a track finishes all its loops.
     userdata is the ye_component_audiosource* that owns the track.
+    NOTE: This fires from the audio thread (inside SDL_GetAudioStreamDataAdjustGain).
+    Do NOT call MIX_DestroyTrack here — the stream's queue is still live in the caller.
+    Queue for deferred destruction on the main thread instead.
 */
 static void ye_audiosource_track_stopped(void *userdata, MIX_Track *track){
     struct ye_component_audiosource *src = (struct ye_component_audiosource *)userdata;
     src->track = NULL;
     src->playing = false;
-    MIX_DestroyTrack(track);
     _ye_audio_decrement_busy();
+    _ye_queue_track_destroy(track);
 }
 
 void ye_add_audiosource_component(struct ye_entity *entity, const char *handle, float volume, bool play_on_awake, int loops, bool simulated, struct ye_rectf range){
@@ -118,6 +121,9 @@ void ye_pause_audiosource(struct ye_entity *entity){
     this math could be optimized and made better
 */
 void ye_system_audiosource(){
+    // Destroy tracks that were queued for deferred cleanup by audio thread callbacks
+    ye_flush_pending_track_destroys();
+
     /*
         We are considering the center of the active camera to be the audio listener
     */
@@ -210,9 +216,17 @@ void ye_system_audiosource(){
                                        * (1.0f - (float)distance_from_center_scaled / 255.0f);
                             MIX_SetTrackGain(src->track, gain);
 
-                            // Spatial position relative to listener (listener is at origin)
-                            MIX_Point3D source_pos = {cx - listener_x, cy - listener_y, 0.0f};
-                            MIX_SetTrack3DPosition(src->track, &source_pos);
+                            // Stereo pan based on horizontal offset — MIX_SetTrack3DPosition
+                            // includes SDL_mixer's own distance attenuation which conflicts
+                            // with our manual gain and uses raw pixel units it can't interpret.
+                            float pan = (cx - listener_x) / max_radius;
+                            if(pan < -1.0f) pan = -1.0f;
+                            if(pan > 1.0f) pan = 1.0f;
+                            MIX_StereoGains stereo = {
+                                1.0f - (pan > 0.0f ? pan : 0.0f),
+                                1.0f + (pan < 0.0f ? pan : 0.0f)
+                            };
+                            MIX_SetTrackStereo(src->track, &stereo);
                         }
                     }
                 }
@@ -227,7 +241,6 @@ void ye_system_audiosource(){
                 }
                 if(src->track != NULL){
                     MIX_SetTrackGain(src->track, ((float)YE_STATE.engine.volume / 128.0f) * src->volume);
-                    MIX_SetTrack3DPosition(src->track, NULL);  // NULL disables 3D positioning
                 }
             }
         }
