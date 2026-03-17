@@ -265,20 +265,11 @@ void ye_render_all() {
     SDL_RenderClear(pRenderer);
 
     /*
-        If we are in editor mode paint to a viewport
-
-        This viewport is for the scene preview
+        In non-editor mode, if we need to set a custom viewport to maintain ratio, do so here.
+        (In editor mode we skip the viewport set — the logical presentation fills the full screen,
+        and the NK panels are overlaid on top.)
     */
-    if(YE_STATE.editor.editor_mode){
-        SDL_Rect viewport;
-        viewport.x = 0;
-        viewport.y = 35;
-        viewport.w = YE_STATE.engine.screen_width / 1.5;
-        viewport.h = 35 + YE_STATE.engine.screen_height / 1.5;
-        SDL_SetRenderViewport(pRenderer, &viewport);
-        // note: this is in practice useless, because in editor set logical size is overwriting this and we are painting to full screen buffer
-    }
-    else{
+    if(!YE_STATE.editor.editor_mode){
         /*
             If we need to set a custom viewport to maintain ratio, do so here
 
