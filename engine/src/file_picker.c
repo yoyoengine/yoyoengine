@@ -7,6 +7,30 @@
 
 #include <yoyoengine/yoyoengine.h>
 
+/*
+    Find the subpath after "resources/" or "resources\" in a file path.
+    Returns pointer into the original string after the resources separator,
+    or NULL if not found. Handles both forward and backward slash separators
+    for cross-platform compatibility (Windows file dialogs return backslash paths).
+*/
+static const char *_find_resources_subpath(const char *filelist) {
+    const char *subpath = strstr(filelist, "resources/");
+    if (subpath) return subpath + strlen("resources/");
+    subpath = strstr(filelist, "resources\\");
+    if (subpath) return subpath + strlen("resources\\");
+    return NULL;
+}
+
+/*
+    Normalize backslashes to forward slashes in-place.
+    Ensures paths returned by the picker are consistent across platforms.
+*/
+static void _normalize_path_slashes(char *path) {
+    for (; *path; path++) {
+        if (*path == '\\') *path = '/';
+    }
+}
+
 static void SDLCALL _picker_wrapper(void* userdata, const char* const* filelist, int filter){
     struct ye_picker_data *picker_data = (struct ye_picker_data*)userdata;
     if(!picker_data) {
@@ -37,9 +61,10 @@ static void SDLCALL _picker_wrapper(void* userdata, const char* const* filelist,
             // write the selected path to the output pointer
             if(picker_data->_truncate_resource_path){
                 // truncate the path to the resource folder
-                const char *resources_subpath = strstr(*filelist, "resources/");
+                const char *resources_subpath = _find_resources_subpath(*filelist);
                 if (resources_subpath) {
-                    *picker_data->dest.output_ptr = strdup(resources_subpath + strlen("resources/"));
+                    *picker_data->dest.output_ptr = strdup(resources_subpath);
+                    _normalize_path_slashes(*picker_data->dest.output_ptr);
                 } else {
                     *picker_data->dest.output_ptr = strdup(*filelist);
                 }
@@ -61,11 +86,12 @@ static void SDLCALL _picker_wrapper(void* userdata, const char* const* filelist,
             // write the selected path directly to the output buffer
             if(picker_data->_truncate_resource_path){
                 // truncate the path to the resource folder
-                const char *resources_subpath = strstr(*filelist, "resources/");
+                const char *resources_subpath = _find_resources_subpath(*filelist);
                 if (resources_subpath) {
-                    strncpy(picker_data->dest.output_buf.buffer, resources_subpath + strlen("resources/"), 
+                    strncpy(picker_data->dest.output_buf.buffer, resources_subpath,
                             picker_data->dest.output_buf.size - 1);
                     picker_data->dest.output_buf.buffer[picker_data->dest.output_buf.size - 1] = '\0';
+                    _normalize_path_slashes(picker_data->dest.output_buf.buffer);
                 } else {
                     strncpy(picker_data->dest.output_buf.buffer, *filelist, picker_data->dest.output_buf.size - 1);
                     picker_data->dest.output_buf.buffer[picker_data->dest.output_buf.size - 1] = '\0';
