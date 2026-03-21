@@ -128,8 +128,8 @@ bool is_dir_outofdate(const char *target_directory, const char *yep_file_path){
     // check if the yep file exists
     SDL_PathInfo yep_info;
     if(!ye_get_path_info(yep_file_path, &yep_info)){
-        ye_logf(error,"Error: yep file %s does not exist\n", yep_file_path);
-        return false;
+        ye_logf(debug,"Yep file %s does not exist, packing required\n", yep_file_path);
+        return true;
     }
     // if the yep file is not a file, return false
     if(yep_info.type != SDL_PATHTYPE_FILE){
@@ -411,14 +411,15 @@ static SDL_EnumerationResult SDLCALL _recurse_dir_callback(void *userdata, const
         // Calculate the relative path from the original root directory
         char *relative_path;
         if (yep_pack_root_path != NULL) {
-            // Calculate relative path from the original root
+            // Calculate relative path from the original root.
+            // Strip trailing separator for comparison to handle mixed / and \ on Windows.
             size_t root_len = strlen(yep_pack_root_path);
-            if (strncmp(full_path, yep_pack_root_path, root_len) == 0) {
-                relative_path = full_path + root_len;
-                // Skip leading slash if present
-                if (*relative_path == '/') {
-                    relative_path++;
-                }
+            if (root_len > 0 && (yep_pack_root_path[root_len - 1] == '/' || yep_pack_root_path[root_len - 1] == '\\')) {
+                root_len--;
+            }
+            if (strncmp(full_path, yep_pack_root_path, root_len) == 0 &&
+                (full_path[root_len] == '/' || full_path[root_len] == '\\')) {
+                relative_path = full_path + root_len + 1; // skip past the separator
             } else {
                 ye_logf(error,"Error: file %s is not within the root directory %s\n", full_path, yep_pack_root_path);
                 return SDL_ENUM_CONTINUE;
