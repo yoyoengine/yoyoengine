@@ -135,37 +135,29 @@ void ye_vector_remove(struct ye_vector *vector, size_t index);
 #ifdef _MSC_VER
     #define YE_VECTOR_FOR_EACH(vector, type, element) \
         __pragma(warning(suppress:4456)) \
-        for (size_t _i = 0, _once = 1; \
-            _once && _i < (vector)->size; \
-            _i++) \
+        for (size_t _i = 0; _i < (vector)->size; _i++) \
+        for (int _ye_once = 1; _ye_once; ) \
         for (type element = *(type*)ye_vector_get((vector), _i); \
-            _once; \
-            _once = 0)
+            _ye_once; _ye_once = 0)
 
     #define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
         __pragma(warning(suppress:4456)) \
-        for (size_t idx = 0, _once = 1; \
-            _once && idx < (vector)->size; \
-            idx++) \
+        for (size_t idx = 0; idx < (vector)->size; idx++) \
+        for (int _ye_once = 1; _ye_once; ) \
         for (type element = *(type*)ye_vector_get((vector), idx); \
-            _once; \
-            _once = 0)
+            _ye_once; _ye_once = 0)
 #else
     #define YE_VECTOR_FOR_EACH(vector, type, element) \
-        for (size_t _i __attribute__((unused)) = 0, _once = 1; \
-            _once && _i < (vector)->size; \
-            _i++) \
+        for (size_t _i __attribute__((unused)) = 0; _i < (vector)->size; _i++) \
+        for (int _ye_once = 1; _ye_once; ) \
         for (type element = *(type*)ye_vector_get((vector), _i); \
-            _once; \
-            _once = 0)
+            _ye_once; _ye_once = 0)
 
     #define YE_VECTOR_FOR_EACH_INDEX(vector, type, element, idx) \
-        for (size_t idx = 0, _once = 1; \
-            _once && idx < (vector)->size; \
-            idx++) \
+        for (size_t idx = 0; idx < (vector)->size; idx++) \
+        for (int _ye_once = 1; _ye_once; ) \
         for (type element = *(type*)ye_vector_get((vector), idx); \
-            _once; \
-            _once = 0)
+            _ye_once; _ye_once = 0)
 #endif
 
 #endif // YE_VECTOR_H
