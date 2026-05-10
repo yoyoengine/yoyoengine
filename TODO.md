@@ -33,8 +33,13 @@ Nothing!!!
 - moving game output dir in cmake causes editor to build path wrong
 - expose p2d config in editor (frustum sleeping might not always be something we want to do)
 
+### Questions
+
+- we might want to remove p2d checks between static object pairs. right now everything static is checking each other
+
 ### Features
 
+- we should be able to freeze rotation, x, or y on p2d bodies with editor checkbox
 - Template should have C++ option, and integrate that into editor when creating project
 - Easy constructor for debug panels, particularly a datatype and interface functions for debug charts (like in roguefight)
 - Viewport jank

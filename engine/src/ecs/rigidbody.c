@@ -48,6 +48,7 @@ void ye_add_rigidbody_component(struct ye_entity *entity, float transform_offset
     rb->p2d_object.out_rotation = &entity->transform->rotation;
 
     rb->p2d_object.in_active    = &entity->active; // active if the entity is active, no fine grained rigidbody control
+    rb->p2d_object.user_data    = entity;
 
     entity->rigidbody = rb;
 
@@ -69,13 +70,13 @@ void ye_remove_rigidbody_component(struct ye_entity *entity) {
         return;
     }
 
-    free(entity->rigidbody);
-    entity->rigidbody = NULL;
-
     ye_entity_list_remove(&rigidbody_list_head, entity);
 
     // remove from p2d
     p2d_remove_object(&entity->rigidbody->p2d_object);
+
+    free(entity->rigidbody);
+    entity->rigidbody = NULL;
 
     // ye_logf(YE_LL_DEBUG, "removed rigidbody component from \"%s\"\n", entity->name);
 }
