@@ -30,6 +30,8 @@ Nothing!!!
 - When opening to welcome page, fullscreen the window and then load into a project. you will notice a weird viewport bug that is fixed by resizing the window.
 - when zenity prompts, we minimze and then maximize which destroys the active reference in nuklear (even though the sdl backend does not touch this)
 - console underneath group panels on welcome page
+- moving game output dir in cmake causes editor to build path wrong
+- expose p2d config in editor (frustum sleeping might not always be something we want to do)
 
 ### Features
 
