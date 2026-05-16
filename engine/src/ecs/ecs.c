@@ -116,7 +116,7 @@ struct ye_entity_node *transform_list_head;
 struct ye_entity_node *renderer_list_head;
 struct ye_entity_node *camera_list_head;
 struct ye_entity_node *tag_list_head;
-struct ye_entity_node *lua_script_list_head;
+// struct ye_entity_node *lua_script_list_head;
 struct ye_entity_node *audiosource_list_head;
 struct ye_entity_node *button_list_head;
 struct ye_entity_node *rigidbody_list_head;
@@ -139,7 +139,7 @@ struct ye_entity * ye_create_entity(){
     entity->transform = NULL;
     entity->renderer = NULL;
     entity->camera = NULL;
-    entity->lua_script = NULL;
+    // entity->lua_script = NULL;
     entity->button = NULL;
     entity->tag = NULL;
     entity->audiosource = NULL;
@@ -167,7 +167,7 @@ struct ye_entity * ye_create_entity_named(const char *name){
     entity->transform = NULL;
     entity->renderer = NULL;
     entity->camera = NULL;
-    entity->lua_script = NULL;
+    // entity->lua_script = NULL;
     entity->button = NULL;
     entity->rigidbody = NULL;
     entity->tag = NULL;
@@ -261,19 +261,19 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         ye_add_audiosource_component(new_entity, entity->audiosource->handle, entity->audiosource->volume, entity->audiosource->play_on_awake, entity->audiosource->loops, entity->audiosource->simulated, entity->audiosource->range);
         new_entity->audiosource->active = entity->audiosource->active;
     }
-    if(entity->lua_script != NULL){
-        struct ye_lua_script_global *globals = NULL;
-        struct ye_lua_script_global *og_ent_globals = entity->lua_script->globals;
+    // if(entity->lua_script != NULL){
+    //     struct ye_lua_script_global *globals = NULL;
+    //     struct ye_lua_script_global *og_ent_globals = entity->lua_script->globals;
 
-        // copy the globals from the original entity
-        while(og_ent_globals != NULL) {
-            ye_lua_script_add_manual_global(&globals, og_ent_globals->type, og_ent_globals->name, (void*)&og_ent_globals->value);
-            og_ent_globals = og_ent_globals->next;
-        }
+    //     // copy the globals from the original entity
+    //     while(og_ent_globals != NULL) {
+    //         ye_lua_script_add_manual_global(&globals, og_ent_globals->type, og_ent_globals->name, (void*)&og_ent_globals->value);
+    //         og_ent_globals = og_ent_globals->next;
+    //     }
 
-        ye_add_lua_script_component(new_entity, entity->lua_script->script_handle, globals);
-        new_entity->lua_script->active = entity->lua_script->active;
-    }
+    //     ye_add_lua_script_component(new_entity, entity->lua_script->script_handle, globals);
+    //     new_entity->lua_script->active = entity->lua_script->active;
+    // }
 
     return new_entity;
 }
@@ -293,10 +293,10 @@ void ye_destroy_entity(struct ye_entity * entity){
     if(entity->camera != NULL) ye_remove_camera_component(entity);
     if(entity->rigidbody != NULL) ye_remove_rigidbody_component(entity);
     if(entity->tag != NULL) ye_remove_tag_component(entity);
-    if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
+    // if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     if(entity->button != NULL) ye_remove_button_component(entity);
     if(entity->audiosource != NULL) ye_remove_audiosource_component(entity);
-    if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
+    // if(entity->lua_script != NULL) ye_remove_lua_script_component(entity);
     // free the entity name
     free(entity->name);
 
@@ -370,7 +370,7 @@ void ye_init_ecs(){
     camera_list_head = ye_entity_list_create();
     tag_list_head = ye_entity_list_create();
     audiosource_list_head = ye_entity_list_create();
-    lua_script_list_head = ye_entity_list_create();
+    // lua_script_list_head = ye_entity_list_create();
     button_list_head = ye_entity_list_create();
     rigidbody_list_head = ye_entity_list_create();
     ye_logf(info, "Initialized ECS\n");
@@ -395,7 +395,7 @@ void ye_shutdown_ecs(){
     ye_entity_list_destroy(&renderer_list_head);
     ye_entity_list_destroy(&camera_list_head);
     ye_entity_list_destroy(&tag_list_head);
-    ye_entity_list_destroy(&lua_script_list_head);
+    // ye_entity_list_destroy(&lua_script_list_head);
     ye_entity_list_destroy(&audiosource_list_head);
     ye_entity_list_destroy(&button_list_head);
     ye_entity_list_destroy(&rigidbody_list_head);
@@ -414,13 +414,13 @@ void ye_print_entities(){
     int i = 0;
     while(current != NULL){
         char b[100];
-        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Btn:%d Scr:%d RB:%d Tag:%d Aud:%d\n",
+        snprintf(b, sizeof(b), "\"%s\" -> ID:%d Trn:%d Rdr:%d Cam:%d Btn:%d RB:%d Tag:%d Aud:%d\n",
             current->entity->name, current->entity->id, 
             current->entity->transform != NULL, 
             current->entity->renderer != NULL, 
             current->entity->camera != NULL,
             current->entity->button != NULL,
-            current->entity->lua_script != NULL,
+            // current->entity->lua_script != NULL,
             current->entity->rigidbody != NULL,
             current->entity->tag != NULL,
             current->entity->audiosource != NULL

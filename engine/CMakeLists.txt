@@ -147,7 +147,7 @@ set(JANSSON_BUILD_MAN OFF CACHE INTERNAL "")
 FetchContent_Declare(
     jansson
     GIT_REPOSITORY https://github.com/akheron/jansson.git
-    GIT_TAG        v2.14.1
+    GIT_TAG        v2.15.0
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -301,15 +301,15 @@ target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SD
 
 # NOTE: linked as static per the reccomendation of the cmake port maintainer
 
-FetchContent_Declare(
-    lua
-    GIT_REPOSITORY https://github.com/walterschell/Lua.git
-    GIT_TAG        v5.4.5
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(lua)
-target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
+# FetchContent_Declare(
+#     lua
+#     GIT_REPOSITORY https://github.com/walterschell/Lua.git
+#     GIT_TAG        v5.4.5
+#     GIT_PROGRESS TRUE
+#     GIT_SHALLOW TRUE
+# )
+# FetchContent_MakeAvailable(lua)
+# target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
 
 # ###############
 # #   SDL3_net  #
@@ -343,7 +343,7 @@ if(YOYO_ENGINE_STATIC)
         SDL3_image-static
         SDL3_mixer-static
         # SDL3_net-static
-        lua_static
+        # lua_static
     )
 else()
     # On GCC/Clang, use whole-archive to ensure all symbols are included in shared lib
@@ -359,7 +359,7 @@ else()
         SDL3_image-static
         SDL3_mixer-static
         # SDL3_net-static
-        lua_static
+        # lua_static
         -Wl,--no-whole-archive
     )
 endif()

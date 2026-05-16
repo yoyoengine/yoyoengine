@@ -8,7 +8,7 @@
 #include <yoyoengine/logging.h>
 #include <yoyoengine/physics.h>
 #include <yoyoengine/event.h>
-#include <yoyoengine/ecs/lua_script.h>
+//#include <yoyoengine/ecs/lua_script.h>
 
 static bool ye_physics_collision_entities(struct p2d_cb_data *data, struct ye_entity **one, struct ye_entity **two) {
     if(!data || !data->a || !data->b) {

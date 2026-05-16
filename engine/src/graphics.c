@@ -30,7 +30,7 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
-#include <yoyoengine/ecs/lua_script.h>
+//#include <yoyoengine/ecs/lua_script.h>
 
 // define globals for file
 SDL_Window *pWindow = NULL;

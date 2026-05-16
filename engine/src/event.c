@@ -59,9 +59,9 @@ void ye_register_event_cb(enum ye_event_type type, void *cb, int flags){
             event->input_cb = (void (*)(SDL_Event))cb;
             break;
 
-        case YE_EVENT_LUA_REGISTER:
-            event->lua_cb = (void (*)(lua_State *))cb;
-            break;
+        //case YE_EVENT_LUA_REGISTER:
+        //    event->lua_cb = (void (*)(lua_State *))cb;
+        //    break;
 
         case YE_EVENT_SCENE_LOAD:
             event->scene_load_cb = (void (*)(char *))cb;
@@ -100,7 +100,7 @@ void ye_fire_event(enum ye_event_type type, union ye_event_args args){
                     break;
 
                 case YE_EVENT_LUA_REGISTER:
-                    current->lua_cb(args.L);
+                    //current->lua_cb(args.L);
                     break;
 
                 case YE_EVENT_SCENE_LOAD:
@@ -160,7 +160,7 @@ void ye_unregister_event_cb(void *cb){
         if(
             current->empty_cb == cb         ||
             current->input_cb == cb         ||
-            current->lua_cb == cb           ||
+            //current->lua_cb == cb           ||
             current->scene_load_cb == cb    ||
             current->collision_cb == cb     ||
             current->custom_cb == cb

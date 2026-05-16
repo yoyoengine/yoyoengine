@@ -31,7 +31,7 @@ YE_API extern struct ye_entity_node *transform_list_head;
 YE_API extern struct ye_entity_node *renderer_list_head;
 YE_API extern struct ye_entity_node *camera_list_head;
 YE_API extern struct ye_entity_node *tag_list_head;
-YE_API extern struct ye_entity_node *lua_script_list_head;
+// YE_API extern struct ye_entity_node *lua_script_list_head;
 YE_API extern struct ye_entity_node *audiosource_list_head;
 YE_API extern struct ye_entity_node *button_list_head;
 YE_API extern struct ye_entity_node *rigidbody_list_head;

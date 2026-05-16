@@ -29,7 +29,7 @@ void ye_cmd_entlist(int argc, const char **argv) {
     bool include_transform      = false;
     bool include_renderer       = false;
     bool include_camera         = false;
-    bool include_lua_script     = false;
+    // bool include_lua_script     = false;
     bool include_button         = false;
     bool include_rigidbody      = false;
     bool include_tag            = false;
@@ -50,8 +50,8 @@ void ye_cmd_entlist(int argc, const char **argv) {
                     include_renderer = true;
                 else if(strcmp(argv[i], "camera") == 0)
                     include_camera = true;
-                else if(strcmp(argv[i], "lua_script") == 0)
-                    include_lua_script = true;
+                // else if(strcmp(argv[i], "lua_script") == 0)
+                //     include_lua_script = true;
                 else if(strcmp(argv[i], "button") == 0)
                     include_button = true;
                 else if(strcmp(argv[i], "rigidbody") == 0)
@@ -91,8 +91,8 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 matches = false;
             if(include_camera && !current->entity->camera)
                 matches = false;
-            if(include_lua_script && !current->entity->lua_script)
-                matches = false;
+            // if(include_lua_script && !current->entity->lua_script)
+            //     matches = false;
             if(include_button && !current->entity->button)
                 matches = false;
             if(include_rigidbody && !current->entity->rigidbody)
@@ -118,8 +118,8 @@ void ye_cmd_entlist(int argc, const char **argv) {
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Renderer]\n");
             if(current->entity->camera)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Camera]\n");
-            if(current->entity->lua_script)
-                ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Lua Script]\n");
+            // if(current->entity->lua_script)
+            //     ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Lua Script]\n");
             if(current->entity->button)
                 ye_logf(_YE_RESERVED_LL_SYSTEM, "    [Button]\n");
             if(current->entity->rigidbody)

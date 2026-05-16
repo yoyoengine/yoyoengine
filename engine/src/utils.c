@@ -471,8 +471,8 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
             return entity->rigidbody != NULL;
         case YE_COMPONENT_TAG:
             return entity->tag != NULL;
-        case YE_COMPONENT_LUA_SCRIPT:
-            return entity->lua_script != NULL;
+        //case YE_COMPONENT_LUA_SCRIPT:
+        //    return entity->lua_script != NULL;
         case YE_COMPONENT_AUDIOSOURCE:
             return entity->audiosource != NULL;
         case YE_COMPONENT_BUTTON:

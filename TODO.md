@@ -16,6 +16,9 @@ Nothing!!!
 
 ### Bugs
 
+- when creating new scene it defaults without a styles.yoyo
+  - this whole system should become global
+- editor picker does not allow selecting `.otf`
 - Changing an entity's Z value in the editor does not currently re-sort the renderer entity list
 - Replace editor booleans with is_exists checks
 - Sometimes nuklear panels (title bar) go inactive when doing things like loading new scenes in editor

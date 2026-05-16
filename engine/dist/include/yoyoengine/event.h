@@ -12,7 +12,7 @@
 
 #include <stdbool.h>
 
-#include <lua.h>
+//#include <lua.h>
 #include <SDL.h>
 
 #include <yoyoengine/ecs/ecs.h>
@@ -45,7 +45,7 @@ struct _ye_event {
         void (*empty_cb)();
         void (*scene_load_cb)(char *scene_name);
         void (*input_cb)(SDL_Event event);
-        void (*lua_cb)(lua_State *L);
+        //void (*lua_cb)(lua_State *L);
         void (*collision_cb)(struct ye_entity *one, struct ye_entity *two);
         void (*custom_cb)(void *data);
     };
@@ -56,7 +56,7 @@ struct _ye_event {
 union ye_event_args {
     char *scene_name;
     SDL_Event input;
-    lua_State *L;
+    //lua_State *L;
     struct {
         struct ye_entity *one;
         struct ye_entity *two;

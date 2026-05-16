@@ -206,10 +206,10 @@ SDL_DialogFileFilter ye_picker_audio_filters[] = {
 };
 int ye_picker_num_audio_filters = sizeof(ye_picker_audio_filters) / sizeof(SDL_DialogFileFilter);
 
-SDL_DialogFileFilter ye_picker_script_filters[] = {
-    { "Lua script",   "lua" }
-};
-int ye_picker_num_script_filters = sizeof(ye_picker_script_filters) / sizeof(SDL_DialogFileFilter);
+//SDL_DialogFileFilter ye_picker_script_filters[] = {
+//    { "Lua script",   "lua" }
+//};
+//int ye_picker_num_script_filters = sizeof(ye_picker_script_filters) / sizeof(SDL_DialogFileFilter);
 
 SDL_DialogFileFilter ye_picker_yoyo_filters[] = {
     { "yoyo config",   "yoyo" }

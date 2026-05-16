@@ -45,7 +45,7 @@
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/debug_renderer.h>
-#include <yoyoengine/ecs/lua_script.h>
+//#include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
 
 // buffer to hold filepath strings
@@ -169,7 +169,7 @@ void ye_process_frame(){
         // ye_run_trick_updates();
     
         // run all scripting before the frame is rendered
-        ye_system_lua_scripting();
+        //ye_system_lua_scripting();
     }
 
     // render frame
