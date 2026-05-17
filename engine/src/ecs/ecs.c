@@ -222,7 +222,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
             ye_add_animation_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.animation->meta_file);
         }
         else if (entity->renderer->type == YE_RENDERER_TYPE_TILEMAP_TILE) {
-			ye_add_tilemap_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.tilemap_tile->src, entity->renderer->renderer_impl.tilemap_tile->src_rect);
+			ye_add_tilemap_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.tile->handle, entity->renderer->renderer_impl.tile->src);
         }
 
         /*
