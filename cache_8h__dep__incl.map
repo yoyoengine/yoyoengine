@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/cache.h" name="dist/include/yoyoengine/cache.h">
+<area shape="rect" id="node1" title="The engine API for caching resources." alt="" coords="475,5,631,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$cache_8c.html" title=" " alt="" coords="185,101,275,126"/>
+<area shape="rect" id="node5" href="$ecs_8c.html" title=" " alt="" coords="299,101,399,126"/>
+<area shape="rect" id="node6" href="$renderer_8c.html" title=" " alt="" coords="423,101,549,126"/>
+<area shape="rect" id="node7" href="$engine_8c.html" title=" " alt="" coords="573,101,665,126"/>
+<area shape="rect" id="node8" href="$graphics_8c.html" title=" " alt="" coords="689,101,792,126"/>
+<area shape="rect" id="node9" href="$scene_8c.html" title=" " alt="" coords="816,101,905,126"/>
+<area shape="rect" id="node10" href="$ui_8c.html" title=" " alt="" coords="929,101,1008,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

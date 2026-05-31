@@ -1,0 +1,7 @@
+<map id="dist/include/yoyoengine/timer.h" name="dist/include/yoyoengine/timer.h">
+<area shape="rect" id="node1" title="Provides a simple timer system for the engine." alt="" coords="153,5,309,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$engine_8c.html" title=" " alt="" coords="185,101,277,126"/>
+<area shape="rect" id="node5" href="$timer_8c.html" title=" " alt="" coords="302,101,385,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

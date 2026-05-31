@@ -1,0 +1,22 @@
+<map id="src/console/commands/cmd_quit.c" name="src/console/commands/cmd_quit.c">
+<area shape="rect" id="node1" title=" " alt="" coords="221,5,378,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="33,240,96,265"/>
+<area shape="rect" id="node3" title=" " alt="" coords="457,93,521,119"/>
+<area shape="rect" id="node4" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="698,167,837,192"/>
+<area shape="rect" id="node14" href="$logging_8h.html" title="The engine Logging API." alt="" coords="171,240,313,265"/>
+<area shape="rect" id="node19" href="$commands_8h.html" title=" " alt="" coords="217,93,381,119"/>
+<area shape="rect" id="node5" title=" " alt="" coords="997,240,1076,265"/>
+<area shape="rect" id="node6" href="$export_8h.html" title=" " alt="" coords="357,313,492,339"/>
+<area shape="rect" id="node7" title=" " alt="" coords="540,240,600,265"/>
+<area shape="rect" id="node8" title=" " alt="" coords="541,313,615,339"/>
+<area shape="rect" id="node9" title=" " alt="" coords="778,387,837,412"/>
+<area shape="rect" id="node10" title=" " alt="" coords="845,313,922,339"/>
+<area shape="rect" id="node11" href="$graphics_8h.html" title="The engine API for handling graphics." alt="" coords="779,240,860,265"/>
+<area shape="rect" id="node12" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="676,240,755,265"/>
+<area shape="rect" id="node13" href="$types_8h.html" title=" " alt="" coords="639,313,770,339"/>
+<area shape="rect" id="node15" href="$ye__nk_8h.html" title=" " alt="" coords="175,313,309,339"/>
+<area shape="rect" id="node16" title=" " alt="" coords="321,387,395,412"/>
+<area shape="rect" id="node17" title=" " alt="" coords="5,387,164,412"/>
+<area shape="rect" id="node18" title=" " alt="" coords="188,387,296,412"/>
+<area shape="rect" id="node20" href="$console_8h.html" title="Provides definitions and API for the developer console." alt="" coords="217,167,363,192"/>
+</map>

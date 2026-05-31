@@ -1,0 +1,11 @@
+<map id="dist/include/yoyoengine/commands.h" name="dist/include/yoyoengine/commands.h">
+<area shape="rect" id="node1" title=" " alt="" coords="641,5,797,45"/>
+<area shape="rect" id="node2" href="$cmd__clear_8c.html" title=" " alt="" coords="5,93,163,133"/>
+<area shape="rect" id="node3" href="$cmd__config_8c.html" title=" " alt="" coords="187,93,344,133"/>
+<area shape="rect" id="node4" href="$cmd__entlist_8c.html" title=" " alt="" coords="368,93,525,133"/>
+<area shape="rect" id="node5" href="$cmd__help_8c.html" title=" " alt="" coords="549,93,707,133"/>
+<area shape="rect" id="node6" href="$cmd__overlay_8c.html" title=" " alt="" coords="731,93,888,133"/>
+<area shape="rect" id="node7" href="$cmd__quit_8c.html" title=" " alt="" coords="912,93,1069,133"/>
+<area shape="rect" id="node8" href="$cmd__scene_8c.html" title=" " alt="" coords="1093,93,1251,133"/>
+<area shape="rect" id="node9" href="$console_8c.html" title=" " alt="" coords="1275,101,1423,126"/>
+</map>

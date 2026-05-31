@@ -1,0 +1,14 @@
+<map id="dist/include/yoyoengine/utils.h" name="dist/include/yoyoengine/utils.h">
+<area shape="rect" id="node1" title="Provides some utility functions for the engine." alt="" coords="377,5,533,45"/>
+<area shape="rect" id="node2" href="$export_8h.html" title=" " alt="" coords="5,167,140,192"/>
+<area shape="rect" id="node3" title=" " alt="" coords="478,167,553,192"/>
+<area shape="rect" id="node4" title=" " alt="" coords="519,240,578,265"/>
+<area shape="rect" id="node5" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="327,93,474,119"/>
+<area shape="rect" id="node7" href="$logging_8h.html" title="The engine Logging API." alt="" coords="161,93,302,119"/>
+<area shape="rect" id="node12" title=" " alt="" coords="628,93,688,119"/>
+<area shape="rect" id="node6" href="$types_8h.html" title=" " alt="" coords="323,167,454,192"/>
+<area shape="rect" id="node8" href="$ye__nk_8h.html" title=" " alt="" coords="164,167,299,192"/>
+<area shape="rect" id="node9" title=" " alt="" coords="194,240,269,265"/>
+<area shape="rect" id="node10" title=" " alt="" coords="293,240,452,265"/>
+<area shape="rect" id="node11" title=" " alt="" coords="61,240,169,265"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="ye_component_renderer" name="ye_component_renderer">
+<area shape="rect" id="node1" title="A structure to represent a component renderer." alt="" coords="628,236,788,261"/>
+<area shape="rect" id="node2" href="$structye__rectf.html" title="A rectangle made up of floats." alt="" coords="365,133,433,159"/>
+<area shape="rect" id="node3" href="$unionye__component__renderer_1_1renderer__impl.html" title=" " alt="" coords="319,183,479,223"/>
+<area shape="rect" id="node4" href="$structye__component__renderer__text.html" title="A structure to represent a text renderer." alt="" coords="5,5,193,31"/>
+<area shape="rect" id="node5" href="$structye__component__renderer__text__outlined.html" title="A structure to represent an outlined text renderer." alt="" coords="19,55,179,95"/>
+<area shape="rect" id="node6" href="$structye__component__renderer__image.html" title="A structure to represent an image renderer." alt="" coords="19,119,179,159"/>
+<area shape="rect" id="node7" href="$structye__component__renderer__animation.html" title="A structure to represent an animation renderer." alt="" coords="19,183,179,223"/>
+<area shape="rect" id="node8" href="$structye__component__renderer__tilemap__tile.html" title="A structure to represent a tilemap tile." alt="" coords="19,247,179,287"/>
+<area shape="rect" id="node9" href="$structye__point__rectf.html" title="A rectangle made up float points." alt="" coords="347,349,450,375"/>
+<area shape="rect" id="node10" href="$structye__pointf.html" title="A 2D point made up of floats." alt="" coords="62,313,137,339"/>
+</map>

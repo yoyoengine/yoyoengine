@@ -1,0 +1,16 @@
+<map id="dist/include/yoyoengine/ecs/audiosource.h" name="dist/include/yoyoengine/ecs/audiosource.h">
+<area shape="rect" id="node1" title="Contains audio emitter component code." alt="" coords="291,5,447,45"/>
+<area shape="rect" id="node2" href="$export_8h.html" title=" " alt="" coords="161,240,295,265"/>
+<area shape="rect" id="node3" title=" " alt="" coords="479,240,553,265"/>
+<area shape="rect" id="node4" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="55,167,201,192"/>
+<area shape="rect" id="node6" href="$utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="307,93,431,119"/>
+<area shape="rect" id="node14" title=" " alt="" coords="679,93,849,119"/>
+<area shape="rect" id="node5" href="$types_8h.html" title=" " alt="" coords="5,240,136,265"/>
+<area shape="rect" id="node7" title=" " alt="" coords="561,313,620,339"/>
+<area shape="rect" id="node8" href="$logging_8h.html" title="The engine Logging API." alt="" coords="361,167,503,192"/>
+<area shape="rect" id="node13" title=" " alt="" coords="277,167,337,192"/>
+<area shape="rect" id="node9" href="$ye__nk_8h.html" title=" " alt="" coords="319,240,454,265"/>
+<area shape="rect" id="node10" title=" " alt="" coords="279,313,353,339"/>
+<area shape="rect" id="node11" title=" " alt="" coords="378,313,537,339"/>
+<area shape="rect" id="node12" title=" " alt="" coords="146,313,254,339"/>
+</map>

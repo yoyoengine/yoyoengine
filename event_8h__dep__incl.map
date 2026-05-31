@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/event.h" name="dist/include/yoyoengine/event.h">
+<area shape="rect" id="node1" title=" " alt="" coords="472,5,628,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$renderer_8c.html" title=" " alt="" coords="185,101,312,126"/>
+<area shape="rect" id="node5" href="$engine_8c.html" title=" " alt="" coords="336,101,428,126"/>
+<area shape="rect" id="node6" href="$event_8c.html" title=" " alt="" coords="452,101,539,126"/>
+<area shape="rect" id="node7" href="$input_8c.html" title=" " alt="" coords="563,101,646,126"/>
+<area shape="rect" id="node8" href="$physics_8c.html" title=" " alt="" coords="670,101,769,126"/>
+<area shape="rect" id="node9" href="$scene_8c.html" title=" " alt="" coords="793,101,883,126"/>
+<area shape="rect" id="node10" href="$ui_8c.html" title=" " alt="" coords="907,101,985,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

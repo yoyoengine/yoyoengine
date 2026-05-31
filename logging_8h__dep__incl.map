@@ -1,0 +1,49 @@
+<map id="dist/include/yoyoengine/logging.h" name="dist/include/yoyoengine/logging.h">
+<area shape="rect" id="node1" title="The engine Logging API." alt="" coords="2020,5,2176,45"/>
+<area shape="rect" id="node2" href="$console_8h.html" title="Provides definitions and API for the developer console." alt="" coords="655,93,811,133"/>
+<area shape="rect" id="node4" href="$cmd__clear_8c.html" title=" " alt="" coords="178,269,335,309"/>
+<area shape="rect" id="node5" href="$cmd__config_8c.html" title=" " alt="" coords="722,269,879,309"/>
+<area shape="rect" id="node8" href="$cmd__overlay_8c.html" title=" " alt="" coords="1266,269,1423,309"/>
+<area shape="rect" id="node9" href="$cmd__quit_8c.html" title=" " alt="" coords="903,269,1061,309"/>
+<area shape="rect" id="node10" href="$cmd__scene_8c.html" title=" " alt="" coords="1085,269,1242,309"/>
+<area shape="rect" id="node11" href="$console_8c.html" title=" " alt="" coords="5,277,153,302"/>
+<area shape="rect" id="node12" href="$engine_8c.html" title=" " alt="" coords="1881,277,1973,302"/>
+<area shape="rect" id="node13" href="$input_8c.html" title=" " alt="" coords="1447,277,1530,302"/>
+<area shape="rect" id="node14" href="$logging_8c.html" title=" " alt="" coords="929,189,1024,214"/>
+<area shape="rect" id="node15" href="$timer_8h.html" title="Provides a simple timer system for the engine." alt="" coords="1931,93,2087,133"/>
+<area shape="rect" id="node16" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="1997,269,2153,309"/>
+<area shape="rect" id="node18" href="$timer_8c.html" title=" " alt="" coords="2115,189,2198,214"/>
+<area shape="rect" id="node19" href="$overlays_8h.html" title=" " alt="" coords="1592,93,1748,133"/>
+<area shape="rect" id="node22" href="$overlays_8c.html" title=" " alt="" coords="1555,277,1671,302"/>
+<area shape="rect" id="node25" href="$ui_8c.html" title=" " alt="" coords="1695,277,1773,302"/>
+<area shape="rect" id="node26" href="$utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="2607,93,2763,133"/>
+<area shape="rect" id="node28" href="$audio_8c.html" title=" " alt="" coords="3534,277,3619,302"/>
+<area shape="rect" id="node34" href="$graphics_8c.html" title=" " alt="" coords="2877,277,2980,302"/>
+<area shape="rect" id="node38" href="$cache_8c.html" title=" " alt="" coords="3247,277,3336,302"/>
+<area shape="rect" id="node40" href="$rigidbody_8c.html" title=" " alt="" coords="3518,101,3649,126"/>
+<area shape="rect" id="node41" href="$tag_8c.html" title=" " alt="" coords="3673,101,3771,126"/>
+<area shape="rect" id="node42" href="$filesystem_8c.html" title=" " alt="" coords="3795,101,3907,126"/>
+<area shape="rect" id="node43" href="$json_8c.html" title=" " alt="" coords="3932,101,4011,126"/>
+<area shape="rect" id="node44" href="$physics_8c.html" title=" " alt="" coords="4035,101,4134,126"/>
+<area shape="rect" id="node45" href="$vector_8c.html" title=" " alt="" coords="4158,101,4283,126"/>
+<area shape="rect" id="node46" href="$version_8c.html" title=" " alt="" coords="4307,101,4403,126"/>
+<area shape="rect" id="node47" href="$yep_8c.html" title=" " alt="" coords="4427,101,4502,126"/>
+<area shape="rect" id="node3" href="$commands_8h.html" title=" " alt="" coords="596,181,752,221"/>
+<area shape="rect" id="node6" href="$cmd__entlist_8c.html" title=" " alt="" coords="359,269,517,309"/>
+<area shape="rect" id="node7" href="$cmd__help_8c.html" title=" " alt="" coords="541,269,698,309"/>
+<area shape="rect" id="node17" href="$file__picker_8c.html" title=" " alt="" coords="2019,357,2131,383"/>
+<area shape="rect" id="node20" href="$physics__overlay_8h.html" title=" " alt="" coords="1708,181,1888,221"/>
+<area shape="rect" id="node23" href="$renderer_8c.html" title=" " alt="" coords="2489,277,2616,302"/>
+<area shape="rect" id="node24" href="$scene_8c.html" title=" " alt="" coords="2640,277,2729,302"/>
+<area shape="rect" id="node21" href="$physics__overlay_8c.html" title=" " alt="" coords="2177,269,2317,309"/>
+<area shape="rect" id="node27" href="$audiosource_8h.html" title="Contains audio emitter component code." alt="" coords="2967,181,3123,221"/>
+<area shape="rect" id="node31" href="$utils_8c.html" title=" " alt="" coords="3004,277,3083,302"/>
+<area shape="rect" id="node32" href="$button_8h.html" title="ECS Button component." alt="" coords="2607,181,2763,221"/>
+<area shape="rect" id="node33" href="$button_8c.html" title=" " alt="" coords="3107,277,3222,302"/>
+<area shape="rect" id="node35" href="$camera_8h.html" title="ECS Camera component." alt="" coords="2375,181,2531,221"/>
+<area shape="rect" id="node37" href="$renderer_8h.html" title="ECS Renderer component." alt="" coords="2787,181,2943,221"/>
+<area shape="rect" id="node39" href="$debug__renderer_8c.html" title=" " alt="" coords="3199,189,3341,214"/>
+<area shape="rect" id="node29" href="$audiosource_8c.html" title=" " alt="" coords="3361,277,3510,302"/>
+<area shape="rect" id="node30" href="$ecs_8c.html" title=" " alt="" coords="2753,277,2853,302"/>
+<area shape="rect" id="node36" href="$camera_8c.html" title=" " alt="" coords="2342,277,2465,302"/>
+</map>

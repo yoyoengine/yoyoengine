@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/console.h" name="dist/include/yoyoengine/console.h">
+<area shape="rect" id="node1" title="Provides definitions and API for the developer console." alt="" coords="164,5,320,45"/>
+<area shape="rect" id="node2" href="$export_8h.html" title=" " alt="" coords="5,167,140,192"/>
+<area shape="rect" id="node3" href="$logging_8h.html" title="The engine Logging API." alt="" coords="171,93,313,119"/>
+<area shape="rect" id="node4" href="$ye__nk_8h.html" title=" " alt="" coords="164,167,299,192"/>
+<area shape="rect" id="node9" title=" " alt="" coords="323,167,398,192"/>
+<area shape="rect" id="node10" title=" " alt="" coords="388,93,451,119"/>
+<area shape="rect" id="node5" title=" " alt="" coords="41,240,99,265"/>
+<area shape="rect" id="node6" title=" " alt="" coords="123,240,198,265"/>
+<area shape="rect" id="node7" title=" " alt="" coords="223,240,381,265"/>
+<area shape="rect" id="node8" title=" " alt="" coords="405,240,513,265"/>
+</map>

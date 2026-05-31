@@ -1,0 +1,17 @@
+<map id="src/ecs/rigidbody.c" name="src/ecs/rigidbody.c">
+<area shape="rect" id="node1" title=" " alt="" coords="328,5,459,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="291,152,370,177"/>
+<area shape="rect" id="node3" href="$logging_8h.html" title="The engine Logging API." alt="" coords="125,152,267,177"/>
+<area shape="rect" id="node11" href="$transform_8h.html" title="ECS Transform component." alt="" coords="579,79,759,104"/>
+<area shape="rect" id="node15" href="$rigidbody_8h.html" title=" " alt="" coords="368,79,544,104"/>
+<area shape="rect" id="node4" href="$export_8h.html" title=" " alt="" coords="430,225,565,251"/>
+<area shape="rect" id="node5" href="$ye__nk_8h.html" title=" " alt="" coords="129,225,263,251"/>
+<area shape="rect" id="node10" title=" " alt="" coords="331,225,405,251"/>
+<area shape="rect" id="node6" title=" " alt="" coords="5,299,64,324"/>
+<area shape="rect" id="node7" title=" " alt="" coords="88,299,163,324"/>
+<area shape="rect" id="node8" title=" " alt="" coords="187,299,346,324"/>
+<area shape="rect" id="node9" title=" " alt="" coords="370,299,478,324"/>
+<area shape="rect" id="node12" title=" " alt="" coords="718,152,778,177"/>
+<area shape="rect" id="node13" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="496,152,643,177"/>
+<area shape="rect" id="node14" href="$types_8h.html" title=" " alt="" coords="589,225,720,251"/>
+</map>

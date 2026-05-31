@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['scene_5fcamera_5fbounds_5fvisible_0',['scene_camera_bounds_visible',['../structye__editor__config.html#a59ce214a99117e8ed2855eb0f8f89eb5',1,'ye_editor_config']]],
+  ['scene_5fdefault_5fcamera_1',['scene_default_camera',['../structye__editor__config.html#ac86bf0bfc45a32c88ed178c885cc2e2e',1,'ye_editor_config']]],
+  ['scene_5ffile_5fpath_2',['scene_file_path',['../structye__runtime__data.html#af9dc10d773b86793bab52439adf93e1b',1,'ye_runtime_data']]],
+  ['scene_5fload_5fcb_3',['scene_load_cb',['../struct__ye__event.html#abf15bd051496d623a4ea39631797fae0',1,'_ye_event']]],
+  ['scene_5fname_4',['scene_name',['../structye__runtime__data.html#a7b72c9c48496efafcb8d1953068fc8ca',1,'ye_runtime_data::scene_name()'],['../unionye__event__args.html#a994251eeefd6d16bf77cc48084f74965',1,'ye_event_args::scene_name()']]],
+  ['screen_5fheight_5',['screen_height',['../structye__engine__config.html#a7b8ce5dc8c5a691fa8f7add8f52bdb20',1,'ye_engine_config']]],
+  ['screen_5fwidth_6',['screen_width',['../structye__engine__config.html#a9fda821ff0c85ba75ce5674120ac2677',1,'ye_engine_config']]],
+  ['sdl_5fquality_5fhint_7',['sdl_quality_hint',['../structye__engine__config.html#a3673e77e33d7603345b5675fc4c4ef96',1,'ye_engine_config']]],
+  ['shutdown_8',['shutdown',['../structye__overlay.html#aa4f477e6a34bd443c5b4a8d1096d4833',1,'ye_overlay']]],
+  ['simulated_9',['simulated',['../structye__component__audiosource.html#a550e22b54cfdc309dbfd3ee0e0cfa564',1,'ye_component_audiosource']]],
+  ['size_10',['size',['../structye__picker__data.html#a0c75f9ac4f4b3032a9331346187cba86',1,'ye_picker_data::size()'],['../structyep__data__info.html#ab782c9f45bc684d08bf92ff2f1b24d68',1,'yep_data_info::size()'],['../structyep__header__node.html#a87347a8b32ef079d62cd6a0c15dc9963',1,'yep_header_node::size()'],['../structye__chart.html#abfbb2f6b1250024543053e6fbbb46c61',1,'ye_chart::size()'],['../structye__vector.html#addaea4854f622789dcc3768048bc79c6',1,'ye_vector::size()'],['../structye__font__node.html#a7ee2630ce4fc5f0ba47139c91224538b',1,'ye_font_node::size()']]],
+  ['skipintro_11',['skipintro',['../structye__engine__config.html#aae1eab4ab5ff5ad1e77bde1b5c9352eb',1,'ye_engine_config']]],
+  ['src_12',['src',['../structye__component__renderer__image.html#ab60885e48bd4537938793be1c53e3ef8',1,'ye_component_renderer_image::src()'],['../structye__component__renderer__tilemap__tile.html#a41e0b7d6607a063c09d78e00548c57d4',1,'ye_component_renderer_tilemap_tile::src()']]],
+  ['start_13',['start',['../structye__debug__render__immediate__node.html#a2faa8cc60a60509a65b81da7e788640a',1,'ye_debug_render_immediate_node']]],
+  ['start_5fticks_14',['start_ticks',['../structye__timer.html#a2220b5755fba29d17c719567fdc190fe',1,'ye_timer']]],
+  ['stretch_5fresolution_15',['stretch_resolution',['../structye__engine__config.html#a3e87acaa156ffb6fdc10a3904a297d01',1,'ye_engine_config']]],
+  ['stretch_5fviewport_16',['stretch_viewport',['../structye__engine__config.html#a7a5d9426db38c75fe2049b15a01086ef',1,'ye_engine_config']]]
+];

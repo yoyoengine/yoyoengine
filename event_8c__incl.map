@@ -1,0 +1,10 @@
+<map id="src/event.c" name="src/event.c">
+<area shape="rect" id="node1" title=" " alt="" coords="180,5,267,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="132,79,195,104"/>
+<area shape="rect" id="node3" href="$event_8h.html" title=" " alt="" coords="219,79,351,104"/>
+<area shape="rect" id="node4" href="$export_8h.html" title=" " alt="" coords="5,225,140,251"/>
+<area shape="rect" id="node5" title=" " alt="" coords="319,225,394,251"/>
+<area shape="rect" id="node6" title=" " alt="" coords="378,152,437,177"/>
+<area shape="rect" id="node7" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="157,152,303,177"/>
+<area shape="rect" id="node8" href="$types_8h.html" title=" " alt="" coords="165,225,295,251"/>
+</map>

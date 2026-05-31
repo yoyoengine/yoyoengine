@@ -1,0 +1,4 @@
+<map id="ye_point_rectf" name="ye_point_rectf">
+<area shape="rect" id="node1" title="A rectangle made up float points." alt="" coords="5,93,108,119"/>
+<area shape="rect" id="node2" href="$structye__pointf.html" title="A 2D point made up of floats." alt="" coords="19,5,94,31"/>
+</map>

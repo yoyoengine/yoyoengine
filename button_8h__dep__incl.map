@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/ecs/button.h" name="dist/include/yoyoengine/ecs/button.h">
+<area shape="rect" id="node1" title="ECS Button component." alt="" coords="477,5,633,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$button_8c.html" title=" " alt="" coords="186,101,301,126"/>
+<area shape="rect" id="node5" href="$ecs_8c.html" title=" " alt="" coords="325,101,425,126"/>
+<area shape="rect" id="node6" href="$engine_8c.html" title=" " alt="" coords="449,101,541,126"/>
+<area shape="rect" id="node7" href="$graphics_8c.html" title=" " alt="" coords="565,101,668,126"/>
+<area shape="rect" id="node8" href="$input_8c.html" title=" " alt="" coords="693,101,775,126"/>
+<area shape="rect" id="node9" href="$scene_8c.html" title=" " alt="" coords="800,101,889,126"/>
+<area shape="rect" id="node10" href="$utils_8c.html" title=" " alt="" coords="913,101,992,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

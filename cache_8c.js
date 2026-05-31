@@ -1,0 +1,27 @@
+var cache_8c =
+[
+    [ "ye_cache_color", "group__CacheLowLevel.html#ga20892cbd756fc305777a9dc26689a5bd", null ],
+    [ "ye_cache_font", "group__CacheLowLevel.html#ga86265b71d3030e5d596613ce2b28154b", null ],
+    [ "ye_cache_font_manual", "group__CacheLowLevel.html#ga000c1102b111617696835b32dc66c6fb", null ],
+    [ "ye_cache_texture", "group__CacheLowLevel.html#gac1c653ee5dd85bd8a852fc94f9f2cbc3", null ],
+    [ "ye_cache_texture_manual", "group__CacheLowLevel.html#gafb4020cf73ff56d7e510d925aa99a3d5", null ],
+    [ "ye_clear_color_cache", "cache_8c.html#a3a59e0595fd2a1a5801428ec38c85a2d", null ],
+    [ "ye_clear_font_cache", "cache_8c.html#acf1d3db4abe35d322f94b43caec84679", null ],
+    [ "ye_clear_texture_cache", "cache_8c.html#ac56d092c9a633a9dc81657a08e96f479", null ],
+    [ "ye_color", "group__CacheAPI.html#ga0a070ed5ac8a0f2c418a3163f24b1e20", null ],
+    [ "ye_destroy_color", "group__CacheLowLevel.html#gace7fa455acafbd279ff11b58f901903a", null ],
+    [ "ye_destroy_font", "group__CacheLowLevel.html#ga30dd8e6478ff112f50e0dec4568d5a3f", null ],
+    [ "ye_destroy_texture", "group__CacheLowLevel.html#ga4062bde3644d3785b43e71a3d136cbd1", null ],
+    [ "ye_font", "group__CacheAPI.html#gad70c398ca58ecd64565f8d1976e02c5f", null ],
+    [ "ye_get_cache_color_count", "cache_8c.html#a5f9ffac761c9e74b75bccc9be9605ef7", null ],
+    [ "ye_get_cache_font_count", "cache_8c.html#ac1e14aeeb89f76e564e9cab6ee4d223e", null ],
+    [ "ye_get_cache_texture_count", "cache_8c.html#af1be636c768a212c7777b9847c88418d", null ],
+    [ "ye_image", "group__CacheAPI.html#ga2f81b946ac62545def43aab64d023142", null ],
+    [ "ye_init_cache", "cache_8c.html#ae7c7bea2a2494862a5fd0927fc551571", null ],
+    [ "ye_pre_cache_scene", "cache_8c.html#a152fea78a0edcf225502764106460a8c", null ],
+    [ "ye_pre_cache_styles", "cache_8c.html#a8a0e474de0f6209edacdd4a7ab785be3", null ],
+    [ "ye_shutdown_cache", "cache_8c.html#a8953810282e71f114afc331db46fe6a0", null ],
+    [ "cached_colors_head", "cache_8c.html#ab1a1b16de1aa8e6385be55c207fcee82", null ],
+    [ "cached_fonts_head", "cache_8c.html#a96ef618ad7c728a4fe6fcfb47bd61934", null ],
+    [ "cached_textures_head", "cache_8c.html#a8e97a8b1ed99df7e4af0d489b7972ddd", null ]
+];

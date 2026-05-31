@@ -1,0 +1,16 @@
+<map id="src/ecs/button.c" name="src/ecs/button.c">
+<area shape="rect" id="node1" title=" " alt="" coords="401,5,515,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="61,299,135,324"/>
+<area shape="rect" id="node3" href="$utils_8h.html" title="Provides some utility functions for the engine." alt="" coords="323,152,447,177"/>
+<area shape="rect" id="node6" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="487,225,634,251"/>
+<area shape="rect" id="node14" href="$button_8h.html" title="ECS Button component." alt="" coords="523,79,684,104"/>
+<area shape="rect" id="node4" href="$export_8h.html" title=" " alt="" coords="437,299,572,324"/>
+<area shape="rect" id="node5" title=" " alt="" coords="419,372,478,397"/>
+<area shape="rect" id="node8" href="$logging_8h.html" title="The engine Logging API." alt="" coords="221,225,362,251"/>
+<area shape="rect" id="node13" title=" " alt="" coords="136,225,196,251"/>
+<area shape="rect" id="node7" href="$types_8h.html" title=" " alt="" coords="597,299,727,324"/>
+<area shape="rect" id="node9" href="$ye__nk_8h.html" title=" " alt="" coords="224,299,359,324"/>
+<area shape="rect" id="node10" title=" " alt="" coords="321,372,395,397"/>
+<area shape="rect" id="node11" title=" " alt="" coords="5,372,164,397"/>
+<area shape="rect" id="node12" title=" " alt="" coords="188,372,296,397"/>
+</map>

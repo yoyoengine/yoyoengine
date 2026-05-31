@@ -1,0 +1,27 @@
+var cache_8h =
+[
+    [ "ye_texture_node", "structye__texture__node.html", "structye__texture__node" ],
+    [ "ye_font_node", "structye__font__node.html", "structye__font__node" ],
+    [ "ye_color_node", "structye__color__node.html", "structye__color__node" ],
+    [ "ye_cache_color", "group__CacheLowLevel.html#ga20892cbd756fc305777a9dc26689a5bd", null ],
+    [ "ye_cache_font", "group__CacheLowLevel.html#ga86265b71d3030e5d596613ce2b28154b", null ],
+    [ "ye_cache_font_manual", "group__CacheLowLevel.html#ga000c1102b111617696835b32dc66c6fb", null ],
+    [ "ye_cache_texture", "group__CacheLowLevel.html#gac1c653ee5dd85bd8a852fc94f9f2cbc3", null ],
+    [ "ye_cache_texture_manual", "group__CacheLowLevel.html#gafb4020cf73ff56d7e510d925aa99a3d5", null ],
+    [ "ye_clear_color_cache", "cache_8h.html#a512b3a1975c86d12ed5d81897f95a426", null ],
+    [ "ye_clear_font_cache", "cache_8h.html#a5b1e4ac0f0b920680d1a3215b1f1a224", null ],
+    [ "ye_clear_texture_cache", "cache_8h.html#ad42bc58b18da6e0a70b4502f5264dc70", null ],
+    [ "ye_color", "group__CacheAPI.html#ga0a070ed5ac8a0f2c418a3163f24b1e20", null ],
+    [ "ye_destroy_color", "group__CacheLowLevel.html#gace7fa455acafbd279ff11b58f901903a", null ],
+    [ "ye_destroy_font", "group__CacheLowLevel.html#ga30dd8e6478ff112f50e0dec4568d5a3f", null ],
+    [ "ye_destroy_texture", "group__CacheLowLevel.html#ga4062bde3644d3785b43e71a3d136cbd1", null ],
+    [ "ye_font", "group__CacheAPI.html#gad70c398ca58ecd64565f8d1976e02c5f", null ],
+    [ "ye_get_cache_color_count", "cache_8h.html#ab8b45fa59685e20df153fe748ba7e38e", null ],
+    [ "ye_get_cache_font_count", "cache_8h.html#ae1b064cc62903cd82413b69904676666", null ],
+    [ "ye_get_cache_texture_count", "cache_8h.html#aad585c43fd8e0d0fb67e8b77defa1f00", null ],
+    [ "ye_image", "group__CacheAPI.html#ga2f81b946ac62545def43aab64d023142", null ],
+    [ "ye_init_cache", "cache_8h.html#ad52a999ce8597b457f0771e8f6a4369b", null ],
+    [ "ye_pre_cache_scene", "cache_8h.html#ab05e647474427d1fb6ab908401980231", null ],
+    [ "ye_pre_cache_styles", "cache_8h.html#a94e82525fd3f30a719dbd7217409624c", null ],
+    [ "ye_shutdown_cache", "cache_8h.html#a8da391e2484cef5239004f59ffdaf268", null ]
+];

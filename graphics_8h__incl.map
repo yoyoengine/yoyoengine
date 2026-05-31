@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/graphics.h" name="dist/include/yoyoengine/graphics.h">
+<area shape="rect" id="node1" title="The engine API for handling graphics." alt="" coords="201,5,357,45"/>
+<area shape="rect" id="node2" href="$export_8h.html" title=" " alt="" coords="51,240,185,265"/>
+<area shape="rect" id="node3" title=" " alt="" coords="22,167,81,192"/>
+<area shape="rect" id="node4" title=" " alt="" coords="366,240,441,265"/>
+<area shape="rect" id="node5" title=" " alt="" coords="498,167,575,192"/>
+<area shape="rect" id="node6" href="$engine_8h.html" title="The header for the engine entry point, contains state definitions." alt="" coords="210,93,349,119"/>
+<area shape="rect" id="node7" title=" " alt="" coords="395,167,473,192"/>
+<area shape="rect" id="node8" title=" " alt="" coords="156,167,216,192"/>
+<area shape="rect" id="node9" href="$ecs_8h.html" title="The engine ECS API." alt="" coords="240,167,319,192"/>
+<area shape="rect" id="node10" href="$types_8h.html" title=" " alt="" coords="211,240,342,265"/>
+</map>

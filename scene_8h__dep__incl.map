@@ -1,0 +1,9 @@
+<map id="dist/include/yoyoengine/scene.h" name="dist/include/yoyoengine/scene.h">
+<area shape="rect" id="node1" title="Manages the active scene in the engine as well as loading in new scenes." alt="" coords="336,5,492,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$cmd__scene_8c.html" title=" " alt="" coords="186,93,343,133"/>
+<area shape="rect" id="node5" href="$engine_8c.html" title=" " alt="" coords="368,101,460,126"/>
+<area shape="rect" id="node6" href="$logging_8c.html" title=" " alt="" coords="484,101,579,126"/>
+<area shape="rect" id="node7" href="$scene_8c.html" title=" " alt="" coords="603,101,692,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

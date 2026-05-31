@@ -1,0 +1,12 @@
+<map id="dist/include/yoyoengine/ecs/audiosource.h" name="dist/include/yoyoengine/ecs/audiosource.h">
+<area shape="rect" id="node1" title="Contains audio emitter component code." alt="" coords="509,5,665,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$audio_8c.html" title=" " alt="" coords="186,101,271,126"/>
+<area shape="rect" id="node5" href="$audiosource_8c.html" title=" " alt="" coords="295,101,445,126"/>
+<area shape="rect" id="node6" href="$ecs_8c.html" title=" " alt="" coords="469,101,569,126"/>
+<area shape="rect" id="node7" href="$renderer_8c.html" title=" " alt="" coords="593,101,720,126"/>
+<area shape="rect" id="node8" href="$engine_8c.html" title=" " alt="" coords="744,101,836,126"/>
+<area shape="rect" id="node9" href="$scene_8c.html" title=" " alt="" coords="860,101,949,126"/>
+<area shape="rect" id="node10" href="$utils_8c.html" title=" " alt="" coords="973,101,1052,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>

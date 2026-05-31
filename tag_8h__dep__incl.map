@@ -1,0 +1,9 @@
+<map id="dist/include/yoyoengine/ecs/tag.h" name="dist/include/yoyoengine/ecs/tag.h">
+<area shape="rect" id="node1" title="ECS Tag component." alt="" coords="340,5,496,45"/>
+<area shape="rect" id="node2" href="$yoyoengine_8h.html" title="The master header for yoyoengine. Includes all other headers." alt="" coords="5,93,161,133"/>
+<area shape="rect" id="node4" href="$cmd__entlist_8c.html" title=" " alt="" coords="186,93,343,133"/>
+<area shape="rect" id="node5" href="$ecs_8c.html" title=" " alt="" coords="368,101,468,126"/>
+<area shape="rect" id="node6" href="$tag_8c.html" title=" " alt="" coords="492,101,589,126"/>
+<area shape="rect" id="node7" href="$scene_8c.html" title=" " alt="" coords="613,101,703,126"/>
+<area shape="rect" id="node3" href="$file__picker_8c.html" title=" " alt="" coords="27,181,139,207"/>
+</map>
