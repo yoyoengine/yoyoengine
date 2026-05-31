@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -29,7 +29,6 @@
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/rigidbody.h>
 #include <yoyoengine/ecs/transform.h>
-//#include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/debug_renderer.h>
 #include <yoyoengine/ecs/audiosource.h>
 
@@ -550,80 +549,6 @@ void ye_construct_tag(struct ye_entity* e, json_t* tag){
     }
 }
 
-void ye_construct_script(struct ye_entity* e, json_t* script, const char* entity_name){
-    // validate script field
-    const char *script_path = NULL;
-    if(!ye_json_string(script,"handle",&script_path)) {
-        ye_logf(warning,"Entity %s has a script component, but it is missing the handle field\n", entity_name);
-        return;
-    }
-
-    // add any globals
-    //struct ye_lua_script_global *real_globals = NULL;
-
-    //json_t *globals = NULL;
-    //if(ye_json_array(script,"globals",&globals)) {
-    //    for(size_t i = 0; i < json_array_size(globals); i++){
-    //        json_t *global = json_array_get(globals,i);
-    //        if(global == NULL){
-    //            ye_logf(warning,"Entity %s has a script component, but it's globals array is invalid.\n", entity_name);
-    //            continue;
-    //        }
-
-    //        // get the type of global
-    //        int type_int;
-    //        if(!ye_json_int(global,"type",&type_int)) {
-    //            ye_logf(warning,"Entity %s has a script component, but one of the globals cannot be deserialized due to type error.\n", entity_name);
-    //            continue;
-    //        }
-
-    //        enum ye_lua_script_global_t type = (enum ye_lua_script_global_t)type_int;
-
-    //        // get the name of the global
-    //        const char *name = NULL;
-    //        if(!ye_json_string(global,"name",&name)) {
-    //            ye_logf(warning,"Entity %s has a script component, but one of the globals cannot be deserialized due to name error.\n", entity_name);
-    //            continue;
-    //        }
-
-    //        json_t * value = json_object_get(global,"value");
-
-    //        // add the global
-    //        double vd;
-    //        const char * vs;
-    //        bool vb;
-    //        switch(type){
-    //            case YE_LSG_NUMBER:
-    //                vd = json_real_value(value);
-    //                ye_lua_script_add_manual_global(&real_globals,type,name,(void*)&vd);
-    //                break;
-    //            case YE_LSG_STRING:
-    //                vs = json_string_value(value);
-    //                ye_lua_script_add_manual_global(&real_globals,type,name,(void*)vs);
-    //                break;
-    //            case YE_LSG_BOOL:
-    //                vb = json_boolean_value(value);
-    //                ye_lua_script_add_manual_global(&real_globals,type,name,(void*)&vb);
-    //                break;
-    //            default:
-    //                ye_logf(warning,"Entity %s has a script component, but one of the globals cannot be deserialized due to type error.\n", entity_name);
-    //                break;
-    //        }
-    //    }
-    //}
-
-    // add the script component
-    //ye_add_lua_script_component(e,script_path, real_globals);
-
-    //if(e->lua_script == NULL) return;
-
-    //// update active state
-    //if(ye_json_has_key(script,"active")){
-    //    bool active = true;    ye_json_bool(script,"active",&active);
-    //    e->lua_script->active = active;
-    //}
-}
-
 void ye_construct_audiosource(struct ye_entity* e, json_t* audiosource, const char* entity_name){
     // handle the simulated bool
     bool simulated;
@@ -786,16 +711,6 @@ void ye_construct_scene(json_t *entities){
                 continue;
             }
             ye_construct_tag(e,tag);
-        }
-
-        // script component
-        if(ye_json_has_key(components,"script")){
-            json_t *script = NULL; ye_json_object(components,"script",&script);
-            if(script == NULL){
-                ye_logf(warning,"Entity %s has a script field, but it's invalid.\n", entity_name);
-                continue;
-            }
-            ye_construct_script(e,script,entity_name);
         }
 
         // if we have an audiosource

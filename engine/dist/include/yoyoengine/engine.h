@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -26,10 +26,6 @@
 
 #include "graphics.h"
 #include "ecs/ecs.h"
-
-//#include <lua.h>
-//#include <lualib.h>
-//#include <lauxlib.h>
 
 #ifdef YE_BUILD_MODE
     /*

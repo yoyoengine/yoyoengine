@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -71,14 +71,5 @@ YE_API void ye_p2d_logf_wrapper(int level, const char *format, ...);
  * @param ... The arguments for the format string
  */
 YE_API void ye_logf(enum logLevel level, const char *format, ...);
-
-/**
- * @brief THIS IS FOR INTERNAL USE ONLY. Logs a message normally but with a lua tag in front of the output.
- * 
- * @param level The level of the message
- * @param format The content of the message (similar to printf)
- * @param ... The arguments for the format string
- */
-YE_API void _ye_lua_logf(enum logLevel level, const char *format, ...);
 
 #endif

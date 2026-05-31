@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -31,7 +31,6 @@ YE_API extern struct ye_entity_node *transform_list_head;
 YE_API extern struct ye_entity_node *renderer_list_head;
 YE_API extern struct ye_entity_node *camera_list_head;
 YE_API extern struct ye_entity_node *tag_list_head;
-// YE_API extern struct ye_entity_node *lua_script_list_head;
 YE_API extern struct ye_entity_node *audiosource_list_head;
 YE_API extern struct ye_entity_node *button_list_head;
 YE_API extern struct ye_entity_node *rigidbody_list_head;
@@ -93,7 +92,6 @@ struct ye_entity {
 
     struct ye_component_transform *transform;       // transform component
     struct ye_component_renderer *renderer;         // renderer component
-    struct ye_component_lua_script *lua_script;     // lua script component
     struct ye_component_button *button;             // button component
     struct ye_component_camera *camera;             // camera component
     struct ye_component_tag *tag;                   // tag component

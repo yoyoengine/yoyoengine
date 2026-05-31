@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -205,11 +205,6 @@ SDL_DialogFileFilter ye_picker_audio_filters[] = {
     { "All audio",   "wav;mp3" }
 };
 int ye_picker_num_audio_filters = sizeof(ye_picker_audio_filters) / sizeof(SDL_DialogFileFilter);
-
-//SDL_DialogFileFilter ye_picker_script_filters[] = {
-//    { "Lua script",   "lua" }
-//};
-//int ye_picker_num_script_filters = sizeof(ye_picker_script_filters) / sizeof(SDL_DialogFileFilter);
 
 SDL_DialogFileFilter ye_picker_yoyo_filters[] = {
     { "yoyo config",   "yoyo" }

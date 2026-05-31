@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -31,7 +31,6 @@
 #include <yoyoengine/cache.h>
 #include <yoyoengine/config.h>
 #include <yoyoengine/engine.h>
-// #include <yoyoengine/tricks.h>
 #include <yoyoengine/physics.h>
 #include <yoyoengine/console.h>
 #include <yoyoengine/version.h>
@@ -39,13 +38,11 @@
 #include <yoyoengine/ecs/ecs.h>
 #include <yoyoengine/ui/overlays.h>
 #include <yoyoengine/graphics.h>
-// #include <yoyoengine/networking.h>
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
 #include <yoyoengine/ecs/transform.h>
 #include <yoyoengine/debug_renderer.h>
-//#include <yoyoengine/ecs/lua_script.h>
 #include <yoyoengine/ecs/audiosource.h>
 
 // buffer to hold filepath strings
@@ -132,7 +129,7 @@ void ye_process_frame(){
         - Send events to Nuklear
         - Handle engine input events (terminal, resizing)
         - Send callback to game C code
-        - Lookup events in mapping table and inform C and Lua
+        - Lookup events in mapping table
     */
     ye_system_input();
 
@@ -163,14 +160,7 @@ void ye_process_frame(){
     }
     YE_STATE.runtime.physics_time = SDL_GetTicks() - physics_time;
 
-    // if we are in runtime, run callbacks
-    if(!YE_STATE.editor.editor_mode){
-        // run all trick update callbacks
-        // ye_run_trick_updates();
-    
-        // run all scripting before the frame is rendered
-        //ye_system_lua_scripting();
-    }
+    // this is where i would run any callbacks... IF I HAD ANY!
 
     // render frame
     ye_render_all();
@@ -421,12 +411,6 @@ void ye_init_engine() {
 
     // the audio initialization accesses YE_STATE.engine.volume to cap each channel by default
 
-    // initialize networking
-    // ye_init_networking();
-
-    // initialize and load tricks (modules/plugins)
-    // ye_init_tricks();
-
     // set our last frame time now because we might play the intro
     last_frame_time = SDL_GetTicks();
 
@@ -475,12 +459,6 @@ void ye_shutdown_engine(){
     ///////////////////////////
 
     ye_logf(YE_LL_INFO, "Shutting down engine...\n");
-
-    // shut tricks down
-    // ye_shutdown_tricks();
-
-    // shutdown networking
-    // ye_shutdown_networking();
 
     // purge debug renderer
     ye_debug_renderer_cleanup(true);

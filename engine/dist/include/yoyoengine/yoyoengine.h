@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -29,7 +29,6 @@
 #include "version.h"        // version info
 #include "engine.h"         // init and core
 #include "config.h"         // jansson wrapper for config files
-// #include "networking.h"  // UNUSED
 #include "event.h"          // event handling
 #include "input.h"
 #include "yep.h"            // custom binary format parser/packer
@@ -58,14 +57,11 @@
 #include "ecs/rigidbody.h"
 #include "ecs/transform.h"
 #include "ecs/tag.h"
-#include "ecs/lua_script.h"
 
 #include "utils.h"
 #include "timer.h"
 #include "audio.h"
 #include "logging.h"        // logging
-#include "lua_api.h"        // scripting api
 #include "scene.h"          // scene manager
-// #include "tricks.h"         // plugin system
 
 #endif // YE_ENGINE_MAIN_H

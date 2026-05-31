@@ -1,16 +1,8 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
-*/
-
-/*
-    Event system ideation:
-
-    creates an easier C api as well as registration for tricks. you can now stack events
-
-    Event queue does not have an init, it starts out as a blank slate and we can manually append or tear it down
 */
 
 #include <stdlib.h>
@@ -59,10 +51,6 @@ void ye_register_event_cb(enum ye_event_type type, void *cb, int flags){
             event->input_cb = (void (*)(SDL_Event))cb;
             break;
 
-        //case YE_EVENT_LUA_REGISTER:
-        //    event->lua_cb = (void (*)(lua_State *))cb;
-        //    break;
-
         case YE_EVENT_SCENE_LOAD:
             event->scene_load_cb = (void (*)(char *))cb;
             break;
@@ -97,10 +85,6 @@ void ye_fire_event(enum ye_event_type type, union ye_event_args args){
 
                 case YE_EVENT_HANDLE_INPUT:
                     current->input_cb(args.input);
-                    break;
-
-                case YE_EVENT_LUA_REGISTER:
-                    //current->lua_cb(args.L);
                     break;
 
                 case YE_EVENT_SCENE_LOAD:
@@ -160,7 +144,6 @@ void ye_unregister_event_cb(void *cb){
         if(
             current->empty_cb == cb         ||
             current->input_cb == cb         ||
-            //current->lua_cb == cb           ||
             current->scene_load_cb == cb    ||
             current->collision_cb == cb     ||
             current->custom_cb == cb

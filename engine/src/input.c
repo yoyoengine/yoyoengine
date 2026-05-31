@@ -1,16 +1,8 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
-*/
-
-/*
-    My vision is this, a simple wrapper on top of SDL2 input handling, which
-    has some predefined "events" like up, down, left, right, action1, etc that
-    all have cooresponding bindings assigned in a big struct map we can lookup in.
-    This way, both C and Lua can easily get common inputs, while the dev can still
-    use the manual C callback for more control. 
 */
 
 #include <SDL.h>
@@ -168,11 +160,6 @@ void ye_system_input() {
 
         // attempt to send event to callback specified by game
         ye_fire_event(YE_EVENT_HANDLE_INPUT, (union ye_event_args){.input = e});
-
-        /*
-            Currently lua polls inputs through its own medium (direct query as needed),
-            so we don't need to do more here, unless we wanted to add a keybind layer later.
-        */
     }
 
     // end nuklear input feeding

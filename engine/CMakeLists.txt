@@ -1,5 +1,5 @@
 # This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-# Copyright (C) 2023-2025  Ryan Zmuda
+# Copyright (C) 2023-2026  Ryan Zmuda
 
 # Licensed under the MIT license. See LICENSE file in the project root for details.
 
@@ -295,22 +295,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
 
-###############
-#     lua     #
-###############
-
-# NOTE: linked as static per the reccomendation of the cmake port maintainer
-
-# FetchContent_Declare(
-#     lua
-#     GIT_REPOSITORY https://github.com/walterschell/Lua.git
-#     GIT_TAG        v5.4.5
-#     GIT_PROGRESS TRUE
-#     GIT_SHALLOW TRUE
-# )
-# FetchContent_MakeAvailable(lua)
-# target_include_directories(yoyoengine PUBLIC ${lua_SOURCE_DIR}/lua-5.4.5/include)
-
 # ###############
 # #   SDL3_net  #
 # ###############
@@ -343,7 +327,6 @@ if(YOYO_ENGINE_STATIC)
         SDL3_image-static
         SDL3_mixer-static
         # SDL3_net-static
-        # lua_static
     )
 else()
     # On GCC/Clang, use whole-archive to ensure all symbols are included in shared lib
@@ -359,94 +342,9 @@ else()
         SDL3_image-static
         SDL3_mixer-static
         # SDL3_net-static
-        # lua_static
         -Wl,--no-whole-archive
     )
 endif()
-
-# ###############
-# # lua runtime #
-# ###############
-
-# # Expose the option to build the lua runtime, which the editor will enable.
-# # The editor creates packs for the games based off of its own engine_resources folder,
-# # so we will have it build the lua runtime there.
-
-# option(BUILD_LUA_RUNTIME "Build the Lua runtime" OFF)
-
-# message(STATUS "BUILD_LUA_RUNTIME: ${BUILD_LUA_RUNTIME}")
-
-# if(BUILD_LUA_RUNTIME)
-    
-#     # where we will output the runtime
-#     option(LUA_RUNTIME_OUTPUT "Where to output the Lua runtime" "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/ye_runtime.lua")
-#     message(STATUS "LUA_RUNTIME_OUTPUT: ${LUA_RUNTIME_OUTPUT}")
-
-#     # create full path to runtime output so it exists
-#     get_filename_component(LUA_RUNTIME_OUTPUT_DIR ${LUA_RUNTIME_OUTPUT} DIRECTORY)
-#     file(MAKE_DIRECTORY ${LUA_RUNTIME_OUTPUT_DIR})
-
-#     # variable to hold runtime source file location
-#     set(LUA_RUNTIME_SRC
-#         ${CMAKE_CURRENT_SOURCE_DIR}/src/lua_runtime
-#         # ${CMAKE_CURRENT_SOURCE_DIR}/dist/resources/lua_runtime
-#     )
-
-#     # all the files that make up the runtime
-#     set(LUA_RUNTIME_FILES
-#         # ${LUA_RUNTIME_SRC}/api.lua
-#         ${LUA_RUNTIME_SRC}/runtime.lua
-#         ${LUA_RUNTIME_SRC}/definitions/input_codes.lua
-#         ${LUA_RUNTIME_SRC}/subsystems/audio.lua
-#         ${LUA_RUNTIME_SRC}/subsystems/scene.lua
-#         ${LUA_RUNTIME_SRC}/subsystems/input.lua
-#         ${LUA_RUNTIME_SRC}/subsystems/timer.lua
-#         ${LUA_RUNTIME_SRC}/ecs/audiosource.lua
-#         ${LUA_RUNTIME_SRC}/ecs/button.lua
-#         ${LUA_RUNTIME_SRC}/ecs/camera.lua
-#         ${LUA_RUNTIME_SRC}/ecs/collider.lua
-#         ${LUA_RUNTIME_SRC}/ecs/lua_script.lua
-#         ${LUA_RUNTIME_SRC}/ecs/physics.lua
-#         ${LUA_RUNTIME_SRC}/ecs/renderer.lua
-#         ${LUA_RUNTIME_SRC}/ecs/tag.lua
-#         ${LUA_RUNTIME_SRC}/ecs/transform.lua
-#         ${LUA_RUNTIME_SRC}/ecs/entity.lua
-#     )
-
-#     # Concatenate all the runtime source into one file
-
-#     # Clear the output file first
-#     add_custom_command(
-#         OUTPUT ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E echo "" > ${LUA_RUNTIME_OUTPUT}
-#         COMMENT "Clearing Lua runtime output file..."
-#     )
-
-#     # Concatenate each Lua file with a newline after each
-#     foreach(LUA_FILE ${LUA_RUNTIME_FILES})
-#     add_custom_command(
-#         OUTPUT ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E echo_append "" >> ${LUA_RUNTIME_OUTPUT} # Ensure it starts with a newline (optional)
-#         COMMAND ${CMAKE_COMMAND} -E cat ${LUA_FILE} >> ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E echo "" >> ${LUA_RUNTIME_OUTPUT} # Append a newline after the file content
-#         DEPENDS ${LUA_FILE}
-#         APPEND
-#         COMMENT "Appending ${LUA_FILE} and a newline to the runtime output..."
-#     )
-#     endforeach()
-
-#     # Final step to touch the output file and print a message
-#     add_custom_command(
-#         OUTPUT ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E touch ${LUA_RUNTIME_OUTPUT}
-#         COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --blue "Finished concatenating Lua files into ${LUA_RUNTIME_OUTPUT}"
-#         APPEND
-#         COMMENT "Finalizing Lua runtime concatenation..."
-#     )
-
-#     # make our engine depend on this command
-#     add_custom_target(lua_runtime ALL DEPENDS ${LUA_RUNTIME_OUTPUT})
-# endif()
 
 # TODO: these two dont not work for INTERFACE
 

@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -12,7 +12,6 @@
 
 #include <stdbool.h>
 
-//#include <lua.h>
 #include <SDL.h>
 
 #include <yoyoengine/ecs/ecs.h>
@@ -24,7 +23,6 @@ enum ye_event_type {
     YE_EVENT_PRE_INIT,          // empty_cb
     YE_EVENT_POST_INIT,         // empty_cb
     YE_EVENT_HANDLE_INPUT,      // input_cb
-    YE_EVENT_LUA_REGISTER,      // lua_cb
     YE_EVENT_PRE_FRAME,         // empty_cb
     YE_EVENT_POST_FRAME,        // empty_cb
     YE_EVENT_SCENE_LOAD,        // scene_load_cb
@@ -45,7 +43,6 @@ struct _ye_event {
         void (*empty_cb)();
         void (*scene_load_cb)(char *scene_name);
         void (*input_cb)(SDL_Event event);
-        //void (*lua_cb)(lua_State *L);
         void (*collision_cb)(struct ye_entity *one, struct ye_entity *two);
         void (*custom_cb)(void *data);
     };
@@ -56,7 +53,6 @@ struct _ye_event {
 union ye_event_args {
     char *scene_name;
     SDL_Event input;
-    //lua_State *L;
     struct {
         struct ye_entity *one;
         struct ye_entity *two;

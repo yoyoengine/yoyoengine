@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -53,7 +53,6 @@ enum YEP_DATATYPE {
     YEP_DATATYPE_MISC,          // loose files, .yoyo .txt etc
     YEP_DATATYPE_IMAGE,         // dont need to differentiate formats because it will be a pixel array from SDL_Image
     YEP_DATATYPE_PCM,           // raw PCM data from SDL3_mixer
-    YEP_DATATYPE_LUA_BYTECODE,  // lua bytecode (DO NOT COMPRESS)
 };
 
 enum YEP_COMPRESSION {

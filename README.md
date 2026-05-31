@@ -88,11 +88,10 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
 
 ### Tech Stack:
 
-- [SDL3](https://www.libsdl.org/) (windowing, rendering, audio, input, networking, etc)
+- [SDL3](https://www.libsdl.org/) (windowing, rendering, audio, input etc)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) (UI)
 - [Uthash](https://github.com/troydhanson/uthash) (Hash tables)
 - [Jansson](https://github.com/akheron/jansson) (JSON parsing)
-- [Lua](https://www.lua.org/) (Scripting)
 - Custom Entity Component System
 - Custom binary packing format for assets, with [zlib](https://zlib.net/) for compression
 - Custom physics and collision system

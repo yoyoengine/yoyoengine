@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -22,7 +22,6 @@
 #include <yoyoengine/ui/ui.h>
 #include <yoyoengine/yep.h>
 #include <yoyoengine/cache.h>
-// #include <yoyoengine/tricks.h>
 #include <yoyoengine/engine.h>
 #include <yoyoengine/logging.h>
 #include <yoyoengine/ecs/ecs.h>
@@ -30,7 +29,6 @@
 #include <yoyoengine/ecs/camera.h>
 #include <yoyoengine/ecs/button.h>
 #include <yoyoengine/ecs/renderer.h>
-//#include <yoyoengine/ecs/lua_script.h>
 
 // define globals for file
 SDL_Window *pWindow = NULL;

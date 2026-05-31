@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -87,7 +87,6 @@ enum ye_component_type {
     YE_COMPONENT_TRANSFORM,
     YE_COMPONENT_RENDERER,
     YE_COMPONENT_RIGIDBODY,
-    YE_COMPONENT_LUA_SCRIPT,
     YE_COMPONENT_AUDIOSOURCE,
     YE_COMPONENT_CAMERA,
     YE_COMPONENT_TAG,

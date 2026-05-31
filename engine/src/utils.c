@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -471,8 +471,6 @@ bool ye_component_exists(struct ye_entity *entity, enum ye_component_type type){
             return entity->rigidbody != NULL;
         case YE_COMPONENT_TAG:
             return entity->tag != NULL;
-        //case YE_COMPONENT_LUA_SCRIPT:
-        //    return entity->lua_script != NULL;
         case YE_COMPONENT_AUDIOSOURCE:
             return entity->audiosource != NULL;
         case YE_COMPONENT_BUTTON:

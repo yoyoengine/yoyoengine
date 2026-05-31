@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -8,7 +8,6 @@
 #include <yoyoengine/logging.h>
 #include <yoyoengine/physics.h>
 #include <yoyoengine/event.h>
-//#include <yoyoengine/ecs/lua_script.h>
 
 static bool ye_physics_collision_entities(struct p2d_cb_data *data, struct ye_entity **one, struct ye_entity **two) {
     if(!data || !data->a || !data->b) {
@@ -33,7 +32,6 @@ void ye_physics_collision_callback(struct p2d_cb_data* data) {
             .two = two
         }
     });
-    // ye_lua_signal_collisions(one, two);
 }
 
 void ye_physics_trigger_callback(struct p2d_cb_data* data) {
@@ -49,5 +47,4 @@ void ye_physics_trigger_callback(struct p2d_cb_data* data) {
             .two = two
         }
     });
-    // ye_lua_signal_trigger_enter(one, two);
 }
