@@ -193,16 +193,16 @@ void ye_pick_folder(struct ye_picker_data data){
 */
 
 SDL_DialogFileFilter ye_picker_image_filters[] = {
+    { "All images",  "png;jpg;jpeg" },
     { "PNG images",  "png" },
-    { "JPEG images", "jpg;jpeg" },
-    { "All images",  "png;jpg;jpeg" }
+    { "JPEG images", "jpg;jpeg" }
 };
 int ye_picker_num_image_filters = sizeof(ye_picker_image_filters) / sizeof(SDL_DialogFileFilter);
 
 SDL_DialogFileFilter ye_picker_audio_filters[] = {
+    { "All audio",   "wav;mp3" },
     { "WAV audio",   "wav" },
-    { "MP3 audio",   "mp3" },
-    { "All audio",   "wav;mp3" }
+    { "MP3 audio",   "mp3" }
 };
 int ye_picker_num_audio_filters = sizeof(ye_picker_audio_filters) / sizeof(SDL_DialogFileFilter);
 
@@ -212,7 +212,9 @@ SDL_DialogFileFilter ye_picker_yoyo_filters[] = {
 int ye_picker_num_yoyo_filters = sizeof(ye_picker_yoyo_filters) / sizeof(SDL_DialogFileFilter);
 
 SDL_DialogFileFilter ye_picker_font_filters[] = {
-    { "TrueType fonts",   "ttf" }
+    { "All Fonts",        "ttf;otf" },
+    { "TrueType fonts",   "ttf" },
+    { "OpenType fonts",   "otf" }
 };
 int ye_picker_num_font_filters = sizeof(ye_picker_font_filters) / sizeof(SDL_DialogFileFilter);
 
