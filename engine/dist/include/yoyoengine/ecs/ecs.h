@@ -134,10 +134,10 @@ YE_API struct ye_entity * ye_create_entity_named(const char *name);
 YE_API void ye_rename_entity(struct ye_entity *entity, const char *new_name);
 
 /**
- * @brief !!!DO NOT USE THIS RIGHT NOW. IT IS COMPLETELY BROKEN!!! Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
- * 
+ * @brief Duplicate an entity by pointer. Will rename the entity to "entity_name (copy)"
+ *
  * @param entity The entity to duplicate
- * @return struct ye_entity* 
+ * @return struct ye_entity*
  */
 YE_API struct ye_entity * ye_duplicate_entity(struct ye_entity *entity);
 

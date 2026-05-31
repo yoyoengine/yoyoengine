@@ -6,6 +6,7 @@
 */
 
 #include <stdbool.h>
+#include <string.h>
 
 #include <yoyoengine/engine.h>
 #include <yoyoengine/ecs/camera.h>
@@ -16,6 +17,7 @@ void ye_set_camera(struct ye_entity *entity){
 
 void ye_add_camera_component(struct ye_entity *entity, int z, struct ye_rectf view_field){
     entity->camera = malloc(sizeof(struct ye_component_camera));
+    memset(entity->camera, 0, sizeof(struct ye_component_camera));
     entity->camera->active = true;
     entity->camera->view_field = view_field; // x and y are used as an offset from the transform on the camera
     entity->camera->z = z;

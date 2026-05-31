@@ -233,8 +233,13 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
 
     free(temp);
 
+    new_entity->active = entity->active;
+
     // copy all components
-    if(entity->transform != NULL) ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);
+    if(entity->transform != NULL){
+        ye_add_transform_component(new_entity, entity->transform->x, entity->transform->y);
+        new_entity->transform->rotation = entity->transform->rotation;
+    }
     if(entity->renderer != NULL){
         if(entity->renderer->type == YE_RENDERER_TYPE_IMAGE){
             ye_add_image_renderer_component(new_entity, entity->renderer->z, entity->renderer->renderer_impl.image->src);
@@ -263,10 +268,15 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
         new_entity->renderer->rotation = entity->renderer->rotation;
         new_entity->renderer->alpha = entity->renderer->alpha;
         new_entity->renderer->alignment = entity->renderer->alignment;
+        new_entity->renderer->center = entity->renderer->center;
+        new_entity->renderer->preserve_original_size = entity->renderer->preserve_original_size;
+        new_entity->renderer->lock_aspect_ratio = entity->renderer->lock_aspect_ratio;
     }
-    if(entity->camera != NULL){ 
+    if(entity->camera != NULL){
         ye_add_camera_component(new_entity, entity->camera->z, entity->camera->view_field);
         new_entity->camera->active = entity->camera->active;
+        new_entity->camera->relative = entity->camera->relative;
+        new_entity->camera->lock_aspect_ratio = entity->camera->lock_aspect_ratio;
     }
     if(entity->button != NULL){
         ye_add_button_component(new_entity, entity->button->rect);
@@ -290,6 +300,7 @@ struct ye_entity * ye_duplicate_entity(struct ye_entity *entity){
     if(entity->audiosource != NULL){
         ye_add_audiosource_component(new_entity, entity->audiosource->handle, entity->audiosource->volume, entity->audiosource->play_on_awake, entity->audiosource->loops, entity->audiosource->simulated, entity->audiosource->range);
         new_entity->audiosource->active = entity->audiosource->active;
+        new_entity->audiosource->relative = entity->audiosource->relative;
     }
 
     return new_entity;
