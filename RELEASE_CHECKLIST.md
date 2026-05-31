@@ -3,7 +3,6 @@
 ## Bump Versions
 
 - `yoyoengine/engine/dist/include/verision.h`
-- `yoyoengine/engine/src/lua_runtime/runtime.lua`
 - `yoyoengine/engine/dist/include/yep.h`
 
 ## Create Tag

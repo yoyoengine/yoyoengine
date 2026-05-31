@@ -14,12 +14,6 @@
 
 A custom, hackable 2D Game Engine written in C.
 
-Check out the hand-crafted documentation website **[here](https://zoogies.github.io/yoyoengine)**.
-
-For advanced C developers, you can generate Doxygen documentation with `doxygen Doxyfile` in the `engine` directory.
-
-#### Head on over to [the yoyoengine hub](https://github.com/yoyoengine/launcher) to download the latest editor release.
-
 ## What?
 
 Yoyoengine started as a small game in SDL, and evolved into a fully featured, general purpose 2D game engine.
@@ -37,13 +31,64 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
 - Easy to use visual editor
 - Multi platform support (Windows, Linux, Web)
 - Asset bundling by default, for optimized builds.
-- A plugin system, with a few premade plugins for things like Discord RPC (see [yoyo-rpc](https://github.com/zoogies/yoyo-rpc))
-- Generic Gamepad and Controller abstraction layer
-- First class Lua scripting support, with native C scripting for complex or performance critical tasks
+- Pleasant to use event-based C scripting API
+
+### Made with yoyoengine:
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://zoogies.itch.io/raise-a-vannie">
+        <img src="https://img.itch.zone/aW1hZ2UvMjUzOTE4OC8xNTExOTIzMS5wbmc%3D/347x500/m5fla8.png" alt="Raise A Vannie" width="100%">
+      </a>
+      <br />
+      <strong><a href="https://zoogies.itch.io/raise-a-vannie">Raise A Vannie</a></strong>
+      <br />
+      <sub>Released: 2024-02-20</sub>
+      <br />
+      <sub>A gambling, plant-growing clicker.</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://zoogies.itch.io/theriac">
+        <img src="https://img.itch.zone/aW1hZ2UvMjU2OTE3Ny8xNTM2MjYzMC5wbmc%3D/347x500/TLeRLy.png" alt="Theriac" width="100%">
+      </a>
+      <br />
+      <strong><a href="https://zoogies.itch.io/theriac">Theriac</a></strong>
+      <br />
+      <sub>Released: 2024-03-13</sub>
+      <br />
+      <sub>GOTY 2024</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://ud-game-development-club.itch.io/ailurophobia">
+        <img src="https://img.itch.zone/aW1hZ2UvMzY2MjkwMy8yMTgwODYwOS5wbmc%3D/347x500/Sl6GHk.png" alt="Ailurophobia" width="100%">
+      </a>
+      <br />
+      <strong><a href="https://ud-game-development-club.itch.io/ailurophobia">Ailurophobia</a></strong>
+      <br />
+      <sub>Released: 2025-06-23</sub>
+      <br />
+      <sub>A horror visual novel.</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://zoogies.itch.io/milliomare">
+        <img src="https://img.itch.zone/aW1hZ2UvNDA1NzU4NS8yNDE4ODYwMy5wbmc%3D/347x500/HAW6uv.png" alt="Milliomare" width="100%">
+      </a>
+      <br />
+      <strong><a href="https://zoogies.itch.io/milliomare">Milliomare</a></strong>
+      <br />
+      <sub>Released: 2025-11-21</sub>
+      <br />
+      <sub>Gamble your way to a million dollars by horse racing.</sub>
+    </td>
+  </tr>
+</table>
 
 ### Tech Stack:
 
-- [SDL2](https://www.libsdl.org/) (windowing, rendering, audio, input, networking, etc)
+- [SDL3](https://www.libsdl.org/) (windowing, rendering, audio, input, networking, etc)
 - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) (UI)
 - [Uthash](https://github.com/troydhanson/uthash) (Hash tables)
 - [Jansson](https://github.com/akheron/jansson) (JSON parsing)

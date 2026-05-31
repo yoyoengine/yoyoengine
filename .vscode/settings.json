@@ -1,13 +1,7 @@
 {
     "files.associations": {
         "*.h": "c",
-        "system_error": "c",
-        "typeinfo": "c",
-        "random": "c",
         "*.yoyo": "json"
     },
-    "cmake.sourceDirectory": "${workspaceFolder}/engine",
-    "Lua.workspace.library": [
-        "${workspaceFolder}/editor/build/bin/Linux/engine_resources/ye_runtime.lua",
-    ],
+    "cmake.sourceDirectory": "${workspaceFolder}/engine"
 }
