@@ -67,6 +67,11 @@ YE_API void ye_entity_list_add(struct ye_entity_node **list, struct ye_entity *e
 YE_API void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct ye_entity *entity);
 
 /**
+ * @brief Re-sort the list of renderer entities by their Z value
+ */
+YE_API void ye_sort_renderer_entity_list_by_z(void);
+
+/**
  * @brief Remove an entity from a list
  * 
  * @param list The list to remove the entity from

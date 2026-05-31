@@ -79,6 +79,37 @@ void ye_entity_list_add_sorted_renderer_z(struct ye_entity_node **list, struct y
     current->next = newNode;
 }
 
+void ye_sort_renderer_entity_list_by_z(void){
+    struct ye_entity_node **list = &renderer_list_head;
+    
+    if(*list == NULL || (*list)->next == NULL) return; // if the list is empty or has only one element, it's already sorted
+
+    struct ye_entity_node *sorted = NULL;
+
+    struct ye_entity_node *current = *list;
+    while(current != NULL){
+        struct ye_entity_node *next = current->next;
+        current->next = NULL;
+
+        if(sorted == NULL || current->entity->renderer->z < sorted->entity->renderer->z){
+            current->next = sorted;
+            sorted = current;
+        }
+        else{
+            struct ye_entity_node *temp = sorted;
+            while(temp->next != NULL && temp->next->entity->renderer->z <= current->entity->renderer->z){
+                temp = temp->next;
+            }
+            current->next = temp->next;
+            temp->next = current;
+        }
+
+        current = next;
+    }
+
+    *list = sorted;
+}
+
 void ye_entity_list_remove(struct ye_entity_node **list, struct ye_entity *entity) {
     struct ye_entity_node *current = *list;
     struct ye_entity_node *prev = NULL;
