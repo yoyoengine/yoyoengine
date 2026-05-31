@@ -9,8 +9,6 @@
 
 #if defined __linux__ || defined __APPLE__ || defined __unix__
     #include <unistd.h>
-#elif WIN32
-    #include <platform/windows/unistd.h>
 #endif
 
 #include <math.h>
