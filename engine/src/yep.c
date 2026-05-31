@@ -445,7 +445,7 @@ static SDL_EnumerationResult SDLCALL _recurse_dir_callback(void *userdata, const
         node->fullpath = strdup(full_path);
 
         // set the name
-        sprintf(node->name, "%s", relative_path);
+        snprintf(node->name, 64, "%s", relative_path);
         node->name[strlen(relative_path)] = '\0'; // ensure null termination
 
         // add the node to the LL
