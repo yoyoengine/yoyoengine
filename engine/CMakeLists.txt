@@ -142,6 +142,8 @@ target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR}/demo/sdl3)
 # set(BUILD_SHARED 1 CACHE INTERNAL "")
 # dont build tests
 set(JANSSON_WITHOUT_TESTS ON CACHE BOOL "Disable building of tests")
+set(JANSSON_EXAMPLES OFF CACHE BOOL "Disable building of examples")
+set(JANSSON_INSTALL OFF CACHE BOOL "Disable installation targets")
 set(JANSSON_BUILD_DOCS OFF CACHE INTERNAL "")
 set(JANSSON_BUILD_MAN OFF CACHE INTERNAL "")
 FetchContent_Declare(
@@ -162,7 +164,25 @@ set(SDL3_DISABLE_INSTALL OFF CACHE BOOL "Disable installation of SDL3") # i forg
 set(SDL_STATIC ON CACHE BOOL "Build a static library")
 set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 set(SDL_TEST OFF CACHE BOOL "Build the test programs")
+set(SDL_TESTS OFF CACHE BOOL "Build the test programs")
+set(SDL_TEST_LIBRARY OFF CACHE BOOL "Build the SDL test library")
+set(SDL_EXAMPLES OFF CACHE BOOL "Build example programs")
+set(SDL_DISABLE_INSTALL ON CACHE BOOL "Disable installation targets")
 set(SDL_STATIC_PIC ON CACHE BOOL "Build static libraries with PIC (Position Independent Code)")
+
+# yoyoengine uses SDL video/render/audio/dialog/gamepad paths, but does not use
+# these SDL subsystems/backends. Keep this list conservative to avoid changing
+# renderer selection behavior on Windows.
+set(SDL_CAMERA OFF CACHE BOOL "Enable camera subsystem")
+set(SDL_HAPTIC OFF CACHE BOOL "Enable haptic subsystem")
+set(SDL_SENSOR OFF CACHE BOOL "Enable sensor subsystem")
+set(SDL_TRAY OFF CACHE BOOL "Enable tray subsystem")
+set(SDL_GPU OFF CACHE BOOL "Enable GPU subsystem")
+set(SDL_DUMMYAUDIO OFF CACHE BOOL "Enable dummy audio driver")
+set(SDL_DUMMYVIDEO OFF CACHE BOOL "Enable dummy video driver")
+set(SDL_DISKAUDIO OFF CACHE BOOL "Enable disk audio driver")
+set(SDL_OFFSCREEN OFF CACHE BOOL "Enable offscreen video driver")
+set(SDL_RENDER_GPU OFF CACHE BOOL "Enable GPU render driver")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
@@ -205,6 +225,7 @@ target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 # set(SDL2TTF_BUILD_SHARED_LIBS OFF CACHE BOOL "Build the library as a shared library")
 set(SDLTTF_SAMPLES OFF CACHE BOOL "Build the SDL3_ttf sample program(s)")
+set(SDLTTF_INSTALL OFF CACHE BOOL "Disable installation targets")
 # let it know it needs to get its vendored deps
 set(SDLTTF_VENDORED  ON CACHE BOOL "Use the vendored version of FreeType and HarfBuzz")
 
@@ -230,6 +251,9 @@ target_include_directories(yoyoengine PUBLIC ${SDL3_ttf_SOURCE_DIR}/include/SDL3
 ################
 
 set(SDL3IMAGE_DEPS_SHARED OFF CACHE BOOL "Build the dependencies as shared libraries")
+set(SDLIMAGE_INSTALL OFF CACHE BOOL "Disable installation targets")
+set(SDLIMAGE_SAMPLES OFF CACHE BOOL "Build the SDL3_image sample program(s)")
+set(SDLIMAGE_TESTS OFF CACHE BOOL "Build unit tests")
 
 # set(PNG_SHARED OFF CACHE BOOL "Build a shared version of the library")
 
@@ -278,19 +302,34 @@ set(SDLMIXER_OPUS  OFF CACHE BOOL "Enable Opus support")
 set(SDLMIXER_FLAC  OFF CACHE BOOL "Enable FLAC support")
 set(SDLMIXER_MOD   OFF CACHE BOOL "Enable Mod support")
 set(SDLMIXER_MIDI  OFF CACHE BOOL "Enable MIDI support")
+set(SDLMIXER_GME   OFF CACHE BOOL "Enable GME support")
+set(SDLMIXER_VORBIS_STB OFF CACHE BOOL "Enable Ogg Vorbis support via stb_vorbis")
+set(SDLMIXER_VORBIS_VORBISFILE OFF CACHE BOOL "Enable Ogg Vorbis support via libvorbisfile")
+set(SDLMIXER_WAVPACK OFF CACHE BOOL "Enable WavPack support")
+set(SDLMIXER_AIFF OFF CACHE BOOL "Enable AIFF support")
+set(SDLMIXER_VOC OFF CACHE BOOL "Enable VOC support")
+set(SDLMIXER_AU OFF CACHE BOOL "Enable AU support")
 
 # mp3 enabled
 set(SDLMIXER_MP3 ON CACHE BOOL "Enable MP3 support")
+set(SDLMIXER_MP3_DRMP3 ON CACHE BOOL "Enable MP3 support via dr_mp3")
+set(SDLMIXER_MP3_MPG123 OFF CACHE BOOL "Enable MP3 support via libmpg123")
 
 # wav enabled
+set(SDLMIXER_WAVE ON CACHE BOOL "Enable WAVE support")
 set(SDLMIXER_WAV ON CACHE BOOL "Enable WAV support")
+
+set(SDLMIXER_TESTS OFF CACHE BOOL "Build unit tests")
+set(SDLMIXER_EXAMPLES OFF CACHE BOOL "Build examples")
+set(SDLMIXER_INSTALL OFF CACHE BOOL "Disable installation targets")
 
 FetchContent_Declare(
     SDL3_mixer
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
     GIT_TAG         release-3.2.0
     GIT_PROGRESS TRUE
-    GIT_SHALLOW FALSE
+    GIT_SHALLOW TRUE
+    GIT_SUBMODULES ""
 )
 FetchContent_MakeAvailable(SDL3_mixer)
 target_include_directories(yoyoengine PUBLIC ${SDL3_mixer_SOURCE_DIR}/include/SDL3_mixer)
