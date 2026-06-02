@@ -49,12 +49,31 @@ void _ye_queue_track_destroy(MIX_Track *track)
 
 void ye_flush_pending_track_destroys()
 {
+    /*
+        Snapshot the queue under the lock, then release it BEFORE calling
+        MIX_DestroyTrack. MIX_DestroyTrack synchronizes with the audio thread
+        (it tears down the track's output stream). Meanwhile the audio thread,
+        inside a stopped callback, holds that same stream lock and calls
+        _ye_queue_track_destroy(), which blocks on pending_track_destroy_lock.
+
+        Holding pending_track_destroy_lock across MIX_DestroyTrack therefore
+        inverts the lock order against the audio thread and deadlocks the game
+        (hard freeze). Doing the destroys outside the lock breaks the cycle.
+    */
+    MIX_Track *to_destroy[YE_MAX_PENDING_TRACK_DESTROYS];
+    int count = 0;
+
     SDL_LockMutex(pending_track_destroy_lock);
-    for(int i = 0; i < pending_track_destroy_count; i++){
-        MIX_DestroyTrack(pending_track_destroys[i]);
+    count = pending_track_destroy_count;
+    for(int i = 0; i < count; i++){
+        to_destroy[i] = pending_track_destroys[i];
     }
     pending_track_destroy_count = 0;
     SDL_UnlockMutex(pending_track_destroy_lock);
+
+    for(int i = 0; i < count; i++){
+        MIX_DestroyTrack(to_destroy[i]);
+    }
 }
 
 /*
