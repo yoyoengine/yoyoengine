@@ -20,11 +20,11 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
 
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/zoogies.png" alt="Zoogies Logo"/></td>
-        <td><img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/theriac.png" alt="Theriac"/></td>
+        <td><img src=".github/media/zoogies.png" alt="Zoogies Logo"/></td>
+        <td><img src=".github/media/theriac-editor.png" alt="Theriac"/></td>
     </tr>
 </table>
-<img src="https://raw.githubusercontent.com/yoyoengine/yoyoeditor/main/.github/media/vannie.png" alt="Raise A Vannie"/>
+<img src=".github/media/vannie.png" alt="Raise A Vannie"/>
 
 ### Feature List:
 
@@ -39,7 +39,7 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
   <tr>
     <td align="center" width="50%">
       <a href="https://zoogies.itch.io/raise-a-vannie">
-        <img src="https://img.itch.zone/aW1hZ2UvMjUzOTE4OC8xNTExOTIzMS5wbmc%3D/347x500/m5fla8.png" alt="Raise A Vannie" width="100%">
+        <img src=".github/media/raise-a-vannie.png" alt="Raise A Vannie" width="100%">
       </a>
       <br />
       <strong><a href="https://zoogies.itch.io/raise-a-vannie">Raise A Vannie</a></strong>
@@ -50,7 +50,7 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
     </td>
     <td align="center" width="50%">
       <a href="https://zoogies.itch.io/theriac">
-        <img src="https://img.itch.zone/aW1hZ2UvMjU2OTE3Ny8xNTM2MjYzMC5wbmc%3D/347x500/TLeRLy.png" alt="Theriac" width="100%">
+        <img src=".github/media/theriac-itch.png" alt="Theriac" width="100%">
       </a>
       <br />
       <strong><a href="https://zoogies.itch.io/theriac">Theriac</a></strong>
@@ -63,7 +63,7 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
   <tr>
     <td align="center" width="50%">
       <a href="https://ud-game-development-club.itch.io/ailurophobia">
-        <img src="https://img.itch.zone/aW1hZ2UvMzY2MjkwMy8yMTgwODYwOS5wbmc%3D/347x500/Sl6GHk.png" alt="Ailurophobia" width="100%">
+        <img src=".github/media/ailurophobia.png" alt="Ailurophobia" width="100%">
       </a>
       <br />
       <strong><a href="https://ud-game-development-club.itch.io/ailurophobia">Ailurophobia</a></strong>
@@ -74,7 +74,7 @@ Yoyoengine started as a small game in SDL, and evolved into a fully featured, ge
     </td>
     <td align="center" width="50%">
       <a href="https://zoogies.itch.io/milliomare">
-        <img src="https://img.itch.zone/aW1hZ2UvNDA1NzU4NS8yNDE4ODYwMy5wbmc%3D/347x500/HAW6uv.png" alt="Milliomare" width="100%">
+        <img src=".github/media/milliomare.png" alt="Milliomare" width="100%">
       </a>
       <br />
       <strong><a href="https://zoogies.itch.io/milliomare">Milliomare</a></strong>
