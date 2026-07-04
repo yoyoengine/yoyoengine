@@ -543,17 +543,30 @@ void ye_shutdown_graphics(){
 
 // helper function to get the current window size, if fullscreen it gets the monitor size
 struct ScreenSize ye_get_screen_size(){
-    struct ScreenSize screenSize;
+    struct ScreenSize screenSize = {
+        YE_STATE.engine.screen_width,
+        YE_STATE.engine.screen_height
+    };
 
     // fullscreen
     if (YE_STATE.engine.fullscreen) {
-        // if we are in fullscreen mode, get the desktop display mode
-		const SDL_DisplayMode *DM = SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay());
-		screenSize.width = DM->w;
-		screenSize.height = DM->h;
-	} else {
-		// if we are not in fullscreen mode, get the window size
-		SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
+        // if we are in fullscreen mode, get the desktop display mode for the window's display
+        SDL_DisplayID display = pWindow != NULL ? SDL_GetDisplayForWindow(pWindow) : 0;
+        if(display == 0)
+            display = SDL_GetPrimaryDisplay();
+
+        const SDL_DisplayMode *DM = SDL_GetDesktopDisplayMode(display);
+        if(DM != NULL){
+            screenSize.width = DM->w;
+            screenSize.height = DM->h;
+        }
+        else if(pWindow != NULL){
+            SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
+        }
+    } else {
+        // if we are not in fullscreen mode, get the window size
+        if(pWindow != NULL)
+            SDL_GetWindowSize(pWindow, &screenSize.width, &screenSize.height);
     }
     return screenSize;
 }
