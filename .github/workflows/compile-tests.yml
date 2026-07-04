@@ -10,11 +10,15 @@ on:
 
 env:
   CMAKE_FLAGS: -DSDL_UNIX_CONSOLE_BUILD=ON
+  DEPS_CACHE_VERSION: v1
 
 jobs:
   build-linux:
     name: Build with ${{ matrix.compiler }}
     runs-on: ubuntu-latest
+    env:
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
     strategy:
       matrix:
         compiler: [gcc, clang]
@@ -25,69 +29,106 @@ jobs:
             cc: clang
 
     steps:
-      - name: Install dependencies
-        run: sudo apt update && sudo apt-get install -y ${{ matrix.compiler }} cmake make
-
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up dependencies
+
+      - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdrm-dev libgbm-dev libfreetype6-dev libharfbuzz-dev nasm
+          sudo apt-get install -y ${{ matrix.compiler }} ccache cmake ninja-build libdrm-dev libgbm-dev libfreetype6-dev libharfbuzz-dev nasm
 
-      - name: Cache Fetchcontent
-        id: cache-fetchcontent
+      - name: Cache dependency builds
+        id: cache-deps
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/engine/build/_deps/*-src
-          key: ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-${{ hashFiles('**/engine/CMakeLists.txt') }}
+          path: ${{ github.workspace }}/engine/build/_deps
+          key: ${{ runner.os }}-${{ matrix.compiler }}-ninja-deps-${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles('engine/CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-
+            ${{ runner.os }}-${{ matrix.compiler }}-ninja-deps-${{ env.DEPS_CACHE_VERSION }}-
+
+      - name: Cache compiler outputs
+        id: cache-ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-ccache-${{ hashFiles('engine/CMakeLists.txt', 'engine/src/**/*.c', 'engine/dist/include/**/*.h') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.compiler }}-ccache-
+
+      - name: Configure ccache
+        run: |
+          ccache --set-config=max_size=500M
+          ccache --set-config=compiler_check=content
+          ccache --zero-stats
 
       - name: Configure with CMake
         run: |
           mkdir -p ${{ github.workspace }}/engine/build
           cd ${{ github.workspace }}/engine/build
-          CC=${{ matrix.cc }} cmake ${{ env.CMAKE_FLAGS }} ..
+          CC=${{ matrix.cc }} cmake -G Ninja ${{ env.CMAKE_FLAGS }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ..
 
       - name: Build
         run: |
           cd ${{ github.workspace }}/engine/build
-          make -j$(nproc)
+          cmake --build . --parallel
+
+      - name: Show ccache stats
+        run: ccache --show-stats
 
   build-msvc:
-      name: Build with MSVC
-      runs-on: windows-2025
+    name: Build with MSVC
+    runs-on: windows-2025
+    env:
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_COMPILERTYPE: msvc
 
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Cache Fetchcontent
-          id: cache-fetchcontent
-          uses: actions/cache@v4
-          with:
-            path: ${{ github.workspace }}\engine\build\_deps\*-src
-            key: windows-msvc-fetchcontent-${{ hashFiles('**/engine/CMakeLists.txt') }}
-            restore-keys: |
-              windows-msvc-fetchcontent-
+      - name: Cache dependency builds
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/engine/build/_deps
+          key: windows-msvc-ninja-deps-${{ env.DEPS_CACHE_VERSION }}-${{ hashFiles('engine/CMakeLists.txt') }}
+          restore-keys: |
+            windows-msvc-ninja-deps-${{ env.DEPS_CACHE_VERSION }}-
             
-        - uses: ilammy/msvc-dev-cmd@v1.13.0
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
 
-        - name: Install pkgconfig with Chocolatey
-          run: choco install pkgconfiglite -y
+      - name: Install build tools with Chocolatey
+        run: choco install pkgconfiglite ccache ninja -y --no-progress
 
-        - name: Set up NASM
-          uses: ilammy/setup-nasm@v1
+      - name: Set up NASM
+        uses: ilammy/setup-nasm@v1
 
-        - name: Configure with CMake
-          run: |
-            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\engine\build"
-            cd ${{ github.workspace }}\engine\build
-            cmake ${{ env.CMAKE_FLAGS }} -DCMAKE_ASM_NASM_COMPILER=nasm ..
+      - name: Cache compiler outputs
+        id: cache-ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: windows-msvc-ccache-${{ hashFiles('engine/CMakeLists.txt', 'engine/src/**/*.c', 'engine/dist/include/**/*.h') }}
+          restore-keys: |
+            windows-msvc-ccache-
+
+      - name: Configure ccache
+        run: |
+          ccache --set-config=max_size=500M
+          ccache --set-config=compiler_check=content
+          ccache --zero-stats
+
+      - name: Configure with CMake
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\engine\build"
+          cd ${{ github.workspace }}\engine\build
+          cmake -G Ninja ${{ env.CMAKE_FLAGS }} -DCMAKE_BUILD_TYPE=Debug -DCMAKE_ASM_NASM_COMPILER=nasm -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ..
         
-        - name: Build with MSVC
-          run: |
-            cd ${{ github.workspace }}\engine\build
-            cmake --build . --config Debug --parallel
+      - name: Build with MSVC
+        run: |
+          cd ${{ github.workspace }}\engine\build
+          cmake --build . --parallel
+
+      - name: Show ccache stats
+        run: ccache --show-stats

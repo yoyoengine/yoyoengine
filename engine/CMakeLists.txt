@@ -92,13 +92,11 @@ endif()
 #   Lilith    #
 ###############
 
-# TODO: pin tag when stable
 FetchContent_Declare(
     lilith
     GIT_REPOSITORY https://github.com/yoyoengine/lilith.git
-    GIT_TAG main
+    GIT_TAG 14e908972e19d0ef68a0543dbef203244b5a35cd
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(lilith)
 target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lilith.h
@@ -107,13 +105,11 @@ target_include_directories(yoyoengine PUBLIC ${lilith_SOURCE_DIR}/include) # Lil
 #     p2d     #
 ###############
 
-# TODO: pin tag when stable
 FetchContent_Declare(
     p2d
     GIT_REPOSITORY https://github.com/yoyoengine/p2d.git
-    GIT_TAG main
+    GIT_TAG a264bbd1cdfb91a7b728d5b065fbf27b8e7dc50f
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(p2d)
 target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
@@ -122,13 +118,11 @@ target_include_directories(yoyoengine PUBLIC ${p2d_SOURCE_DIR}/include)
 #   Nuklear   #
 ###############
 
-# going to use custom branch ref so we dont have to add a populate command to `make nuke`
 FetchContent_Declare(
     nuklear
     GIT_REPOSITORY https://github.com/yoyoengine/Nuklear.git
-    GIT_TAG yoyoengine # WIP SDL3 Nuklear port
+    GIT_TAG 9e4751687f001a4ce97b26a7896f1bd687795fe4 # WIP SDL3 Nuklear port
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(nuklear)
 target_include_directories(yoyoengine PUBLIC ${nuklear_SOURCE_DIR})
@@ -149,9 +143,8 @@ set(JANSSON_BUILD_MAN OFF CACHE INTERNAL "")
 FetchContent_Declare(
     jansson
     GIT_REPOSITORY https://github.com/akheron/jansson.git
-    GIT_TAG        v2.15.0
+    GIT_TAG        4a9a6db73d5dc553164992e87426502ab2d54512
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(jansson)
 target_include_directories(yoyoengine PUBLIC ${jansson_BINARY_DIR}/include)
@@ -186,9 +179,8 @@ set(SDL_RENDER_GPU OFF CACHE BOOL "Enable GPU render driver")
 FetchContent_Declare(
     SDL3
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL.git
-    GIT_TAG         release-3.4.2
+    GIT_TAG         683181b47cfabd293e3ea409f838915b8297a4fd
     GIT_PROGRESS    TRUE
-    GIT_SHALLOW     TRUE
 )
 # set(SDL_SHARED OFF CACHE BOOL "Build a shared library")
 FetchContent_MakeAvailable(SDL3)
@@ -211,9 +203,8 @@ set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "Disable building of zlib examples")
 FetchContent_Declare(
     zlib
     GIT_REPOSITORY https://github.com/madler/zlib.git
-    GIT_TAG        v1.3.1
+    GIT_TAG        51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(zlib)
 target_include_directories(yoyoengine PUBLIC ${zlib_SOURCE_DIR})
@@ -238,9 +229,8 @@ set(SDLTTF_VENDORED  ON CACHE BOOL "Use the vendored version of FreeType and Har
 FetchContent_Declare(
     SDL3_ttf
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_ttf
-    GIT_TAG         release-3.2.2
+    GIT_TAG         a1ce3670aec736ecbf0936c43f2f0cc53aa61e5b
     GIT_PROGRESS    TRUE
-    GIT_SHALLOW     TRUE
 )
 FetchContent_MakeAvailable(SDL3_ttf)
 
@@ -283,9 +273,8 @@ set(SDLIMAGE_XV OFF CACHE BOOL "Support loading XV images")
 FetchContent_Declare(
     SDL3_image
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG         release-3.2.4
+    GIT_TAG         11154afb7855293159588b245b446a4ef09e574f
     GIT_PROGRESS    TRUE
-    GIT_SHALLOW     TRUE
 )
 FetchContent_MakeAvailable(SDL3_image)
 target_include_directories(yoyoengine PUBLIC ${SDL3_image_SOURCE_DIR}/include/SDL3_image)
@@ -326,9 +315,8 @@ set(SDLMIXER_INSTALL OFF CACHE BOOL "Disable installation targets")
 FetchContent_Declare(
     SDL3_mixer
     GIT_REPOSITORY  https://github.com/libsdl-org/SDL_mixer.git
-    GIT_TAG         release-3.2.0
+    GIT_TAG         cedfeef30e93db35eee6b25759117da63f8e5a4f
     GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
     GIT_SUBMODULES ""
 )
 FetchContent_MakeAvailable(SDL3_mixer)
