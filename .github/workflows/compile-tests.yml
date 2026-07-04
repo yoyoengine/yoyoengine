@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ runner.os }}-${{ matrix.compiler }}-ccache-${{ hashFiles('engine/CMakeLists.txt', 'engine/src/**/*.c', 'engine/dist/include/**/*.h') }}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-ccache-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.compiler }}-ccache-
 
@@ -59,6 +59,7 @@ jobs:
         run: |
           ccache --set-config=max_size=500M
           ccache --set-config=compiler_check=content
+          ccache --set-config=sloppiness=time_macros,include_file_mtime,include_file_ctime
           ccache --zero-stats
 
       - name: Configure with CMake
@@ -109,7 +110,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: windows-msvc-ccache-${{ hashFiles('engine/CMakeLists.txt', 'engine/src/**/*.c', 'engine/dist/include/**/*.h') }}
+          key: windows-msvc-ccache-${{ github.run_id }}
           restore-keys: |
             windows-msvc-ccache-
 
@@ -117,13 +118,14 @@ jobs:
         run: |
           ccache --set-config=max_size=500M
           ccache --set-config=compiler_check=content
+          ccache --set-config=sloppiness=time_macros,include_file_mtime,include_file_ctime
           ccache --zero-stats
 
       - name: Configure with CMake
         run: |
           New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\engine\build"
           cd ${{ github.workspace }}\engine\build
-          cmake -G Ninja ${{ env.CMAKE_FLAGS }} -DCMAKE_BUILD_TYPE=Debug -DCMAKE_ASM_NASM_COMPILER=nasm -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ..
+          cmake -G Ninja ${{ env.CMAKE_FLAGS }} -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded -DCMAKE_ASM_NASM_COMPILER=nasm -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ..
         
       - name: Build with MSVC
         run: |
