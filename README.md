@@ -6,6 +6,7 @@
 </div>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/xncSnrtQhg?style=flat-square)](https://discord.gg/xncSnrtQhg)
 [![wakatime](https://wakatime.com/badge/user/3e73d21c-9ccb-4e77-ab4d-6f58f0296cfa/project/d703c117-3f87-4f6f-96f5-e0c40088a6a0.svg)](https://wakatime.com/badge/user/3e73d21c-9ccb-4e77-ab4d-6f58f0296cfa/project/d703c117-3f87-4f6f-96f5-e0c40088a6a0?style=for-the-badge)
 ![GitHub repo size](https://img.shields.io/github/repo-size/zoogies/yoyoengine)
 ![GitHub Tag](https://img.shields.io/github/v/tag/zoogies/yoyoengine)
